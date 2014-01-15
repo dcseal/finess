@@ -1,11 +1,21 @@
 #include <cmath>
 #include "dogdefs.h"
 
-// This is a user-supplied routine that sets the
-// initial conditions at all the points "xpts"
+// This is a user-required routine.
 //
-void QinitFunc(const dTensor1& xpts, 
-	       dTensor2& qvals)
+// This routine defines the initial conditions for the problem.
+//
+// Input:
+//
+//    xpts( 1:numpts, 1:ndim )
+//
+// Output:
+//
+//    qvals( 1:numpts, 1:meqn )
+//
+// See also: ...
+//
+void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
 {
 
     const int numpts=xpts.getsize();
@@ -24,4 +34,3 @@ void QinitFunc(const dTensor1& xpts,
     }
   
 }
-
