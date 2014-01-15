@@ -32,7 +32,7 @@ cscope:
 
 retags:
 	$(CTAGS) $(TAGSOURCES)
-	$(DOGPACK)/scripts/makefiletags $(TAGSOURCES) >> tags
+	$(FINESS)/scripts/makefiletags $(TAGSOURCES) >> tags
 	LC_ALL=C sort -u tags -o tags
 
 tags: retags

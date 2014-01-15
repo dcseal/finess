@@ -1,9 +1,9 @@
 # config specifies the compiler
 
-include $(DOGPACK)/config/Makefile.config
+include $(FINESS)/config/Makefile.config
 
 # where this library lives
-LIB_SYS = $(DOGPACK)/lib/sys
+LIB_SYS = $(FINESS)/lib/sys
 
 # define inherited symbols
 #
