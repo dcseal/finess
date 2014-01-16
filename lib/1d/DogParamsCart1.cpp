@@ -99,13 +99,13 @@ void DogParamsCart1::checkParameters()
     }
 }
 
-// data put into qhelp.dat (which is then used by plotting routines)
-void DogParamsCart1::write_qhelp(const char* filename)
+// append data to outputdir/qhelp.dat (which is then used by plotting routines)
+void DogParamsCart1::append_qhelp(const char* filename)
 {
-  //dogParams.write_qhelp(filename);
-  FILE* file = fopen(filename,"a");
-  fprintf(file,"%16d : mx\n",mx);
-  fprintf(file,"%16.8e : xlow\n", xlow);
-  fprintf(file,"%16.8e : xhigh\n",xhigh);
-  fclose(file);
+    //dogParams.write_qhelp(filename);
+    FILE* file = fopen(filename,"a");
+    fprintf(file,"%16d : mx\n",mx);
+    fprintf(file,"%16.8e : xlow\n", xlow);
+    fprintf(file,"%16.8e : xhigh\n",xhigh);
+    fclose(file);
 }

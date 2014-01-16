@@ -17,6 +17,8 @@ void DogSolveLxW(const dTensor2& node, const dTensor1& prim_vol, dTensorBC3& aux
         double tstart, double tend,int nv, const int method[],
         double dtv[], const double cflv[],string outputdir)
 {  
+
+/*
     // ------------------------------------------------------------
     // Function definitions
     void CopyQ(const dTensorBC3&,dTensorBC3&);
@@ -172,5 +174,7 @@ void DogSolveLxW(const dTensor2& node, const dTensor1& prim_vol, dTensorBC3& aux
 
     // set initial time step for next call to DogSolve
     dtv[1] = dt;
+
+*/
 
 }

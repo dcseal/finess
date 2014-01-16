@@ -12,11 +12,15 @@
 
 using namespace std;
 
-void DogSolveRK(const dTensor2& node, const dTensor1& prim_vol, dTensorBC3& aux, 
-        dTensorBC3& qold, dTensorBC3& qnew, dTensorBC1& smax,
-        double tstart, double tend,int nv, const int method[],
-        double dtv[], const double cflv[],string outputdir)
+void DogSolveRK(
+    const dTensor2& node, const dTensor1& prim_vol, 
+    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
+    dTensorBC1& smax,
+    double tstart, double tend, int nv,
+    double dtv[], const double cflv[], string outputdir)
 {
+
+/*
     // ------------------------------------------------------------
     // Function definitions
     void CopyQ(const dTensorBC3&,dTensorBC3&);
@@ -350,5 +354,7 @@ void DogSolveRK(const dTensor2& node, const dTensor1& prim_vol, dTensorBC3& aux,
     dtv[1] = dt;
 
     DeleteRKInfo(rk);
+
+*/
 
 }

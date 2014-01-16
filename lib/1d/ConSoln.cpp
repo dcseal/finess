@@ -5,10 +5,14 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
+#include "DogParams.h"
+
 using namespace std;
 
-void ConSoln(const int method[], const dTensor2& node, const dTensorBC3& aux,
-        const dTensorBC3& q, double t, string outputdir)
+void ConSoln( const dTensor2& node, 
+    const dTensorBC2& aux,
+    const dTensorBC2& q, 
+    double t, string outputdir)
 {
 
     const int melems = q.getsize(1);
@@ -31,7 +35,7 @@ void ConSoln(const int method[], const dTensor2& node, const dTensorBC3& aux,
     // -----------------
     // CONSERVATION
     // -----------------
-    if (method[5]<1) // without capacity function
+    if( dogParams.get_mcapa() < 1 ) // without capacity function
     {
         for (int m=1; m<=meqn; m++)
         {
@@ -41,7 +45,7 @@ void ConSoln(const int method[], const dTensor2& node, const dTensorBC3& aux,
             {
                 double x = node.get(i,1);
                 double dtmp = node.get(i+1,1)-node.get(i,1);
-                double qtmp = q.get(i,m,1);
+                double qtmp = q.get(i, m);
 
                 qsum.set(m, (qsum.get(m) + dtmp*qtmp) );
             }
@@ -49,7 +53,6 @@ void ConSoln(const int method[], const dTensor2& node, const dTensorBC3& aux,
     }
     else // with capacity function
     {
-        const int mcapa = method[5];
         for (int m=1; m<=meqn; m++)
         {
             qsum.set(m, 0.0);
@@ -58,8 +61,8 @@ void ConSoln(const int method[], const dTensor2& node, const dTensorBC3& aux,
             {
                 double x = node.get(i,1);
                 double dtmp = node.get(i+1,1)-node.get(i,1);
-                double qtmp = q.get(i,m,1);
-                double atmp = aux.get(i,mcapa,1);
+                double qtmp = q.get(i,m);
+                double atmp = aux.get(i, dogParams.get_mcapa() );
 
                 qsum.set(m, (qsum.get(m) + atmp*dtmp*qtmp) );
             }
