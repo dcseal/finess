@@ -82,7 +82,6 @@ void LaxWendroff(const double dt, const int method[], const dTensor2& node,
     void SetWaveSpd(const dTensor1&,const dTensor1&,const dTensor1&,const dTensor1&,
             const dTensor1&,double&,double&);
     void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-    void LstarExtra(const dTensor2&,dTensorBC3&,dTensorBC3&,dTensorBC3&);
 
     // quick error check
     if( method[7] > 0 )
@@ -261,7 +260,7 @@ void LaxWendroff(const double dt, const int method[], const dTensor2& node,
     // Part V: add extra contributions to Lstar
     // ---------------------------------------------------------
     // Call LstarExtra
-    LstarExtra(node,aux,q,Lstar);
+    // LstarExtra(node,aux,q,Lstar);
     // ---------------------------------------------------------
 
 }

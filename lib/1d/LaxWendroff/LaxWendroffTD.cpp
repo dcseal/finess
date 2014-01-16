@@ -289,7 +289,7 @@ CopyQ( aux1, auxavg );
     // Part V: add extra contributions to Lstar
     // ---------------------------------------------------------
     // Call LstarExtra
-    LstarExtra(node,aux1,q1,Lstar);
+    // LstarExtra(node,aux1,q1,Lstar);
     // ---------------------------------------------------------
 
 }

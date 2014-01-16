@@ -13,13 +13,13 @@
  * application links to this common main function, that executes the code.
  *
  * The purpose of placing this extra layer between appname/main.cpp and
- * RunDogpack is to make the main function in each application as this as
+ * RunDogpack is to make the main function in each application as short as
  * possible.
  *
  */
 int main_global(int argc, char* argv[])
 {
-    // Open parameters.ini file
+    // Open parameters.ini file, (and read [dogParams]? -DS)
     ini_doc.initFromFile("parameters.ini");
     IniDocument::Section& ini_sec = ini_doc["dogParams"];
 
@@ -31,15 +31,14 @@ int main_global(int argc, char* argv[])
     void RunStartScript(int ndims);
     RunStartScript(1);
 
-    // Call the ``RunDogpack'' routine, which executes the
-    // discontinuous Galerkin code
+    // Call the ``RunDogpack'' routine, which executes the code
     int RunDogpack(string outputdir);
     int m = RunDogpack(get_outputdir());
 
     // Get current time
     double time2 = time(NULL);
 
-    // Output elapsed time
+    // Output elapsed running time
     cout << setprecision(5);
     cout << " Total elapsed time in seconds = " << setw(11) 
         << scientific << time2-time1 << endl << endl;

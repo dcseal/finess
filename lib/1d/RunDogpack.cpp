@@ -134,8 +134,10 @@ int RunDogpack(string outputdir)
         else if (time_stepping_method == "SDC")
         {
             // Spectral deferred correction (SDC) time-stepping scheme
-            DogSolveSDC(node,prim_vol,aux,qold,qnew,smax,tstart,tend,
-                    nv,method,dtv,cflv,outputdir);
+//          DogSolveSDC(node,prim_vol,aux,qold,qnew,smax,tstart,tend,
+//                  nv,method,dtv,cflv,outputdir);
+            printf("DogSolveSDC has not been written\n");
+            exit(1);
         }
         else if (time_stepping_method == "Lax-Wendroff")
         {

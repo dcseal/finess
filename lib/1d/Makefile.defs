@@ -85,12 +85,9 @@ BeforeStep           = $(LIB1D)/BeforeStep
 AfterUpdateSoln      = $(LIB1D)/AfterUpdateSoln
 ApplyLimiter         = $(LIB1D)/ApplyLimiter
 ApplyPosLimiter      = $(LIB1D)/ApplyPosLimiter
-ArtificialViscosity  = $(LIB1D)/ArtificialViscosity
-RelaxLimiter         = $(LIB1D)/RelaxLimiter
 RiemannSolve         = $(LIB1D)/RiemannSolveLLF
 ConstructL           = $(LIB1D)/ConstructL
 InitApp              = $(LIB1D)/InitApp
-LstarExtra           = $(LIB1D)/LstarExtra
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
 DogSolveUser         = $(LIB1D)/DogSolveUser
@@ -120,7 +117,6 @@ LIB1D_OBJECTS = \
   $(Output_Extra).o \
   $(ConSoln).o \
   $(LIB1D)/DogSolveRK.o \
-  $(LIB1D)/DogSolveSDC.o \
   $(DogSolveLxW).o \
   $(DogSolveUser).o \
   $(LaxWendroff).o \
@@ -136,17 +132,12 @@ LIB1D_OBJECTS = \
   $(AfterFullTimeStep).o \
   $(InitApp).o \
   $(AfterUpdateSoln).o \
-  $(LstarExtra).o \
   $(ApplyLimiter).o \
   $(ApplyPosLimiter).o \
-  $(ArtificialViscosity).o \
-  $(RelaxLimiter).o \
   $(LIB1D)/ConvertQtoW.o \
   $(LIB1D)/ConvertWtoQ.o \
   $(ConstructL).o \
   $(LIB1D)/UpdateSoln.o \
-  $(LIB1D)/TimeStepSDC.o \
-  $(LIB1D)/StepSDC.o \
   $(LIB1D)/ResInt.o \
   $(LIB1D)/GetCFL.o \
   $(RiemannSolve).o \
@@ -169,7 +160,6 @@ LIB1D_SOURCES = \
   $(Output_Extra).cpp \
   $(ConSoln).cpp \
   $(LIB1D)/DogSolveRK.cpp \
-  $(LIB1D)/DogSolveSDC.cpp \
   $(DogSolveLxW).cpp \
   $(DogSolveUser).cpp \
   $(LaxWendroff).cpp \
@@ -185,17 +175,12 @@ LIB1D_SOURCES = \
   $(AfterFullTimeStep).cpp \
   $(InitApp).cpp \
   $(AfterUpdateSoln).cpp \
-  $(LstarExtra).cpp \
   $(ApplyLimiter).cpp \
   $(ApplyPosLimiter).cpp \
-  $(ArtificialViscosity).cpp \
-  $(RelaxLimiter).cpp \
   $(LIB1D)/ConvertQtoW.cpp \
   $(LIB1D)/ConvertWtoQ.cpp \
   $(ConstructL).cpp \
   $(LIB1D)/UpdateSoln.cpp \
-  $(LIB1D)/TimeStepSDC.cpp \
-  $(LIB1D)/StepSDC.cpp \
   $(LIB1D)/ResInt.cpp \
   $(LIB1D)/GetCFL.cpp \
   $(RiemannSolve).cpp \

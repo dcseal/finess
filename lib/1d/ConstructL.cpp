@@ -14,6 +14,10 @@ void ConstructL(const int method[],
         dTensorBC3& Lstar,
         dTensorBC1& smax)
 {
+
+printf("ConstructL needs to be written.  This routine is doing nothing right now.\n");
+
+/*
     double RiemannSolve(const dTensor1& xedge,
             const dTensor1& Ql,
             const dTensor1& Qr,
@@ -31,7 +35,6 @@ void ConstructL(const int method[],
     void SetWaveSpd(const dTensor1&,const dTensor1&,const dTensor1&,const dTensor1&,
             const dTensor1&,double&,double&);
     void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-    void LstarExtra(const dTensor2&,dTensorBC3&,dTensorBC3&,dTensorBC3&);
     void ArtificialViscosity(const dTensor2&,dTensorBC3&,dTensorBC3&,dTensorBC3&);
 
     const int melems = q.getsize(1);
@@ -194,7 +197,7 @@ void ConstructL(const int method[],
     // Part V: add extra contributions to Lstar
     // ---------------------------------------------------------
     // Call LstarExtra
-    LstarExtra(node,aux,q,Lstar);
+    // LstarExtra(node,aux,q,Lstar);
     // ---------------------------------------------------------
 
     // ---------------------------------------------------------
@@ -206,4 +209,6 @@ void ConstructL(const int method[],
         {  ArtificialViscosity(node,aux,q,Lstar);  }
     }
     // ---------------------------------------------------------
+*/
+
 }

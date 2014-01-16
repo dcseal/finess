@@ -77,7 +77,8 @@ class DogSolver
         // parser to read input arguments.  Current valid options are 
         // "-o outputdir" and "-d X", for an output directory and debugging
         // level.
-        static void parse_arguments(int argc,char**argv);
+        // ------------------------------------------------------------------ //
+        static void parse_arguments(int argc, char**argv);
 
         // ------------------------------------------------------------------ //
         // Main solver.  Right now, this is essentially hard coding a

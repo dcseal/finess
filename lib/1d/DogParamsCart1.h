@@ -1,5 +1,5 @@
-#ifndef DOGPARAMSCART1_H
-#define DOGPARAMSCART1_H
+#ifndef _DOGPARAMSCART1_H_
+#define _DOGPARAMSCART1_H_
 
 class IniDocument;
 struct DogParamsCart1{
@@ -17,6 +17,7 @@ struct DogParamsCart1{
  private:
    void checkParameters();
    void setDerivedParameters();
+
  public:
    bool get_is_initialized(){return is_initialized;}
    void reportParameters();
