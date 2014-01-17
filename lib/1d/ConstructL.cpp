@@ -1,4 +1,5 @@
 #include <cmath>
+#include "assert.h"            // for assert_eq.  Can be removed in future
 #include "DogParams.h"
 #include "DogParamsCart1.h"
 #include "tensors.h"
@@ -18,111 +19,109 @@ void ConstructL(
 
 printf("ConstructL needs to be written.  This routine is doing nothing right now.\n");
 
-/*
-    void FluxFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-    void SetWaveSpd(const dTensor1&,const dTensor1&,const dTensor1&,const dTensor1&,
-            const dTensor1&,double&,double&);
-    void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-*/
-
-    const int     mx = q.getsize(1);
-    const int   meqn = q.getsize(2);
-    const int   maux = aux.getsize(2);
-    const int    mbc = q.getmbc();
-
-    // "Plus" flux, "minus" flux and source term, respectively
-    dTensorBC2  Fp(mx, meqn, mbc );
-    dTensorBC2  Fm(mx, meqn, mbc );
-    dTensorBC2 Psi(mx, meqn, mbc );
-
-    // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
-    const double   xlow = dogParamsCart1.get_xlow();
-    const double     dx = dogParamsCart1.get_dx();
-
-    // ---------------------------------------------------------
-    // Part I: compute inter-element interaction fluxes
-    // ---------------------------------------------------------
-
     // Boundary conditions
     //
     // TODO - this should be moved before ConstructL is called (-DS)
     void SetBndValues(const dTensor2&, dTensorBC2&, dTensorBC2&);
     SetBndValues(node, aux, q);
 
-/*
-    // Loop over interior edges and solve Riemann problems
-    //#pragma omp parallel for
-    //
-    // This sets both smax(i) and smax(i-1), so can't be parallelized!
-    //
-    for (int i=(1-mbc); i<=(mx+mbc); i++)
+    // User supplied functions:
+    void FluxFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
+    void SetWaveSpd(const dTensor1&,const dTensor1&,const dTensor1&,const dTensor1&,
+            const dTensor1&,double&,double&);
+    void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
+    void SampleFunction( int istart, int iend,
+        const dTensor2& node, const dTensorBC2& qin, 
+        const dTensorBC2& auxin,  dTensorBC2& Fout,
+        void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
+
+    // Routine for WENO reconstrution
+    void WenoReconstruct( const dTensor2& gin, dTensor1& diff_g );
+
+    // Parameters for the current grid
+    const int     mx = q.getsize(1);
+    const int   meqn = q.getsize(2);
+    const int   maux = aux.getsize(2);
+    const int    mbc = q.getmbc();
+
+// TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
+// should equal mbc.  This should be added somewhere in the code. 
+// (Derived parameters? -DS)
+const int ws = 5;
+assert_eq( mbc, 3 );
+
+
+    // The Roe-average, flux, and source term, respectively.  Recall that the
+    // flux lives at the nodal locations, i-1/2, so there is one more term in
+    // that vector than on the original grid.
+    dTensor2     qs(mx+1, meqn );
+    dTensorBC2    F(mx+1, meqn, mbc );
+    dTensorBC2  Psi(mx,   meqn, mbc );
+
+    // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
+    const double   xlow = dogParamsCart1.get_xlow();
+    const double     dx = dogParamsCart1.get_dx();
+
+    // ---------------------------------------------------------
+    // Part I: Compute Roe Averages
+    //         TODO - the User may want to replace this ...
+    // ---------------------------------------------------------
+    for( int i=1; i <= mx+1; i++ )
+    for( int m=1; m <= meqn; m++ )
     {
-        dTensor1 Ql(meqn);
-        dTensor1 Qr(meqn);
-        dTensor1 Auxl(meqn);
-        dTensor1 Auxr(meqn);
+        double tmp = 0.5*( q.get(i,m) + q.get(i+1,m) );
+        qs.set(i, m, tmp );
+    }
 
-        // Riemann data - q
+    // ---------------------------------------------------------
+    // Part II: Compute left and right decomposition
+    // ---------------------------------------------------------
+
+//#pragma omp parallel for
+    for (int i= 1; i<= mx; i++)
+    {
+
+        // Pull the 'left' and 'right' stencils
+        dTensor2 Qm(meqn, ws), Qp(meqn, ws);
+        for( int m=1; m <= meqn; m++ )
+        for( int s=1; s <= ws; s++ )
+        {
+            Qp.set(m, s, q.get( i-1-ws+s, m ) );
+            Qm.set(m, s, q.get( i+ws-s,   m ) );
+        }
+
+        // Convert to characteristic variables
+        dTensor2 Wvals(meqn, ws);
+        // TODO (this is necessary for a system)
+        //      see: ProjectLeftEig.  You'll want to use qs - Q_avg
+
+// Fastest wave speed observed for this element:
+//      smax.set(i,   Max(smax_edge, smax.get(i)) );
+smax.set( i, 1.0 );  // TODO
+
+dTensor1 dQp( ws );
+dTensor1 dQm( ws );
+WenoReconstruct( Qp, dQp );
+WenoReconstruct( Qm, dQm );
+
+        // Construct fluxes: d/dt q_i = -1/dx( f_{i+1/2} - f_{i-1/2} )
         for (int m=1; m<=meqn; m++)
         {
-            Ql.set(m, 0.0 );
-            Qr.set(m, 0.0 );
-
-            for (int k=1; k<=method[1]; k++)
-            {
-                Ql.set(m, Ql.get(m) + sqrt(2.0*double(k)-1.0)
-                        *q.get(i-1,m,k) );
-                Qr.set(m, Qr.get(m) + pow(-1.0,k+1)
-                        *sqrt(2.0*double(k)-1.0)*q.get(i,m,k) ); 
-            }
+//          Fp.set(i, m, 0. );
         }
 
-        // Riemann data - aux
-        for (int m=1; m<=maux; m++)
-        {
-
-            Auxl.set(m, 0.0 );
-            Auxr.set(m, 0.0 );
-
-            for (int k=1; k<=method[1]; k++)
-            {
-                Auxl.set(m, Auxl.get(m) + sqrt(2.0*double(k)-1.0)
-                        *aux.get(i-1,m,k) );
-                Auxr.set(m, Auxr.get(m) + pow(-1.0,k+1)
-                        *sqrt(2.0*double(k)-1.0)*aux.get(i,m,k) ); 
-            }
-        }
-
-        // Solve Riemann problem
-        dTensor1 xedge(1);
-        xedge.set(1, xlower + (double(i)-1.0)*dx );
-
-        dTensor1 Fl(meqn);
-        dTensor1 Fr(meqn);
-        double smax_edge = RiemannSolve(xedge,Ql,Qr,Auxl,Auxr,Fl,Fr,
-                &FluxFunc,&SetWaveSpd);
-
-        // This is a problem for the pragma statements! (-DS)
-        smax.set(i-1, Max(smax_edge,smax.get(i-1)) );
-        smax.set(i,   Max(smax_edge,smax.get(i)) );
-
-        // Construct fluxes
-        for (int m=1; m<=meqn; m++)
-        {
-            Fm.set(i,  m, Fr.get(m) );
-            Fp.set(i-1,m, Fl.get(m) );
-        }
     }
     // ---------------------------------------------------------
 
     // ---------------------------------------------------------
     // Part II: compute source term
     // --------------------------------------------------------- 
-    if ( method[7]>0 )
+    if( dogParams.get_source_term() )
     {        
         // Set source term on computational grid
         // Set values and apply L2-projection
-        L2Project(0,1-mbc,melems+mbc,node,q,aux,Psi,&SourceTermFunc);
+        // TODO - replace with SampleFunc
+        SampleFunction( 1-mbc, mx+mbc, node, q, aux, Psi, &SourceTermFunc);
     }
     // ---------------------------------------------------------
 
@@ -130,32 +129,25 @@ printf("ConstructL needs to be written.  This routine is doing nothing right now
     // ---------------------------------------------------------
     // Part III: construct Lstar
     // ---------------------------------------------------------
-    if( method[7]==0 )  // Without Source Term
+    if( dogParams.get_source_term()==0 )  // Without Source Term
     {
 #pragma omp parallel for
-        for (int i=(2-mbc); i<=(melems+mbc-1); i++)	
-            for (int m=1; m<=meqn; m++)
-                for (int k=1; k<=method[1]; k++)
-                {
-                    double tmp = N.get(i,m,k) - sqrt(2.0*double(k)-1.0)*
-                        ( Fp.get(i,m) + pow(-1.0,k)*Fm.get(i,m) )/dx;
-
-                    Lstar.set(i,m,k, tmp );	      
-                }
+        for (int i=(1-mbc); i<=(mx+mbc); i++)	
+        for (int m=1; m<=meqn; m++)
+        {
+            double tmp = 0.;
+            Lstar.set(i,m, tmp );	      
+        }
     }
     else  // With Source Term
     {
 #pragma omp parallel for
-        for (int i=(2-mbc); i<=(melems+mbc-1); i++)	
-            for (int m=1; m<=meqn; m++)	    
-                for (int k=1; k<=method[1]; k++)
-                {
-                    double tmp = N.get(i,m,k) - sqrt(2.0*double(k)-1.0)*
-                        ( Fp.get(i,m) + pow(-1.0,k)*Fm.get(i,m) )/dx
-                        + Psi.get(i,m,k);
-
-                    Lstar.set(i,m,k, tmp );
-                }
+        for (int i=(1-mbc); i<=(mx+mbc); i++)	
+        for (int m=1; m<=meqn; m++)	    
+        {
+            double tmp = 0.;
+            Lstar.set(i,m, tmp );
+        }
     }
     // ---------------------------------------------------------
 
@@ -165,7 +157,5 @@ printf("ConstructL needs to be written.  This routine is doing nothing right now
     // Call LstarExtra
     // LstarExtra(node,aux,q,Lstar);
     // ---------------------------------------------------------
-
-*/
 
 }
