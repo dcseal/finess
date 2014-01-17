@@ -61,11 +61,15 @@ to see a list of options.
     xhigh   = params[7]
     point_type = 1
 
+    # TODO - this is hard-coded here
+    meth1 = 1
+
     print ""
     print "        GridType = ",GridType
     print "  points_per_dir = ",points_per_dir
     print "      point_type = ",point_type
     print "       outputdir = ",outputdir
+    print "       sorder    = ",meth1
     print ""
 
     # Grid information

@@ -17,8 +17,6 @@ void ConstructL(
         dTensorBC1& smax)
 {
 
-printf("ConstructL needs to be written.  This routine is doing nothing right now.\n");
-
     // Boundary conditions
     //
     // TODO - this should be moved before ConstructL is called (-DS)
@@ -48,46 +46,61 @@ printf("ConstructL needs to be written.  This routine is doing nothing right now
 // should equal mbc.  This should be added somewhere in the code. 
 // (Derived parameters? -DS)
 const int ws = 5;
+const int  r = 3;  // order = 2*r-1
 assert_eq( mbc, 3 );
-
 
     // The Roe-average, flux, and source term, respectively.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
     // that vector than on the original grid.
-    dTensor2     qs(mx+1, meqn );
-    dTensorBC2    F(mx+1, meqn, mbc );
-    dTensorBC2  Psi(mx,   meqn, mbc );
+    dTensor2      qs(mx+1, meqn );
+    dTensorBC2    Fp(mx+1, meqn, mbc );
+    dTensorBC2    Fm(mx+1, meqn, mbc );
+    dTensorBC2  fHat(mx+1, meqn, mbc );
+    dTensorBC2   Psi(mx,   meqn, mbc );
 
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
     const double   xlow = dogParamsCart1.get_xlow();
     const double     dx = dogParamsCart1.get_dx();
 
     // ---------------------------------------------------------
+    // Part 0: compute source term
+    // --------------------------------------------------------- 
+    Lstar.setall(0.);
+//  if( dogParams.get_source_term() )
+//  {        
+//      // Set source term on computational grid
+//      // Set values and apply L2-projection
+//      // TODO - replace with SampleFunc
+//      SampleFunction( 1-mbc, mx+mbc, node, q, aux, Lstar, &SourceTermFunc);
+//  }
+    // ---------------------------------------------------------
+
+
+    // ---------------------------------------------------------
     // Part I: Compute Roe Averages
     //         TODO - the User may want to replace this ...
     // ---------------------------------------------------------
-    for( int i=1; i <= mx+1; i++ )
-    for( int m=1; m <= meqn; m++ )
-    {
-        double tmp = 0.5*( q.get(i,m) + q.get(i+1,m) );
-        qs.set(i, m, tmp );
-    }
+//  for( int i=1; i <= mx+1; i++ )
+//  for( int m=1; m <= meqn; m++ )
+//  {
+//      double tmp = 0.5*( q.get(i,m) + q.get(i+1,m) );
+//      qs.set(i, m, tmp );
+//  }
 
     // ---------------------------------------------------------
-    // Part II: Compute left and right decomposition
+    // Part II: Compute left/right decomposition, f^+ and f^-
     // ---------------------------------------------------------
-
-//#pragma omp parallel for
-    for (int i= 1; i<= mx; i++)
+    for (int i= 1; i<= mx+1; i++)  // TODO - mx+1?
     {
 
-        // Pull the 'left' and 'right' stencils
-        dTensor2 Qm(meqn, ws), Qp(meqn, ws);
+        // Pull the 'left' and 'right' stencils surrounding the point
+        // x_{i-1/2}:
+        dTensor2 Ql(meqn, ws), Qr(meqn, ws);
         for( int m=1; m <= meqn; m++ )
         for( int s=1; s <= ws; s++ )
         {
-            Qp.set(m, s, q.get( i-1-ws+s, m ) );
-            Qm.set(m, s, q.get( i+ws-s,   m ) );
+            Ql.set(m, s, q.get( i-1+s-r, m ) );
+            Qr.set(m, s, q.get( i+1+r-s, m ) );
         }
 
         // Convert to characteristic variables
@@ -99,58 +112,31 @@ assert_eq( mbc, 3 );
 //      smax.set(i,   Max(smax_edge, smax.get(i)) );
 smax.set( i, 1.0 );  // TODO
 
-dTensor1 dQp( ws );
-dTensor1 dQm( ws );
-WenoReconstruct( Qp, dQp );
-WenoReconstruct( Qm, dQm );
+dTensor1 dQl( ws );
+dTensor1 dQr( ws );
+WenoReconstruct( Ql, dQl );
+WenoReconstruct( Qr, dQr );
 
         // Construct fluxes: d/dt q_i = -1/dx( f_{i+1/2} - f_{i-1/2} )
         for (int m=1; m<=meqn; m++)
         {
-//          Fp.set(i, m, 0. );
+            Fp.set(i, m, dQl.get(m) );
+            Fm.set(i, m, dQr.get(m) );
         }
 
     }
     // ---------------------------------------------------------
 
     // ---------------------------------------------------------
-    // Part II: compute source term
-    // --------------------------------------------------------- 
-    if( dogParams.get_source_term() )
-    {        
-        // Set source term on computational grid
-        // Set values and apply L2-projection
-        // TODO - replace with SampleFunc
-        SampleFunction( 1-mbc, mx+mbc, node, q, aux, Psi, &SourceTermFunc);
-    }
+    // Part III: Construct Lstar
     // ---------------------------------------------------------
-
-
-    // ---------------------------------------------------------
-    // Part III: construct Lstar
-    // ---------------------------------------------------------
-    if( dogParams.get_source_term()==0 )  // Without Source Term
+    for (int i=1; i<=mx; i++)
     {
-#pragma omp parallel for
-        for (int i=(1-mbc); i<=(mx+mbc); i++)	
         for (int m=1; m<=meqn; m++)
         {
-            double tmp = 0.;
-            Lstar.set(i,m, tmp );	      
+            Lstar.set(i,m, -(Fp.get(i+1,m)-Fp.get(i,m))/dx );
         }
     }
-    else  // With Source Term
-    {
-#pragma omp parallel for
-        for (int i=(1-mbc); i<=(mx+mbc); i++)	
-        for (int m=1; m<=meqn; m++)	    
-        {
-            double tmp = 0.;
-            Lstar.set(i,m, tmp );
-        }
-    }
-    // ---------------------------------------------------------
-
     // ---------------------------------------------------------
     // Part IV: add extra contributions to Lstar
     // ---------------------------------------------------------
