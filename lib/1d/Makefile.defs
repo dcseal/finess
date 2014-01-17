@@ -78,7 +78,6 @@ RunDogpack           = $(LIB1D)/RunDogpack
 Output               = $(LIB1D)/Output
 Output_Extra         = $(LIB1D)/Output_Extra
 ConSoln              = $(LIB1D)/ConSoln
-BeforeQinit          = $(LIB1D)/BeforeQinit
 AfterQinit           = $(LIB1D)/AfterQinit
 AfterStep            = $(LIB1D)/AfterStep
 BeforeStep           = $(LIB1D)/BeforeStep
@@ -91,18 +90,17 @@ InitApp              = $(LIB1D)/InitApp
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
 DogSolveUser         = $(LIB1D)/DogSolveUser
-L2Project            = $(LIB1D)/L2Project
 GridSetup            = $(LIB1D)/GridSetup
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
-DogSolveLxW          = $(LIB1D)/DogSolveLxW
 DFluxFunc            = $(LIB1D)/LaxWendroff/DFluxFunc
 D2FluxFunc           = $(LIB1D)/LaxWendroff/D2FluxFunc
-LaxWendroff          = $(LIB1D)/LaxWendroff/LaxWendroff
-LaxWendroffTD        = $(LIB1D)/LaxWendroff/LaxWendroffTD
-L2ProjectLxW         = $(LIB1D)/LaxWendroff/L2ProjectLxW
-L2ProjectLxWTD       = $(LIB1D)/LaxWendroff/L2ProjectLxWTD
-RiemannSolveLxW      = $(LIB1D)/LaxWendroff/RiemannSolveLxW_LLF
+
+# TODO - these should be added in at a later time (-DS)
+#DogSolveLxW          = $(LIB1D)/DogSolveLxW
+#LaxWendroff          = $(LIB1D)/LaxWendroff/LaxWendroff
+#LaxWendroffTD        = $(LIB1D)/LaxWendroff/LaxWendroffTD
+#RiemannSolveLxW      = $(LIB1D)/LaxWendroff/RiemannSolveLxW_LLF
 
 LIB1D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
@@ -110,21 +108,14 @@ LIB1D_OBJECTS = \
   $(RunDogpack).o \
   $(LIB1D)/DogParamsCart1.o \
   $(GridSetup).o \
-  $(L2Project).o \
-  $(L2ProjectLxW).o \
-  $(L2ProjectLxWTD).o \
   $(Output).o \
   $(Output_Extra).o \
   $(ConSoln).o \
   $(LIB1D)/DogSolveRK.o \
-  $(DogSolveLxW).o \
   $(DogSolveUser).o \
-  $(LaxWendroff).o \
-  $(LaxWendroffTD).o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
   $(LIB1D)/CopyQ.o \
-  $(BeforeQinit).o \
   $(AfterQinit).o \
   $(BeforeStep).o \
   $(AfterStep).o \
@@ -141,10 +132,7 @@ LIB1D_OBJECTS = \
   $(LIB1D)/ResInt.o \
   $(LIB1D)/GetCFL.o \
   $(RiemannSolve).o \
-  $(RiemannSolveLxW).o \
   $(LIB1D)/SetRKinfo.o \
-  $(LIB1D)/LaxWendroff/EvalRiemmanData.o \
-  $(LIB1D)/LegendrePolys1d.o \
 
 LIB1D_SOURCES = \
   $(LIB1D)/*.h \
@@ -153,21 +141,14 @@ LIB1D_SOURCES = \
   $(RunDogpack).cpp \
   $(LIB1D)/DogParamsCart1.cpp \
   $(GridSetup).cpp \
-  $(L2Project).cpp \
-  $(L2ProjectLxW).cpp \
-  $(L2ProjectLxWTD).cpp \
   $(Output).cpp \
   $(Output_Extra).cpp \
   $(ConSoln).cpp \
   $(LIB1D)/DogSolveRK.cpp \
-  $(DogSolveLxW).cpp \
   $(DogSolveUser).cpp \
-  $(LaxWendroff).cpp \
-  $(LaxWendroffTD).cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \
   $(LIB1D)/CopyQ.cpp \
-  $(BeforeQinit).cpp \
   $(AfterQinit).cpp \
   $(BeforeStep).cpp \
   $(AfterStep).cpp \
@@ -184,8 +165,5 @@ LIB1D_SOURCES = \
   $(LIB1D)/ResInt.cpp \
   $(LIB1D)/GetCFL.cpp \
   $(RiemannSolve).cpp \
-  $(RiemannSolveLxW).cpp \
   $(LIB1D)/SetRKinfo.cpp \
-  $(LIB1D)/LaxWendroff/EvalRiemmanData.cpp \
-  $(LIB1D)/LegendrePolys1d.cpp \
 

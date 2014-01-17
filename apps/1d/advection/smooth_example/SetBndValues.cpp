@@ -3,18 +3,18 @@
 // Periodic boundary conditions
 //
 // TODO - this should be modified.  the WENO q and aux are smaller arrays.
-void SetBndValues(const dTensor2& node, 
-		  dTensorBC3& aux, 
-		  dTensorBC3& q)
+void SetBndValues(
+    const dTensor2& node, 
+    dTensorBC2& aux, 
+    dTensorBC2& q)
 {
+
     double tmp;
-    const int melems = q.getsize(1);
+    const int mx = q.getsize(1);
     const int meqn   = q.getsize(2);
-    const int kmax   = q.getsize(3);
     const int maux   = aux.getsize(2);
     const int mbc    = q.getmbc();
     
-    for (int ell=1; ell<=kmax; ell++)
     { 
         // ***********************************************
         // LEFT BOUNDARY
@@ -24,15 +24,15 @@ void SetBndValues(const dTensor2& node,
 	        // q values
 	        for (int m=1; m<=meqn; m++)
 	        {
-	            tmp = q.get(i+melems,m,ell);
-		        q.set(i,m,ell, tmp );
+	            tmp = q.get(i+mx,m);
+		        q.set(i,m, tmp );
             }
                 
 	        // aux values
 	        for (int m=1; m<=maux; m++)
             {
-	            tmp = aux.get(i+melems,m,ell);
-		        aux.set(i,m,ell, tmp );
+	            tmp = aux.get(i+mx,m);
+		        aux.set(i,m, tmp );
             }
         }
         // ***********************************************  
@@ -41,20 +41,20 @@ void SetBndValues(const dTensor2& node,
         // ***********************************************
         // RIGHT BOUNDARY
         // ***********************************************
-        for (int i=(melems+1); i<=(melems+mbc); i++)
+        for (int i=(mx+1); i<=(mx+mbc); i++)
         {        
 	        // q values
 	        for (int m=1; m<=meqn; m++)
 	        {
-	            tmp = q.get(i-melems,m,ell);    
-		        q.set(i,m,ell, tmp );
+	            tmp = q.get(i-mx,m);    
+		        q.set(i,m, tmp );
             }
                 
 	        // aux values
 	        for (int m=1; m<=maux; m++)
             {
-	            tmp = aux.get(i-melems,m,ell);
-		        aux.set(i,m,ell, tmp );
+	            tmp = aux.get(i-mx,m);
+		        aux.set(i,m, tmp );
             }
 		}
         // ***********************************************

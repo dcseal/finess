@@ -14,13 +14,16 @@ using namespace std;
 
 void DogSolveUser(const dTensor2& node, 
         const dTensor1& prim_vol, 
-        dTensorBC3& aux, 
-        dTensorBC3& qold,
-        dTensorBC3& qnew,
+        dTensorBC2& aux, 
+        dTensorBC2& qold,
+        dTensorBC2& qnew,
         dTensorBC1& smax,
-        double tstart, double tend,int nv, const int method[],
+        double tstart, double tend,int nv, 
         double dtv[], const double cflv[],string outputdir)
-{  
+{
+
+
+/*
     // ------------------------------------------------------------
     // Function definitions
     void CopyQ(const dTensorBC3&,dTensorBC3&);
@@ -174,5 +177,7 @@ void DogSolveUser(const dTensor2& node,
 
     // set initial time step for next call to DogSolve
     dtv[1] = dt;
+
+*/
 
 }

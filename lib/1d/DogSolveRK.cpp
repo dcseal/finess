@@ -20,6 +20,9 @@ void DogSolveRK(
     double dtv[], const double cflv[], string outputdir)
 {
 
+// TODO - redo this section to contain a different sized q vector
+printf("WARNING: no DogSolveRK has been written yet\n");
+
 /*
     // ------------------------------------------------------------
     // Function definitions

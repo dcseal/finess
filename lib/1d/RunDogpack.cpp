@@ -28,7 +28,7 @@
  * following two functions, once for each frame the user requested:
  *
  *     a.) Call DogSolve[TS-method], where TS-method is a valid time-stepping
- *     option.  (e.g. DogSolveRK, DogSolveSDC, DogSolveLxW, DogSolveUser).
+ *     option.  (e.g. DogSolveRK, DogSolveSDC, DogSolveUser).
  *
  *     b.) Call Output to print data to file
  *
@@ -141,14 +141,14 @@ int RunDogpack(string outputdir)
         if (time_stepping_method == "Runge-Kutta")
         {  
             // Runge-Kutta time-stepping scheme
-//          DogSolveRK(node, prim_vol, aux, qold, qnew, smax, tstart, tend, 
-//                  nv, method, dtv, cflv, outputdir);
+            DogSolveRK(node, prim_vol, aux, qold, qnew, smax, tstart, tend, 
+                    nv, dtv, cflv, outputdir);
         }
         else if (time_stepping_method == "User-Defined")
         {
             // User-defined time-stepping scheme
-//          DogSolveUser(node,prim_vol,aux,qold,qnew,smax,tstart,tend,
-//                  nv,method,dtv,cflv,outputdir);
+            DogSolveUser(node,  prim_vol, aux, qold, qnew, smax, tstart, tend, 
+                    nv, dtv, cflv, outputdir);
         }
 
         // Output data to file
