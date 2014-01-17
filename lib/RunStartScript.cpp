@@ -2,7 +2,7 @@
 #include "assert.h"
 #include "debug.h"
 
-// Function used to call startscript from $(DOGPACK)/scripts;
+// Function used to call startscript from $(FINESS)/scripts;
 //
 // That shell script creates the output directory and copies a few files in
 // the output folder
@@ -19,7 +19,7 @@ void RunStartScript(int ndims)
     numchars = snprintf(command_str,1024,
             "if test -f startscript && test -x startscript;\n"
             "then ./startscript %s %d\n"
-            "else ${DOGPACK}/scripts/startscript %s %d\n"
+            "else ${FINESS}/scripts/startscript %s %d\n"
             "fi", get_outputdir(), ndims, get_outputdir(), ndims);
     assert_lt(numchars,1023);
     assert_gt(numchars,0);

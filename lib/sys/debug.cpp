@@ -216,7 +216,7 @@ void errmsg_printf_fileLine(const char *func, const char *file, int line_number,
     escape_special_shell_characters(message,escaped_msg);
     str_pos = shell_command;
     str_pos+= sprintf(str_pos, 
-      "${DOGPACK}/scripts/errmsg_printf_script ");
+      "${FINESS}/scripts/errmsg_printf_script ");
     sprintf(str_pos, "%s", escaped_msg);
     
     fprintf(stderr, "executing shell command: %s", shell_command);

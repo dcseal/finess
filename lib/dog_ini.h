@@ -5,7 +5,7 @@
 using namespace std;
 
 // set defaults from defaults file
-// ($DOGPACK/config/$(section_label)_defaults.ini)
+// ($FINESS/config/$(section_label)_defaults.ini)
 void get_defaults(
   IniDocument::Section& params,
   const string& section_label,

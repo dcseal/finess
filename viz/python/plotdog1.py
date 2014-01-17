@@ -7,11 +7,11 @@ Generic code for plotting DoGPack output in matplotlib.
     """
 Execute via
 
-    $ python $DOGPACK/viz/python/plotdog1.py
+    $ python $FINESS/viz/python/plotdog1.py
 
 from an application directory.   For help type
 
-    $ python $DOGPACK/viz/python/plotdog1.py -h
+    $ python $FINESS/viz/python/plotdog1.py -h
  
 to see a list of options.
 
