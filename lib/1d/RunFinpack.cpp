@@ -1,5 +1,5 @@
 /*
- * Top level function to RunDogpack.  Briefly, this function calls the
+ * Top level function to RunFinpack.  Briefly, this function calls the
  * following functions in the following order:
  *
  * 1.)  Iniitalize global structs dogParams and dogParamsCart1
@@ -43,9 +43,9 @@
 #include "DogParams.h"            // accessors for the parameters.ini file
 #include "DogParamsCart1.h"       // accessors for the parameters.ini file
 #include "IniDocument.h"
-#include "RunDogpack.h"           // Function declarations
+#include "RunFinpack.h"           // Function declarations
 
-int RunDogpack(string outputdir)
+int RunFinpack(string outputdir)
 {
 
     // Output title information
@@ -111,12 +111,12 @@ int RunDogpack(string outputdir)
 
     // Set any auxiliary variables on computational grid
     // Set values and apply L2-projection
-//  if (method[6]>0)
-//  {  L2Project(0, 1-mbc, mx+mbc, node, qnew, aux, aux, &AuxFunc);  }
+    if(maux >0)
+    {  SampleFunction(1-mbc, mx+mbc, node, qnew, aux, aux, &AuxFunc);  }
 
-//  // Set initial data on computational grid
-//  // Set values and apply L2-projection
-//  L2Project(0, 1-mbc, mx+mbc, node, qnew, aux, qnew, &QinitFunc);
+    // Set initial data on computational grid
+    // Set values and apply L2-projection
+    SampleFunction( 1-mbc, mx+mbc, node, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
     AfterQinit(node, aux, qnew);
@@ -141,7 +141,7 @@ int RunDogpack(string outputdir)
         if (time_stepping_method == "Runge-Kutta")
         {  
             // Runge-Kutta time-stepping scheme
-            DogSolveRK(node, prim_vol, aux, qold, qnew, smax, tstart, tend, 
+            FinSolveRK(node, prim_vol, aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
         else if (time_stepping_method == "User-Defined")
@@ -165,6 +165,8 @@ int RunDogpack(string outputdir)
     return 0;
 }
 
+// Wrapper functions to make the calls to Qinit and AuxFunc make sense when
+// passed into SampleFunction
 void QinitFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals)
 {

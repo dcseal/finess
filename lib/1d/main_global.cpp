@@ -13,7 +13,7 @@
  * application links to this common main function, that executes the code.
  *
  * The purpose of placing this extra layer between appname/main.cpp and
- * RunDogpack is to make the main function in each application as short as
+ * RunFinpack is to make the main function in each application as short as
  * possible.
  *
  */
@@ -31,9 +31,9 @@ int main_global(int argc, char* argv[])
     void RunStartScript(int ndims);
     RunStartScript(1);
 
-    // Call the ``RunDogpack'' routine, which executes the code
-    int RunDogpack(string outputdir);
-    int m = RunDogpack(get_outputdir());
+    // Call the ``RunFinpack'' routine, which executes the code
+    int RunFinpack(string outputdir);
+    int m = RunFinpack(get_outputdir());
 
     // Get current time
     double time2 = time(NULL);

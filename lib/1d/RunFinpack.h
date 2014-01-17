@@ -1,10 +1,6 @@
 #ifndef _RUN_DOGPACK_H_
 #define _RUN_DOGPACK_H_
 
-// If we want to use DogSolver from the top-level library, this needs to be
-// written:
-// #include "DogState1d.h"  
-
 using namespace std;
 
 // ------------------------------------------------------------
@@ -24,7 +20,7 @@ void ConSoln(const dTensor2& node,
     const dTensorBC2& aux,
     const dTensorBC2& q, double t, string outputdir);
 
-void DogSolveRK(
+void FinSolveRK(
     const dTensor2& node, const dTensor1& prim_vol, 
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
     dTensorBC1& smax,
@@ -41,6 +37,15 @@ void DogSolveUser(const dTensor2& node,
         double dtv[], const double cflv[],string outputdir);
 
 void InitApp(IniDocument& ini_doc);
+
+void SampleFunction( 
+    int istart, int iend,
+    const dTensor2& node,
+    const dTensorBC2& qin, 
+    const dTensorBC2& auxin,  
+    dTensorBC2& Fout,
+    void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
+
 // ------------------------------------------------------------
 
 #endif

@@ -74,7 +74,7 @@ SOURCES_EXPECTED = \
 # way we keep track of which object modules are currently being
 # overridden by some application)
 #
-RunDogpack           = $(LIB1D)/RunDogpack
+RunFinpack           = $(LIB1D)/RunFinpack
 Output               = $(LIB1D)/Output
 Output_Extra         = $(LIB1D)/Output_Extra
 ConSoln              = $(LIB1D)/ConSoln
@@ -91,6 +91,7 @@ BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
 DogSolveUser         = $(LIB1D)/DogSolveUser
 GridSetup            = $(LIB1D)/GridSetup
+SampleFunction       = $(LIB1D)/SampleFunction
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB1D)/LaxWendroff/DFluxFunc
@@ -105,13 +106,14 @@ D2FluxFunc           = $(LIB1D)/LaxWendroff/D2FluxFunc
 LIB1D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
   $(LIB1D)/main_global.o \
-  $(RunDogpack).o \
+  $(RunFinpack).o \
   $(LIB1D)/DogParamsCart1.o \
   $(GridSetup).o \
+  $(SampleFunction).o \
   $(Output).o \
   $(Output_Extra).o \
   $(ConSoln).o \
-  $(LIB1D)/DogSolveRK.o \
+  $(LIB1D)/FinSolveRK.o \
   $(DogSolveUser).o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
@@ -138,13 +140,14 @@ LIB1D_SOURCES = \
   $(LIB1D)/*.h \
   $(TOPLIB_SOURCES) \
   $(LIB1D)/main_global.cpp \
-  $(RunDogpack).cpp \
+  $(RunFinpack).cpp \
   $(LIB1D)/DogParamsCart1.cpp \
   $(GridSetup).cpp \
+  $(SampleFunction).cpp \
   $(Output).cpp \
   $(Output_Extra).cpp \
   $(ConSoln).cpp \
-  $(LIB1D)/DogSolveRK.cpp \
+  $(LIB1D)/FinSolveRK.cpp \
   $(DogSolveUser).cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \

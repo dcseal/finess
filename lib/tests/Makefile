@@ -1,4 +1,4 @@
-include $(DOGPACK)/lib/Makefile.defs
+include $(FINESS)/lib/Makefile.defs
 
 DOGDEFS_SOURCES = \
  $(TOPLIB)/constants.h \
@@ -79,4 +79,4 @@ time_test: time_test.o $(TIME_OBJECTS) $(TIME_SOURCES)
 
 CLEAN_FILES = *.o $(EXECUTABLES)
 
-include $(DOGPACK)/lib/Makefile.targets
+include $(FINESS)/lib/Makefile.targets

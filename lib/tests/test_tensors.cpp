@@ -2,17 +2,19 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+
 #ifndef CHECK_BOUNDS
 #define CHECK_BOUNDS
 #endif
+
 #ifndef NDIMS
 #define NDIMS 0
 #endif
+
 #include "tensors.h"
 #include "assert.h"
 #include "debug.h"
 
-//#define myprintf(e, args...) printf(e, ##args)
 #define myprintf(e, args...) ((void)0)
 
 double timeval_subtract (struct timeval *x, struct timeval *y)
@@ -663,6 +665,6 @@ int main()
     test_dTensor5();
     test_dTensorBC5();
     test_dTensor4d();
-    // test_dTensorBC5();
+    //test_dTensorBC5();
     test_uninitialized();
 }

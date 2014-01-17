@@ -8,7 +8,7 @@
 //
 //       q_t + f(q,x,t)_x = Psi(q,x,t)
 //
-void ConstructL(const int method[],
+void ConstructL(
         const dTensor2& node,
         dTensorBC2& aux,
         dTensorBC2& q,      // setbndy conditions modifies q
@@ -33,7 +33,7 @@ printf("ConstructL needs to be written.  This routine is doing nothing right now
     // "Plus" flux, "minus" flux and source term, respectively
     dTensorBC2  Fp(mx, meqn, mbc );
     dTensorBC2  Fm(mx, meqn, mbc );
-    dTensorBC2 Psi(mx, meqn, mbc);
+    dTensorBC2 Psi(mx, meqn, mbc );
 
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
     const double   xlow = dogParamsCart1.get_xlow();
@@ -44,6 +44,8 @@ printf("ConstructL needs to be written.  This routine is doing nothing right now
     // ---------------------------------------------------------
 
     // Boundary conditions
+    //
+    // TODO - this should be moved before ConstructL is called (-DS)
     void SetBndValues(const dTensor2&, dTensorBC2&, dTensorBC2&);
     SetBndValues(node, aux, q);
 

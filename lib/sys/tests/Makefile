@@ -1,4 +1,4 @@
-include $(DOGPACK)/lib/sys/Makefile.defs
+include $(FINESS)/lib/sys/Makefile.defs
 
 TEST_SOURCES = \
  $(LIB_SYS)/assert.h \
@@ -142,5 +142,5 @@ clean_Interval:
 clean_time:
 	rm -f $(TIME_OBJECTS) time_test
 
-include $(DOGPACK)/lib/sys/Makefile.targets
+include $(FINESS)/lib/sys/Makefile.targets
 
