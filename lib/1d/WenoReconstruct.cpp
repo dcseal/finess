@@ -13,7 +13,7 @@
 //
 // Output:
 //
-//      diff_g( 1:meqn  ) - The derivative of g evaluated at the 'right' half
+//      diff_g( 1:meqn, 1 ) - The derivative of g evaluated at the 'right' half
 //                          of the stencil, i+1/2.  To get the same derivative
 //                          at i-1/2, reverse the stencil, and call this same
 //                          function again.
@@ -23,7 +23,7 @@
 //     u = { u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2} },
 //
 // and then reconstructs the value u_{i+1/2} with this method.
-void WenoReconstruct( const dTensor2& g, dTensor1& diff_g )
+void WenoReconstruct( const dTensor2& g, dTensor2& diff_g )
 {
 
     const double xlow = dogParamsCart1.get_xlow();
@@ -35,9 +35,10 @@ void WenoReconstruct( const dTensor2& g, dTensor1& diff_g )
 
     const int meqn = g.getsize(1);
     assert_eq( g.getsize(2), 5 );
+
     for( int m=1; m <= meqn; m++ )
     {
-
+//printf("g.getsize(1) = %d, g.getsize(2) = %d\n", g.getsize(1), g.getsize(2) );
         uim2 = g.get(m,1);
         uim1 = g.get(m,2);
         ui   = g.get(m,3);
@@ -50,7 +51,7 @@ void WenoReconstruct( const dTensor2& g, dTensor1& diff_g )
         u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
 
         // 5th-order reconstruction
-        diff_g.set(m, 0.1*u1+0.6*u2+0.3*u3 );
+        diff_g.set(m, 1, 0.1*u1+0.6*u2+0.3*u3 );
     }
 
 }

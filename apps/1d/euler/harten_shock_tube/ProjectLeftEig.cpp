@@ -6,10 +6,21 @@
 // Qvals onto the left eigenvectors ofthe flux 
 // Jacobian; the result is stored in Wvals
 //
-void ProjectLeftEig(const dTensor1& Aux_ave, 
-        const dTensor1& Q_ave,
-        const dTensor2& Qvals,
-        dTensor2& Wvals)
+// Input:
+//
+// Aux_ave( 1:maux )
+//   Q_ave( 1:meqn )
+//   Qvals( 1:meqn, 1:numpts )
+//
+// Output:
+//
+//   Wvals( 1:meqn, 1:numpts )
+//
+void ProjectLeftEig(
+    const dTensor1& Aux_ave, 
+    const dTensor1& Q_ave,
+    const dTensor2& Qvals,
+    dTensor2& Wvals)
 {    
     const int meqn = Qvals.getsize(1);
     const int kmax = Qvals.getsize(2)+1;

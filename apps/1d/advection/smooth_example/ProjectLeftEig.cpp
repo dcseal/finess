@@ -9,12 +9,13 @@ void ProjectLeftEig(const dTensor1& Aux_ave,
         const dTensor2& Qvals,
         dTensor2& Wvals)
 {    
+
     const int meqn = Qvals.getsize(1);
-    const int kmax = Qvals.getsize(2)+1;
+    const int mpts = Qvals.getsize(2);
 
     // Project onto left eigenvectors
-    for (int k=1; k<=(kmax-1); k++)
+    for (int m=1; m<=mpts; m++)
     {
-        Wvals.set(1,k, Qvals.get(1,k) );
+        Wvals.set(1, m, Qvals.get(1, m) );
     }
 }

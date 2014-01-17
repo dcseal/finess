@@ -10,11 +10,11 @@ void ProjectRightEig(const dTensor1& Aux_ave,
         dTensor2& Qvals)
 {    
     const int meqn = Qvals.getsize(1);
-    const int kmax = Qvals.getsize(2)+1;
+    const int mpts = Qvals.getsize(2);
 
     // Project onto right eigenvectors
-    for (int k=1; k<=(kmax-1); k++)
+    for (int m=1; m<=mpts; m++)
     {
-        Qvals.set(1,k, Wvals.get(1,k) );
+        Qvals.set(1, m, Wvals.get(1,m) );
     }
 }
