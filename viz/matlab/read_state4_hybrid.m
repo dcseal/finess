@@ -37,7 +37,7 @@ function [q,time]=read_state4_hybrid(outputdir,num_frame,varname,grid,meqn,kmax)
     NumPhysElems = grid.NumPhysElems;
 
     % Scan in the filename.  For the order in which elements are saved, see, for
-    % example: $(FINESS)/scalar/lib/Ouput_Hybrid.cpp.
+    % example: $(DOGPACK)/scalar/lib/Ouput_Hybrid.cpp.
     %
     % The ouput format is a single long list of numbers, the first
     % element is time.

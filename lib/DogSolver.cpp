@@ -176,7 +176,7 @@ int DogSolver::RunDogpack()
         Output(n);
 
         // Done with solution from tstart to tend
-        printf("FINESS: Frame %3d: at time t =%12.5e\n\n", n,tend);
+        printf("DOGPACK: Frame %3d: at time t =%12.5e\n\n", n,tend);
     }
 
     // Get current time

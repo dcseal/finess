@@ -35,7 +35,7 @@ class DogSolver
         //        TODO: APPARENTLY THIS CAN ALSO READ IN DEBUG OPTIONS! (-DS)
         //
         //    2.) Run the start script, lib/RunStartScript.cpp, which
-        //        calls $(FINESS)/scripts/startscript.  The purpose of that
+        //        calls $(DOGPACK)/scripts/startscript.  The purpose of that
         //        script is to create the output directory for storing data from
         //        the simulation, as well as copy enough files to that directory
         //        which can be used to reproduce the simulation.

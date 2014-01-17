@@ -1,5 +1,5 @@
-#ifndef _RUN_FINESS_H_
-#define _RUN_FINESS_H_
+#ifndef _RUN_DOGPACK_H_
+#define _RUN_DOGPACK_H_
 
 using namespace std;
 

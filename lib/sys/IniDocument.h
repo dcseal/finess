@@ -19,9 +19,9 @@
 //
 // For examples of how to interact with this instance, see the following:
 //
-// [dogParams] is parsed in $(FINESS)/lib/1d/main_global.cpp;
-// [dogParams] is parsed in $(FINESS)/lib/2d/main_global.cpp;
-// [grid]      is parsed in $(FINESS)/lib/2d/struct/DogParamsCart2.cpp
+// [dogParams] is parsed in $(DOGPACK)/lib/1d/main_global.cpp;
+// [dogParams] is parsed in $(DOGPACK)/lib/2d/main_global.cpp;
+// [grid]      is parsed in $(DOGPACK)/lib/2d/struct/DogParamsCart2.cpp
 
 
 class IniDocument

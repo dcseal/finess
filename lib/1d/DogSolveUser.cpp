@@ -116,7 +116,7 @@ void DogSolveUser(const dTensor2& node,
             // ----------------------------------------------------------------
             cout << endl;
             cout << " No user-defined time-stepping scheme has been defined yet. " << endl;
-            cout << " Copy $FINESS/lib/1d/DogSolveUser.cpp into the current " << endl;
+            cout << " Copy $DOGPACK/lib/1d/DogSolveUser.cpp into the current " << endl;
             cout << " directory and modify as needed." << endl << endl;
             exit(1);
             // ----------------------------------------------------------------

@@ -156,7 +156,7 @@ int RunFinpack(string outputdir)
 
         // Done with solution from tstart to tend
         cout << setprecision(5);
-        cout << "FINESS: Frame " << setw(3) << n;
+        cout << "DOGPACK: Frame " << setw(3) << n;
         cout << ": plot files done at time t =";
         cout << setw(12) << scientific << tend << endl;
         cout << endl;

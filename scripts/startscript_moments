@@ -24,8 +24,8 @@ make -s diff > $outputdir/svn_diff
 make -s info > $outputdir/svn_info
 #\svn info -R > $outputdir/svn_info
 #\svn diff > $outputdir/svn_diff
-#\svn info -R ${FINESS}/${dims}d/lib >> $outputdir/svn_info
-#\svn diff ${FINESS}/${dims}d/lib >> $outputdir/svn_diff
+#\svn info -R ${DOGPACK}/${dims}d/lib >> $outputdir/svn_info
+#\svn diff ${DOGPACK}/${dims}d/lib >> $outputdir/svn_diff
 
 # ----------- Moment information -----------
 outputdir_moment="output_moments"

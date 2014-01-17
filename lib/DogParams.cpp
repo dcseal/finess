@@ -89,7 +89,7 @@ void DogParams::init()
     //option_names_list.push_back("nout_per_plot"       ); //default: empty string
     //option_names_list.push_back("which_compnt_divfree"); //default: empty string
 
-    // get defaults from e.g. $FINESS/config/dogParams_defaults.ini
+    // get defaults from e.g. $DOGPACK/config/dogParams_defaults.ini
     get_defaults      (ini_sec, section_label, option_names_list);
     verify_options_set(ini_sec, section_label, option_names_list);
 

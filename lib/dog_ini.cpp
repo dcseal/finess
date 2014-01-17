@@ -12,14 +12,14 @@ static void get_defaults_helper(
   const string& defaults_file_in)
 {
   string defaults_file = defaults_file_in;
-  // search and replace $FINESS with value
-  string S_FINESS("$FINESS");
-  size_t found = defaults_file.find(S_FINESS);
+  // search and replace $DOGPACK with value
+  string S_DOGPACK("$DOGPACK");
+  size_t found = defaults_file.find(S_DOGPACK);
   if(found!=string::npos)
   {
       // do we need the assignment here?:
       defaults_file = defaults_file.replace(found,
-          S_FINESS.length(), string(getenv("FINESS")));
+          S_DOGPACK.length(), string(getenv("DOGPACK")));
   }
   //ifstream default_ini_ifstream(defaults_file.c_str(), ios::in);
   IniDocument defaults_doc;
@@ -67,7 +67,7 @@ void get_defaults(
   string defaults_file = params[defaults_option_label];
   // the default defaults file
   if(defaults_file.empty())
-    defaults_file = "$FINESS/config/ini_defaults/"+section_label+".ini";
+    defaults_file = "$DOGPACK/config/ini_defaults/"+section_label+".ini";
   get_defaults_helper(
     params,
     option_names_list,

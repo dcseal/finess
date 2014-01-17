@@ -19,7 +19,7 @@ void Output_Extra(const dTensor2& node,
             string outputdir)
 {
 
-    // See $(FINESS)/lib/1d/Output.cpp to see where this gets called.
+    // See $(DOGPACK)/lib/1d/Output.cpp to see where this gets called.
     return;
 
 }
