@@ -6,7 +6,7 @@ from subprocess import call, Popen, PIPE
 dogpack_data_template = '''
 ; Parameters common to dogpack applications
 [dogParams]
-defaults_file = "$DOGPACK/config/dogParams_defaults.ini"
+defaults_file = "$FINESS/config/dogParams_defaults.ini"
 ndims       = 1             ; 1 or 2
 mesh_type   = Cartesian     ; (either Cartesian or Unstructured) 
 nout        = 1             ; number of output times to print results

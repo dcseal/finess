@@ -3,7 +3,7 @@
 % The script PLOTQ2_CART is a user supplied plotting script, with copies of
 % *this* script formatted and placed in each application.  
 %
-% The file you are currently reading (located in $DOGPACK/viz/matlab/plotq2_cart.m)
+% The file you are currently reading (located in $FINESS/viz/matlab/plotq2_cart.m)
 % is the default script, and if an application doesn't define a replacement
 % for this script, this is the one that will be run.
 %
