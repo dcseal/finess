@@ -98,7 +98,7 @@ assert_eq( mbc, 3 );
             Qavg.set(m, tmp );
         }
         dTensor1 Auxavg(iMax(maux, 1 ) );
-        for( int ma=1; ma <= meqn; ma++ )
+        for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,ma) + aux.get(i-1,ma) );
             Auxavg.set(ma, tmp );
@@ -175,7 +175,7 @@ smax.set( i, 1.0 );
         // --------------------------------------------------------------------
         // Part IV: Perform a WENO reconstruction on the characteristic vars.
         // --------------------------------------------------------------------
-        dTensor2 dGp( 1, meqn ), dGm( 1, meqn );
+        dTensor2 dGp( meqn, 1 ), dGm( meqn, 1 );
         WenoReconstruct( gp, dGp );
         WenoReconstruct( gm, dGm );
 

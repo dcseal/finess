@@ -33,25 +33,60 @@ void WenoReconstruct( const dTensor2& g, dTensor2& diff_g )
     double uim2,uim1,ui,uip1,uip2;
     double u1,u2,u3;
 
+    double beta0, beta1, beta2;  // smoothness indicators
+    double om0, om1, om2;
+
     const int meqn = g.getsize(1);
     assert_eq( g.getsize(2), 5 );
 
+// TODO - make this a user-defined input (add a [weno] section to the
+// parameters file)
+const double eps = 1.0e-12;  
+
     for( int m=1; m <= meqn; m++ )
     {
-//printf("g.getsize(1) = %d, g.getsize(2) = %d\n", g.getsize(1), g.getsize(2) );
+
         uim2 = g.get(m,1);
         uim1 = g.get(m,2);
         ui   = g.get(m,3);
         uip1 = g.get(m,4);
         uip2 = g.get(m,5);
 
-        // 3rd-order reconstructions using small 3-point stencils
+        // -- central finite difference reconstruction -- //
         u1 = ( 1./3.)*uim2 - (7./6.)*uim1 + (11./6.)*ui;
         u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1;
         u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
 
         // 5th-order reconstruction
         diff_g.set(m, 1, 0.1*u1+0.6*u2+0.3*u3 );
+
+        // -- Fifth-order Jiang and Shu WENO reconstruction -- //
+
+// TODO - finish filling this in 
+
+        // Compute smoothness indicators (identical for left/right values):
+//      beta0 =(13./12.)*pow(uim2-2*uim1+ui,2)+0.25*pow(uim2-4*uim1+3*ui,2);
+//      beta1 =(13./12.)*pow(uim1-2*ui+uip1,2)+0.25*pow(uim1-uip1,2);
+//      beta2 =(13./12.)*pow(ui-2*uip1+uip2,2)+0.25*pow(3*ui-4*uip1+uip2,2);
+//      
+//      // 3rd-order reconstructions using small 3-point stencils
+//      u1 = ( 1./3.)*uim2 - (7./6.)*uim1 + (11./6.)*ui;
+//      u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1;
+//      u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
+        
+        // Get linear weights and regularization parameter
+        // gamma = [0.1, 0.6, 0.3]
+        // eps   = cls._eps
+        
+        // Compute nonlinear weights and normalize their sum to 1
+// TODO - finish filling this in
+//      omt  = [ g/(eps+b)**2 for g,b in zip(gamma,beta) ]
+//      omts = sum(omt)
+//      om   = [ o / omts for o in omt ]
+//      
+//      # Return 5th-order conservative reconstruction
+//      return om[0]*u1 + om[1]*u2 + om[2]*u3
+
     }
 
 }
