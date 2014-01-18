@@ -146,7 +146,7 @@ assert_eq( mbc, 3 );
         // --------------------------------------------------------------------
         // Part III: Apply Lax-Friedrich's flux splitting to g
         // --------------------------------------------------------------------
-const double alpha = 1.0;  // TODO - insert call to max eigenvalue
+const double alpha = 1.1;  // TODO - insert call to max eigenvalue
 
 /*
 printf("printing wvals\n");
@@ -161,14 +161,14 @@ for( int s=1; s <= ws+1; s++ )
         for( int s=1; s <= ws; s++ )
         {
             gp.set( m, s, 0.5*(gvals.get(m,s)      + alpha*wvals.get(m,s) )      );
-            gm.set( m, s, 0.5*(gvals.get(m,ws-s+1) - alpha*wvals.get(m,ws-s+1) ) );
-/*
-printf("    alpha = %f;", alpha );
-printf("    w1, w2 = %f, %f\n", wvals.get(m,s), wvals.get(m,ws-s+1) );
-printf("gp, gm = %f, %f\n", gp.get(m,s), gm.get(m,s) );
-*/
-        }
+            gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - alpha*wvals.get(m,ws-s+2) ) );
 
+//printf("    alpha = %f;", alpha );
+//printf("    w1, w2 = %2.5e %2.5e; ", wvals.get(m,s), wvals.get(m,ws-s+2) );
+//printf("gp, gm = %f, %f\n", gp.get(m,s), gm.get(m,s) );
+
+        }
+//printf("\n");
 // TODO - Fastest wave speed observed for this element:
 smax.set( i, 1.0 );
 
