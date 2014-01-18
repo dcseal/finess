@@ -1,3 +1,4 @@
+#include <cmath>
 #include "DogParamsCart1.h"
 #include "assert.h"
 #include "tensors.h"
@@ -34,7 +35,11 @@ void WenoReconstruct( const dTensor2& g, dTensor2& diff_g )
     double u1,u2,u3;
 
     double beta0, beta1, beta2;  // smoothness indicators
-    double om0, om1, om2;
+    double omt0, omt1, omt2, omts;
+
+    // linear weights
+    double g0, g1, g2;           
+    g0 = 0.1; g1 = 0.6; g2 = 0.3;
 
     const int meqn = g.getsize(1);
     assert_eq( g.getsize(2), 5 );
@@ -53,39 +58,44 @@ const double eps = 1.0e-12;
         uip2 = g.get(m,5);
 
         // -- central finite difference reconstruction -- //
-        u1 = ( 1./3.)*uim2 - (7./6.)*uim1 + (11./6.)*ui;
-        u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1;
-        u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
+//      u1 = ( 1./3.)*uim2 - (7./6.)*uim1 + (11./6.)*ui;
+//      u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1;
+//      u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
 
-        // 5th-order reconstruction
-        diff_g.set(m, 1, 0.1*u1+0.6*u2+0.3*u3 );
+//      // 5th-order reconstruction
+//      diff_g.set(m, 1, 0.1*u1+0.6*u2+0.3*u3 );
 
         // -- Fifth-order Jiang and Shu WENO reconstruction -- //
 
 // TODO - finish filling this in 
 
         // Compute smoothness indicators (identical for left/right values):
-//      beta0 =(13./12.)*pow(uim2-2*uim1+ui,2)+0.25*pow(uim2-4*uim1+3*ui,2);
-//      beta1 =(13./12.)*pow(uim1-2*ui+uip1,2)+0.25*pow(uim1-uip1,2);
-//      beta2 =(13./12.)*pow(ui-2*uip1+uip2,2)+0.25*pow(3*ui-4*uip1+uip2,2);
-//      
-//      // 3rd-order reconstructions using small 3-point stencils
-//      u1 = ( 1./3.)*uim2 - (7./6.)*uim1 + (11./6.)*ui;
-//      u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1;
-//      u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
+        beta0 =(13./12.)*pow(uim2-2*uim1+ui,2)+0.25*pow(uim2-4*uim1+3*ui,2);
+        beta1 =(13./12.)*pow(uim1-2*ui+uip1,2)+0.25*pow(uim1-uip1,2);
+        beta2 =(13./12.)*pow(ui-2*uip1+uip2,2)+0.25*pow(3*ui-4*uip1+uip2,2);
+        
+        // 3rd-order reconstructions using small 3-point stencils
+        u1 = ( 1./3.)*uim2 - (7./6.)*uim1 + (11./6.)*ui;
+        u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1;
+        u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
         
         // Get linear weights and regularization parameter
         // gamma = [0.1, 0.6, 0.3]
         // eps   = cls._eps
         
         // Compute nonlinear weights and normalize their sum to 1
-// TODO - finish filling this in
-//      omt  = [ g/(eps+b)**2 for g,b in zip(gamma,beta) ]
-//      omts = sum(omt)
-//      om   = [ o / omts for o in omt ]
-//      
-//      # Return 5th-order conservative reconstruction
-//      return om[0]*u1 + om[1]*u2 + om[2]*u3
+        omt0 = g0*pow(eps+beta0,-2);
+        omt1 = g1*pow(eps+beta1,-2);
+        omt2 = g2*pow(eps+beta2,-2);
+        omts = omt0+omt1+omt2;
+
+        // omt  = [ g/(eps+b)**2 for g,b in zip(gamma,beta) ]
+        // omts = sum(omt)
+        // om   = [ o / omts for o in omt ]
+        
+        // # Return 5th-order conservative reconstruction
+        // return om[0]*u1 + om[1]*u2 + om[2]*u3
+        diff_g.set(m, 1, (omt0*u1 + omt1*u2 + omt2*u3)/omts );
 
     }
 
