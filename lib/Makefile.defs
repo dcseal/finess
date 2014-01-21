@@ -20,7 +20,7 @@ TOPLIB_OBJECTS = \
   $(TOPLIB)/dog_ini.o \
   $(TOPLIB)/DogParams.o \
   $(TOPLIB)/DogState.o \
-  $(TOPLIB)/DogSolver.o \
+  $(TOPLIB)/OutputDir.o \
   $(TOPLIB)/Positivity.o \
   $(TOPLIB)/basics.o \
   $(TOPLIB)/tensors.o \
@@ -35,7 +35,7 @@ TOPLIB_SOURCES = \
   $(TOPLIB)/dog_ini.cpp \
   $(TOPLIB)/DogParams.cpp \
   $(TOPLIB)/DogState.cpp \
-  $(TOPLIB)/DogSolver.cpp \
+  $(TOPLIB)/OutputDir.cpp \
   $(TOPLIB)/basics.cpp \
   $(TOPLIB)/tensors.cpp \
   $(TOPLIB)/dog_math.cpp \

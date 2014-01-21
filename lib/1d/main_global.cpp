@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "dogdefs.h"
 #include "IniDocument.h"
-#include "DogSolver.h"
+#include "OutputDir.h"
 
 /*
  * Common main function that's called by every (1D) application.
@@ -26,14 +26,21 @@ int main_global(int argc, char* argv[])
     // Get current time
     double time1 = time(NULL);
 
-    DogSolver::parse_arguments(argc,argv);
+    // Parse the command line arguments.  (e.g. -o sets a different output
+    // directory, and -d sets a different debug level).
+    //
+    // TODO - there is no need for this to be a class.  A single global
+    // variable containing the output directory would suffice. (-DS)
+    OutputDir::parse_arguments(argc, argv);
 
+    // Call startscript (Default: scripts/startscript, otherwise it checks for
+    // a local file called 'startscript' from the application's directory)
     void RunStartScript(int ndims);
     RunStartScript(1);
 
     // Call the ``RunFinpack'' routine, which executes the code
-    int RunFinpack(string outputdir);
-    int m = RunFinpack(get_outputdir());
+    int RunFinpack( string outputdir );
+    int m = RunFinpack( get_outputdir() );
 
     // Get current time
     double time2 = time(NULL);
