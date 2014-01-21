@@ -98,4 +98,3 @@ bool verify_options_set(
   }
   return true;
 }
-

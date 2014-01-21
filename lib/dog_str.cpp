@@ -1,10 +1,7 @@
 #include <stdio.h>
-#include <cstring> // for strcmp
+#include <cstring>     // for strcmp
 #include "assert.h"
 #include "dog_str.h"
-
-#define NDIMS 0  // Why is this here? (-DS)
-
 #include "tensors1d.h"
 #include "debug.h"
 

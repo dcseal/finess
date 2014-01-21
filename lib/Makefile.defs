@@ -19,10 +19,7 @@ TOPLIB_OBJECTS = \
   $(LIB_SYS_OBJECTS) \
   $(TOPLIB)/dog_ini.o \
   $(TOPLIB)/DogParams.o \
-  $(TOPLIB)/DogState.o \
   $(TOPLIB)/OutputDir.o \
-  $(TOPLIB)/Positivity.o \
-  $(TOPLIB)/basics.o \
   $(TOPLIB)/tensors.o \
   $(TOPLIB)/dog_math.o \
   $(TOPLIB)/dog_str.o \
@@ -34,9 +31,7 @@ TOPLIB_SOURCES = \
   $(TOPLIB)/*.h \
   $(TOPLIB)/dog_ini.cpp \
   $(TOPLIB)/DogParams.cpp \
-  $(TOPLIB)/DogState.cpp \
   $(TOPLIB)/OutputDir.cpp \
-  $(TOPLIB)/basics.cpp \
   $(TOPLIB)/tensors.cpp \
   $(TOPLIB)/dog_math.cpp \
   $(TOPLIB)/dog_str.cpp \
