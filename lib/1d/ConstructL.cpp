@@ -29,8 +29,9 @@ void ConstructL(
         const dTensor2& Qvals, dTensor2& Wvals);
     void ProjectRightEig(const dTensor1& Aux_ave, const dTensor1& Q_ave, 
                          const dTensor2& Wvals, dTensor2& Qvals);
-    void SetWaveSpd(const dTensor1&,const dTensor1&,const dTensor1&,const dTensor1&,
-            const dTensor1&,double&,double&);
+    void SetWaveSpd(const dTensor1& xedge, const dTensor1& Ql,
+            const dTensor1& Qr, const dTensor1& Auxl, const dTensor1& Auxr,
+            double& s1,double& s2);
     void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
     void SampleFunction( int istart, int iend,
         const dTensor2& node, const dTensorBC2& qin, 
@@ -53,37 +54,23 @@ void ConstructL(
 // TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
 // should equal mbc.  This should be added somewhere in the code. 
 // (Derived parameters? -DS)
-const int ws = 5;
 const int  r = 3;  // order = 2*r-1
+const int ws = 5;  // Number of points for the weno-reconstruction
 assert_eq( mbc, 3 );
 
-    // The Roe-average, flux, and source term, respectively.  Recall that the
+    // The flux, f_{i-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
     // that vector than on the original grid.
     dTensorBC2  fhat(mx+1, meqn, mbc );
-    dTensorBC2   Psi(mx,   meqn, mbc );
 
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
     const double   xlow = dogParamsCart1.get_xlow();
     const double     dx = dogParamsCart1.get_dx();
 
     // ---------------------------------------------------------
-    // Part 0: compute source term
-    // --------------------------------------------------------- 
-    Lstar.setall(0.);
-//  if( dogParams.get_source_term() )
-//  {        
-//      // Set source term on computational grid
-//      // Set values and apply L2-projection
-//      // TODO - replace with SampleFunc
-//      SampleFunction( 1-mbc, mx+mbc, node, q, aux, Lstar, &SourceTermFunc);
-//  }
+    // Compute fhat_{i-1/2}
     // ---------------------------------------------------------
-
-
-    // ---------------------------------------------------------
-    // Part II: Compute left/right decomposition, f^+ and f^-
-    // ---------------------------------------------------------
+#pragma omp parallel for
     for (int i= 1; i<= mx+1; i++)
     {
 
@@ -130,6 +117,13 @@ assert_eq( mbc, 3 );
                 auxvals.set( ma, s, aux.get(is, ma ) );
             }
         }
+
+        // The format of Flux and ProjectLeftEig/ProjectRightEig do not
+        // contain the same order.  That is, Flux assumes q(1:npts, 1:meqn),
+        // whereas the other functions assume q(1:meqn, 1:npts).  For
+        // consistency, I will copy back to the latter, because the WENO
+        // reconstruction *should* be faster if the list of points is second.
+        // (-DS)
         ConvertTranspose( qvals,   qvals_t   );
         ConvertTranspose( auxvals, auxvals_t );
 
@@ -146,31 +140,41 @@ assert_eq( mbc, 3 );
         // --------------------------------------------------------------------
         // Part III: Apply Lax-Friedrich's flux splitting to g
         // --------------------------------------------------------------------
-const double alpha = 1.1;  // TODO - insert call to max eigenvalue
 
-/*
-printf("printing wvals\n");
-for( int s=1; s <= ws+1; s++ )
-{
-    printf("w = %f\n", wvals.get(1,s) );
-}
-*/
+
+        // -- Compute a local wave speed -- //
+
+        dTensor1 xedge(1), Ql(meqn), Qr(meqn);
+        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
+        for( int m=1; m<= meqn; m++)
+        {
+            Ql.set(m, q.get(i-1,m) );
+            Qr.set(m, q.get(i  ,m) );
+        }
+
+        for( int m=1; m<= maux; m++)
+        {
+            Auxl.set(m, aux.get(i-1,m) );
+            Auxr.set(m, aux.get(i  ,m) );
+        }
+
+        double s1,s2;
+        SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
+        const double alpha = Max( abs(s1), abs(s2) );
+        smax.set( i, alpha  );
+        const double l_alpha = 1.1*alpha;  // extra safety factor added here
+
+        // -- Flux splitting -- //
 
         dTensor2 gp( meqn, ws ), gm( meqn, ws );
         for( int m=1; m <= meqn; m++ )
         for( int s=1; s <= ws; s++ )
         {
-            gp.set( m, s, 0.5*(gvals.get(m,s)      + alpha*wvals.get(m,s) )      );
-            gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - alpha*wvals.get(m,ws-s+2) ) );
-
-//printf("    alpha = %f;", alpha );
-//printf("    w1, w2 = %2.5e %2.5e; ", wvals.get(m,s), wvals.get(m,ws-s+2) );
-//printf("gp, gm = %f, %f\n", gp.get(m,s), gm.get(m,s) );
-
+            gp.set( m, s, 0.5*(gvals.get(m,s)      + l_alpha*wvals.get(m,s) )      );
+            gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - l_alpha*wvals.get(m,ws-s+2) ) );
         }
-//printf("\n");
-// TODO - Fastest wave speed observed for this element:
-smax.set( i, 1.0 );
+
 
         // --------------------------------------------------------------------
         // Part IV: Perform a WENO reconstruction on the characteristic vars.
@@ -191,36 +195,48 @@ smax.set( i, 1.0 );
         for( int m=1; m <= meqn; m++ )
         {
             fhat.set(i, m, fhat_loc.get(m,1) );
-
-/*
-printf("qavg = %2.10e\n", Qavg.get(m) );
-printf("ghat = %2.10e\n", ghat.get(m,1) );
-printf("fhat = %2.10e\n", fhat.get(i,m) );
-*/
-
         }
 
     }
-    // ---------------------------------------------------------
+    // --------------------------------------------------------------------- //
 
-// Construct fluxes: d/dt q_i = -1/dx( f_{i+1/2} - f_{i-1/2} )
-
-    // ---------------------------------------------------------
-    // Part III: Construct Lstar
-    // ---------------------------------------------------------
-    for (int i=1; i<=mx; i++)
+    // --------------------------------------------------------------------- //
+    // Construct Lstar, defined by:
+    //
+    //    d/dt q_i = Lstar = -1/dx( fh_{i+1/2} - fh_{i-1/2} )
+    //
+    // TODO - We should be able to avoid this for loop if we save Lstar in the
+    // above loop without executing a second loop.  However, this requires 
+    // larger strides.  (-DS)
+    // --------------------------------------------------------------------- //
+    if( dogParams.get_source_term() )
     {
-        for (int m=1; m<=meqn; m++)
+        // Compute the source term.
+        SampleFunction( 1-mbc, mx+mbc, node, q, aux, Lstar, &SourceTermFunc);
+#pragma omp parallel for
+        for (int i=1; i<=mx; i++)
         {
-            Lstar.set(i,m, -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
+            for (int m=1; m<=meqn; m++)
+            {
+                Lstar.set(i,m, Lstar.get(i,m) -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
+            }
+        }
+    }
+    else
+    {
+#pragma omp parallel for
+        for (int i=1; i<=mx; i++)
+        {
+            for (int m=1; m<=meqn; m++)
+            {
+                Lstar.set(i,m, -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
+            }
         }
     }
     // ---------------------------------------------------------
-    // Part IV: add extra contributions to Lstar
+    // Add extra contributions to Lstar
     // ---------------------------------------------------------
-    // Call LstarExtra
     // LstarExtra(node,aux,q,Lstar);
-    // ---------------------------------------------------------
 
 }
 
