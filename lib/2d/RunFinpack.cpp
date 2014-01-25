@@ -38,6 +38,7 @@ int RunFinpack(string outputdir)
     cout << endl;
 
     // Get addtional parameters
+    // TODO - fix or add in a parser for extra user inputs
 //  InitApp( ini_doc );
 //  cout << endl;
 
@@ -56,7 +57,6 @@ int RunFinpack(string outputdir)
     const int&     my       = dogParamsCart2.get_my();
     const int&     mbc      = dogParamsCart2.get_mbc();
     const int&     mrestart = dogParams.get_mrestart();
-    const int        mnodes = mx + 1;
 
     // Output helpful stuff to qhelp.dat for plotting purposes
     string qhelp;
@@ -66,35 +66,30 @@ int RunFinpack(string outputdir)
 
 
     // Dimension arrays
-    dTensor3      node(mx, my, mdim);
     dTensor2      prim_vol(mx, my);
     dTensorBC3    qnew(mx, my, meqn, mbc);
     dTensorBC3    qold(mx, my, meqn, mbc);
     dTensorBC2    smax(mx, my, mbc);
     dTensorBC3    aux (mx, my, iMax(maux, 1), mbc);
 
-    // Construct 1D grid (trivial for uniform case)
-    GridSetup( node, prim_vol);
-
-/*
     // Set any auxiliary variables on computational grid
     // Set values and apply L2-projection
-    if(maux >0)
-    {  SampleFunction(1-mbc, mx+mbc, node, qnew, aux, aux, &AuxFunc);  }
+    if( maux > 0 )
+    {  SampleFunction(1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, aux, &AuxFunc);  }
 
     // Set initial data on computational grid
     // Set values and apply L2-projection
-    SampleFunction( 1-mbc, mx+mbc, node, qnew, aux, qnew, &QinitFunc);
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
-    AfterQinit(node, aux, qnew);
+    AfterQinit( aux, qnew);
 
     // Output initial data to file
     // For each element, we output ``method[1]'' number of values
-    Output(node, aux, qnew, 0.0, 0, outputdir);
+    Output( aux, qnew, 0.0, 0, outputdir);
 
     // Compute conservation and print to file
-    ConSoln( node, aux, qnew, 0.0, outputdir);
+    ConSoln( aux, qnew, 0.0, outputdir);
 
     // Main loop for time stepping
     double tstart = 0.0;
@@ -109,18 +104,18 @@ int RunFinpack(string outputdir)
         if (time_stepping_method == "Runge-Kutta")
         {  
             // Runge-Kutta time-stepping scheme
-            FinSolveRK(node, prim_vol, aux, qold, qnew, smax, tstart, tend, 
+            FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
         else if (time_stepping_method == "User-Defined")
         {
             // User-defined time-stepping scheme
-            DogSolveUser(node,  prim_vol, aux, qold, qnew, smax, tstart, tend, 
+            DogSolveUser(  aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
 
         // Output data to file
-        Output(node, aux, qnew, tend, n, outputdir);
+        Output( aux, qnew, tend, n, outputdir);
 
         // Done with solution from tstart to tend
         cout << setprecision(5);
@@ -129,7 +124,7 @@ int RunFinpack(string outputdir)
         cout << setw(12) << scientific << tend << endl;
         cout << endl;
     }
-*/
+
     return 0;
 }
 

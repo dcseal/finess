@@ -10,10 +10,8 @@
 
 using namespace std;
 
-void ConSoln( const dTensor2& node, 
-    const dTensorBC3& aux,
-    const dTensorBC3& q, 
-    double t, string outputdir)
+void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, 
+              double t, string outputdir)
 {
 
     const int     mx = dogParamsCart2.get_mx();

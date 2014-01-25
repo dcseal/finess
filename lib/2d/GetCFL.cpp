@@ -7,13 +7,16 @@
 using namespace std;
 
 double GetCFL(double dt, double dtmax,
-        const dTensor2& prim_vol,
         const dTensorBC3& aux,
-        const dTensorBC1& smax)
+        const dTensorBC2& smax)
 {
 
     const int mx = dogParamsCart2.get_mx();
     const int my = dogParamsCart2.get_my();
+    const double dx = dogParamsCart2.get_dx();
+    const double dy = dogParamsCart2.get_dy();
+    const double area_inv = 1./(dx*dy);
+
     double cfl   = -100.0;
 
     if( dt > dtmax )
@@ -30,7 +33,7 @@ double GetCFL(double dt, double dtmax,
     for (int i=1; i<=mx; i++)
     for (int j=1; j<=my; j++)
     {
-        cfl = Max( dt*smax.get(j) / prim_vol.get(i,j), cfl);  
+        cfl = Max( dt*smax.get(i,j) * area_inv, cfl);  
     }
 
     if( cfl > 1.0e8 )

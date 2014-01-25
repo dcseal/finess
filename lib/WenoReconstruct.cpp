@@ -1,5 +1,4 @@
 #include <cmath>
-#include "DogParamsCart1.h"
 #include "assert.h"
 #include "tensors.h"
 
@@ -26,9 +25,6 @@
 // and then reconstructs the value u_{i+1/2} with this method.
 void WenoReconstruct( const dTensor2& g, dTensor2& diff_g )
 {
-
-    const double xlow = dogParamsCart1.get_xlow();
-    const double dx   = dogParamsCart1.get_dx();
 
     // Stencil and the smaller three point derivatives:
     double uim2,uim1,ui,uip1,uip2;
@@ -62,7 +58,7 @@ const double eps = 1.0e-12;
 //      u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1;
 //      u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
 
-//      // 5th-order reconstruction
+//      // 5th-order reconstruction (linear weights)
 //      diff_g.set(m, 1, 0.1*u1+0.6*u2+0.3*u3 );
 
         // -- Fifth-order Jiang and Shu WENO reconstruction -- //
@@ -89,10 +85,6 @@ const double eps = 1.0e-12;
         omt2 = g2*pow(eps+beta2,-2);
         omts = omt0+omt1+omt2;
 
-        // omt  = [ g/(eps+b)**2 for g,b in zip(gamma,beta) ]
-        // omts = sum(omt)
-        // om   = [ o / omts for o in omt ]
-        
         // # Return 5th-order conservative reconstruction
         // return om[0]*u1 + om[1]*u2 + om[2]*u3
         diff_g.set(m, 1, (omt0*u1 + omt1*u2 + omt2*u3)/omts );

@@ -24,6 +24,7 @@ TOPLIB_OBJECTS = \
   $(TOPLIB)/dog_math.o \
   $(TOPLIB)/dog_str.o \
   $(TOPLIB)/dog_io.o \
+  $(TOPLIB)/WenoReconstruct.o \
   $(RunStartScript).o \
 #
 TOPLIB_SOURCES = \
@@ -36,6 +37,7 @@ TOPLIB_SOURCES = \
   $(TOPLIB)/dog_math.cpp \
   $(TOPLIB)/dog_str.cpp \
   $(TOPLIB)/dog_io.cpp \
+  $(TOPLIB)/WenoReconstruct.cpp \
   $(RunStartScript).cpp \
 
 # inheriting libraries and applications are expected to override these

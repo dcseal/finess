@@ -92,7 +92,6 @@ AfterFullTimeStep    = $(LIB2D)/AfterFullTimeStep
 DogSolveUser         = $(LIB2D)/DogSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
-WenoReconstruct      = $(LIB2D)/WenoReconstruct
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 #DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
@@ -111,15 +110,13 @@ LIB2D_OBJECTS = \
   $(LIB2D)/DogParamsCart2.o \
   $(GridSetup).o \
   $(SampleFunction).o \
-  $(WenoReconstruct).o \
   $(Output).o \
   $(ConSoln).o \
   $(LIB2D)/FinSolveRK.o \
   $(LIB2D)/SetRKinfo.o \
   $(LIB2D)/GetCFL.o \
-# $(DogSolveUser).o \
-# $(LIB2D)/CopyQ.o \
-# $(AfterQinit).o \
+  $(AfterQinit).o \
+  $(DogSolveUser).o \
 # $(BeforeStep).o \
 # $(AfterStep).o \
 # $(BeforeFullTimeStep).o \
@@ -143,15 +140,13 @@ LIB2D_SOURCES = \
   $(LIB2D)/DogParamsCart2.cpp \
   $(GridSetup).cpp \
   $(SampleFunction).cpp \
-  $(WenoReconstruct).cpp \
   $(Output).cpp \
   $(ConSoln).cpp \
   $(LIB2D)/FinSolveRK.cpp \
   $(LIB2D)/SetRKinfo.cpp \
   $(LIB2D)/GetCFL.cpp \
-# $(DogSolveUser).cpp \
-# $(LIB2D)/CopyQ.cpp \
-# $(AfterQinit).cpp \
+  $(AfterQinit).cpp \
+  $(DogSolveUser).cpp \
 # $(BeforeStep).cpp \
 # $(AfterStep).cpp \
 # $(BeforeFullTimeStep).cpp \

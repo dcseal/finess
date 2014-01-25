@@ -11,7 +11,6 @@ using namespace std;
 //
 // ---------------------------------------------------------------------
 // Inputs should have the following sizes:   
-//           dTensor2    node(mnodes,2)
 //           dTensorBC3 auxin(1-mbc:mx+mbc, 1-mbc:my+mbc, maux    )
 //           dTensorBC3   qin(1-mbc:mx+mbc, 1-mbc:my+mbc, meqn    )
 //           dTensorBC3  Fout(1-mbc:mx+mbc, 1-mbc:my+mbc, mlength )
@@ -23,7 +22,6 @@ using namespace std;
 void SampleFunction( 
     int istart, int iend,
     int jstart, int jend,
-    const dTensor2& node,
     const dTensorBC3& qin, 
     const dTensorBC3& auxin,  
           dTensorBC3& Fout,
@@ -98,7 +96,6 @@ void SampleFunction(
                 for (int ma=1; ma<=maux; ma++)
                 {
                     auxvals.set(m,ma, 0.0 );
-
                     for (int k=1; k<=mpoints; k++)
                     {
                         auxvals.set(m,ma, auxvals.get(m,ma) + auxin.get(i,j,ma) );

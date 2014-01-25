@@ -92,7 +92,6 @@ AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
 DogSolveUser         = $(LIB1D)/DogSolveUser
 GridSetup            = $(LIB1D)/GridSetup
 SampleFunction       = $(LIB1D)/SampleFunction
-WenoReconstruct      = $(LIB1D)/WenoReconstruct
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB1D)/LaxWendroff/DFluxFunc
@@ -111,7 +110,6 @@ LIB1D_OBJECTS = \
   $(LIB1D)/DogParamsCart1.o \
   $(GridSetup).o \
   $(SampleFunction).o \
-  $(WenoReconstruct).o \
   $(Output).o \
   $(Output_Extra).o \
   $(ConSoln).o \
@@ -146,7 +144,6 @@ LIB1D_SOURCES = \
   $(LIB1D)/DogParamsCart1.cpp \
   $(GridSetup).cpp \
   $(SampleFunction).cpp \
-  $(WenoReconstruct).cpp \
   $(Output).cpp \
   $(Output_Extra).cpp \
   $(ConSoln).cpp \

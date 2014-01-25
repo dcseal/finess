@@ -11,9 +11,8 @@
 using namespace std;
 
 void FinSolveRK(
-    const dTensor2& node, const dTensor2& prim_vol, 
     dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
-    dTensorBC1& smax,
+    dTensorBC2& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[], string outputdir)
 {
@@ -93,7 +92,7 @@ void FinSolveRK(
 //          smax.setall(0.);
 
             // do any extra work
-//          BeforeFullTimeStep(dt, node, prim_vol, auxstar, aux, qold, qnew);
+//          BeforeFullTimeStep(dt, auxstar, aux, qold, qnew);
 
             // Take a full time step of size dt
 //          switch( time_order )
@@ -103,11 +102,11 @@ void FinSolveRK(
 //                  // --------------------------------------------------------
 //                  // Stage #1 (the only one in this case)
 //                  rk.mstage = 1;
-//                  BeforeStep(dt,node,aux,qnew);
-//                  ConstructL(node, aux, qnew, Lstar, smax);
+//                  BeforeStep(dt,aux,qnew);
+//                  ConstructL( aux, qnew, Lstar, smax);
 //                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qnew);
-//                  AfterStep(dt,node,aux,qnew);
+//                          rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qnew);
+//                  AfterStep(dt,aux,qnew);
 //                  // --------------------------------------------------------
 
 //                  break;
@@ -117,19 +116,19 @@ void FinSolveRK(
 //                  // ---------------------------------------------------------
 //                  // Stage #1
 //                  rk.mstage = 1;
-//                  BeforeStep(dt,node,aux,qnew);
-//                  ConstructL(node,aux,qnew,Lstar,smax);
+//                  BeforeStep(dt,aux,qnew);
+//                  ConstructL(aux,qnew,Lstar,smax);
 //                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);      
-//                  AfterStep(dt,node,auxstar,qstar);
+//                          rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);      
+//                  AfterStep(dt,auxstar,qstar);
 //                  // ---------------------------------------------------------
 //                  // Stage #2
 //                  rk.mstage = 2;
-//                  BeforeStep(dt,node,auxstar,qstar);
-//                  ConstructL(node,aux,qstar,Lstar,smax);
+//                  BeforeStep(dt,auxstar,qstar);
+//                  ConstructL(aux,qstar,Lstar,smax);
 //                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,node,auxstar,qstar,Lstar,qnew);
-//                  AfterStep(dt,node,aux,qnew); 
+//                          rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);
+//                  AfterStep(dt,aux,qnew); 
 //                  // ---------------------------------------------------------
 
 //                  break;
@@ -139,29 +138,29 @@ void FinSolveRK(
 //                  // ---------------------------------------------------------
 //                  // Stage #1
 //                  rk.mstage = 1;
-//                  BeforeStep(dt,node,aux,qnew);    
-//                  ConstructL(node,aux,qnew,Lstar,smax);
+//                  BeforeStep(dt,aux,qnew);    
+//                  ConstructL(aux,qnew,Lstar,smax);
 //                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);
-//                  AfterStep(dt,node,auxstar,qstar);
+//                          rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
+//                  AfterStep(dt,auxstar,qstar);
 
 //                  // ---------------------------------------------------------
 //                  // Stage #2
 //                  rk.mstage = 2;
-//                  BeforeStep(dt,node,auxstar,qstar);
-//                  ConstructL(node,aux,qstar,Lstar,smax);
+//                  BeforeStep(dt,auxstar,qstar);
+//                  ConstructL(aux,qstar,Lstar,smax);
 //                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);
-//                  AfterStep(dt,node,auxstar,qstar);
+//                          rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
+//                  AfterStep(dt,auxstar,qstar);
 
 //                  // ---------------------------------------------------------
 //                  // Stage #3
 //                  rk.mstage = 3;
-//                  BeforeStep(dt,node,auxstar,qstar);
-//                  ConstructL(node,auxstar,qstar,Lstar,smax);
+//                  BeforeStep(dt,auxstar,qstar);
+//                  ConstructL(auxstar,qstar,Lstar,smax);
 //                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,node,auxstar,qstar,Lstar,qnew);   
-//                  AfterStep(dt,node,aux,qnew);
+//                          rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);   
+//                  AfterStep(dt,aux,qnew);
 //                  // ---------------------------------------------------------
 
 //                  break;
@@ -176,16 +175,16 @@ void FinSolveRK(
 //                  for (int s=1; s<=5; s++)
 //                  {
 //                      rk.mstage = s;
-//                      BeforeStep(dt,node,aux,q1);
-//                      ConstructL(node,aux,q1,Lstar,smax);
+//                      BeforeStep(dt,aux,q1);
+//                      ConstructL(aux,q1,Lstar,smax);
 //                      if (s==1)
 //                      {  CopyQ(Lstar,Lold);  }
 //                      UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                              rk.beta->get(rk.mstage),dt,node,aux,q1,Lstar,q1);
+//                              rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
 //                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(node,aux,q1,
+//                      {  ApplyLimiter(aux,q1,
 //                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,node,aux,q1);
+//                      AfterStep(dt,aux,q1);
 //                  }
 
 //                  // Temporary storage
@@ -202,26 +201,26 @@ void FinSolveRK(
 //                  for (int s=6; s<=9; s++)
 //                  {
 //                      rk.mstage = s;
-//                      BeforeStep(dt,node,aux,q1);
-//                      ConstructL(method,node,aux,q1,Lstar,smax);
+//                      BeforeStep(dt,aux,q1);
+//                      ConstructL(method,aux,q1,Lstar,smax);
 //                      UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                              rk.beta->get(rk.mstage),dt,node,aux,q1,Lstar,q1);
+//                              rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
 //                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(node,aux,q1,
+//                      {  ApplyLimiter(aux,q1,
 //                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,node,aux,q1);
+//                      AfterStep(dt,aux,q1);
 //                  }
 
 //                  // Stage: 10
 //                  rk.mstage = 10;
-//                  BeforeStep(dt,node,aux,q1);
-//                  ConstructL(method,node,aux,q1,Lstar,smax);
+//                  BeforeStep(dt,aux,q1);
+//                  ConstructL(method,aux,q1,Lstar,smax);
 //                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,node,aux,q2,Lstar,q1);
+//                          rk.beta->get(rk.mstage),dt,aux,q2,Lstar,q1);
 //                  if (dogParams.using_moment_limiter())
-//                  {  ApplyLimiter(node,aux,q1,
+//                  {  ApplyLimiter(aux,q1,
 //                          &ProjectRightEig,&ProjectLeftEig);  }
-//                  AfterStep(dt,node,aux,q1);
+//                  AfterStep(dt,aux,q1);
 
 //                  CopyQ(q1,qnew);
 //                  // -----------------------------------------------          
@@ -236,8 +235,8 @@ void FinSolveRK(
 //                  for (int s=1; s<=8; s++)
 //                  {
 //                      rk.mstage = s;
-//                      BeforeStep(dt,node,aux,q1);
-//                      ConstructL(method,node,aux,q1,Lstar,smax);
+//                      BeforeStep(dt,aux,q1);
+//                      ConstructL(method,aux,q1,Lstar,smax);
 //                      if (s==1)
 //                      {  CopyQ(Lstar,Lold);  }
 
@@ -246,12 +245,12 @@ void FinSolveRK(
 //                              rk.gamma->get(2,s), 
 //                              rk.gamma->get(3,s), 
 //                              rk.delta->get(s), rk.beta->get(s),
-//                              dt, node, aux, qold, Lstar, q1, q2);
+//                              dt,  aux, qold, Lstar, q1, q2);
 
 //                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(node,aux,q1,
+//                      {  ApplyLimiter(aux,q1,
 //                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,node,aux,q1);
+//                      AfterStep(dt,aux,q1);
 //                  }
 
 //                  CopyQ(q1, qnew);
@@ -267,10 +266,10 @@ void FinSolveRK(
 //          }  // End of switch statement over time-order
 
             // do any extra work (TODO - add this in later)
-//          AfterFullTimeStep(dt, node, prim_vol, auxstar, aux, qold, qnew);
+//          AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
 
             // compute cfl number
-            cfl = GetCFL(dt, dtv[2], prim_vol, aux, smax);
+            cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
             if( dogParams.get_verbosity() )
@@ -314,7 +313,7 @@ void FinSolveRK(
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln(node, aux, qnew, t, outputdir);
+        ConSoln( aux, qnew, t, outputdir);
 
     } // End of while loop
 
