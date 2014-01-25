@@ -1,0 +1,169 @@
+# included from application Makefiles;
+
+# default definitions which application Makefiles can override
+
+NDIMS=2
+include $(FINESS)/lib/Makefile.defs
+
+# library this file is in
+LIB2D = $(FINESS)/lib/2d
+LIB2D_INCLUDE = -I$(LIB2D) $(TOPLIB_INCLUDE)
+
+# inheriting libraries are expected to override this
+INCLUDE_LIBS = $(LIB2D_INCLUDE)
+
+# added to by applications
+#
+# (recall that make expands variables names when used, not when defined,
+# so it is okay that these are defined later.)
+#
+# applications are expected to override the definitions of ALL_*
+# in order to add additional files to the COMMON_* files.
+ALL_OBJECTS = $(COMMON_OBJECTS) # applications are expected to override this
+ALL_SOURCES = $(COMMON_SOURCES) # applications are expected to override this
+#
+# all applications must link to the following objects
+# (or an equivalent)
+COMMON_OBJECTS = $(OBJECTS_EXPECTED) $(LIB2D_OBJECTS)
+COMMON_SOURCES = $(SOURCES_EXPECTED) $(LIB2D_SOURCES)
+
+# default locations for expected application files
+#
+#
+# (If you want to be able to vary a particular name,
+# please do so by making definitions such as the following
+# and then overriding it in the application Makefile)
+AuxFunc         = AuxFunc
+QinitFunc       = QinitFunc
+FluxFunc        = FluxFunc
+SourceTermFunc  = SourceTermFunc
+SetWaveSpd      = SetWaveSpd
+SetBndValues    = SetBndValues
+ProjectLeftEig  = ProjectLeftEig
+ProjectRightEig = ProjectRightEig
+
+OBJECTS_EXPECTED = \
+  main.o \
+  $(AuxFunc).o \
+  $(QinitFunc).o \
+  $(FluxFunc).o \
+  $(SourceTermFunc).o \
+  $(SetWaveSpd).o \
+  $(SetBndValues).o \
+  $(ProjectLeftEig).o \
+  $(ProjectRightEig).o \
+
+SOURCES_EXPECTED = \
+  main.cpp \
+  $(AuxFunc).cpp \
+  $(QinitFunc).cpp \
+  $(FluxFunc).cpp \
+  $(SourceTermFunc).cpp \
+  $(SetWaveSpd).cpp \
+  $(SetBndValues).cpp \
+  $(ProjectLeftEig).cpp \
+  $(ProjectRightEig).cpp \
+
+# default library files that applications are likely to override
+#
+# (either with local or alternative library object modules)
+#
+# (Please expand this list as needed rather than overriding
+# LIB2D_OBJECTS in application Makefiles so that we can add
+# new object modules to the library without breaking existing
+# application Makefiles. Of course we could just define variables
+# for all the object modules in the library, but by doing it this
+# way we keep track of which object modules are currently being
+# overridden by some application)
+#
+RunFinpack           = $(LIB2D)/RunFinpack
+Output               = $(LIB2D)/Output
+ConSoln              = $(LIB2D)/ConSoln
+AfterQinit           = $(LIB2D)/AfterQinit
+AfterStep            = $(LIB2D)/AfterStep
+BeforeStep           = $(LIB2D)/BeforeStep
+AfterUpdateSoln      = $(LIB2D)/AfterUpdateSoln
+ApplyLimiter         = $(LIB2D)/ApplyLimiter
+ApplyPosLimiter      = $(LIB2D)/ApplyPosLimiter
+ConstructL           = $(LIB2D)/ConstructL
+InitApp              = $(LIB2D)/InitApp
+BeforeFullTimeStep   = $(LIB2D)/BeforeFullTimeStep
+AfterFullTimeStep    = $(LIB2D)/AfterFullTimeStep
+DogSolveUser         = $(LIB2D)/DogSolveUser
+GridSetup            = $(LIB2D)/GridSetup
+SampleFunction       = $(LIB2D)/SampleFunction
+WenoReconstruct      = $(LIB2D)/WenoReconstruct
+
+# Routines needed for Lax-Wendroff (and multiderivative) time stepping:
+#DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
+#D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
+
+# TODO - these should be added in at a later time (-DS)
+#DogSolveLxW          = $(LIB2D)/DogSolveLxW
+#LaxWendroff          = $(LIB2D)/LaxWendroff/LaxWendroff
+#LaxWendroffTD        = $(LIB2D)/LaxWendroff/LaxWendroffTD
+#RiemannSolveLxW      = $(LIB2D)/LaxWendroff/RiemannSolveLxW_LLF
+
+LIB2D_OBJECTS = \
+  $(TOPLIB_OBJECTS) \
+  $(LIB2D)/main_global.o \
+  $(RunFinpack).o \
+  $(LIB2D)/DogParamsCart2.o \
+# $(GridSetup).o \
+# $(SampleFunction).o \
+# $(WenoReconstruct).o \
+# $(Output).o \
+# $(ConSoln).o \
+# $(LIB2D)/FinSolveRK.o \
+# $(DogSolveUser).o \
+# $(LIB2D)/CopyQ.o \
+# $(AfterQinit).o \
+# $(BeforeStep).o \
+# $(AfterStep).o \
+# $(BeforeFullTimeStep).o \
+# $(AfterFullTimeStep).o \
+# $(InitApp).o \
+# $(AfterUpdateSoln).o \
+# $(ApplyLimiter).o \
+# $(ApplyPosLimiter).o \
+# $(LIB2D)/ConvertQtoW.o \
+# $(LIB2D)/ConvertWtoQ.o \
+# $(ConstructL).o \
+# $(LIB2D)/UpdateSoln.o \
+# $(LIB2D)/ResInt.o \
+# $(LIB2D)/GetCFL.o \
+# $(RiemannSolve).o \
+# $(LIB2D)/SetRKinfo.o \
+
+LIB2D_SOURCES = \
+  $(LIB2D)/*.h \
+  $(TOPLIB_SOURCES) \
+  $(LIB2D)/main_global.cpp \
+  $(RunFinpack).cpp \
+  $(LIB2D)/DogParamsCart2.cpp \
+# $(GridSetup).cpp \
+# $(SampleFunction).cpp \
+# $(WenoReconstruct).cpp \
+# $(Output).cpp \
+# $(ConSoln).cpp \
+# $(LIB2D)/FinSolveRK.cpp \
+# $(DogSolveUser).cpp \
+# $(LIB2D)/CopyQ.cpp \
+# $(AfterQinit).cpp \
+# $(BeforeStep).cpp \
+# $(AfterStep).cpp \
+# $(BeforeFullTimeStep).cpp \
+# $(AfterFullTimeStep).cpp \
+# $(InitApp).cpp \
+# $(AfterUpdateSoln).cpp \
+# $(ApplyLimiter).cpp \
+# $(ApplyPosLimiter).cpp \
+# $(LIB2D)/ConvertQtoW.cpp \
+# $(LIB2D)/ConvertWtoQ.cpp \
+# $(ConstructL).cpp \
+# $(LIB2D)/UpdateSoln.cpp \
+# $(LIB2D)/ResInt.cpp \
+# $(LIB2D)/GetCFL.cpp \
+# $(RiemannSolve).cpp \
+# $(LIB2D)/SetRKinfo.cpp \
+
