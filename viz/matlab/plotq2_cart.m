@@ -33,7 +33,7 @@
 % Note: Be careful about redefining variables that are used in plotdog2.m.
 % For example, q is used as a counter, so do not set something like "q = 5;"
 %
-% See also: PLOTQ2_UNST and PLOTDOG2.
+% See also: PLOTDOG2.
 
 figure(1);
 clf;

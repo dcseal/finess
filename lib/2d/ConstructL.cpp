@@ -226,8 +226,8 @@ assert_eq( mbc, 3 );
     // ---------------------------------------------------------
     nvec.set(1, 0.0 );  nvec.set(2, 1.0 );
 #pragma omp parallel for
-    for (int i = 1; i<= mx; i++)
-    for (int j = 1; j<= my+1;   j++)
+    for (int i = 1; i<= mx;   i++)
+    for (int j = 1; j<= my+1; j++)
     {
 
         // --------------------------------------------------------------------
@@ -387,7 +387,7 @@ assert_eq( mbc, 3 );
             for (int m=1; m<=meqn; m++)
             {
                 double tmp = -(F.get(i+1,j,m) - F.get(i,j,m) )/dx;
-                tmp       -=  (G.get(i,j+1,m) - G.get(i,j,m) )/dy;
+                tmp =  tmp   -(G.get(i,j+1,m) - G.get(i,j,m) )/dy;
                 Lstar.set(i,j, m, Lstar.get(i,j,m) + tmp );
             }
         }
@@ -401,7 +401,7 @@ assert_eq( mbc, 3 );
             for (int m=1; m<=meqn; m++)
             {
                 double tmp = -(F.get(i+1,j,m) - F.get(i,j,m) )/dx;
-                tmp       -=  (G.get(i,j+1,m) - G.get(i,j,m) )/dy;
+                tmp = tmp    -(G.get(i,j+1,m) - G.get(i,j,m) )/dy;
                 Lstar.set(i,j, m, tmp );
             }
         }

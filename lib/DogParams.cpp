@@ -756,7 +756,8 @@ void DogParams::write_qhelp(const char* filename)
     fprintf(file,"%16d : meqn\n", meqn);
     fprintf(file,"%16d : maux\n", get_maux());
     fprintf(file,"%16d : nout\n", nout);
-    fprintf(file,"%16d : space_order\n", get_space_order());
+    fprintf(file,"%16d : space_order\n", 1 );  // TODO!!!
+//  fprintf(file,"%16d : space_order\n", get_space_order());
     fprintf(file,"%16d : datafmt\n", get_datafmt());
     fclose(file);
 }

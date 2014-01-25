@@ -17,11 +17,10 @@ void Output(
         string outputdir)
 {
 
-    // TODO - these calls can be replaced with calls to dogParamsCart2
-    const int mx      = q.getsize(1);
-    const int my      = q.getsize(2);
-    const int meqn    = q.getsize(3);
-    const int maux    = aux.getsize(2);
+    const int meqn    = dogParams.get_meqn();
+    const int maux    = dogParams.get_maux();
+    const int mx      = dogParamsCart2.get_mx();
+    const int my      = dogParamsCart2.get_my();
 
     // Open file -- q
     ostringstream fname1;

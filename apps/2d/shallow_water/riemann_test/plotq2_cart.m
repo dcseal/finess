@@ -25,17 +25,13 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TODO - we need to add back in the bottom topography, which is saved in the
-% aux arrays.
-
 OPT = 1;   % if OPT==1, shock aligned in x-direction
            % if OPT==2, shock aligned in y-direction
 
 figure(1);
 clf;
 if (m==1)
-  %pcolor(xl,yl,qaug(:,:,m)+aux_aug(:,:,1));  % TODO
-  pcolor(xl,yl,qaug(:,:,m));
+  pcolor(xl,yl,qaug(:,:,m)+aux_aug(:,:,1));
 else
   pcolor(xl,yl,qaug(:,:,m));
 end
@@ -57,11 +53,9 @@ set(t1,'fontsize',16);
 figure(2);
 clf;
 if (OPT==1)
-% pz=plot(reshape(xc,mx*my,1),reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
-  pz=plot(reshape(xc,mx*my,1),reshape(qsoln(:,:,1)           ,mx*my,1),'bo');
+  pz=plot(reshape(xc,mx*my,1),reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
 else
-% pz=plot(reshape(yc,mx*my,1),reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
-  pz=plot(reshape(yc,mx*my,1),reshape(qsoln(:,:,1)           ,mx*my,1),'bo');
+  pz=plot(reshape(yc,mx*my,1),reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
 end
 set(pz,'linewidth',2);
 set(pz,'markersize',8);
