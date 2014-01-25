@@ -58,12 +58,12 @@ void Output(const dTensor2& node,
     aux_file.close();
 
     // Output additional information if needed - TODO reintroduce this call
-    void Output_Extra(const dTensor2& node, 
-            const dTensorBC2& aux,
-            const dTensorBC2& q,
-            double t,
-            int nframe,
-            string outputdir);
-    Output_Extra(node,aux,q,t,nframe,outputdir);
+//  void Output_Extra(const dTensor2& node, 
+//          const dTensorBC2& aux,
+//          const dTensorBC2& q,
+//          double t,
+//          int nframe,
+//          string outputdir);
+//  Output_Extra(node,aux,q,t,nframe,outputdir);
 
 }

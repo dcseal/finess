@@ -6,24 +6,27 @@
 #include <iomanip>
 #include "dogdefs.h"
 #include "DogParams.h"
+#include "DogParamsCart2.h"
 
 using namespace std;
 
 void ConSoln( const dTensor2& node, 
-    const dTensorBC2& aux,
-    const dTensorBC2& q, 
+    const dTensorBC3& aux,
+    const dTensorBC3& q, 
     double t, string outputdir)
 {
 
-    const int melems = q.getsize(1);
-    const int   meqn = q.getsize(2);
-    const int   maux = aux.getsize(2);
+    const int     mx = dogParamsCart2.get_mx();
+    const int     my = dogParamsCart2.get_my();
+    const int   meqn = dogParams.get_meqn();
+    const int   maux = dogParams.get_maux();
+
     string fname1 = outputdir+"/conservation.dat";
     ofstream write_file1,write_file2;
     dTensor1 qsum(meqn);
     dTensor1 res_sum(meqn);
 
-    if (t==0) 
+    if( t==0 ) 
     {
         write_file1.open(fname1.c_str(), ofstream::out);
     }
@@ -39,16 +42,18 @@ void ConSoln( const dTensor2& node,
     {
         for (int m=1; m<=meqn; m++)
         {
-            qsum.set(m,0.0);
+//          qsum.set(m,0.0);
 
-            for (int i=1; i<=melems; i++)
-            {
-                double x = node.get(i,1);
-                double dtmp = node.get(i+1,1)-node.get(i,1);
-                double qtmp = q.get(i, m);
+//          for (int i=1; i<=mx; i++)
+//          for (int j=1; j<=my; j++)
+//          {
+//              double x = node.get(i,j,1);
+//              double dtmp = node.get(i+1,1)-node.get(i,1);
+//              double qtmp = q.get(i, m);
 
-                qsum.set(m, (qsum.get(m) + dtmp*qtmp) );
-            }
+// TODO
+                qsum.set(m, 0.0 );
+//          }
         }
     }
     else // with capacity function
@@ -57,15 +62,19 @@ void ConSoln( const dTensor2& node,
         {
             qsum.set(m, 0.0);
 
-            for (int i=1; i<=melems; i++)
-            {
-                double x = node.get(i,1);
-                double dtmp = node.get(i+1,1)-node.get(i,1);
-                double qtmp = q.get(i,m);
-                double atmp = aux.get(i, dogParams.get_mcapa() );
+//          for (int i=1; i<=mx; i++)
+//          for (int j=1; j<=my; j++)
+//          {
+//              double x = node.get(i,j,1);
+//              double y = node.get(i,j,2);
+//              double dtmp = node.get(i+1,1)-node.get(i,1);
 
-                qsum.set(m, (qsum.get(m) + atmp*dtmp*qtmp) );
-            }
+//              double qtmp = q.get(i,j,m);
+//              double atmp = aux.get(i,j, dogParams.get_mcapa() );
+
+//              qsum.set(m, (qsum.get(m) + atmp*dtmp*qtmp) );
+// TODO
+//          }
         }
     }
 

@@ -3,15 +3,16 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
 #include "RKinfo.h"
 #include "FinSolveRK.h"
+#include "DogParams.h"
+#include "DogParamsCart2.h"
 
 using namespace std;
 
 void FinSolveRK(
-    const dTensor2& node, const dTensor1& prim_vol, 
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
+    const dTensor2& node, const dTensor2& prim_vol, 
+    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
     dTensorBC1& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[], string outputdir)
@@ -32,13 +33,13 @@ void FinSolveRK(
 
     const double xlow = dogParamsCart2.get_xlow();
     const double ylow = dogParamsCart2.get_ylow();
+    const int     mbc = dogParamsCart2.get_mbc();
 
-    const int mx = dogParamsCart2.get_mx();
-    const int my = dogParamsCart2.get_my();
+    const int mx   = dogParamsCart2.get_mx();
+    const int my   = dogParamsCart2.get_my();
 
     const int meqn   = dogParams.get_meqn();
     const int maux   = dogParams.get_maux();
-    const int mbc    = dogParams.get_mbc();
 
     // Allocate storage for this solver
     dTensorBC3   qstar(mx, my, meqn, mbc);
@@ -50,8 +51,8 @@ void FinSolveRK(
 
     // Set initialize qstar and auxstar values
     // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    CopyQ(qold, qstar   );
-    CopyQ( aux, auxstar );
+    qold.copyfrom( qstar   );
+    aux.copyfrom(  auxstar );
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -76,7 +77,7 @@ void FinSolveRK(
         }        
 
         // copy qnew into qold
-        CopyQ(qnew, qold);
+        qnew.copyfrom( qold );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
@@ -89,81 +90,81 @@ void FinSolveRK(
             t = told + dt;
 
             // Set initial maximum wave speed to zero
-            smax.setall(0.);
+//          smax.setall(0.);
 
             // do any extra work
-            BeforeFullTimeStep(dt, node, prim_vol, auxstar, aux, qold, qnew);
+//          BeforeFullTimeStep(dt, node, prim_vol, auxstar, aux, qold, qnew);
 
             // Take a full time step of size dt
-            switch( time_order )
-            {
-                case 1:  // First order in time
+//          switch( time_order )
+//          {
+//              case 1:  // First order in time
 
-                    // --------------------------------------------------------
-                    // Stage #1 (the only one in this case)
-                    rk.mstage = 1;
-                    BeforeStep(dt,node,aux,qnew);
-                    ConstructL(node, aux, qnew, Lstar, smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qnew);
-                    AfterStep(dt,node,aux,qnew);
-                    // --------------------------------------------------------
+//                  // --------------------------------------------------------
+//                  // Stage #1 (the only one in this case)
+//                  rk.mstage = 1;
+//                  BeforeStep(dt,node,aux,qnew);
+//                  ConstructL(node, aux, qnew, Lstar, smax);
+//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+//                          rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qnew);
+//                  AfterStep(dt,node,aux,qnew);
+//                  // --------------------------------------------------------
 
-                    break;
+//                  break;
 
-                case 2:  // Second order in time
+//              case 2:  // Second order in time
 
-                    // ---------------------------------------------------------
-                    // Stage #1
-                    rk.mstage = 1;
-                    BeforeStep(dt,node,aux,qnew);
-                    ConstructL(node,aux,qnew,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);      
-                    AfterStep(dt,node,auxstar,qstar);
-                    // ---------------------------------------------------------
-                    // Stage #2
-                    rk.mstage = 2;
-                    BeforeStep(dt,node,auxstar,qstar);
-                    ConstructL(node,aux,qstar,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,node,auxstar,qstar,Lstar,qnew);
-                    AfterStep(dt,node,aux,qnew); 
-                    // ---------------------------------------------------------
+//                  // ---------------------------------------------------------
+//                  // Stage #1
+//                  rk.mstage = 1;
+//                  BeforeStep(dt,node,aux,qnew);
+//                  ConstructL(node,aux,qnew,Lstar,smax);
+//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+//                          rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);      
+//                  AfterStep(dt,node,auxstar,qstar);
+//                  // ---------------------------------------------------------
+//                  // Stage #2
+//                  rk.mstage = 2;
+//                  BeforeStep(dt,node,auxstar,qstar);
+//                  ConstructL(node,aux,qstar,Lstar,smax);
+//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+//                          rk.beta->get(rk.mstage),dt,node,auxstar,qstar,Lstar,qnew);
+//                  AfterStep(dt,node,aux,qnew); 
+//                  // ---------------------------------------------------------
 
-                    break;
+//                  break;
 
-                case 3:  // Third order in time  (low-storage SSP method)
+//              case 3:  // Third order in time  (low-storage SSP method)
 
-                    // ---------------------------------------------------------
-                    // Stage #1
-                    rk.mstage = 1;
-                    BeforeStep(dt,node,aux,qnew);    
-                    ConstructL(node,aux,qnew,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);
-                    AfterStep(dt,node,auxstar,qstar);
+//                  // ---------------------------------------------------------
+//                  // Stage #1
+//                  rk.mstage = 1;
+//                  BeforeStep(dt,node,aux,qnew);    
+//                  ConstructL(node,aux,qnew,Lstar,smax);
+//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+//                          rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);
+//                  AfterStep(dt,node,auxstar,qstar);
 
-                    // ---------------------------------------------------------
-                    // Stage #2
-                    rk.mstage = 2;
-                    BeforeStep(dt,node,auxstar,qstar);
-                    ConstructL(node,aux,qstar,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);
-                    AfterStep(dt,node,auxstar,qstar);
+//                  // ---------------------------------------------------------
+//                  // Stage #2
+//                  rk.mstage = 2;
+//                  BeforeStep(dt,node,auxstar,qstar);
+//                  ConstructL(node,aux,qstar,Lstar,smax);
+//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+//                          rk.beta->get(rk.mstage),dt,node,aux,qnew,Lstar,qstar);
+//                  AfterStep(dt,node,auxstar,qstar);
 
-                    // ---------------------------------------------------------
-                    // Stage #3
-                    rk.mstage = 3;
-                    BeforeStep(dt,node,auxstar,qstar);
-                    ConstructL(node,auxstar,qstar,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,node,auxstar,qstar,Lstar,qnew);   
-                    AfterStep(dt,node,aux,qnew);
-                    // ---------------------------------------------------------
+//                  // ---------------------------------------------------------
+//                  // Stage #3
+//                  rk.mstage = 3;
+//                  BeforeStep(dt,node,auxstar,qstar);
+//                  ConstructL(node,auxstar,qstar,Lstar,smax);
+//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+//                          rk.beta->get(rk.mstage),dt,node,auxstar,qstar,Lstar,qnew);   
+//                  AfterStep(dt,node,aux,qnew);
+//                  // ---------------------------------------------------------
 
-                    break;
+//                  break;
 
 //              case 4:  // Fourth order in time (10-stages)
 
@@ -253,20 +254,20 @@ void FinSolveRK(
 //                      AfterStep(dt,node,aux,q1);
 //                  }
 
-                    CopyQ(q1, qnew);
-                    // -----------------------------------------------          
-                    break;
+//                  CopyQ(q1, qnew);
+//                  // -----------------------------------------------          
+//                  break;
 
-                default:
+//              default:
 
-                    printf("WARNING: torder = %d has not been implemented\n", time_order );
+//                  printf("WARNING: torder = %d has not been implemented\n", time_order );
 
-                    break;
+//                  break;
 
-            }  // End of switch statement over time-order
+//          }  // End of switch statement over time-order
 
             // do any extra work (TODO - add this in later)
-            AfterFullTimeStep(dt, node, prim_vol, auxstar, aux, qold, qnew);
+//          AfterFullTimeStep(dt, node, prim_vol, auxstar, aux, qold, qnew);
 
             // compute cfl number
             cfl = GetCFL(dt, dtv[2], prim_vol, aux, smax);
@@ -307,7 +308,7 @@ void FinSolveRK(
                 }
 
                 // copy qold into qnew
-                CopyQ(qold,qnew);
+                qold.copyfrom( qnew );
             }
 
         } // End of m_accept loop

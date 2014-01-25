@@ -111,10 +111,12 @@ LIB2D_OBJECTS = \
   $(LIB2D)/DogParamsCart2.o \
   $(GridSetup).o \
   $(SampleFunction).o \
-# $(WenoReconstruct).o \
-# $(Output).o \
-# $(ConSoln).o \
-# $(LIB2D)/FinSolveRK.o \
+  $(WenoReconstruct).o \
+  $(Output).o \
+  $(ConSoln).o \
+  $(LIB2D)/FinSolveRK.o \
+  $(LIB2D)/SetRKinfo.o \
+  $(LIB2D)/GetCFL.o \
 # $(DogSolveUser).o \
 # $(LIB2D)/CopyQ.o \
 # $(AfterQinit).o \
@@ -131,9 +133,7 @@ LIB2D_OBJECTS = \
 # $(ConstructL).o \
 # $(LIB2D)/UpdateSoln.o \
 # $(LIB2D)/ResInt.o \
-# $(LIB2D)/GetCFL.o \
 # $(RiemannSolve).o \
-# $(LIB2D)/SetRKinfo.o \
 
 LIB2D_SOURCES = \
   $(LIB2D)/*.h \
@@ -143,10 +143,12 @@ LIB2D_SOURCES = \
   $(LIB2D)/DogParamsCart2.cpp \
   $(GridSetup).cpp \
   $(SampleFunction).cpp \
-# $(WenoReconstruct).cpp \
-# $(Output).cpp \
-# $(ConSoln).cpp \
-# $(LIB2D)/FinSolveRK.cpp \
+  $(WenoReconstruct).cpp \
+  $(Output).cpp \
+  $(ConSoln).cpp \
+  $(LIB2D)/FinSolveRK.cpp \
+  $(LIB2D)/SetRKinfo.cpp \
+  $(LIB2D)/GetCFL.cpp \
 # $(DogSolveUser).cpp \
 # $(LIB2D)/CopyQ.cpp \
 # $(AfterQinit).cpp \
@@ -163,7 +165,5 @@ LIB2D_SOURCES = \
 # $(ConstructL).cpp \
 # $(LIB2D)/UpdateSoln.cpp \
 # $(LIB2D)/ResInt.cpp \
-# $(LIB2D)/GetCFL.cpp \
 # $(RiemannSolve).cpp \
-# $(LIB2D)/SetRKinfo.cpp \
 

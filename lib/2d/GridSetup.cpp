@@ -1,22 +1,27 @@
 #include "DogParamsCart2.h"
 #include "tensors.h"
 
-void GridSetup( dTensor2& node, dTensor1& prim_vol)
+void GridSetup( dTensor3& node, dTensor2& prim_vol)
 {
+
     const double xlow = dogParamsCart2.get_xlow();
     const double dx   = dogParamsCart2.get_dx();
 
-    const int mnodes = node.getsize(1);
-    const int melems = prim_vol.getsize();
+    const double ylow = dogParamsCart2.get_ylow();
+    const double dy   = dogParamsCart2.get_dy();
 
-    // Set variable "node"
-#pragma omp parallel for
-    for (int i=1; i<=mnodes; i++)
-    {  node.set(i,1, xlow+(double(i)-1.0e0)*dx );  }
+// TODO - ??? - mnodes = mx*my, or mnodes = (mx,my) ???
+//  const int        = node.getsize(1);
+//  const int melems = prim_vol.getsize();
 
-    // Set grid cell volumes
-#pragma omp parallel for
-    for (int j=1; j<=melems; j++)
-    {  prim_vol.set(j, dx);  }
+//      // Set variable "node"
+//  #pragma omp parallel for
+//      for (int i=1; i<=mnodes; i++)
+//      {  node.set(i,1, xlow+(double(i)-1.0e0)*dx );  }
+
+//      // Set grid cell volumes
+//  #pragma omp parallel for
+//      for (int j=1; j<=melems; j++)
+//      {  prim_vol.set(j, dx);  }
 
 }

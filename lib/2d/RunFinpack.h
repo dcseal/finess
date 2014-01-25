@@ -5,7 +5,7 @@ using namespace std;
 
 // ------------------------------------------------------------
 // Functions use in RunDogpack.cpp
-void GridSetup( dTensor2& node, dTensor1& prim_vol);
+void GridSetup( dTensor3& node, dTensor2& prim_vol);
 
 void Output(const dTensor2& node, const dTensorBC2& aux, const dTensorBC2& q,
         double t, int nframe, string outputdir);

@@ -7,8 +7,8 @@
 using namespace std;
 
 double GetCFL(double dt, double dtmax,
-        const dTensor1& prim_vol,
-        const dTensorBC2& aux,
+        const dTensor2& prim_vol,
+        const dTensorBC3& aux,
         const dTensorBC1& smax)
 {
 
@@ -27,9 +27,10 @@ double GetCFL(double dt, double dtmax,
 
 // This can't be done in parallel!!!  (-DS)
 //#pragma omp parallel for
-    for (int j=1; j<=mx; j++)
+    for (int i=1; i<=mx; i++)
+    for (int j=1; j<=my; j++)
     {
-        cfl = Max( dt*smax.get(j) / prim_vol.get(j), cfl);  
+        cfl = Max( dt*smax.get(j) / prim_vol.get(i,j), cfl);  
     }
 
     if( cfl > 1.0e8 )
