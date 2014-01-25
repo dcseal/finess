@@ -36,8 +36,8 @@ void Output(
     // here, but then the plotting routines will have to change as well.  It
     // is faster to index the arrays in odometer order. (-DS).
     for (int m=1; m<=meqn; m++)
-    for (int i=1; i<=mx; i++)      
     for (int j=1; j<=my; j++)      
+    for (int i=1; i<=mx; i++)      
     {
         q_file << setw(24) << scientific << q.get(i,j,m) << endl;
     }
@@ -54,8 +54,8 @@ void Output(
 
     // Output aux array
     for (int m=1; m<=maux; m++)
-    for (int i=1; i<=mx; i++)      
     for (int j=1; j<=my; j++)      
+    for (int i=1; i<=mx; i++)      
     {
         aux_file << setw(24) << scientific << aux.get(i,j,m) << endl;
     }

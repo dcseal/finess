@@ -8,23 +8,21 @@
 void FluxFunc(const dTensor2& xpts, const dTensor2& Q, 
         const dTensor2& Aux, dTensor3& flux)
 {
-    int i;
-    int numpts=xpts.getsize(1);
-    double x,y,qc,u,v;
 
-    for (i=1; i<=numpts; i++)
+    const int numpts=xpts.getsize(1);
+    for(int i=1; i<=numpts; i++)
     {
-        x = xpts.get(i,1);
-        y = xpts.get(i,2);
+        double x = xpts.get(i,1);
+        double y = xpts.get(i,2);
 
         // Variables
-        qc = Q.get(i,1);
-        u  = Aux.get(i,1);
-        v  = Aux.get(i,2);
+        double qc = Q.get(i,1);
+        double u  = Aux.get(i,1);
+        double v  = Aux.get(i,2);
 
         // Flux function
-        flux.set(i,1,1, u*qc );
-        flux.set(i,1,2, v*qc );
+        flux.set(i, 1, 1, u*qc );
+        flux.set(i, 1, 2, v*qc );
     }
 
 }

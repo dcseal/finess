@@ -50,8 +50,8 @@ void FinSolveRK(
 
     // Set initialize qstar and auxstar values
     // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    qold.copyfrom( qstar   );
-    aux.copyfrom(  auxstar );
+    qstar.copyfrom( qold   );
+    auxstar.copyfrom( aux  );
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -76,7 +76,7 @@ void FinSolveRK(
         }        
 
         // copy qnew into qold
-        qnew.copyfrom( qold );
+        qold.copyfrom( qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
@@ -111,120 +111,111 @@ void FinSolveRK(
 
                     break;
 
-//              case 2:  // Second order in time
+                case 2:  // Second order in time
 
-//                  // ---------------------------------------------------------
-//                  // Stage #1
-//                  rk.mstage = 1;
-//                  BeforeStep(dt,aux,qnew);
-//                  ConstructL(aux,qnew,Lstar,smax);
-//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);      
-//                  AfterStep(dt,auxstar,qstar);
-//                  // ---------------------------------------------------------
-//                  // Stage #2
-//                  rk.mstage = 2;
-//                  BeforeStep(dt,auxstar,qstar);
-//                  ConstructL(aux,qstar,Lstar,smax);
-//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);
-//                  AfterStep(dt,aux,qnew); 
-//                  // ---------------------------------------------------------
+                    // ---------------------------------------------------------
+                    // Stage #1
+                    rk.mstage = 1;
+                    BeforeStep(dt,aux,qnew);
+                    ConstructL(aux,qnew,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);      
+                    AfterStep(dt,auxstar,qstar);
+                    // ---------------------------------------------------------
+                    // Stage #2
+                    rk.mstage = 2;
+                    BeforeStep(dt,auxstar,qstar);
+                    ConstructL(aux,qstar,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                            rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);
+                    AfterStep(dt,aux,qnew); 
+                    // ---------------------------------------------------------
 
-//                  break;
+                    break;
 
-//              case 3:  // Third order in time  (low-storage SSP method)
+                case 3:  // Third order in time  (low-storage SSP method)
 
-//                  // ---------------------------------------------------------
-//                  // Stage #1
-//                  rk.mstage = 1;
-//                  BeforeStep(dt,aux,qnew);    
-//                  ConstructL(aux,qnew,Lstar,smax);
-//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
-//                  AfterStep(dt,auxstar,qstar);
+                    // ---------------------------------------------------------
+                    // Stage #1
+                    rk.mstage = 1;
+                    BeforeStep(dt,aux,qnew);    
+                    ConstructL(aux,qnew,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
+                    AfterStep(dt,auxstar,qstar);
 
-//                  // ---------------------------------------------------------
-//                  // Stage #2
-//                  rk.mstage = 2;
-//                  BeforeStep(dt,auxstar,qstar);
-//                  ConstructL(aux,qstar,Lstar,smax);
-//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
-//                  AfterStep(dt,auxstar,qstar);
+                    // ---------------------------------------------------------
+                    // Stage #2
+                    rk.mstage = 2;
+                    BeforeStep(dt,auxstar,qstar);
+                    ConstructL(aux,qstar,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
+                    AfterStep(dt,auxstar,qstar);
 
-//                  // ---------------------------------------------------------
-//                  // Stage #3
-//                  rk.mstage = 3;
-//                  BeforeStep(dt,auxstar,qstar);
-//                  ConstructL(auxstar,qstar,Lstar,smax);
-//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);   
-//                  AfterStep(dt,aux,qnew);
-//                  // ---------------------------------------------------------
+                    // ---------------------------------------------------------
+                    // Stage #3
+                    rk.mstage = 3;
+                    BeforeStep(dt,auxstar,qstar);
+                    ConstructL(auxstar,qstar,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                            rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);   
+                    AfterStep(dt,aux,qnew);
+                    // ---------------------------------------------------------
 
-//                  break;
+                    break;
 
-//              case 4:  // Fourth order in time (10-stages)
+                case 4:  // Fourth order in time (10-stages)
 
-//                  // -----------------------------------------------
-//                  CopyQ(qnew,q1);
-//                  CopyQ(q1,q2);
+                    // -----------------------------------------------
+                    q1.copyfrom( qnew );
+                    q2.copyfrom(   q1 );
 
-//                  // Stage: 1,2,3,4, and 5
-//                  for (int s=1; s<=5; s++)
-//                  {
-//                      rk.mstage = s;
-//                      BeforeStep(dt,aux,q1);
-//                      ConstructL(aux,q1,Lstar,smax);
-//                      if (s==1)
-//                      {  CopyQ(Lstar,Lold);  }
-//                      UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                              rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
-//                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(aux,q1,
-//                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,aux,q1);
-//                  }
+                    // Stage: 1,2,3,4, and 5
+                    for (int s=1; s<=5; s++)
+                    {
+                        rk.mstage = s;
+                        BeforeStep(dt,aux,q1);
+                        ConstructL(aux,q1,Lstar,smax);
+                        if (s==1)
+                        {  Lold.copyfrom( Lstar ); }
+                        UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                                rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
+                        AfterStep(dt,aux,q1);
+                    }
 
-//                  // Temporary storage
-//                  for (int i=(2-mbc); i<=(mx+mbc-1); i++)
-//                      for (int m=1; m<=meqn; m++)
-//                          for (int k=1; k<=method[1]; k++)
-//                          {
-//                              double tmp = (q2.get(i,m,k) + 9.0*q1.get(i,m,k))/25.0;
-//                              q2.set(i,m,k, tmp );
-//                              q1.set(i,m,k, 15.0*tmp - 5.0*q1.get(i,m,k) );
-//                          }
+                    // Temporary storage
+                    for (int i=(1-mbc); i<=(mx+mbc); i++)
+                    for (int j=(1-mbc); i<=(my+mbc); j++)
+                    for (int m=1; m<=meqn; m++)
+                    {
+                        double tmp = (q2.get(i,j,m) + 9.0*q1.get(i,j,m))/25.0;
+                        q2.set(i,j,m, tmp );
+                        q1.set(i,j,m, 15.0*tmp - 5.0*q1.get(i,j,m) );
+                    }
 
-//                  // Stage: 6,7,8, and 9
-//                  for (int s=6; s<=9; s++)
-//                  {
-//                      rk.mstage = s;
-//                      BeforeStep(dt,aux,q1);
-//                      ConstructL(method,aux,q1,Lstar,smax);
-//                      UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                              rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
-//                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(aux,q1,
-//                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,aux,q1);
-//                  }
+                    // Stage: 6,7,8, and 9
+                    for (int s=6; s<=9; s++)
+                    {
+                        rk.mstage = s;
+                        BeforeStep(dt,aux,q1);
+                        ConstructL(aux,q1,Lstar,smax);
+                        UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                                rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
+                        AfterStep(dt,aux,q1);
+                    }
 
-//                  // Stage: 10
-//                  rk.mstage = 10;
-//                  BeforeStep(dt,aux,q1);
-//                  ConstructL(method,aux,q1,Lstar,smax);
-//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,aux,q2,Lstar,q1);
-//                  if (dogParams.using_moment_limiter())
-//                  {  ApplyLimiter(aux,q1,
-//                          &ProjectRightEig,&ProjectLeftEig);  }
-//                  AfterStep(dt,aux,q1);
+                    // Stage: 10
+                    rk.mstage = 10;
+                    BeforeStep(dt,aux,q1);
+                    ConstructL(aux,q1,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                            rk.beta->get(rk.mstage),dt,aux,q2,Lstar,q1);
+                    AfterStep(dt,aux,q1);
 
-//                  CopyQ(q1,qnew);
-//                  // -----------------------------------------------          
-//                  break;
+                    qnew.copyfrom( q1 );
+                    // -----------------------------------------------          
+                    break;
 
 //              case 5:  // Fifth order in time (8-stages)
 
@@ -236,7 +227,7 @@ void FinSolveRK(
 //                  {
 //                      rk.mstage = s;
 //                      BeforeStep(dt,aux,q1);
-//                      ConstructL(method,aux,q1,Lstar,smax);
+//                      ConstructL(aux,q1,Lstar,smax);
 //                      if (s==1)
 //                      {  CopyQ(Lstar,Lold);  }
 

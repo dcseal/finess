@@ -16,27 +16,31 @@ void ConstructL(
         dTensorBC2& smax)
 {
 
-/*
     // Boundary conditions
     //
     // TODO - this should be moved before ConstructL is called (-DS)
-    void SetBndValues(const dTensor2&, dTensorBC2&, dTensorBC2&);
-    SetBndValues(node, aux, q);
+    void SetBndValues(dTensorBC3& aux, dTensorBC3& q);
+    SetBndValues( aux, q );
 
     // User supplied functions:
-    void FluxFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-    void ProjectLeftEig( const dTensor1& Aux_ave, const dTensor1& Q_ave, 
+    void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
+    void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
         const dTensor2& Qvals, dTensor2& Wvals);
-    void ProjectRightEig(const dTensor1& Aux_ave, const dTensor1& Q_ave, 
+    void ProjectRightEig(int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
                          const dTensor2& Wvals, dTensor2& Qvals);
-    void SetWaveSpd(const dTensor1& xedge, const dTensor1& Ql,
-            const dTensor1& Qr, const dTensor1& Auxl, const dTensor1& Auxr,
-            double& s1,double& s2);
-    void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-    void SampleFunction( int istart, int iend,
-        const dTensor2& node, const dTensorBC2& qin, 
-        const dTensorBC2& auxin,  dTensorBC2& Fout,
-        void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
+    void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge, 
+        const dTensor1& Ql,   const dTensor1& Qr, 
+        const dTensor1& Auxl, const dTensor1& Auxr,
+        double& s1,double& s2);
+    void SourceTermFunc(const dTensor2& xpts, const dTensor2& qvals, 
+                const dTensor2& auxvals, dTensor2& source);
+
+    void SampleFunction( 
+        int istart, int iend,
+        int jstart, int jend,
+        const dTensorBC3& qin, 
+        const dTensorBC3& auxin,  dTensorBC3& Fout,
+        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
 
     // Routine for WENO reconstrution
     void WenoReconstruct( const dTensor2& gin, dTensor2& diff_g );
@@ -46,10 +50,11 @@ void ConstructL(
     void ConvertTranspose( const dTensor2& qin, dTensor2& qout );
 
     // Parameters for the current grid
-    const int     mx = q.getsize(1);
-    const int   meqn = q.getsize(2);
-    const int   maux = aux.getsize(2);
-    const int    mbc = q.getmbc();
+    const int   meqn = dogParams.get_meqn();
+    const int   maux = dogParams.get_maux();
+    const int     mx = dogParamsCart2.get_mx();
+    const int     my = dogParamsCart2.get_my();
+    const int    mbc = dogParamsCart2.get_mbc();
 
 // TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
 // should equal mbc.  This should be added somewhere in the code. 
@@ -61,17 +66,23 @@ assert_eq( mbc, 3 );
     // The flux, f_{i-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
     // that vector than on the original grid.
-    dTensorBC2  fhat(mx+1, meqn, mbc );
+    dTensorBC3  fhat(mx+1, my,   meqn, mbc );
+    dTensorBC3  ghat(mx,   my+1, meqn, mbc );
 
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
     const double   xlow = dogParamsCart2.get_xlow();
     const double     dx = dogParamsCart2.get_dx();
+    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dy = dogParamsCart2.get_dy();
 
     // ---------------------------------------------------------
     // Compute fhat_{i-1/2}
     // ---------------------------------------------------------
+    dTensor1 nvec(2);
+    nvec.set(1, 1.0 );  nvec.set(2, 0.0 );
 #pragma omp parallel for
     for (int i= 1; i<= mx+1; i++)
+    for (int j= 1; j<= my;   j++)
     {
 
         // --------------------------------------------------------------------
@@ -81,13 +92,13 @@ assert_eq( mbc, 3 );
         dTensor1 Qavg(meqn);
         for( int m=1; m <= meqn; m++ )
         {
-            double tmp = 0.5*( q.get(i,m) + q.get(i-1,m) );
+            double tmp = 0.5*( q.get(i,j,m) + q.get(i-1,j,m) );
             Qavg.set(m, tmp );
         }
         dTensor1 Auxavg(iMax(maux, 1 ) );
         for( int ma=1; ma <= maux; ma++ )
         {
-            double tmp = 0.5*( aux.get(i,ma) + aux.get(i-1,ma) );
+            double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i-1,j,ma) );
             Auxavg.set(ma, tmp );
         }
 
@@ -98,7 +109,7 @@ assert_eq( mbc, 3 );
         // Sample q over the stencil:
         dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
         dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
-        dTensor1 xvals( ws+1 );
+        dTensor2 xvals( ws+1, 2 );
         for( int s=1; s <= ws+1; s++ )
         {
             // Index into the large array
@@ -106,15 +117,17 @@ assert_eq( mbc, 3 );
 
             // TODO - check that this is the correct value ...
             double xi = xlow + double( is )*dx - 0.5*dx;
-            xvals.set( s, xi );
+            double yi = ylow + double( j  )*dy - 0.5*dy;
+            xvals.set( s, 1, xi );
+            xvals.set( s, 2, yi );
 
             for( int m=1; m <= meqn; m++ )
             {
-                qvals.set( m, s, q.get(is, m ) );
+                qvals.set( m, s, q.get(is, j, m ) );
             }
             for( int ma=1; ma <= maux; ma++ )
             {
-                auxvals.set( ma, s, aux.get(is, ma ) );
+                auxvals.set( ma, s, aux.get(is, j, ma ) );
             }
         }
 
@@ -128,14 +141,23 @@ assert_eq( mbc, 3 );
         ConvertTranspose( auxvals, auxvals_t );
 
         // Sample f over the stencil:
-        dTensor2 fvals( meqn, ws+1 );  dTensor2 fvals_t( ws+1, meqn );
+        dTensor3 fvals_t( ws+1, meqn, 2 );
         FluxFunc( xvals, qvals_t, auxvals_t, fvals_t );
-        ConvertTranspose( fvals_t, fvals );
+
+        // Flux function in q_t + f_x + g_y = 0:
+        dTensor2 f( meqn, ws+1 ), g( meqn, ws+1 );
+        for( int me=1; me <= meqn; me++ )
+        for( int s=1; s <= ws+1; s++ )
+        {
+            f.set(me, s, fvals_t.get( s, me, 1 ) );
+            g.set(me, s, fvals_t.get( s, me, 2 ) );
+        }
+
 
         // Project entire stencil onto the characteristic variables:
         dTensor2 wvals( meqn, ws+1  ), gvals( meqn, ws+1 );
-        ProjectLeftEig( Auxavg, Qavg, qvals, wvals );
-        ProjectLeftEig( Auxavg, Qavg, fvals, gvals );
+        ProjectLeftEig( 1, Auxavg, Qavg, qvals, wvals );
+        ProjectLeftEig( 1, Auxavg, Qavg,     f, gvals );
 
         // --------------------------------------------------------------------
         // Part III: Apply Lax-Friedrich's flux splitting to g
@@ -149,20 +171,20 @@ assert_eq( mbc, 3 );
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         for( int m=1; m<= meqn; m++)
         {
-            Ql.set(m, q.get(i-1,m) );
-            Qr.set(m, q.get(i  ,m) );
+            Ql.set(m, q.get(i-1, j, m) );
+            Qr.set(m, q.get(i  , j, m) );
         }
 
         for( int m=1; m<= maux; m++)
         {
-            Auxl.set(m, aux.get(i-1,m) );
-            Auxr.set(m, aux.get(i  ,m) );
+            Auxl.set(m, aux.get(i-1, j, m) );
+            Auxr.set(m, aux.get(i  , j, m) );
         }
 
         double s1,s2;
-        SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
+        SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
         const double alpha = Max( abs(s1), abs(s2) );
-        smax.set( i, alpha  );
+        smax.set( i, j, alpha  );
         const double l_alpha = 1.1*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
@@ -174,7 +196,6 @@ assert_eq( mbc, 3 );
             gp.set( m, s, 0.5*(gvals.get(m,s)      + l_alpha*wvals.get(m,s) )      );
             gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - l_alpha*wvals.get(m,ws-s+2) ) );
         }
-
 
         // --------------------------------------------------------------------
         // Part IV: Perform a WENO reconstruction on the characteristic vars.
@@ -191,10 +212,10 @@ assert_eq( mbc, 3 );
         }
 
         dTensor2 fhat_loc( ghat );
-        ProjectRightEig(Auxavg, Qavg, ghat, fhat_loc);
+        ProjectRightEig(1, Auxavg, Qavg, ghat, fhat_loc);
         for( int m=1; m <= meqn; m++ )
         {
-            fhat.set(i, m, fhat_loc.get(m,1) );
+            fhat.set(i, j, m, fhat_loc.get(m,1) );
         }
 
     }
@@ -212,13 +233,14 @@ assert_eq( mbc, 3 );
     if( dogParams.get_source_term() )
     {
         // Compute the source term.
-        SampleFunction( 1-mbc, mx+mbc, node, q, aux, Lstar, &SourceTermFunc);
+        SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
 #pragma omp parallel for
         for (int i=1; i<=mx; i++)
+        for (int j=1; j<=my; j++)
         {
             for (int m=1; m<=meqn; m++)
             {
-                Lstar.set(i,m, Lstar.get(i,m) -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
+                Lstar.set(i,j, m, Lstar.get(i,j,m) -(fhat.get(i+1,j,m)-fhat.get(i,j,m))/dx );
             }
         }
     }
@@ -226,10 +248,11 @@ assert_eq( mbc, 3 );
     {
 #pragma omp parallel for
         for (int i=1; i<=mx; i++)
+        for (int j=1; j<=my; j++)
         {
             for (int m=1; m<=meqn; m++)
             {
-                Lstar.set(i,m, -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
+                Lstar.set(i,j, m, -(fhat.get(i+1,j,m)-fhat.get(i,j,m))/dx );
             }
         }
     }
@@ -238,7 +261,6 @@ assert_eq( mbc, 3 );
     // ---------------------------------------------------------
     // LstarExtra(node,aux,q,Lstar);
 
-*/
 }
 
 void ConvertTranspose( const dTensor2& qin, dTensor2& qout )

@@ -4,16 +4,20 @@
 // Qvals onto the left eigenvectors ofthe flux 
 // Jacobian; the result is stored in Wvals
 //
-void ProjectLeftEig(int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-		    const dTensor2& Qvals, dTensor2& Wvals)
+// For a scalar problem, there is nothing to do here.
+//
+void ProjectLeftEig(int ixy, 
+    const dTensor1& Aux_ave, const dTensor1& Q_ave, 
+    const dTensor2& Qvals,         dTensor2& Wvals)
 {    
-  int m,k;
-  int meqn = Qvals.getsize(1);
-  int kmax = Qvals.getsize(2);
-  
-  // Project onto left eigenvectors
-  for (k=1; k<=kmax; k++)
+
+    const int meqn = Qvals.getsize(1);  // assert_eq( meqn, 1 )
+    const int mpts = Qvals.getsize(2);
+
+    // Project onto left eigenvectors
+    for(int m=1; m<=mpts; m++)
     {
-      Wvals.set(1,k, Qvals.get(1,k) );
+        Wvals.set(1,m, Qvals.get(1,m) );
     }
+
 }

@@ -4,209 +4,191 @@
 //
 //      DOUBLE PERIODIC BOUNDARY CONDITIONS
 //
-void SetBndValues(dTensorBC4& q, dTensorBC4& aux)
+void SetBndValues(dTensorBC3& aux, dTensorBC3& q)
 {
-  int mx   = q.getsize(1);
-  int my   = q.getsize(2);
-  int meqn = q.getsize(3);
-  int kmax = q.getsize(4);
-  int mbc  = q.getmbc();
-  int maux = aux.getsize(3);
-  int i,j,k,ell,m;
-  double tmp;
-  
-  // -----------------------
-  // BOUNDARY CONDITION LOOP
-  // -----------------------
 
-  // ***********************************************
-  // LEFT BOUNDARY
-  // ***********************************************
-  for (i=0; i>=(1-mbc); i--)
+    const int mx   = q.getsize(1);
+    const int my   = q.getsize(2);
+    const int meqn = q.getsize(3);
+    const int mbc  = q.getmbc();
+    const int maux = aux.getsize(3);
+
+    // -----------------------
+    // BOUNDARY CONDITION LOOP
+    // -----------------------
+
+    // ***********************************************
+    // LEFT BOUNDARY
+    // ***********************************************
+    for(int i=0; i>=(1-mbc); i--)
     {
-      for (j=1; j<=my; j++)
-	{           
-	  // q values
-	  for (m=1; m<=meqn; m++)
-	    for (ell=1; ell<=kmax; ell++)
-	      {
-		tmp = q.get(i+mx,j,m,ell);
-		q.set(i,j,m,ell, tmp );
-	      }
-	  
-	  // aux values
-	  for (m=1; m<=maux; m++)
-	    for (ell=1; ell<=kmax; ell++)
-	      {
-		tmp = aux.get(i+mx,j,m,ell);
-		aux.set(i,j,m,ell, tmp );
-	      }
-	}
+        for(int j=1; j<=my; j++)
+        {           
+            // q values
+            for(int m=1; m<=meqn; m++)
+            {
+                double tmp = q.get(i+mx,j,m);
+                q.set(i,j,m, tmp );
+            }
+
+            // aux values
+            for(int m=1; m<=maux; m++)
+            {
+                double tmp = aux.get(i+mx,j,m);
+                aux.set(i,j,m, tmp );
+            }
+        }
     }
-  // ***********************************************
-  
-  
-  
-  // ***********************************************
-  // RIGHT BOUNDARY
-  // ***********************************************
-  for (i=(mx+1); i<=(mx+mbc); i++)
+    // ***********************************************
+
+
+
+    // ***********************************************
+    // RIGHT BOUNDARY
+    // ***********************************************
+    for(int i=(mx+1); i<=(mx+mbc); i++)
     {
-      for (j=1; j<=my; j++)
-	{           
-	  // q values
-	  for (m=1; m<=meqn; m++)
-	    for (ell=1; ell<=kmax; ell++)
-	      {
-		tmp = q.get(i-mx,j,m,ell);
-		q.set(i,j,m,ell, tmp );
-	      }
-	  
-	  // aux values
-	  for (m=1; m<=maux; m++)
-	    for (ell=1; ell<=kmax; ell++)
-	      {
-		tmp = aux.get(i-mx,j,m,ell);
-		aux.set(i,j,m,ell, tmp );
-	      }
-	}
+        for(int j=1; j<=my; j++)
+        {           
+            // q values
+            for(int m=1; m<=meqn; m++)
+                {
+                    double tmp = q.get(i-mx,j,m);
+                    q.set(i,j,m, tmp );
+                }
+
+            // aux values
+            for(int m=1; m<=maux; m++)
+                {
+                    double tmp = aux.get(i-mx,j,m);
+                    aux.set(i,j,m, tmp );
+                }
+        }
     }
-  // ***********************************************
-  
-  
-  
-  // ***********************************************
-  // BOTTOM BOUNDARY
-  // ***********************************************
-  for (j=0; j>=(1-mbc); j--)
+    // ***********************************************
+
+
+
+    // ***********************************************
+    // BOTTOM BOUNDARY
+    // ***********************************************
+    for(int j=0; j>=(1-mbc); j--)
     {
-      for (i=1; i<=mx; i++)
-	{           
-	  // q values
-	  for (m=1; m<=meqn; m++)
-	    for (ell=1; ell<=kmax; ell++)
-	      {
-		tmp = q.get(i,j+my,m,ell);
-		q.set(i,j,m,ell, tmp );
-	      }               
-	  
-	  // aux values
-	  for (m=1; m<=maux; m++)
-	    for (ell=1; ell<=kmax; ell++)
-	      {
-		tmp = aux.get(i,j+my,m,ell);
-		aux.set(i,j,m,ell, tmp );
-	      }
-	}
+        for(int i=1; i<=mx; i++)
+        {           
+            // q values
+            for(int m=1; m<=meqn; m++)
+                {
+                    double tmp = q.get(i,j+my,m);
+                    q.set(i,j,m, tmp );
+                }               
+
+            // aux values
+            for(int m=1; m<=maux; m++)
+                {
+                    double tmp = aux.get(i,j+my,m);
+                    aux.set(i,j,m, tmp );
+                }
+        }
     }
-  // ***********************************************
-  
-  
-  
-  // ***********************************************
-  // TOP BOUNDARY
-  // ***********************************************
-  for (j=(my+1); j<=(my+mbc); j++)
+    // ***********************************************
+
+
+
+    // ***********************************************
+    // TOP BOUNDARY
+    // ***********************************************
+    for(int j=(my+1); j<=(my+mbc); j++)
     {
-      for (i=1; i<=mx; i++)
-	{           
-	  // q values
-	  for (m=1; m<=meqn; m++)
-	    for (ell=1; ell<=kmax; ell++)
-	      {
-		tmp = q.get(i,j-my,m,ell);
-		q.set(i,j,m,ell, tmp );
-	      }
-	  
-	  // aux values
-	  for (m=1; m<=maux; m++)
-	    for (ell=1; ell<=kmax; ell++)
-	      {
-		tmp = aux.get(i,j-my,m,ell);
-		aux.set(i,j,m,ell, tmp );
-	      }
-	}
+        for(int i=1; i<=mx; i++)
+        {           
+            // q values
+            for(int m=1; m<=meqn; m++)
+                {
+                    double tmp = q.get(i,j-my,m);
+                    q.set(i,j,m, tmp );
+                }
+
+            // aux values
+            for(int m=1; m<=maux; m++)
+                {
+                    double tmp = aux.get(i,j-my,m);
+                    aux.set(i,j,m, tmp );
+                }
+        }
     }
-  // ***********************************************
-  
-  
-  // ***********************************************
-  // BOTTOM LEFT CORNER
-  // ***********************************************
-  for (i=1; i<=mbc; i++)
-    for (j=1; j<=mbc; j++)
-      {
-	for (m=1; m<=meqn; m++)
-	  for (ell=1; ell<=kmax; ell++)
-	    {     
-	      q.set(1-i,1-j,m,ell, q.get(mx+1-i,my+1-j,m,ell) );
-	    }
-	for (m=1; m<=maux; m++)
-	  for (ell=1; ell<=kmax; ell++)
-	    {     
-	      aux.set(1-i,1-j,m,ell, aux.get(mx+1-i,my+1-j,m,ell) );
-	    }
-      }
-  // ***********************************************
-  
-        
-  // ***********************************************
-  // BOTTOM RIGHT CORNER
-  // ***********************************************
-  for (i=1; i<=mbc; i++)
-    for (j=1; j<=mbc; j++)
-      {
-	for (m=1; m<=meqn; m++)
-	  for (ell=1; ell<=kmax; ell++)
-	    {     
-	      q.set(mx+i,1-j,m,ell, q.get(i,my+1-j,m,ell) );
-	    }
-	for (m=1; m<=maux; m++)
-	  for (ell=1; ell<=kmax; ell++)
-	    {     
-	      aux.set(mx+i,1-j,m,ell, aux.get(i,my+1-j,m,ell) );
-	    }
-      }
-  // ***********************************************
-  
-  
-  // ***********************************************
-  // TOP RIGHT CORNER
-  // ***********************************************
-  for (i=1; i<=mbc; i++)
-    for (j=1; j<=mbc; j++)
-      {
-	for (m=1; m<=meqn; m++)
-	  for (ell=1; ell<=kmax; ell++)
-	    {     
-	      q.set(mx+i,my+j,m,ell, q.get(i,j,m,ell) );
-	    }
-	for (m=1; m<=maux; m++)
-	  for (ell=1; ell<=kmax; ell++)
-	    {     
-	      aux.set(mx+i,my+j,m,ell, aux.get(i,j,m,ell) );
-	    }
-      }
-  // ***********************************************
-  
-  
-  // ***********************************************
-  // TOP LEFT CORNER
-  // ***********************************************
-  for (i=1; i<=mbc; i++)
-    for (j=1; j<=mbc; j++)
-      {
-	for (m=1; m<=meqn; m++)
-	  for (ell=1; ell<=kmax; ell++)
-	    {     
-	      q.set(1-i,my+j,m,ell, q.get(mx+1-i,j,m,ell) );
-	    }
-	for (m=1; m<=maux; m++)
-	  for (ell=1; ell<=kmax; ell++)
-	    {     
-	      aux.set(1-i,my+j,m,ell, aux.get(mx+1-i,j,m,ell) );
-	    }
-      }
-  // ***********************************************
-        
+    // ***********************************************
+
+
+    // ***********************************************
+    // BOTTOM LEFT CORNER
+    // ***********************************************
+    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(1-i,1-j,m, q.get(mx+1-i,my+1-j,m) );
+                }
+            for(int m=1; m<=maux; m++)
+                {     
+                    aux.set(1-i,1-j,m, aux.get(mx+1-i,my+1-j,m) );
+                }
+        }
+    // ***********************************************
+
+
+    // ***********************************************
+    // BOTTOM RIGHT CORNER
+    // ***********************************************
+    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(mx+i,1-j,m, q.get(i,my+1-j,m) );
+                }
+            for(int m=1; m<=maux; m++)
+                {     
+                    aux.set(mx+i,1-j,m, aux.get(i,my+1-j,m) );
+                }
+        }
+    // ***********************************************
+
+
+    // ***********************************************
+    // TOP RIGHT CORNER
+    // ***********************************************
+    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(mx+i,my+j,m, q.get(i,j,m) );
+                }
+            for(int m=1; m<=maux; m++)
+                {     
+                    aux.set(mx+i,my+j,m, aux.get(i,j,m) );
+                }
+        }
+    // ***********************************************
+
+
+    // ***********************************************
+    // TOP LEFT CORNER
+    // ***********************************************
+    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(1-i,my+j,m, q.get(mx+1-i,j,m) );
+                }
+            for(int m=1; m<=maux; m++)
+                {     
+                    aux.set(1-i,my+j,m, aux.get(mx+1-i,j,m) );
+                }
+        }
+    // ***********************************************
+
 }
