@@ -136,8 +136,8 @@ void DogParamsCart2::append_qhelp(const char* filename)
 {
     //dogParams.write_qhelp(filename);
     FILE* file = fopen(filename,"a");
-    fprintf(file,"%16d : mx\n",mx);
-    fprintf(file,"%16d : my\n",mx);
+    fprintf(file,"%16d : mx\n", mx);
+    fprintf(file,"%16d : my\n", my);
     fprintf(file,"%16.8e : xlow\n", xlow);
     fprintf(file,"%16.8e : xhigh\n",xhigh);
     fprintf(file,"%16.8e : ylow\n", xlow);
