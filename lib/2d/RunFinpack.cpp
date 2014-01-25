@@ -79,22 +79,22 @@ int RunFinpack(string outputdir)
     dtv[2] = dogParams.get_max_dt();
     const double*  cflv     = dogParams.get_cflv();
     const int      nv       = dogParams.get_nv();
-    const int*     method   = dogParams.get_method();
     const int&     meqn     = dogParams.get_meqn();
     const int&     maux     = dogParams.get_maux();
     const int&     mdim     = dogParams.get_ndims();     assert_eq( mdim, 1 );
     const int&     mx       = dogParamsCart2.get_mx();
+    const int&     my       = dogParamsCart2.get_my();
     const int&     mbc      = dogParamsCart2.get_mbc();
     const int&     mrestart = dogParams.get_mrestart();
     const int        mnodes = mx + 1;
-
-/*
 
     // Output helpful stuff to qhelp.dat for plotting purposes
     string qhelp;
     qhelp=outputdir+"/qhelp.dat";
     dogParams.write_qhelp(qhelp.c_str());
     dogParamsCart2.append_qhelp(qhelp.c_str());
+
+/*
 
     // Dimension arrays
     dTensor2      node(mnodes, mdim);

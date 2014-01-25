@@ -30,18 +30,23 @@ void FinSolveRK(
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
 
-    const int mx = qold.getsize(1);
-    const int meqn   = qold.getsize(2);
-    const int maux   = aux.getsize(2);
-    const int mbc = qnew.getmbc();
+    const double xlow = dogParamsCart2.get_xlow();
+    const double ylow = dogParamsCart2.get_ylow();
+
+    const int mx = dogParamsCart2.get_mx();
+    const int my = dogParamsCart2.get_my();
+
+    const int meqn   = dogParams.get_meqn();
+    const int maux   = dogParams.get_maux();
+    const int mbc    = dogParams.get_mbc();
 
     // Allocate storage for this solver
-    dTensorBC2   qstar(mx, meqn, mbc);
-    dTensorBC2 auxstar(mx, maux, mbc);
-    dTensorBC2   Lstar(mx, meqn, mbc);
-    dTensorBC2    Lold(mx, meqn, mbc);
-    dTensorBC2      q1(mx, meqn, mbc);
-    dTensorBC2      q2(mx, meqn, mbc);
+    dTensorBC3   qstar(mx, my, meqn, mbc);
+    dTensorBC3 auxstar(mx, my, maux, mbc);
+    dTensorBC3   Lstar(mx, my, meqn, mbc);
+    dTensorBC3    Lold(mx, my, meqn, mbc);
+    dTensorBC3      q1(mx, my, meqn, mbc);
+    dTensorBC3      q2(mx, my, meqn, mbc);
 
     // Set initialize qstar and auxstar values
     // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)

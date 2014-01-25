@@ -109,8 +109,8 @@ LIB2D_OBJECTS = \
   $(LIB2D)/main_global.o \
   $(RunFinpack).o \
   $(LIB2D)/DogParamsCart2.o \
-# $(GridSetup).o \
-# $(SampleFunction).o \
+  $(GridSetup).o \
+  $(SampleFunction).o \
 # $(WenoReconstruct).o \
 # $(Output).o \
 # $(ConSoln).o \
@@ -141,8 +141,8 @@ LIB2D_SOURCES = \
   $(LIB2D)/main_global.cpp \
   $(RunFinpack).cpp \
   $(LIB2D)/DogParamsCart2.cpp \
-# $(GridSetup).cpp \
-# $(SampleFunction).cpp \
+  $(GridSetup).cpp \
+  $(SampleFunction).cpp \
 # $(WenoReconstruct).cpp \
 # $(Output).cpp \
 # $(ConSoln).cpp \
