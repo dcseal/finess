@@ -217,42 +217,39 @@ void FinSolveRK(
                     // -----------------------------------------------          
                     break;
 
-//              case 5:  // Fifth order in time (8-stages)
+                case 5:  // Fifth order in time (8-stages)
 
-//                  // -----------------------------------------------
-//                  CopyQ(qnew,q1);
-//                  q2.setall(0.);
+                    // -----------------------------------------------
+                    q1.copyfrom( qnew );
+                    q2.setall(0.);
 
-//                  for (int s=1; s<=8; s++)
-//                  {
-//                      rk.mstage = s;
-//                      BeforeStep(dt,aux,q1);
-//                      ConstructL(aux,q1,Lstar,smax);
-//                      if (s==1)
-//                      {  CopyQ(Lstar,Lold);  }
+                    for (int s=1; s<=8; s++)
+                    {
+                        rk.mstage = s;
+                        BeforeStep(dt,aux,q1);
+                        ConstructL(aux,q1,Lstar,smax);
+                        if (s==1)
+                        {  Lold.copyfrom(Lstar); }
 
-//                      UpdateSoln(
-//                              rk.gamma->get(1,s), 
-//                              rk.gamma->get(2,s), 
-//                              rk.gamma->get(3,s), 
-//                              rk.delta->get(s), rk.beta->get(s),
-//                              dt,  aux, qold, Lstar, q1, q2);
+                        UpdateSoln(
+                                rk.gamma->get(1,s), 
+                                rk.gamma->get(2,s), 
+                                rk.gamma->get(3,s), 
+                                rk.delta->get(s), rk.beta->get(s),
+                                dt,  aux, qold, Lstar, q1, q2);
 
-//                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(aux,q1,
-//                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,aux,q1);
-//                  }
+                        AfterStep(dt,aux,q1);
+                    }
 
-//                  CopyQ(q1, qnew);
-//                  // -----------------------------------------------          
-//                  break;
+                    qnew.copyfrom( q1 );
+                    // -----------------------------------------------          
+                    break;
 
-//              default:
+                default:
 
-//                  printf("WARNING: torder = %d has not been implemented\n", time_order );
+                    printf("WARNING: torder = %d has not been implemented\n", time_order );
 
-//                  break;
+                    break;
 
             }  // End of switch statement over time-order
 

@@ -20,11 +20,20 @@ void ConstructL(
         dTensorBC3& q,      // setbndy conditions modifies q
         dTensorBC3& Lstar,
         dTensorBC2& smax);
+
+// Used for orders 1--4:
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
         const dTensorBC3& aux,
         const dTensorBC3& qstar, 
         const dTensorBC3& Lstar,
               dTensorBC3& qnew);
+
+// Used for fifth-order stepper:
+void UpdateSoln(
+    double g1,double g2, double g3, double delta, 
+    double beta,double dt,
+    const dTensorBC3& aux, const dTensorBC3& qold, const dTensorBC3& Lstar,
+    dTensorBC3& q1, dTensorBC3& q2);
 void AfterStep(double dt, dTensorBC3& aux, dTensorBC3& q);
 
 // Called once before each full time step (c.f. BeforeStep, which is called
