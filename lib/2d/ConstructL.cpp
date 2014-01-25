@@ -7,16 +7,16 @@
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
-//       q_t + f(q,x,t)_x = Psi(q,x,t)
+//       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
 void ConstructL(
-        const dTensor2& node,
-        dTensorBC2& aux,
-        dTensorBC2& q,      // setbndy conditions modifies q
-        dTensorBC2& Lstar,
-        dTensorBC1& smax)
+        dTensorBC3& aux,
+        dTensorBC3& q,      // setbndy conditions modifies q
+        dTensorBC3& Lstar,
+        dTensorBC2& smax)
 {
 
+/*
     // Boundary conditions
     //
     // TODO - this should be moved before ConstructL is called (-DS)
@@ -238,6 +238,7 @@ assert_eq( mbc, 3 );
     // ---------------------------------------------------------
     // LstarExtra(node,aux,q,Lstar);
 
+*/
 }
 
 void ConvertTranspose( const dTensor2& qin, dTensor2& qout )

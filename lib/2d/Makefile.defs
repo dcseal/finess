@@ -77,6 +77,7 @@ SOURCES_EXPECTED = \
 # overridden by some application)
 #
 RunFinpack           = $(LIB2D)/RunFinpack
+InitApp              = $(LIB2D)/InitApp
 Output               = $(LIB2D)/Output
 ConSoln              = $(LIB2D)/ConSoln
 AfterQinit           = $(LIB2D)/AfterQinit
@@ -86,7 +87,6 @@ AfterUpdateSoln      = $(LIB2D)/AfterUpdateSoln
 ApplyLimiter         = $(LIB2D)/ApplyLimiter
 ApplyPosLimiter      = $(LIB2D)/ApplyPosLimiter
 ConstructL           = $(LIB2D)/ConstructL
-InitApp              = $(LIB2D)/InitApp
 BeforeFullTimeStep   = $(LIB2D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB2D)/AfterFullTimeStep
 DogSolveUser         = $(LIB2D)/DogSolveUser
@@ -107,6 +107,7 @@ LIB2D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
   $(LIB2D)/main_global.o \
   $(RunFinpack).o \
+  $(InitApp).o \
   $(LIB2D)/DogParamsCart2.o \
   $(GridSetup).o \
   $(SampleFunction).o \
@@ -117,18 +118,17 @@ LIB2D_OBJECTS = \
   $(LIB2D)/GetCFL.o \
   $(AfterQinit).o \
   $(DogSolveUser).o \
-# $(BeforeStep).o \
-# $(AfterStep).o \
-# $(BeforeFullTimeStep).o \
-# $(AfterFullTimeStep).o \
-# $(InitApp).o \
+  $(BeforeFullTimeStep).o \
+  $(BeforeStep).o \
+  $(AfterStep).o \
+  $(ConstructL).o \
+  $(AfterFullTimeStep).o \
+  $(LIB2D)/UpdateSoln.o \
 # $(AfterUpdateSoln).o \
 # $(ApplyLimiter).o \
 # $(ApplyPosLimiter).o \
 # $(LIB2D)/ConvertQtoW.o \
 # $(LIB2D)/ConvertWtoQ.o \
-# $(ConstructL).o \
-# $(LIB2D)/UpdateSoln.o \
 # $(LIB2D)/ResInt.o \
 # $(RiemannSolve).o \
 
@@ -137,6 +137,7 @@ LIB2D_SOURCES = \
   $(TOPLIB_SOURCES) \
   $(LIB2D)/main_global.cpp \
   $(RunFinpack).cpp \
+  $(InitApp).cpp \
   $(LIB2D)/DogParamsCart2.cpp \
   $(GridSetup).cpp \
   $(SampleFunction).cpp \
@@ -147,18 +148,17 @@ LIB2D_SOURCES = \
   $(LIB2D)/GetCFL.cpp \
   $(AfterQinit).cpp \
   $(DogSolveUser).cpp \
-# $(BeforeStep).cpp \
-# $(AfterStep).cpp \
-# $(BeforeFullTimeStep).cpp \
-# $(AfterFullTimeStep).cpp \
-# $(InitApp).cpp \
+  $(BeforeFullTimeStep).cpp \
+  $(BeforeStep).cpp \
+  $(AfterStep).cpp \
+  $(ConstructL).cpp \
+  $(AfterFullTimeStep).cpp \
+  $(LIB2D)/UpdateSoln.cpp \
 # $(AfterUpdateSoln).cpp \
 # $(ApplyLimiter).cpp \
 # $(ApplyPosLimiter).cpp \
 # $(LIB2D)/ConvertQtoW.cpp \
 # $(LIB2D)/ConvertWtoQ.cpp \
-# $(ConstructL).cpp \
-# $(LIB2D)/UpdateSoln.cpp \
 # $(LIB2D)/ResInt.cpp \
 # $(RiemannSolve).cpp \
 

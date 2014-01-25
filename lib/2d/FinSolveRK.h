@@ -16,24 +16,26 @@ double GetCFL(double dt, double dtmax,
 // the Runge-Kutta method:
 void BeforeStep(double dt, dTensorBC3& aux, dTensorBC3& q);
 void ConstructL( 
-        dTensorBC2& aux,
-        dTensorBC2& q,      // setbndy conditions modifies q
-        dTensorBC2& Lstar,
-        dTensorBC1& smax);
+        dTensorBC3& aux,
+        dTensorBC3& q,      // setbndy conditions modifies q
+        dTensorBC3& Lstar,
+        dTensorBC2& smax);
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
-        const dTensorBC2& aux,
-        const dTensorBC2& qstar, 
-        const dTensorBC2& Lstar,
-        dTensorBC2& qnew);
-void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+        const dTensorBC3& aux,
+        const dTensorBC3& qstar, 
+        const dTensorBC3& Lstar,
+              dTensorBC3& qnew);
+void AfterStep(double dt, dTensorBC3& aux, dTensorBC3& q);
 
-// TODO - add these calls in later
-void BeforeFullTimeStep(double dt, const dTensor1& prim_vol,
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
-void AfterFullTimeStep(double dt, const dTensor1& prim_vol,
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
+// Called once before each full time step (c.f. BeforeStep, which is called
+// before each stage in an RK method)
+void BeforeFullTimeStep(double dt, 
+               dTensorBC3& auxold, dTensorBC3& aux, 
+               dTensorBC3& qold,   dTensorBC3& q);
+
+void AfterFullTimeStep(double dt, 
+               dTensorBC3& auxold, dTensorBC3& aux, 
+               dTensorBC3& qold,   dTensorBC3& q);
 
 // ------------------------------------------------------------
 // Runge-Kutta information

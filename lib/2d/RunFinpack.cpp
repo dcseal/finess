@@ -37,10 +37,9 @@ int RunFinpack(string outputdir)
     dogParamsCart2.init(ini_doc);
     cout << endl;
 
-    // Get addtional parameters
-    // TODO - fix or add in a parser for extra user inputs
-//  InitApp( ini_doc );
-//  cout << endl;
+    // Get addtional parameters (application specific parameters)
+    InitApp( ini_doc );
+    cout << endl;
 
     const string time_stepping_method = dogParams.get_time_stepping_method();
     const int&     nout     = dogParams.get_nout();

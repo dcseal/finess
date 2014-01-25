@@ -89,27 +89,27 @@ void FinSolveRK(
             t = told + dt;
 
             // Set initial maximum wave speed to zero
-//          smax.setall(0.);
+            smax.setall(0.);
 
             // do any extra work
-//          BeforeFullTimeStep(dt, auxstar, aux, qold, qnew);
+            BeforeFullTimeStep(dt, auxstar, aux, qold, qnew);
 
             // Take a full time step of size dt
-//          switch( time_order )
-//          {
-//              case 1:  // First order in time
+            switch( time_order )
+            {
+                case 1:  // First order in time (Forward-Euler)
 
-//                  // --------------------------------------------------------
-//                  // Stage #1 (the only one in this case)
-//                  rk.mstage = 1;
-//                  BeforeStep(dt,aux,qnew);
-//                  ConstructL( aux, qnew, Lstar, smax);
-//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qnew);
-//                  AfterStep(dt,aux,qnew);
-//                  // --------------------------------------------------------
+                    // --------------------------------------------------------
+                    // Stage #1 (the only one in this case)
+                    rk.mstage = 1;
+                    BeforeStep(dt,aux,qnew);
+                    ConstructL( aux, qnew, Lstar, smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qnew);
+                    AfterStep(dt,aux,qnew);
+                    // --------------------------------------------------------
 
-//                  break;
+                    break;
 
 //              case 2:  // Second order in time
 
@@ -263,10 +263,10 @@ void FinSolveRK(
 
 //                  break;
 
-//          }  // End of switch statement over time-order
+            }  // End of switch statement over time-order
 
-            // do any extra work (TODO - add this in later)
-//          AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
+            // Do any extra work
+            AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
 
             // compute cfl number
             cfl = GetCFL(dt, dtv[2], aux, smax);
