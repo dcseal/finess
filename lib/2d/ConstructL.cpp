@@ -183,6 +183,7 @@ assert_eq( mbc, 3 );
         dTensor1 xedge(1), Ql(meqn), Qr(meqn);
         dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
+
         for( int m=1; m<= meqn; m++)
         {
             Ql.set(m, q.get(i-1, j, m) );
@@ -200,7 +201,7 @@ assert_eq( mbc, 3 );
         SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
 
         const double alpha = Max( abs(s1), abs(s2) );
-        smax.set( i, j, 1, alpha  );
+        smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
         const double l_alpha = 1.1*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
@@ -346,7 +347,7 @@ assert_eq( mbc, 3 );
         SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
 
         const double alpha = Max( abs(s1), abs(s2) );
-        smax.set( i, j, 2, alpha  );
+        smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
         const double l_alpha = 1.1*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
@@ -383,7 +384,6 @@ assert_eq( mbc, 3 );
     }
     // --------------------------------------------------------------------- //
 
-
     // --------------------------------------------------------------------- //
     // Construct Lstar, defined by:
     //
@@ -410,7 +410,7 @@ assert_eq( mbc, 3 );
             }
         }
     }
-    else
+    else  // No source term
     {
 #pragma omp parallel for
         for (int i=1; i<=mx; i++)

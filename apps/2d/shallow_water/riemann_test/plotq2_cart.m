@@ -25,7 +25,7 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-OPT = 2;   % if OPT==1, shock aligned in x-direction
+OPT = 1;   % if OPT==1, shock aligned in x-direction
            % if OPT==2, shock aligned in y-direction
 
 figure(1);
@@ -62,6 +62,33 @@ else
     pz = plot(reshape(yc,mx*my,1), reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
 %   imid = floor( mx/2 );
 %   pz = plot(yc(imid,:),  qsoln(imid, :, 1), 'bo');
+end
+set(pz,'linewidth',2);
+set(pz,'markersize',8);
+hold on;
+hold off;
+axis on; box on; grid off;
+set(gca,'plotboxaspectratio',[1.5 1 1]);
+set(gca,'fontsize',16);
+set(gca,'xtick',0:0.25:1);
+set(gca,'ytick',0:0.5:3.5);
+axis([0 1 0 3.5]);
+t1 = title(['Total height at t = ',num2str(time),'     [DoGPack]']);
+
+figure(3);
+clf;
+if( OPT==1 )
+    pz = plot(xc(:,1), qsoln(:,1,1)+aux(:,1,1),'bo');
+else
+    pz = plot(yc(1,:), qsoln(1,:,1)+aux(1,:,1),'bo');
+set(pz,'linewidth',2);
+set(pz,'markersize',8);
+    hold on;
+    pz = plot(yc(2,:), qsoln(2,:,1)+aux(2,:,1),'bo');
+set(pz,'linewidth',2);
+set(pz,'markersize',8);
+    pz = plot(yc(3,:), qsoln(3,:,1)+aux(2,:,1),'bo');
+    hold off;
 end
 set(pz,'linewidth',2);
 set(pz,'markersize',8);

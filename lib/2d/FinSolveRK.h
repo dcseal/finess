@@ -46,8 +46,6 @@ void AfterFullTimeStep(double dt,
                dTensorBC3& auxold, dTensorBC3& aux, 
                dTensorBC3& qold,   dTensorBC3& q);
 
-void SetBndValues(dTensorBC3& aux, dTensorBC3& q);
-
 // ------------------------------------------------------------
 // Runge-Kutta information
 void SetRKinfo(int method2, RKinfo& rk);

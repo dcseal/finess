@@ -6,7 +6,7 @@
 //
 //      ZEROTH ORDER EXTRAPOLATION BOUNDARY CONDITIONS
 //
-void SetBndValues(dTensorBC3& q, dTensorBC3& aux)
+void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
 {
 
     int i,j,m;
@@ -31,10 +31,18 @@ void SetBndValues(dTensorBC3& q, dTensorBC3& aux)
             // q values
             for (m=1; m<=meqn; m++)
             {
-//              double tmp = q.get(1,j,m);
-                double tmp = q.get(i+mx,j,m); // periodic
+                double tmp = q.get(1,j,m);
+//              double tmp = q.get(i+mx,j,m); // periodic
                 q.set(i,j,m, tmp );
             }
+            // aux values
+            for (m=1; m<=maux; m++)
+            {
+                double tmp = q.get(1,j,m);
+//              double tmp = aux.get(i+mx,j,m); // periodic
+                aux.set(i,j,m, tmp );
+            }
+
         }
     }
     // ***********************************************
@@ -51,10 +59,18 @@ void SetBndValues(dTensorBC3& q, dTensorBC3& aux)
             // q values
             for (m=1; m<=meqn; m++)
             {
-//              double tmp = q.get(mx,j,m);                    
-                double tmp = q.get(i-mx,j,m); // periodic
+                double tmp = q.get(mx,j,m);                    
+//              double tmp = q.get(i-mx,j,m); // periodic
                 q.set(i,j,m, tmp );
             }
+            // aux values
+            for (m=1; m<=maux; m++)
+            {
+                double tmp = q.get(mx,j,m);                    
+//              double tmp = aux.get(i-mx,j,m); // periodic
+                aux.set(i,j,m, tmp );
+            }
+
         }
     }
     // ***********************************************

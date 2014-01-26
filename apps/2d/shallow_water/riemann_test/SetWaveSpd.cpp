@@ -1,6 +1,7 @@
 #include <cmath>
 #include "dog_math.h"
 #include "tensors.h"
+#include "stdio.h"
 
 // This is a user-supplied routine that sets the
 // HLLE wave speeds for use in "RiemannSolve"
@@ -38,6 +39,12 @@ void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
     
     // Maximum speed
     s2 = Max(un+sqrt(h), unr+sqrt(hr));
+
+//  printf("Printing values from SetWaveSpd\n");
+//  printf("  un, u1, u2 = %f %f %f\n", un, u1,u2 );
+//  printf("  n1, n2 = %f, %f\n", nvec.get(1), nvec.get(2) );
+//  printf("  h, hl, hr = %f %f %f\n", h, hl, hr );
+//  printf("s1 = %f, s2 = %f\n", s1, s2 );
     
 }
 

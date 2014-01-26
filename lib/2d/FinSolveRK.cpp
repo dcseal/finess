@@ -107,7 +107,6 @@ void FinSolveRK(
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qnew);
                     AfterStep(dt,aux,qnew);
-                    SetBndValues( aux, qnew );
                     // --------------------------------------------------------
 
                     break;
@@ -122,7 +121,7 @@ void FinSolveRK(
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);      
                     AfterStep(dt,auxstar,qstar);
-                    SetBndValues( auxstar, qstar );
+
                     // ---------------------------------------------------------
                     // Stage #2
                     rk.mstage = 2;
@@ -131,7 +130,6 @@ void FinSolveRK(
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);
                     AfterStep(dt,aux,qnew); 
-                    SetBndValues( aux, qnew );
                     // ---------------------------------------------------------
 
                     break;
@@ -146,7 +144,6 @@ void FinSolveRK(
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
                     AfterStep(dt,auxstar,qstar);
-                    SetBndValues( auxstar, qstar );
 
                     // ---------------------------------------------------------
                     // Stage #2
@@ -156,7 +153,6 @@ void FinSolveRK(
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
                     AfterStep(dt,auxstar,qstar);
-                    SetBndValues( auxstar, qstar );
 
                     // ---------------------------------------------------------
                     // Stage #3
@@ -166,7 +162,6 @@ void FinSolveRK(
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);   
                     AfterStep(dt,aux,qnew);
-                    SetBndValues( aux, qnew );
                     // ---------------------------------------------------------
 
                     break;
@@ -263,7 +258,6 @@ void FinSolveRK(
             AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
 
             // compute cfl number
-//          SetBndValues( aux, smax );
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
