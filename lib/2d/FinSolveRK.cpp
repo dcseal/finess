@@ -191,11 +191,11 @@ void FinSolveRK(
                     }
 
                     // Temporary storage
-                    for (int i=(1-mbc); i<=(mx+mbc); i++)
-                    for (int j=(1-mbc); i<=(my+mbc); j++)
-                    for (int m=1; m<=meqn; m++)
+                    for(int i = (1-mbc); i <= (mx+mbc); i++)
+                    for(int j = (1-mbc); j <= (my+mbc); j++)
+                    for(int m = 1; m <= meqn; m++)
                     {
-                        double tmp = (q2.get(i,j,m) + 9.0*q1.get(i,j,m))/25.0;
+                        double tmp = ( q2.get(i,j,m) + 9.0*q1.get(i,j,m) )/25.0;
                         q2.set(i,j,m, tmp );
                         q1.set(i,j,m, 15.0*tmp - 5.0*q1.get(i,j,m) );
                     }
