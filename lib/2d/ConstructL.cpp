@@ -22,7 +22,7 @@ void ConstructL(
     void SetBndValues(dTensorBC3& aux, dTensorBC3& q);
     SetBndValues( aux, q );
 
-    // User supplied functions:
+    // --- User supplied functions --- //
     void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
     void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
         const dTensor2& Qvals, dTensor2& Wvals);
@@ -78,6 +78,17 @@ assert_eq( mbc, 3 );
 
     // Normal vector.  This is a carry-over from the DG code.
     dTensor1 nvec(2);
+
+    // --- Compute the Largest eigenvalue in the system --- //
+//  void MaxEig( const dTensor1& nvec, const dTensor1& xedge, 
+//      const dTensor1& Q, const dTensor1& aux, double& eig );
+//  double alpha = 0.0;
+//  for (int i = 1; i <= mx+1; i++)
+//  for (int j = 1; j <= my;   j++)
+//  {
+//      TODO - see if global wave speed fixes my problem.  Currently, I believe
+//      that the issue is smax isn't being set correctly.
+//  }
 
     // --------------------------------------------------------------------- //
     // Compute F{i-1/2, j} - 1st component of the flux function
@@ -344,7 +355,7 @@ assert_eq( mbc, 3 );
         for( int m=1; m <= meqn; m++ )
         for( int s=1; s <= ws; s++ )
         {
-            gp.set( m, s, 0.5*(gvals.get(m,s)      + l_alpha*wvals.get(m,s) )      );
+            gp.set( m, s, 0.5*(gvals.get(m,s     ) + l_alpha*wvals.get(m,s     ) ) );
             gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - l_alpha*wvals.get(m,ws-s+2) ) );
         }
 

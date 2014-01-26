@@ -34,9 +34,24 @@ void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
     un = u1*nvec.get(1) + u2*nvec.get(2);
 
     // Minimum speed
-    s1 = Min(un-sqrt(h),unl-sqrt(hl));
+    s1 = Min(un-sqrt(h), unl-sqrt(hl));
     
     // Maximum speed
-    s2 = Max(un+sqrt(h),unr+sqrt(hr));
+    s2 = Max(un+sqrt(h), unr+sqrt(hr));
     
+}
+
+void MaxEig( const dTensor1& nvec, const dTensor1& xedge,
+    const dTensor1& Q, const dTensor1& Aux, double& eig )
+{
+
+    // Average states
+    double h      = Q.get(1);
+    double sqrth  = sqrt( h );
+    double u1     = Q.get(2)/h;
+    double u2     = Q.get(3)/h;
+    double u      = u1*nvec.get(1) + u2*nvec.get(2);
+
+    eig = Max( fabs(u-sqrth), fabs(u+sqrth) );
+
 }

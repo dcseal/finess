@@ -37,7 +37,7 @@ else
 end
 
 shading flat;
-yrbcolormap
+%yrbcolormap
 axis on; box on; grid off;
 axis('equal');
 axis([-0.01 1.01 -0.01 1.01]);

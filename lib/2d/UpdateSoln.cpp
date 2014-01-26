@@ -15,8 +15,10 @@ void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
     const int    mbc = qnew.getmbc();
 
 #pragma omp parallel for
-    for (int i=(1-mbc); i<=(mx+mbc); i++)
-    for (int j=(1-mbc); j<=(my+mbc); j++)
+//  for (int i=(1-mbc); i<=(mx+mbc); i++)
+//  for (int j=(1-mbc); j<=(my+mbc); j++)
+    for (int i= 1; i <= mx; i++)
+    for (int j= 1; j <= my; j++)
     for (int m=1; m<=meqn; m++)        
     {
         double tmp = alpha1*qstar.get(i,j,m) + alpha2*qnew.get(i,j,m)
