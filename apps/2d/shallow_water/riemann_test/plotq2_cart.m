@@ -25,16 +25,17 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-OPT = 1;   % if OPT==1, shock aligned in x-direction
+OPT = 2;   % if OPT==1, shock aligned in x-direction
            % if OPT==2, shock aligned in y-direction
 
 figure(1);
 clf;
-if (m==1)
+if( m==1 )
   pcolor(xl,yl,qaug(:,:,m)+aux_aug(:,:,1));
 else
   pcolor(xl,yl,qaug(:,:,m));
 end
+
 shading flat;
 yrbcolormap
 axis on; box on; grid off;
@@ -43,19 +44,24 @@ axis([-0.01 1.01 -0.01 1.01]);
 set(gca,'xtick',0:0.25:1);
 set(gca,'ytick',0:0.25:1);
 set(gca,'fontsize',16);
-if m==1
+
+if(m==1)
   t1 = title(['Total height at t = ',num2str(time),'     [DoGPack]']); 
 else
   t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [DoGPack]']); 
 end
 set(t1,'fontsize',16);
 
+% Show a plot of every row (column) of the solution.  For this Riemann problem,
+% each row (column) should be identical.
 figure(2);
 clf;
-if (OPT==1)
-  pz=plot(reshape(xc,mx*my,1),reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
+if( OPT==1 )
+    pz=plot(reshape(xc,mx*my,1), reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
 else
-  pz=plot(reshape(yc,mx*my,1),reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
+    pz = plot(reshape(yc,mx*my,1), reshape(qsoln(:,:,1)+aux(:,:,1),mx*my,1),'bo');
+%   imid = floor( mx/2 );
+%   pz = plot(yc(imid,:),  qsoln(imid, :, 1), 'bo');
 end
 set(pz,'linewidth',2);
 set(pz,'markersize',8);

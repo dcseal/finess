@@ -31,7 +31,8 @@ void SetBndValues(dTensorBC3& q, dTensorBC3& aux)
             // q values
             for (m=1; m<=meqn; m++)
             {
-                double tmp = q.get(1,j,m);
+//              double tmp = q.get(1,j,m);
+                double tmp = q.get(i+mx,j,m); // periodic
                 q.set(i,j,m, tmp );
             }
         }
@@ -50,7 +51,8 @@ void SetBndValues(dTensorBC3& q, dTensorBC3& aux)
             // q values
             for (m=1; m<=meqn; m++)
             {
-                double tmp = q.get(mx,j,m);                    
+//              double tmp = q.get(mx,j,m);                    
+                double tmp = q.get(i-mx,j,m); // periodic
                 q.set(i,j,m, tmp );
             }
         }

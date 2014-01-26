@@ -10,7 +10,7 @@ void ConSoln(
 
 double GetCFL(double dt, double dtmax,
         const dTensorBC3& aux,
-        const dTensorBC2& smax);
+        const dTensorBC3& smax);
 
 // These four functions get called in the following order for each stage in
 // the Runge-Kutta method:
@@ -19,7 +19,7 @@ void ConstructL(
         dTensorBC3& aux,
         dTensorBC3& q,      // setbndy conditions modifies q
         dTensorBC3& Lstar,
-        dTensorBC2& smax);
+        dTensorBC3& smax);
 
 // Used for orders 1--4:
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,

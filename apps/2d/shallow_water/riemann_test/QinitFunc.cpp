@@ -12,7 +12,7 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
 
     // OPT = 1 is Shock Tube Problem in x Direction
     // OPT = 2 is Shock Tube Problem in y Direction
-    const int OPT = 1;
+    const int OPT = 2;
 
     // Loop over grid points
     for(int i=1; i<=numpts; i++)
@@ -39,7 +39,8 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
         }
         else
         {
-            b  =  0.5*exp(-pow(14.0*y-7.0,2));
+            //b  =  0.5*exp(-pow(14.0*y-7.0,2));
+            b  =  0.0;
 
             if(y>0.5)
             {

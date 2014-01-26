@@ -12,7 +12,7 @@ using namespace std;
 
 void FinSolveRK(
     dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
-    dTensorBC2& smax,
+    dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[], string outputdir)
 {
@@ -24,8 +24,8 @@ void FinSolveRK(
 
     double t            = tstart;
     double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max   CFL number
-    double CFL_target   = cflv[2];  // targe CFL number
+    double CFL_max      = cflv[1];  // max    CFL number
+    double CFL_target   = cflv[2];  // target CFL number
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;

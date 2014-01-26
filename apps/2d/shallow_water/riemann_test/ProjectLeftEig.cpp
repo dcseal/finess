@@ -8,13 +8,13 @@
 void ProjectLeftEig( int ixy, const dTensor1& Aux_ave,
         const dTensor1& Q_ave, const dTensor2& Qvals, dTensor2& Wvals)
 {    
-    int m,k;
-    int meqn = Qvals.getsize(1);
-    int kmax = Qvals.getsize(2)+1;
-    double h,u1,u2;
-    int mu,mv;
+
+    const int meqn = Qvals.getsize(1);
+    const int mpts = Qvals.getsize(2);
+
 
     // Direction
+    int mu,mv;
     if (ixy==1)
     {  
         mu = 2;
@@ -27,17 +27,17 @@ void ProjectLeftEig( int ixy, const dTensor1& Aux_ave,
     }
 
     // Average states
-    h  = Q_ave.get(1);
-    u1 = Q_ave.get(mu)/h;
-    u2 = Q_ave.get(mv)/h;
+    const double h  = Q_ave.get(1);
+    const double u1 = Q_ave.get(mu)/h;
+    const double u2 = Q_ave.get(mv)/h;
 
     // Project onto left eigenvectors
-    for (k=1; k<=(kmax-1); k++)
+    for(int m=1; m <= mpts; m++ )
     {
-        Wvals.set(1,k, (sqrt(h)+u1)/(2.0*sqrt(h))*Qvals.get(1,k) - (0.5/sqrt(h))*Qvals.get(mu,k) );
+        Wvals.set(1,m, (sqrt(h)+u1)/(2.0*sqrt(h))*Qvals.get(1,m) - (0.5/sqrt(h))*Qvals.get(mu,m) );
 
-        Wvals.set(2,k, -u2*Qvals.get(1,k) + Qvals.get(mv,k) );
+        Wvals.set(2,m, -u2*Qvals.get(1,m) + Qvals.get(mv,m) );
 
-        Wvals.set(3,k, (sqrt(h)-u1)/(2.0*sqrt(h))*Qvals.get(1,k) + (0.5/sqrt(h))*Qvals.get(mu,k) );
+        Wvals.set(3,m, (sqrt(h)-u1)/(2.0*sqrt(h))*Qvals.get(1,m) + (0.5/sqrt(h))*Qvals.get(mu,m) );
     }
 }

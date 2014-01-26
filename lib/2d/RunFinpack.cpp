@@ -68,7 +68,7 @@ int RunFinpack(string outputdir)
     dTensor2      prim_vol(mx, my);
     dTensorBC3    qnew(mx, my, meqn, mbc);
     dTensorBC3    qold(mx, my, meqn, mbc);
-    dTensorBC2    smax(mx, my, mbc);
+    dTensorBC3    smax(mx, my, mdim, mbc);
     dTensorBC3    aux (mx, my, iMax(maux, 1), mbc);
 
     // Set any auxiliary variables on computational grid
@@ -93,11 +93,11 @@ int RunFinpack(string outputdir)
     // Main loop for time stepping
     double tstart = 0.0;
     double tend   = 0.0;
-    double dtout = tfinal/double(nout);    
+    double dtout  = tfinal/double(nout);    
     for (int n=1; n<=nout; n++)
     {        
         tstart = tend;      
-        tend = tstart + dtout;
+        tend   = tstart + dtout;
 
         // Solve hyperbolic system from tstart to tend
         if (time_stepping_method == "Runge-Kutta")

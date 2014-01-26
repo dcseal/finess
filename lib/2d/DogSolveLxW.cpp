@@ -6,10 +6,6 @@
 #include "DogParams.h"
 #include "RKinfo.h"
 
-// If we want to use DogSolver from the top-level library, this needs to be
-// written:
-// #include "DogState1d.h"  
-
 using namespace std;
 
 void DogSolveLxW(const dTensor2& node, const dTensor1& prim_vol, dTensorBC3& aux, 

@@ -21,13 +21,13 @@ void ConSoln(
 
 void FinSolveRK(
     dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
-    dTensorBC2& smax,
+    dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[], string outputdir);
 
 void DogSolveUser(
         dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew,
-        dTensorBC2& smax,
+        dTensorBC3& smax,
         double tstart, double tend,int nv, 
         double dtv[], const double cflv[],string outputdir);
 

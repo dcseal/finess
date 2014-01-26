@@ -61,6 +61,7 @@ void SampleFunction(
 #pragma omp parallel for
     for (int i=istart; i<=iend; i++)
     {
+
         const double xc = xlow + (double(i)-0.5)*dx;
         for (int j=jstart; j<=jend; j++)
         {

@@ -11,9 +11,9 @@
 //
 void ConstructL(
         dTensorBC3& aux,
-        dTensorBC3& q,      // setbndy conditions modifies q
+        dTensorBC3& q,      // SetBndValues modifies q and aux
         dTensorBC3& Lstar,
-        dTensorBC2& smax)
+        dTensorBC3& smax)
 {
 
     // Boundary conditions
@@ -59,30 +59,33 @@ void ConstructL(
 // TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
 // should equal mbc.  This should be added somewhere in the code. 
 // (Derived parameters? -DS)
-const int  r = 3;  // order = 2*r-1
-const int ws = 5;  // Number of points for the weno-reconstruction
+const int  r = 3;       // order = 2*r-1
+const int ws = 5;       // Number of points for the weno-reconstruction
 assert_eq( mbc, 3 );
 
-    // The flux, f_{i-1/2}.  Recall that the
+    // The flux, f_{i-1/2, j} and g_{i, j-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
-    // that vector than on the original grid.
+    // that vector than on the original grid.  Additionally, for 2D code, there
+    // are two terms in the flux: q_t + f_x + g_y = psi.
     dTensorBC3  F(mx+1, my,   meqn, mbc );
     dTensorBC3  G(mx,   my+1, meqn, mbc );
 
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
-    const double   xlow = dogParamsCart2.get_xlow();
     const double     dx = dogParamsCart2.get_dx();
-    const double   ylow = dogParamsCart2.get_ylow();
     const double     dy = dogParamsCart2.get_dy();
+    const double   xlow = dogParamsCart2.get_xlow();
+    const double   ylow = dogParamsCart2.get_ylow();
 
-    // ---------------------------------------------------------
-    // Compute F{i-1/2, j}
-    // ---------------------------------------------------------
+    // Normal vector.  This is a carry-over from the DG code.
     dTensor1 nvec(2);
+
+    // --------------------------------------------------------------------- //
+    // Compute F{i-1/2, j} - 1st component of the flux function
+    // --------------------------------------------------------------------- //
     nvec.set(1, 1.0 );  nvec.set(2, 0.0 );
 #pragma omp parallel for
-    for (int i= 1; i<= mx+1; i++)
-    for (int j= 1; j<= my;   j++)
+    for (int i = 1; i <= mx+1; i++)
+    for (int j = 1; j <= my;   j++)
     {
 
         // --------------------------------------------------------------------
@@ -109,6 +112,7 @@ assert_eq( mbc, 3 );
         // Sample q over the stencil:
         dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
         dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
+
         dTensor2 xvals( ws+1, 2 );
         for( int s=1; s <= ws+1; s++ )
         {
@@ -140,17 +144,17 @@ assert_eq( mbc, 3 );
         ConvertTranspose( qvals,   qvals_t   );
         ConvertTranspose( auxvals, auxvals_t );
 
-        // Sample f over the stencil:
+        // Sample the flux function over the stencil:
         dTensor3 fvals_t( ws+1, meqn, 2 );
         FluxFunc( xvals, qvals_t, auxvals_t, fvals_t );
 
-        // Flux function in q_t + f_x + g_y = 0:
+        // Flux function "f" in q_t + f_x + g_y = 0:
         dTensor2 f( meqn, ws+1 ), g( meqn, ws+1 );
         for( int me=1; me <= meqn; me++ )
         for( int s=1; s <= ws+1; s++ )
         {
-            f.set(me, s, fvals_t.get( s, me, 1 ) );
-            g.set(me, s, fvals_t.get( s, me, 2 ) );
+            f.set(me, s, fvals_t.get( s, me, 1 ) );  // 1st-component - f
+            g.set(me, s, fvals_t.get( s, me, 2 ) );  // 2nd-component - g
         }
 
 
@@ -162,7 +166,6 @@ assert_eq( mbc, 3 );
         // --------------------------------------------------------------------
         // Part III: Apply Lax-Friedrich's flux splitting to g
         // --------------------------------------------------------------------
-
 
         // -- Compute a local wave speed -- //
 
@@ -181,10 +184,12 @@ assert_eq( mbc, 3 );
             Auxr.set(m, aux.get(i  , j, m) );
         }
 
+        // Compute an approximate "fastest" wave speed.
         double s1,s2;
-        SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
+        SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
+
         const double alpha = Max( abs(s1), abs(s2) );
-        smax.set( i, j, alpha  );
+        smax.set( i, j, 1, alpha  );
         const double l_alpha = 1.1*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
@@ -193,7 +198,7 @@ assert_eq( mbc, 3 );
         for( int m=1; m <= meqn; m++ )
         for( int s=1; s <= ws; s++ )
         {
-            gp.set( m, s, 0.5*(gvals.get(m,s)      + l_alpha*wvals.get(m,s) )      );
+            gp.set( m, s, 0.5*(gvals.get(m,s     ) + l_alpha*wvals.get(m,s     ) ) );
             gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - l_alpha*wvals.get(m,ws-s+2) ) );
         }
 
@@ -221,9 +226,9 @@ assert_eq( mbc, 3 );
     }
     // --------------------------------------------------------------------- //
 
-    // ---------------------------------------------------------
-    // Compute ghat{i, j-1/2}
-    // ---------------------------------------------------------
+    // --------------------------------------------------------------------- //
+    // Compute G{i, j-1/2} - 2nd-component of the flux function
+    // --------------------------------------------------------------------- //
     nvec.set(1, 0.0 );  nvec.set(2, 1.0 );
 #pragma omp parallel for
     for (int i = 1; i<= mx;   i++)
@@ -308,7 +313,6 @@ assert_eq( mbc, 3 );
         // Part III: Apply Lax-Friedrich's flux splitting to g
         // --------------------------------------------------------------------
 
-
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(1), Ql(meqn), Qr(meqn);
@@ -326,10 +330,12 @@ assert_eq( mbc, 3 );
             Auxr.set(m, aux.get(i, j,   m) );
         }
 
+        // Compute an approximate "fastest" wave speed.
         double s1,s2;
-        SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
+        SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
+
         const double alpha = Max( abs(s1), abs(s2) );
-        smax.set( i, j, Max(alpha, smax.get(i,j) )  );
+        smax.set( i, j, 2, alpha  );
         const double l_alpha = 1.1*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
@@ -370,7 +376,8 @@ assert_eq( mbc, 3 );
     // --------------------------------------------------------------------- //
     // Construct Lstar, defined by:
     //
-    //    d/dt q_i = Lstar = -1/dx( fh_{i+1/2} - fh_{i-1/2} )
+    //    d/dt q_{i,j} = Lstar = -1/dx( fh_{i+1/2,j} - fh_{i-1/2,j} )
+    //                           -1/dy( gh_{i,j+1/2} - gh_{i,j-1/2} ).
     //
     // TODO - We should be able to avoid this for loop if we save Lstar in the
     // above loop without executing a second loop.  However, this requires 
@@ -386,8 +393,8 @@ assert_eq( mbc, 3 );
         {
             for (int m=1; m<=meqn; m++)
             {
-                double tmp = -(F.get(i+1,j,m) - F.get(i,j,m) )/dx;
-                tmp =  tmp   -(G.get(i,j+1,m) - G.get(i,j,m) )/dy;
+                double tmp = -(F.get(i+1, j,   m) - F.get(i, j, m) ) / dx;
+                tmp =  tmp   -(G.get(i,   j+1, m) - G.get(i, j, m) ) / dy;
                 Lstar.set(i,j, m, Lstar.get(i,j,m) + tmp );
             }
         }
@@ -400,12 +407,13 @@ assert_eq( mbc, 3 );
         {
             for (int m=1; m<=meqn; m++)
             {
-                double tmp = -(F.get(i+1,j,m) - F.get(i,j,m) )/dx;
-                tmp = tmp    -(G.get(i,j+1,m) - G.get(i,j,m) )/dy;
+                double tmp = -(F.get(i+1, j,   m) - F.get(i, j, m) ) / dx;
+                tmp =  tmp   -(G.get(i,   j+1, m) - G.get(i, j, m) ) / dy;
                 Lstar.set(i,j, m, tmp );
             }
         }
     }
+
     // ---------------------------------------------------------
     // Add extra contributions to Lstar
     // ---------------------------------------------------------

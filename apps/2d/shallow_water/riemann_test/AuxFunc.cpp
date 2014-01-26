@@ -12,7 +12,7 @@ void AuxFunc(const dTensor2& xpts,
 
     // OPT = 1 is Shock Tube Problem in x Direction
     // OPT = 2 is Shock Tube Problem in y Direction
-    int OPT = 1;
+    int OPT = 2;
 
     for(int i=1; i<=numpts; i++)
     {

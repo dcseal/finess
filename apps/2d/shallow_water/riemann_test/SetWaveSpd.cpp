@@ -10,6 +10,7 @@ void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
 		const dTensor1& Auxl, const dTensor1& Auxr,
 		double& s1,double& s2)
 {
+
     double hl,u1l,u2l,unl;
     double hr,u1r,u2r,unr;
     double h,u1,u2,un;
