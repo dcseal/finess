@@ -296,7 +296,7 @@ void FinSolveRK(
                 }
 
                 // copy qold into qnew
-                qold.copyfrom( qnew );
+                qnew.copyfrom( qold );
             }
 
         } // End of m_accept loop

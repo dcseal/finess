@@ -18,12 +18,21 @@ void ConstructL( const dTensor2& node,
         dTensorBC2& q,      // setbndy conditions modifies q
         dTensorBC2& Lstar,
         dTensorBC1& smax);
+// orders 1-4 time stepping:
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
         const dTensor2& node, 
         const dTensorBC2& aux,
         const dTensorBC2& qstar, 
         const dTensorBC2& Lstar,
         dTensorBC2& qnew);
+// 5th-order time stepping (low-storage):
+void UpdateSoln(
+    double g1,double g2, double g3, double delta, 
+    double beta,double dt,
+    const dTensor2& node, 
+    const dTensorBC2& aux,
+    const dTensorBC2& qold, const dTensorBC2& Lstar,
+    dTensorBC2& q1, dTensorBC2& q2);
 void AfterStep(double dt, const dTensor2& node, dTensorBC2& aux, dTensorBC2& q);
 
 double GetCFL(double dt, double dtmax,

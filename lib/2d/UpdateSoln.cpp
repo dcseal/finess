@@ -47,7 +47,7 @@ void UpdateSoln(
     const int     my = q1.getsize(2);
     const int   meqn = q1.getsize(3);
     const int   maux = aux.getsize(3);
-    const int mbc    = q1.getmbc();
+    const int    mbc = q1.getmbc();
 
 #pragma omp parallel for
     for (int i=(1-mbc); i<=(mx+mbc); i++)

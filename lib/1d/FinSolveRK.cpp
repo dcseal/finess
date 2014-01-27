@@ -45,8 +45,8 @@ void FinSolveRK(
 
     // Set initialize qstar and auxstar values
     // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    CopyQ(qold, qstar   );
-    CopyQ( aux, auxstar );
+    qstar.copyfrom( qold );
+    auxstar.copyfrom( aux );
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -71,7 +71,8 @@ void FinSolveRK(
         }        
 
         // copy qnew into qold
-        CopyQ(qnew, qold);
+        // CopyQ(qnew, qold);
+        qold.copyfrom( qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
@@ -160,95 +161,102 @@ void FinSolveRK(
 
                     break;
 
-//              case 4:  // Fourth order in time (10-stages)
+                case 4:  // Fourth order in time (10-stages)
 
-//                  // -----------------------------------------------
-//                  CopyQ(qnew,q1);
-//                  CopyQ(q1,q2);
+                    // -----------------------------------------------
+                    //CopyQ(qnew,q1);
+                    //CopyQ(q1,q2);
+                    q1.copyfrom( qnew );
+                    q2.copyfrom( qnew );
 
-//                  // Stage: 1,2,3,4, and 5
-//                  for (int s=1; s<=5; s++)
-//                  {
-//                      rk.mstage = s;
-//                      BeforeStep(dt,node,aux,q1);
-//                      ConstructL(node,aux,q1,Lstar,smax);
-//                      if (s==1)
-//                      {  CopyQ(Lstar,Lold);  }
-//                      UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                              rk.beta->get(rk.mstage),dt,node,aux,q1,Lstar,q1);
+                    // Stage: 1,2,3,4, and 5
+                    for (int s=1; s<=5; s++)
+                    {
+                        rk.mstage = s;
+                        BeforeStep(dt,node,aux,q1);
+                        ConstructL(node,aux,q1,Lstar,smax);
+                        if (s==1)
+                        {  
+                            // CopyQ(Lstar,Lold);  
+                            Lold.copyfrom( Lstar );
+                        }
+                        UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                                rk.beta->get(rk.mstage),dt,node,aux,q1,Lstar,q1);
 //                      if (dogParams.using_moment_limiter())
 //                      {  ApplyLimiter(node,aux,q1,
 //                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,node,aux,q1);
-//                  }
+                        AfterStep(dt,node,aux,q1);
+                    }
 
-//                  // Temporary storage
-//                  for (int i=(2-mbc); i<=(mx+mbc-1); i++)
-//                      for (int m=1; m<=meqn; m++)
-//                          for (int k=1; k<=method[1]; k++)
-//                          {
-//                              double tmp = (q2.get(i,m,k) + 9.0*q1.get(i,m,k))/25.0;
-//                              q2.set(i,m,k, tmp );
-//                              q1.set(i,m,k, 15.0*tmp - 5.0*q1.get(i,m,k) );
-//                          }
+                    // Temporary storage
+                    for (int i=(1-mbc); i<=(mx+mbc); i++)
+                    for (int m=1; m<=meqn; m++)
+                    {
+                        double tmp = (q2.get(i,m) + 9.0*q1.get(i,m))/25.0;
+                        q2.set(i,m, tmp );
+                        q1.set(i,m, 15.0*tmp - 5.0*q1.get(i,m) );
+                    }
 
-//                  // Stage: 6,7,8, and 9
-//                  for (int s=6; s<=9; s++)
-//                  {
-//                      rk.mstage = s;
-//                      BeforeStep(dt,node,aux,q1);
-//                      ConstructL(method,node,aux,q1,Lstar,smax);
-//                      UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                              rk.beta->get(rk.mstage),dt,node,aux,q1,Lstar,q1);
+                    // Stage: 6,7,8, and 9
+                    for (int s=6; s<=9; s++)
+                    {
+                        rk.mstage = s;
+                        BeforeStep(dt,node,aux,q1);
+                        ConstructL(node,aux,q1,Lstar,smax);
+                        UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                                rk.beta->get(rk.mstage),dt,node,aux,q1,Lstar,q1);
 //                      if (dogParams.using_moment_limiter())
 //                      {  ApplyLimiter(node,aux,q1,
 //                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,node,aux,q1);
-//                  }
+                        AfterStep(dt,node,aux,q1);
+                    }
 
-//                  // Stage: 10
-//                  rk.mstage = 10;
-//                  BeforeStep(dt,node,aux,q1);
-//                  ConstructL(method,node,aux,q1,Lstar,smax);
-//                  UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-//                          rk.beta->get(rk.mstage),dt,node,aux,q2,Lstar,q1);
+                    // Stage: 10
+                    rk.mstage = 10;
+                    BeforeStep(dt,node,aux,q1);
+                    ConstructL(node,aux,q1,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
+                            rk.beta->get(rk.mstage),dt,node,aux,q2,Lstar,q1);
 //                  if (dogParams.using_moment_limiter())
 //                  {  ApplyLimiter(node,aux,q1,
 //                          &ProjectRightEig,&ProjectLeftEig);  }
-//                  AfterStep(dt,node,aux,q1);
+                    AfterStep(dt,node,aux,q1);
 
-//                  CopyQ(q1,qnew);
-//                  // -----------------------------------------------          
-//                  break;
+                    // CopyQ(q1,qnew);
+                    qnew.copyfrom( q1 );
+                    // -----------------------------------------------          
+                    break;
 
-//              case 5:  // Fifth order in time (8-stages)
+                case 5:  // Fifth order in time (8-stages)
 
-//                  // -----------------------------------------------
-//                  CopyQ(qnew,q1);
-//                  q2.setall(0.);
+                    // -----------------------------------------------
+                    // CopyQ(qnew,q1);
+                    q1.copyfrom( qnew );
+                    q2.setall(0.);
 
-//                  for (int s=1; s<=8; s++)
-//                  {
-//                      rk.mstage = s;
-//                      BeforeStep(dt,node,aux,q1);
-//                      ConstructL(method,node,aux,q1,Lstar,smax);
-//                      if (s==1)
-//                      {  CopyQ(Lstar,Lold);  }
+                    for (int s=1; s<=8; s++)
+                    {
+                        rk.mstage = s;
+                        BeforeStep(dt,node,aux,q1);
+                        ConstructL(node,aux,q1,Lstar,smax);
+                        if (s==1)
+                        {  CopyQ(Lstar,Lold);  }
 
-//                      UpdateSoln(
-//                              rk.gamma->get(1,s), 
-//                              rk.gamma->get(2,s), 
-//                              rk.gamma->get(3,s), 
-//                              rk.delta->get(s), rk.beta->get(s),
-//                              dt, node, aux, qold, Lstar, q1, q2);
+                        UpdateSoln(
+                                rk.gamma->get(1,s), 
+                                rk.gamma->get(2,s), 
+                                rk.gamma->get(3,s), 
+                                rk.delta->get(s), rk.beta->get(s),
+                                dt, node, aux, qold, Lstar, q1, q2);
 
 //                      if (dogParams.using_moment_limiter())
 //                      {  ApplyLimiter(node,aux,q1,
 //                              &ProjectRightEig,&ProjectLeftEig);  }
-//                      AfterStep(dt,node,aux,q1);
-//                  }
+                        AfterStep(dt,node,aux,q1);
+                    }
 
-                    CopyQ(q1, qnew);
+                    // CopyQ(q1, qnew);
+                    qnew.copyfrom( q1 );
                     // -----------------------------------------------          
                     break;
 
@@ -302,7 +310,8 @@ void FinSolveRK(
                 }
 
                 // copy qold into qnew
-                CopyQ(qold,qnew);
+                // CopyQ(qold, qnew);
+                qnew.copyfrom( qold );
             }
 
         } // End of m_accept loop
