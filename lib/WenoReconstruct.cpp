@@ -13,6 +13,10 @@
 //
 // Output:
 //
+//      TODO - this comment is not correct.  When you take differences of
+//      these, ( g_{i+1/2} - g_{i-1/2} ) / dx, only THEN do you get a finite
+//      difference approximation to g_x( x_i ).
+//
 //      diff_g( 1:meqn, 1 ) - The derivative of g evaluated at the 'right' half
 //                          of the stencil, i+1/2.  To get the same derivative
 //                          at i-1/2, reverse the stencil, and call this same
