@@ -55,15 +55,15 @@ if __name__ == '__main__':
     parser.add_option('-i', '--iterations', type='int', default=6, 
                        help='''number of times we wish to run computation.
                        Default = 6''')
-    parser.add_option('-x', '--mx-start', type='int', default=4, 
+    parser.add_option('-x', '--mx-start', type='int', default=10, 
                        help='''MX_START = number of grid points to start
-                       computation with''')
+                       computation with. Default = 10''')
     parser.add_option('-t', '--dt-start', type='float', default=0.44,
                        help='''DT_START = starting dt value''')
     parser.add_option('-s', '--space-order', type='int', default=5,
                        help='''SPACE_ORDER = spatial order of accuracy''')
-    parser.add_option('-p', '--time-order', type='int', default=2,
-                       help='''TIME_ORDER = time order of accuracy''')
+    parser.add_option('-p', '--time-order', type='int', default=3,
+                       help='''TIME_ORDER = time order of accuracy. Default = 3''')
     parser.add_option('-n', '--n-start', type='int', default=0, 
                        help='''N_START = folder number to start output from.
                        Folders are named output000i with 
