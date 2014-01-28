@@ -51,7 +51,8 @@ void FinSolveRK(
     // Set initialize qstar and auxstar values
     // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
     qstar.copyfrom( qold   );
-    auxstar.copyfrom( aux  );
+    if( maux > 0 )
+    { auxstar.copyfrom( aux  ); }
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
