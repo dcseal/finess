@@ -84,7 +84,6 @@ BeforeStep           = $(LIB1D)/BeforeStep
 AfterUpdateSoln      = $(LIB1D)/AfterUpdateSoln
 ApplyLimiter         = $(LIB1D)/ApplyLimiter
 ApplyPosLimiter      = $(LIB1D)/ApplyPosLimiter
-RiemannSolve         = $(LIB1D)/RiemannSolveLLF
 ConstructL           = $(LIB1D)/ConstructL
 InitApp              = $(LIB1D)/InitApp
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
@@ -136,7 +135,6 @@ LIB1D_OBJECTS = \
   $(LIB1D)/UpdateSoln.o \
   $(LIB1D)/ResInt.o \
   $(LIB1D)/GetCFL.o \
-  $(RiemannSolve).o \
   $(LIB1D)/SetRKinfo.o \
 
 LIB1D_SOURCES = \
@@ -172,6 +170,5 @@ LIB1D_SOURCES = \
   $(LIB1D)/UpdateSoln.cpp \
   $(LIB1D)/ResInt.cpp \
   $(LIB1D)/GetCFL.cpp \
-  $(RiemannSolve).cpp \
   $(LIB1D)/SetRKinfo.cpp \
 
