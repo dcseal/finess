@@ -10,7 +10,7 @@
 using namespace std;
 
 void FinSolveRK(
-    const dTensor2& node, const dTensor1& prim_vol, 
+    const dTensor2& node, const dTensor1& prim_vol,      // TODO - remove these params
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
     dTensorBC1& smax,
     double tstart, double tend, int nv,

@@ -98,7 +98,8 @@ DFluxFunc            = $(LIB1D)/LaxWendroff/DFluxFunc
 D2FluxFunc           = $(LIB1D)/LaxWendroff/D2FluxFunc
 
 # TODO - these should be added in at a later time (-DS)
-#DogSolveLxW          = $(LIB1D)/DogSolveLxW
+FinSolveLxW           = $(LIB1D)/FinSolveLxW
+ConstructIntegratedL  = $(LIB1D)/ConstructIntegratedL
 #LaxWendroff          = $(LIB1D)/LaxWendroff/LaxWendroff
 #LaxWendroffTD        = $(LIB1D)/LaxWendroff/LaxWendroffTD
 #RiemannSolveLxW      = $(LIB1D)/LaxWendroff/RiemannSolveLxW_LLF
@@ -114,9 +115,11 @@ LIB1D_OBJECTS = \
   $(Output_Extra).o \
   $(ConSoln).o \
   $(LIB1D)/FinSolveRK.o \
+  $(FinSolveLxW).o \
   $(DogSolveUser).o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
+  $(ConstructIntegratedL).o \
   $(LIB1D)/CopyQ.o \
   $(AfterQinit).o \
   $(BeforeStep).o \
@@ -148,9 +151,11 @@ LIB1D_SOURCES = \
   $(Output_Extra).cpp \
   $(ConSoln).cpp \
   $(LIB1D)/FinSolveRK.cpp \
+  $(FinSolveLxW).cpp \
   $(DogSolveUser).cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \
+  $(ConstructIntegratedL).cpp \
   $(LIB1D)/CopyQ.cpp \
   $(AfterQinit).cpp \
   $(BeforeStep).cpp \
