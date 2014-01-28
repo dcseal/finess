@@ -67,7 +67,7 @@ const double eps = 1.0e-12;
 
         // -- Fifth-order Jiang and Shu WENO reconstruction -- //
 
-// TODO - finish filling this in 
+// -- TODO finish filling in other options here -- //
 
         // Compute smoothness indicators (identical for left/right values):
         beta0 =(13./12.)*pow(uim2-2*uim1+ui,2)+0.25*pow(uim2-4*uim1+3*ui,2);
