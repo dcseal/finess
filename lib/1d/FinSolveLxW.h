@@ -34,10 +34,10 @@ void AfterFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol
 
 // ------------------------------------------------------------
 // LxW functions -- See LaxWendroff/
-void ConstructIntegratedL( double dt, const dTensor2& node, 
-    const dTensorBC2& aux, const dTensorBC2& q,
-    dTensorBC2& f, dTensorBC2& fx, dTensorBC2& fxx, dTensorBC2&
-    qx, dTensorBC1& smax, dTensorBC2& F);
+//  void ConstructIntegratedL( double dt, const dTensor2& node, 
+//      const dTensorBC2& aux, const dTensorBC2& q,
+//      dTensorBC2& f, dTensorBC2& fx, dTensorBC2& fxx, dTensorBC2&
+//      qx, dTensorBC1& smax, dTensorBC2& F);
 // ------------------------------------------------------------
 
 #endif

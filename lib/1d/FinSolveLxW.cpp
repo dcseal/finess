@@ -101,7 +101,7 @@ void FinSolveLxW(
             // ---------------------------------------------------------
             // Take a full time step of size dt
             BeforeStep(dt,node,aux,qnew);
-            ConstructIntegratedL( dt, node, aux, qnew, f, fx, fxx, qx, smax, F);
+//          ConstructIntegratedL( dt, node, aux, qnew, f, fx, fxx, qx, smax, F);
 // Perform a WENO reconstruction on F:  TODO
             
             // Update the solution:
