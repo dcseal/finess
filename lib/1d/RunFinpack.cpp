@@ -144,6 +144,12 @@ int RunFinpack(string outputdir)
             FinSolveRK(node, prim_vol, aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
+        else if( time_stepping_method == "Lax-Wendroff")
+        {
+            FinSolveLxW( node, prim_vol,      // TODO - remove these params 
+                aux, qold, qnew, smax, tstart, tend, 
+                nv, dtv, cflv, outputdir);
+        }
         else if (time_stepping_method == "User-Defined")
         {
             // User-defined time-stepping scheme

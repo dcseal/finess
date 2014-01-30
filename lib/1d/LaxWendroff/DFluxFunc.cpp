@@ -9,6 +9,18 @@
 //     Burger's equation, f'(q) = q
 //     Acoustics equation, f'(q) = [0 1; 1 0]
 //
+// Inputs:
+//
+//     xpts( 1:numpts )         - a list of x-values at various spatial points.
+//        Q( 1:numpts, 1:meqn ) - a vector of conserved variables
+//      Aux( 1:numpts, 1:maux ) - vector of auxilary values
+//   
+// Output:
+//
+//    Dflux( 1:numpts, 1:meqn, 1:meqn ) - f'(q) at each point.
+//
+// See also: FluxFunc and D2FluxFunc.
+//
 void DFluxFunc(const dTensor1& xpts, 
 	       const dTensor2& Q,
 	       const dTensor2& Aux,

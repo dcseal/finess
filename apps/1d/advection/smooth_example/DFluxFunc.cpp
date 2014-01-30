@@ -12,7 +12,6 @@ void DFluxFunc(const dTensor1& xpts,
 {
     const int numpts = xpts.getsize();
     const int meqn   = Q.getsize(2);
-
     for (int i=1; i<=numpts; i++)
     {
         const double x = xpts.get(i);

@@ -44,7 +44,6 @@ void FinSolveRK(
     dTensorBC2      q2(mx, meqn, mbc);
 
     // Set initialize qstar and auxstar values
-    // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
     qstar.copyfrom( qold );
     auxstar.copyfrom( aux );
 

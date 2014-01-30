@@ -59,7 +59,7 @@ axis([-1.05 1.05 -1.05 1.05]);
 set(gca,'xtick',-1:0.5:1);
 set(gca,'ytick',-1:0.5:1);
 set(gca,'fontsize',16);
-t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [DoGPack]']); 
+t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
     
 

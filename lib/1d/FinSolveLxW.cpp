@@ -38,23 +38,12 @@ void FinSolveLxW(
 
     // Allocate storage for this solver
 
-    // Flux function, and (linear) derivatives of the flux function
-    dTensorBC2    f(mx, meqn, mbc);
-    dTensorBC2   fx(mx, meqn, mbc);
-    dTensorBC2  fxx(mx, meqn, mbc);
+    dTensorBC2  Lstar(mx, meqn, mbc); // right hand side (for Euler steps)
+    dTensorBC2    F(mx, meqn, mbc );  // time-integrated flux
 
-    // Time-integrated flux function:
-    dTensorBC2    F(mx, meqn, mbc );
-
-    // Single-derivative of state vector (using conserved variables):
-    dTensorBC2   qx(mx, meqn, mbc);
-
-    // Set initialize qstar and auxstar values
-    // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    //qstar.copyfrom( qold );
-    //auxstar.copyfrom( aux );
-    dTensorBC2 auxold( mx, meqn, mbc );
-    auxold.copyfrom( aux );
+    // Set initialize auxstar values
+    dTensorBC2 auxold( mx, maux, mbc );
+    if( maux > 0 ){auxold.copyfrom( aux );}
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -101,16 +90,18 @@ void FinSolveLxW(
             // ---------------------------------------------------------
             // Take a full time step of size dt
             BeforeStep(dt,node,aux,qnew);
-//          ConstructIntegratedL( dt, node, aux, qnew, f, fx, fxx, qx, smax, F);
-// Perform a WENO reconstruction on F:  TODO
-            
+            SetBndValues(node, aux, qnew);
+            ConstructIntegratedF( dt, node, aux, qnew, smax, F);
+            ConstructL( node, aux, qnew, F, Lstar, smax);  // <-- "new" method
+            // ConstructL( node, aux, qnew, Lstar, smax);  // <-- Euler method
+
             // Update the solution:
-//  #pragma omp parallel for
-//          for( int k=0; k < numel; k++ )
-//          {
-//              double tmp = qnew.vget( k ) + F.vget(k);
-//              qnew.vset(k, tmp );
-//          }
+#pragma omp parallel for
+            for( int k=0; k < numel; k++ )
+            {
+                double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                qnew.vset(k, tmp );
+            }
 
             // Perform any extra work required:
             AfterStep(dt,node,aux,qnew);
@@ -159,8 +150,7 @@ void FinSolveLxW(
 
                 // copy qold into qnew
                 // CopyQ(qold, qnew);
-                qnew.copyfrom( qold );
-                auxold.copyfrom( aux );
+                qnew.copyfrom( qold  );
             }
 
         } // End of m_accept loop
