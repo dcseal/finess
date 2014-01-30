@@ -26,12 +26,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % gas constant
-fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
-if fids==-1
-  error(['File  ',outputdir,'/eulerhelp.dat  not found.']);
+if( exist( [outputdir,'/eulerhelp.dat'], f ) )
+    fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
+    if(fids==-1)
+      error(['File  ',outputdir,'/eulerhelp.dat  not found.']);
+    end
+    gamma_gas  = fscanf(fids,'%e',1);
+    fclose(fids);
+else
+    gamma_gas = 1.4;
+    disp(['Setting gamma_gas = ', num2str( '%f', gamma_gas ) ]);
 end
-gamma_gas  = fscanf(fids,'%e',1);
-fclose(fids);
 
 rr = reshape(sqrt( xc.^2 + yc.^2 ),mx*my,1);
     
