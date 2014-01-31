@@ -352,13 +352,10 @@ assert_eq( mbc, 3 );
             // TODO - check that this is the correct value ...
             double xi = xlow + double( is )*dx - 0.5*dx;
             xvals.set( s, xi );
-//printf("i = %d\n", i );
             for( int m=1; m <= meqn; m++ )
             {
                 qvals.set( m, s, q.get(is, m ) );
                 fvals.set( m, s, F.get(is, m ) ); // <-- NEW part (sample integrated flux)
-//printf(" is s = %d %d\n", is, s );
-//assert_almost_eq( qvals.get(m,s), fvals.get(m,s) );
             }
             for( int ma=1; ma <= maux; ma++ )
             {

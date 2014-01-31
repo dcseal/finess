@@ -7,8 +7,17 @@
 //
 //     D2flux(:, i, j, k) = \partial^2 f_i / \partial q_j \partial q_k
 //
-//     Dummy Function Call if not using LaxWendroff
+// Inputs:
 //
+//     xpts( 1:numpts )         - a list of x-values at various spatial points.
+//        Q( 1:numpts, 1:meqn ) - a vector of conserved variables
+//      Aux( 1:numpts, 1:maux ) - vector of auxilary values
+//   
+// Output:
+//
+//    D2flux( 1:numpts, 1:meqn, 1:meqn, 1:meqn ) - f''(q) at each point.
+//
+// See also: FluxFunc and D2FluxFunc.
 void D2FluxFunc(const dTensor1& xpts, 
 		const dTensor2& Q,
 		const dTensor2& Aux,

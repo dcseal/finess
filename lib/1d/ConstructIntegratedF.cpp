@@ -170,19 +170,70 @@ const int half_mpts_sten =   mbc;  assert_eq( half_mpts_sten, 3 );
             f_t.set( m1, tmp );
         }
 
+        // ---  Third-order terms --- //
+        dTensor1 f_tt( meqn );
+        if( dogParams.get_time_order() > 2 )
+        {
+
+            f_tt.setall(0.);
+
+            // Hessian
+            dTensor4 H( 1, meqn, meqn, meqn );
+            D2FluxFunc(xpts, q_transpose, a_transpose, H);
+
+            // Compute terms that get multiplied by \pd2{ f }{ q }.
+            dTensor1 tmp_vec( meqn );
+            for( int m =1; m <= meqn; m++ )
+            {
+                double tmp1 = 0.;
+                double tmp2 = 0.;
+                for( int m1=1; m1 <= meqn; m1++ )
+                for( int m2=1; m2 <= meqn; m2++ )
+                {
+                    tmp1 += H.get(1,m,m1,m2) * fx_val.get(m1)*fx_val.get(m2);
+                    tmp2 += H.get(1,m,m2,m2) * qx_val.get(m1)*fx_val.get(m2);
+                }
+                f_tt.set( m, tmp1 );
+                tmp_vec.set( m, tmp2 );
+            }
+
+            // Add in the third term that gets multiplied by A:
+            for( int m1=1; m1 <= meqn; m1++ )
+            {
+                double tmp = 0.;
+                for( int m2=1; m2 <= meqn; m2++ )
+                {
+                    tmp += A.get(1,m1,m2)*fxx_val.get(m2);
+                }
+                tmp_vec.set( m1, tmp_vec.get(m1) + tmp );
+            }
+
+            // Multiply final term by A:
+            for( int m1=1; m1 <= meqn; m1++ )
+            {
+                double tmp = 0.;
+                for( int m2=1; m2 <= meqn; m2++ )
+                {
+                    tmp += A.get(1,m1,m2)*tmp_vec.get(m2);
+                }
+                f_tt.set( m1, f_tt.get(m1) + tmp );
+            }
+
+
+        }
+
         // Second-order accuracy:
         for( int m=1; m<=meqn; m++ )
         {
-            F.set( i, m, f.get(i,m) - 0.5*dt*f_t.get(m) );
-            // F.set( i, m, f.get(i,m) ); // TODO
+            F.set( i, m, f.get(i,m) - 0.5*dt*f_t.get(m) + dt*dt/6.0*f_tt.get(m) );
         }
 
-        // TODO - INCLUDE HIGHER-ORDER TERMS HERE:
 
     }
 
     // TODO - something needs to be done about the boundary data!!!
-    // For now, we'll assume periodic
+    // For now, we'll assume F satisfies the same boundary conditions that Q
+    // does (but this is not true!!)
 void SetBndValues(const dTensor2&, dTensorBC2&, dTensorBC2&);
 SetBndValues(node, aux, F );
 
