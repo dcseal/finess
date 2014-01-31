@@ -11,22 +11,18 @@
 // Burger's Equation, D2flux = 1.0
 //
 void D2FluxFunc(const dTensor1& xpts, 
-		const dTensor2& Q,
-		const dTensor2& Aux, 
-		dTensor4& D2flux)
+        const dTensor2& Q,
+        const dTensor2& Aux, 
+        dTensor4& D2flux)
 {
-  int i,m1,m2,m3;
-  int numpts=xpts.getsize();
 
-  double x;
-  double h,u;
+    int numpts=xpts.getsize();
+    for (int i=1; i<=numpts; i++)
+    {
+        const double x = xpts.get(i);
 
-  for (i=1; i<=numpts; i++)
-  {
-    x = xpts.get(i);
+        // 2nd Derivative of Flux function
+        D2flux.set(i, 1, 1, 1, 1.0e0 );       // Burger's Equation
 
-    // 2nd Derivative of Flux function
-    D2flux.set(i, 1, 1, 1, 1.0e0 );       // Burger's Equation
-
-  }    
+    }    
 }

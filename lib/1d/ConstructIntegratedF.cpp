@@ -122,14 +122,16 @@ const int half_mpts_sten =   mbc;  assert_eq( half_mpts_sten, 3 );
 
         for( int m=1; m <= meqn; m++ )
         {
-            int s = -half_mpts_sten+1;
+            int s = -half_mpts_sten;
             for( int r = 1; r <= mpts_sten; r++ )
             {
                 Fvals.set( m, r, f.get( i+s, m ) );
                 qvals.set( m, r, q.get( i+s, m ) );
+//printf(" Reading %d;  saving to %d\n", i+s, r );
                 s++;
             }
         }
+//exit(1);
 
         // Storage for local derivatives:
         dTensor1 fx_val  ( meqn );
@@ -165,13 +167,13 @@ const int half_mpts_sten =   mbc;  assert_eq( half_mpts_sten, 3 );
             double tmp = 0.;
             for( int m2=1; m2 <= meqn; m2++ )
             {
-                tmp += A.get(1, m1,m2) * fx_val.get(m2);
+                tmp += -A.get(1, m1, m2) * fx_val.get(m2);
             }
             f_t.set( m1, tmp );
         }
 
         // ---  Third-order terms --- //
-        dTensor1 f_tt( meqn );
+        dTensor1 f_tt( meqn );   f_tt.setall(0.);
         if( dogParams.get_time_order() > 2 )
         {
 
@@ -225,7 +227,7 @@ const int half_mpts_sten =   mbc;  assert_eq( half_mpts_sten, 3 );
         // Second-order accuracy:
         for( int m=1; m<=meqn; m++ )
         {
-            F.set( i, m, f.get(i,m) - 0.5*dt*f_t.get(m) + dt*dt/6.0*f_tt.get(m) );
+            F.set( i, m, f.get(i,m) + 0.5*dt*(f_t.get(m) + dt/3.0*f_tt.get(m)) );
         }
 
 
@@ -238,6 +240,3 @@ void SetBndValues(const dTensor2&, dTensorBC2&, dTensorBC2&);
 SetBndValues(node, aux, F );
 
 }
-
-
-

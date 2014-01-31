@@ -124,11 +124,11 @@ MX_START grid points.
     parser.add_argument('-t', '--order',
                       type = int,
                       nargs   = 2,
-                      default = [2, 2],
+                      default = [5, 3],
                       metavar = ('S_ORDER', 'T_ORDER'),
                       help = 
 '''Order of accuracy in space S_ORDER, and time T_ORDER.
-(default: [2,2])''')
+(default: [5,3])''')
   
     return parser.parse_args()
 

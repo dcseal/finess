@@ -133,8 +133,8 @@ set(t1,'fontsize',16);
 %  disp(['   min(xi) = ', num2str(min(xi)), '    max(xi) = ', num2str(max(xi))]);
 
   %  print error in exact vs computed solution
-%  err2 = norm(qsoln-qex,2)/norm(qex,2);
-   err2 = dx*norm(qsoln-qex,2);
+   err2 = norm(qsoln-qex,2)/norm(qex,2);
+%  err2 = dx*norm(qsoln-qex,2);
 %  disp(dx*norm(qex,2))
 
    % Friendly helper message: (commented to pull convergence numbers more easily)
@@ -142,7 +142,7 @@ set(t1,'fontsize',16);
 %  disp(['   dx = ',num2str(dx,'%2.15e'),['         err2 = ' ...
 %                      ''],num2str(err2,'%2.15e')]);
 %  fprintf(1, 'err2 = %2.15e\n', err2 );
-   fprintf(1, '%2.15e\n', err2 );
+   fprintf(1, '%d %2.15e\n', mx, err2 );
 
     % Plot the error
     figure(4);
