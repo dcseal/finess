@@ -13,10 +13,10 @@ void Diff1( double dx, const dTensor2& f, dTensor1& fx )
     const int mcomps = f.getsize( 1 );
 
     // TODO - include options for larger stencils:
-    assert_eq( f.getsize( 2 ), 6 );
+    assert_eq( f.getsize( 2 ), 5 );
     for( int m=1; m <= mcomps; m++ )
     {
-        double tmp = (  f.get( m, 1 ) - f.get( m, 6 ) )*(1.0/12.0);
+        double tmp = (  f.get( m, 1 ) - f.get( m, 5 ) )*(1.0/12.0);
         tmp       += ( -f.get( m, 2 ) + f.get( m, 4 ) )*(2.0/ 3.0);
         fx.set( m, tmp / dx );
     }
@@ -29,10 +29,10 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
     const int mcomps = f.getsize( 1 );
 
     // TODO - include options for larger stencils:
-    assert_eq( f.getsize( 2 ), 6 );
+    assert_eq( f.getsize( 2 ), 5 );
     for( int m=1; m <= mcomps; m++ )
     {
-        double tmp = ( -f.get( m, 1 ) - f.get( m, 6 ) )*(1.0/12.0);
+        double tmp = ( -f.get( m, 1 ) - f.get( m, 5 ) )*(1.0/12.0);
         tmp       += (  f.get( m, 2 ) + f.get( m, 4 ) )*(4.0/ 3.0);
         tmp       += ( -f.get( m, 3 )                 )*(5.0/ 2.0);
         fxx.set( m, tmp / (dx*dx) );
@@ -103,8 +103,8 @@ void ConstructIntegratedF( double dt, const dTensor2& node,
     SampleFunction( 1-mbc, mx+mbc, node, q, aux, f, &FluxFunc );
 
 // TODO  - allow for different sized stencils
-const int      mpts_sten = 2*mbc;  assert_eq( mpts_sten,      6 );
-const int half_mpts_sten =   mbc;  assert_eq( half_mpts_sten, 3 );
+const int      mpts_sten = 2*mbc-1;  assert_eq( mpts_sten,      5 );
+const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
 
     // Compute finite difference approximations on all of the conserved
     // variables:
@@ -122,16 +122,17 @@ const int half_mpts_sten =   mbc;  assert_eq( half_mpts_sten, 3 );
 
         for( int m=1; m <= meqn; m++ )
         {
-            int s = -half_mpts_sten;
+            int s = -half_mpts_sten+1;
             for( int r = 1; r <= mpts_sten; r++ )
             {
                 Fvals.set( m, r, f.get( i+s, m ) );
                 qvals.set( m, r, q.get( i+s, m ) );
+//assert_almost_eq( f.get(i+s,m), q.get(i+s,m) );
+//printf("Fvals.get(%d,%d) = %g; qvals.get(%d,%d) = %g\n", m, r, Fvals.get(m,r), m, r, qvals.get(m,r) );
 //printf(" Reading %d;  saving to %d\n", i+s, r );
                 s++;
             }
         }
-//exit(1);
 
         // Storage for local derivatives:
         dTensor1 fx_val  ( meqn );
@@ -224,7 +225,7 @@ const int half_mpts_sten =   mbc;  assert_eq( half_mpts_sten, 3 );
 
         }
 
-        // Second-order accuracy:
+        // Second/Third-order accuracy:
         for( int m=1; m<=meqn; m++ )
         {
             F.set( i, m, f.get(i,m) + 0.5*dt*(f_t.get(m) + dt/3.0*f_tt.get(m)) );
