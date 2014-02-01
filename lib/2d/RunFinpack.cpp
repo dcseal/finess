@@ -79,6 +79,7 @@ int RunFinpack(string outputdir)
     // Set initial data on computational grid
     // Set values and apply L2-projection
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
+    qold.copyfrom(qnew);
 
     // Run AfterQinit to set any necessary variables
     AfterQinit( aux, qnew);
@@ -104,6 +105,12 @@ int RunFinpack(string outputdir)
         {  
             // Runge-Kutta time-stepping scheme
             FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
+                    nv, dtv, cflv, outputdir);
+        }
+        else if (time_stepping_method == "Lax-Wendroff")
+        {
+            // User-defined time-stepping scheme
+            FinSolveLxW(aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
         else if (time_stepping_method == "User-Defined")

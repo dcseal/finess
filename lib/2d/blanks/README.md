@@ -1,6 +1,11 @@
-# Default (blank) templates.
+# Default (blank) templates
 
-These functions are required to be defined by every application.
+This is a collection of potential templates that can be used for each
+application.  It is advisable that the user copies an existing application in
+place of copying or modifying these.
 
-TODO - These "templates" need documentation to be useful.  I don't understand
-why their documentation was removed. (-DS)
+The code assumes that each of these function have been defined in order to
+compile.  For example, please visit the application directory.
+
+TODO - some documentation needs to be written here, as well as in each REQUIRED
+TEMPLATE.  See lib/1d/blanks for what's in there.

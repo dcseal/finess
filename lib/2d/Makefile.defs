@@ -89,6 +89,8 @@ ApplyPosLimiter      = $(LIB2D)/ApplyPosLimiter
 ConstructL           = $(LIB2D)/ConstructL
 BeforeFullTimeStep   = $(LIB2D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB2D)/AfterFullTimeStep
+FinSolveRK           = $(LIB2D)/FinSolveRK
+FinSolveLxW          = $(LIB2D)/FinSolveLxW
 DogSolveUser         = $(LIB2D)/DogSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
@@ -113,7 +115,8 @@ LIB2D_OBJECTS = \
   $(SampleFunction).o \
   $(Output).o \
   $(ConSoln).o \
-  $(LIB2D)/FinSolveRK.o \
+  $(FinSolveRK).o \
+  $(FinSolveLxW).o \
   $(LIB2D)/SetRKinfo.o \
   $(LIB2D)/GetCFL.o \
   $(AfterQinit).o \
@@ -143,7 +146,8 @@ LIB2D_SOURCES = \
   $(SampleFunction).cpp \
   $(Output).cpp \
   $(ConSoln).cpp \
-  $(LIB2D)/FinSolveRK.cpp \
+  $(FinSolveRK).cpp \
+  $(FinSolveLxW).cpp \
   $(LIB2D)/SetRKinfo.cpp \
   $(LIB2D)/GetCFL.cpp \
   $(AfterQinit).cpp \

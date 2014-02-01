@@ -3,8 +3,8 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "RKinfo.h"
-#include "FinSolveRK.h"
+#include "RKinfo.h"           // Coefficients for the RK method
+#include "FinSolveRK.h"       // Functions directly called from this function
 #include "DogParams.h"
 #include "DogParamsCart2.h"
 
@@ -265,7 +265,7 @@ void FinSolveRK(
             if( dogParams.get_verbosity() )
             {
                 cout << setprecision(3);
-                cout << "FinSolve1D ... Step" << setw(5) << n_step;
+                cout << "FinSolveRKRK2D ... Step" << setw(5) << n_step;
                 cout << "   CFL =" << setw(6) << fixed << cfl;
                 cout << "   dt =" << setw(11) << scientific << dt;
                 cout << "   t =" << setw(11) << scientific << t <<endl;
@@ -291,7 +291,7 @@ void FinSolveRK(
                 t = told;
                 if( dogParams.get_verbosity() )
                 {
-                    cout<<"FinSolve1D rejecting step...";
+                    cout<<"FinSolveRK2D rejecting step...";
                     cout<<"CFL number too large";
                     cout<<endl;
                 }
