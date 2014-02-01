@@ -87,6 +87,7 @@ AfterUpdateSoln      = $(LIB2D)/AfterUpdateSoln
 ApplyLimiter         = $(LIB2D)/ApplyLimiter
 ApplyPosLimiter      = $(LIB2D)/ApplyPosLimiter
 ConstructL           = $(LIB2D)/ConstructL
+ConstructIntegratedR = $(LIB2D)/ConstructIntegratedR
 BeforeFullTimeStep   = $(LIB2D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB2D)/AfterFullTimeStep
 FinSolveRK           = $(LIB2D)/FinSolveRK
@@ -125,6 +126,7 @@ LIB2D_OBJECTS = \
   $(BeforeStep).o \
   $(AfterStep).o \
   $(ConstructL).o \
+  $(ConstructIntegratedR).o \
   $(AfterFullTimeStep).o \
   $(LIB2D)/UpdateSoln.o \
 # $(AfterUpdateSoln).o \
@@ -156,6 +158,7 @@ LIB2D_SOURCES = \
   $(BeforeStep).cpp \
   $(AfterStep).cpp \
   $(ConstructL).cpp \
+  $(ConstructIntegratedR).cpp \
   $(AfterFullTimeStep).cpp \
   $(LIB2D)/UpdateSoln.cpp \
 # $(AfterUpdateSoln).cpp \
