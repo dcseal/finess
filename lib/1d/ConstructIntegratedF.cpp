@@ -127,9 +127,6 @@ const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
             {
                 Fvals.set( m, r, f.get( i+s, m ) );
                 qvals.set( m, r, q.get( i+s, m ) );
-//assert_almost_eq( f.get(i+s,m), q.get(i+s,m) );
-//printf("Fvals.get(%d,%d) = %g; qvals.get(%d,%d) = %g\n", m, r, Fvals.get(m,r), m, r, qvals.get(m,r) );
-//printf(" Reading %d;  saving to %d\n", i+s, r );
                 s++;
             }
         }
@@ -178,8 +175,6 @@ const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
         if( dogParams.get_time_order() > 2 )
         {
 
-            f_tt.setall(0.);
-
             // Hessian
             dTensor4 H( 1, meqn, meqn, meqn );
             D2FluxFunc(xpts, q_transpose, a_transpose, H);
@@ -194,7 +189,7 @@ const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
                 for( int m2=1; m2 <= meqn; m2++ )
                 {
                     tmp1 += H.get(1,m,m1,m2) * fx_val.get(m1)*fx_val.get(m2);
-                    tmp2 += H.get(1,m,m2,m2) * qx_val.get(m1)*fx_val.get(m2);
+                    tmp2 += H.get(1,m,m1,m2) * qx_val.get(m1)*fx_val.get(m2);
                 }
                 f_tt.set( m, tmp1 );
                 tmp_vec.set( m, tmp2 );
