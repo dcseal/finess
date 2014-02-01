@@ -316,7 +316,7 @@ void FinSolveRK(
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln(node, aux, qnew, t, outputdir);
+        ConSoln(aux, qnew, t, outputdir);
 
     } // End of while loop
 

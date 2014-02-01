@@ -126,7 +126,7 @@ int RunFinpack(string outputdir)
     Output(node, aux, qnew, 0.0, 0, outputdir);
 
     // Compute conservation and print to file
-    ConSoln( node, aux, qnew, 0.0, outputdir);
+    ConSoln( aux, qnew, 0.0, outputdir);
 
     // Main loop for time stepping
     double tstart = 0.0;

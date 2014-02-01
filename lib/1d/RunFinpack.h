@@ -16,7 +16,7 @@ void AuxFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& auxvals);
 void AfterQinit(const dTensor2& node, dTensorBC2& aux, dTensorBC2& q);
 
-void ConSoln(const dTensor2& node, 
+void ConSoln(
     const dTensorBC2& aux,
     const dTensorBC2& q, double t, string outputdir);
 

@@ -6,6 +6,7 @@
 #include <iomanip>
 #include "dogdefs.h"
 #include "DogParams.h"
+#include "DogParamsCart1.h"
 
 using namespace std;
 
@@ -46,10 +47,9 @@ void ConSoln(
         {
             qsum.set(m,0.0);
 
-            for (int i=1; i<=melems; i++)
+            for (int i=1; i<=mx; i++)
             {
-                const double x    = node.get(i,1);
-                const double dtmp = node.get(i+1,1)-node.get(i,1);
+                const double x    = xlow + (double(i)-0.5)*dx;
                 const double qtmp = q.get(i, m);
 
                 qsum.set(m, qsum.get(m) + dx*qtmp );
@@ -62,10 +62,9 @@ void ConSoln(
         {
             qsum.set(m, 0.0);
 
-            for (int i=1; i<=melems; i++)
+            for (int i=1; i<=mx; i++)
             {
-                const double x = node.get(i,1);
-                const double dtmp = node.get(i+1,1)-node.get(i,1);
+                const double x    = xlow + (double(i)-0.5)*dx;
                 const double qtmp = q.get(i,m);
                 const double atmp = aux.get(i, dogParams.get_mcapa() );
 

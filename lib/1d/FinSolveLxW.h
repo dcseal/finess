@@ -7,7 +7,7 @@ void SetBndValues(const dTensor2& node, dTensorBC2& aux, dTensorBC2& q);
 
 void CopyQ(const dTensorBC2&, dTensorBC2&);
 
-void ConSoln( const dTensor2& node, 
+void ConSoln( 
     const dTensorBC2& aux,
     const dTensorBC2& q, 
     double t, string outputdir);
