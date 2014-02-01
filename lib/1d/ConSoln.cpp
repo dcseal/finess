@@ -9,21 +9,26 @@
 
 using namespace std;
 
-void ConSoln( const dTensor2& node, 
+void ConSoln( 
     const dTensorBC2& aux,
     const dTensorBC2& q, 
     double t, string outputdir)
 {
 
-    const int melems = q.getsize(1);
-    const int   meqn = q.getsize(2);
-    const int   maux = aux.getsize(2);
+    const int     mx = dogParamsCart1.get_mx();
+    const int   meqn = dogParams.get_meqn();
+    const int   maux = dogParams.get_maux();
+
+    // Grid information:
+    const double dx   = dogParamsCart1.get_dx();
+    const double xlow = dogParamsCart1.get_xlow();
+
     string fname1 = outputdir+"/conservation.dat";
     ofstream write_file1,write_file2;
     dTensor1 qsum(meqn);
     dTensor1 res_sum(meqn);
 
-    if (t==0) 
+    if( t==0 ) 
     {
         write_file1.open(fname1.c_str(), ofstream::out);
     }
@@ -43,11 +48,11 @@ void ConSoln( const dTensor2& node,
 
             for (int i=1; i<=melems; i++)
             {
-                double x = node.get(i,1);
-                double dtmp = node.get(i+1,1)-node.get(i,1);
-                double qtmp = q.get(i, m);
+                const double x    = node.get(i,1);
+                const double dtmp = node.get(i+1,1)-node.get(i,1);
+                const double qtmp = q.get(i, m);
 
-                qsum.set(m, (qsum.get(m) + dtmp*qtmp) );
+                qsum.set(m, qsum.get(m) + dx*qtmp );
             }
         }
     }
@@ -59,12 +64,12 @@ void ConSoln( const dTensor2& node,
 
             for (int i=1; i<=melems; i++)
             {
-                double x = node.get(i,1);
-                double dtmp = node.get(i+1,1)-node.get(i,1);
-                double qtmp = q.get(i,m);
-                double atmp = aux.get(i, dogParams.get_mcapa() );
+                const double x = node.get(i,1);
+                const double dtmp = node.get(i+1,1)-node.get(i,1);
+                const double qtmp = q.get(i,m);
+                const double atmp = aux.get(i, dogParams.get_mcapa() );
 
-                qsum.set(m, (qsum.get(m) + atmp*dtmp*qtmp) );
+                qsum.set(m, (qsum.get(m) + atmp*dx*qtmp) );
             }
         }
     }
