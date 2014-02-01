@@ -96,3 +96,43 @@ const double eps = 1.0e-12;
     }
 
 }
+
+
+// Central Finite difference approximations:
+//
+// First-derivative (using a 5 point central stencil)
+void Diff1( double dx, const dTensor2& f, dTensor1& fx )
+{
+
+    const int mcomps = f.getsize( 1 );
+
+    // TODO - include options for larger stencils:
+    assert_eq( f.getsize( 2 ), 5 );
+    for( int m=1; m <= mcomps; m++ )
+    {
+        double tmp = (  f.get( m, 1 ) - f.get( m, 5 ) )*(1.0/12.0);
+        tmp       += ( -f.get( m, 2 ) + f.get( m, 4 ) )*(2.0/ 3.0);
+        fx.set( m, tmp / dx );
+    }
+
+}
+
+// Central Finite difference approximations:
+//
+// Second-derivative (using a 5 point central stencil)
+void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
+{
+
+    const int mcomps = f.getsize( 1 );
+
+    // TODO - include options for larger stencils:
+    assert_eq( f.getsize( 2 ), 5 );
+    for( int m=1; m <= mcomps; m++ )
+    {
+        double tmp = ( -f.get( m, 1 ) - f.get( m, 5 ) )*(1.0/12.0);
+        tmp       += (  f.get( m, 2 ) + f.get( m, 4 ) )*(4.0/ 3.0);
+        tmp       += ( -f.get( m, 3 )                 )*(5.0/ 2.0);
+        fxx.set( m, tmp / (dx*dx) );
+    }
+
+}

@@ -469,6 +469,6 @@ assert_eq( mbc, 3 );
     // ---------------------------------------------------------
     // Add extra contributions to Lstar
     // ---------------------------------------------------------
-    // LstarExtra(node,aux,q,Lstar);
+    // LstarExtra(aux,q,Lstar);
 
 }

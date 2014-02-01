@@ -7,9 +7,38 @@
 
 // EXPERIMENTAL CODE
 
-// Central Finite difference approximations.  See lib/WenoReconstruct.cpp
-void Diff1( double dx, const dTensor2& f, dTensor1& fx );
-void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
+void Diff1( double dx, const dTensor2& f, dTensor1& fx )
+{
+
+    const int mcomps = f.getsize( 1 );
+
+    // TODO - include options for larger stencils:
+    assert_eq( f.getsize( 2 ), 5 );
+    for( int m=1; m <= mcomps; m++ )
+    {
+        double tmp = (  f.get( m, 1 ) - f.get( m, 5 ) )*(1.0/12.0);
+        tmp       += ( -f.get( m, 2 ) + f.get( m, 4 ) )*(2.0/ 3.0);
+        fx.set( m, tmp / dx );
+    }
+
+}
+
+void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
+{
+
+    const int mcomps = f.getsize( 1 );
+
+    // TODO - include options for larger stencils:
+    assert_eq( f.getsize( 2 ), 5 );
+    for( int m=1; m <= mcomps; m++ )
+    {
+        double tmp = ( -f.get( m, 1 ) - f.get( m, 5 ) )*(1.0/12.0);
+        tmp       += (  f.get( m, 2 ) + f.get( m, 4 ) )*(4.0/ 3.0);
+        tmp       += ( -f.get( m, 3 )                 )*(5.0/ 2.0);
+        fxx.set( m, tmp / (dx*dx) );
+    }
+
+}
 
 // This function computes the (linear) finite difference approximation to the
 // integrated flux function on the conserved variables.  It requires knowledge
@@ -55,13 +84,8 @@ void ConstructIntegratedF( double dt, const dTensor2& node,
         dTensorBC2& Fout,
         void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
 
-    // Problem dimensions. TODO - the boundary data either:
-    //     a) needs one more point, or 
-    //     b) needs to double the number of ghost cells, or
-    //     c) One-sided differences at the boundary.
-    //
-    // I would prefer to run with option (c).  (-DS).
-
+    // Problem dimensions (TODO - the boundary data either a) needs one more
+    // point, or b) needs to double the number of ghost cells )
     const int mx     = q.getsize(1);
     const int meqn   = q.getsize(2);
     const int maux   = aux.getsize(2);

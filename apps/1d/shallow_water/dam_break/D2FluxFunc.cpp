@@ -33,7 +33,7 @@ void D2FluxFunc(const dTensor1& xpts,
     D2flux.set(i, 2, 1, 1, 1.0 + 2.0*u*u/h );
     D2flux.set(i, 2, 1, 2, - 2.0*u/h);
     D2flux.set(i, 2, 2, 1, - 2.0*u/h);
-    D2flux.set(i, 2, 2, 2, 2.0 * pow(h,-1) );
+    D2flux.set(i, 2, 2, 2, 2.0/h  );
 
   }
 
