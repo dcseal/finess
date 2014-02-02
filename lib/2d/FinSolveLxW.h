@@ -15,11 +15,6 @@ double GetCFL(double dt, double dtmax,
 // These four functions get called in the following order for each stage in
 // the Runge-Kutta method:
 void BeforeStep(double dt, dTensorBC3& aux, dTensorBC3& q);
-void ConstructL( 
-        dTensorBC3& aux,
-        dTensorBC3& q,      // setbndy conditions modifies q
-        dTensorBC3& Lstar,
-        dTensorBC3& smax);
 
 // Used for orders 1--4:
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
@@ -55,5 +50,18 @@ void AfterFullTimeStep(double dt,
 //        routine
 //
 // ------------------------------------------------------------
+
+void ConstructLxWL(
+        const dTensorBC3& aux,
+        const dTensorBC3& q,
+        dTensorBC3& F,         // <--- new term: integrated flux, f
+        dTensorBC3& G,         // <--- new term: integrated flux, g
+        dTensorBC3& Lstar,
+        dTensorBC3& smax);
+
+void ConstructIntegratedR( double dt, 
+    dTensorBC3& aux, dTensorBC3& q,
+    dTensorBC3& smax, 
+    dTensorBC3& F, dTensorBC3& G);
 
 #endif

@@ -87,6 +87,7 @@ AfterUpdateSoln      = $(LIB2D)/AfterUpdateSoln
 ApplyLimiter         = $(LIB2D)/ApplyLimiter
 ApplyPosLimiter      = $(LIB2D)/ApplyPosLimiter
 ConstructL           = $(LIB2D)/ConstructL
+ConstructLxWL        = $(LIB2D)/ConstructLxWL
 ConstructIntegratedR = $(LIB2D)/ConstructIntegratedR
 BeforeFullTimeStep   = $(LIB2D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB2D)/AfterFullTimeStep
@@ -97,7 +98,7 @@ GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
-#DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
+DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
 #D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
 
 # TODO - these should be added in at a later time (-DS)
@@ -126,9 +127,11 @@ LIB2D_OBJECTS = \
   $(BeforeStep).o \
   $(AfterStep).o \
   $(ConstructL).o \
+  $(ConstructLxWL).o \
   $(ConstructIntegratedR).o \
   $(AfterFullTimeStep).o \
   $(LIB2D)/UpdateSoln.o \
+  $(DFluxFunc).o \
 # $(AfterUpdateSoln).o \
 # $(ApplyLimiter).o \
 # $(ApplyPosLimiter).o \
@@ -158,9 +161,11 @@ LIB2D_SOURCES = \
   $(BeforeStep).cpp \
   $(AfterStep).cpp \
   $(ConstructL).cpp \
+  $(ConstructLxWL).cpp \
   $(ConstructIntegratedR).cpp \
   $(AfterFullTimeStep).cpp \
   $(LIB2D)/UpdateSoln.cpp \
+  $(DFluxFunc).cpp \
 # $(AfterUpdateSoln).cpp \
 # $(ApplyLimiter).cpp \
 # $(ApplyPosLimiter).cpp \

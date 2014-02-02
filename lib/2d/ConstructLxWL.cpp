@@ -9,21 +9,18 @@
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
-void ConstructL(
-        dTensorBC3& aux,
-        dTensorBC3& q,      // SetBndValues modifies q and aux
+// EXPERIMENTAL CODE - This routine performs the Lax-Friedrich's flux
+// splitting on a modified flux function, F and G.
+void ConstructLxWL(
+        const dTensorBC3& aux,
+        const dTensorBC3& q,
+        dTensorBC3& F,         // <--- new term: integrated flux, f
+        dTensorBC3& G,         // <--- new term: integrated flux, g
         dTensorBC3& Lstar,
         dTensorBC3& smax)
 {
 
-    // Boundary conditions
-    //
-    // TODO - this should be moved before ConstructL is called (-DS)
-    void SetBndValues(dTensorBC3& aux, dTensorBC3& q);
-    SetBndValues( aux, q );
-
     // --- User supplied functions --- //
-    void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
     void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
         const dTensor2& Qvals, dTensor2& Wvals);
     void ProjectRightEig(int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
@@ -80,7 +77,7 @@ assert_eq( mbc, 3 );
     dTensor1 nvec(2);
 
     // --------------------------------------------------------------------- //
-    // Compute Fhat{i-1/2, j} - 1st component of the flux function
+    // Compute F{i-1/2, j} - 1st component of the flux function
     // --------------------------------------------------------------------- //
     nvec.set(1, 1.0 );  nvec.set(2, 0.0 );
 #pragma omp parallel for
@@ -111,9 +108,11 @@ assert_eq( mbc, 3 );
 
         // Sample q over the stencil:
         dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
 
+        // Flux function "f" and "g" in q_t + f_x + g_y = 0:
+        dTensor2 f( meqn, ws+1 ), g( meqn, ws+1 );
         dTensor2 xvals( ws+1, 2 );
+
         for( int s=1; s <= ws+1; s++ )
         {
             // Index into the large array
@@ -128,35 +127,14 @@ assert_eq( mbc, 3 );
             for( int m=1; m <= meqn; m++ )
             {
                 qvals.set( m, s, q.get(is, j, m ) );
+                f.set    ( m, s, F.get(is, j, m ) );  // <-- NEW part (sample integrated flux)
+                g.set    ( m, s, G.get(is, j, m ) );  // <-- NEW part (sample integrated flux)
             }
             for( int ma=1; ma <= maux; ma++ )
             {
                 auxvals.set( ma, s, aux.get(is, j, ma ) );
             }
         }
-
-        // The format of Flux and ProjectLeftEig/ProjectRightEig do not
-        // contain the same order.  That is, Flux assumes q(1:npts, 1:meqn),
-        // whereas the other functions assume q(1:meqn, 1:npts).  For
-        // consistency, I will copy back to the latter, because the WENO
-        // reconstruction *should* be faster if the list of points is second.
-        // (-DS)
-        ConvertTranspose( qvals,   qvals_t   );
-        ConvertTranspose( auxvals, auxvals_t );
-
-        // Sample the flux function over the stencil:
-        dTensor3 fvals_t( ws+1, meqn, 2 );
-        FluxFunc( xvals, qvals_t, auxvals_t, fvals_t );
-
-        // Flux function "f" in q_t + f_x + g_y = 0:
-        dTensor2 f( meqn, ws+1 ), g( meqn, ws+1 );
-        for( int me=1; me <= meqn; me++ )
-        for( int s=1; s <= ws+1; s++ )
-        {
-            f.set(me, s, fvals_t.get( s, me, 1 ) );  // 1st-component - f
-            g.set(me, s, fvals_t.get( s, me, 2 ) );  // 2nd-component - g
-        }
-
 
         // Project entire stencil onto the characteristic variables:
         dTensor2 wvals( meqn, ws+1  ), gvals( meqn, ws+1 );
@@ -169,9 +147,10 @@ assert_eq( mbc, 3 );
 
         // -- Compute a local wave speed -- //
 
-        dTensor1 xedge(1), Ql(meqn), Qr(meqn);
+        dTensor1 xedge(2), Ql(meqn), Qr(meqn);
         dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
+        xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
 
         for( int m=1; m<= meqn; m++)
         {
@@ -228,7 +207,7 @@ assert_eq( mbc, 3 );
     // --------------------------------------------------------------------- //
 
     // --------------------------------------------------------------------- //
-    // Compute Ghat{i, j-1/2} - 2nd-component of the flux function
+    // Compute G{i, j-1/2} - 2nd-component of the flux function
     // --------------------------------------------------------------------- //
     nvec.set(1, 0.0 );  nvec.set(2, 1.0 );
 #pragma omp parallel for
@@ -259,8 +238,11 @@ assert_eq( mbc, 3 );
 
         // Sample q over the stencil:
         dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
         dTensor2 xvals( ws+1, 2 );
+
+        // Flux function in q_t + f_x + g_y = 0:
+        dTensor2 f( meqn, ws+1 ), g( meqn, ws+1 );
+
         for( int s=1; s <= ws+1; s++ )
         {
             // Index into the large array
@@ -275,35 +257,14 @@ assert_eq( mbc, 3 );
             for( int m=1; m <= meqn; m++ )
             {
                 qvals.set( m, s, q.get(i, js, m ) );
+                f.set(m,s, F.get(i,js,m ) );  // <-- NEW part (sample integrated flux)
+                g.set(m,s, G.get(i,js,m ) );  // <-- NEW part (sample integrated flux)
             }
             for( int ma=1; ma <= maux; ma++ )
             {
                 auxvals.set( ma, s, aux.get(i, js, ma ) );
             }
         }
-
-        // The format of Flux and ProjectLeftEig/ProjectRightEig do not
-        // contain the same order.  That is, Flux assumes q(1:npts, 1:meqn),
-        // whereas the other functions assume q(1:meqn, 1:npts).  For
-        // consistency, I will copy back to the latter, because the WENO
-        // reconstruction *should* be faster if the list of points is second.
-        // (-DS)
-        ConvertTranspose( qvals,   qvals_t   );
-        ConvertTranspose( auxvals, auxvals_t );
-
-        // Sample f over the stencil:
-        dTensor3 fvals_t( ws+1, meqn, 2 );
-        FluxFunc( xvals, qvals_t, auxvals_t, fvals_t );
-
-        // Flux function in q_t + f_x + g_y = 0:
-        dTensor2 f( meqn, ws+1 ), g( meqn, ws+1 );
-        for( int me=1; me <= meqn; me++ )
-        for( int s=1; s <= ws+1; s++ )
-        {
-            f.set(me, s, fvals_t.get( s, me, 1 ) );
-            g.set(me, s, fvals_t.get( s, me, 2 ) );
-        }
-
 
         // Project entire stencil onto the characteristic variables:
         dTensor2 wvals( meqn, ws+1  ), gvals( meqn, ws+1 );
@@ -316,9 +277,10 @@ assert_eq( mbc, 3 );
 
         // -- Compute a local wave speed -- //
 
-        dTensor1 xedge(1), Ql(meqn), Qr(meqn);
+        dTensor1 xedge(2), Ql(meqn), Qr(meqn);
         dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
+        xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
         for( int m=1; m<= meqn; m++)
         {
             Ql.set(m, q.get(i, j-1, m) );
@@ -363,11 +325,11 @@ assert_eq( mbc, 3 );
             ghat.set(m, 1, dGp.get(m,1) + dGm.get(m,1) );
         }
 
-        dTensor2 fhat_loc( ghat );
-        ProjectRightEig(2, Auxavg, Qavg, ghat, fhat_loc);
+        dTensor2 ghat_loc( ghat );
+        ProjectRightEig(2, Auxavg, Qavg, ghat, ghat_loc );
         for( int m=1; m <= meqn; m++ )
         {
-            Ghat.set(i,j,m, fhat_loc.get(m,1) );
+            Ghat.set(i,j,m, ghat_loc.get(m,1) );
         }
 
     }
@@ -385,19 +347,18 @@ assert_eq( mbc, 3 );
     // --------------------------------------------------------------------- //
     if( dogParams.get_source_term() )
     {
-
         printf("Error: source-term not implemented for Lax-Wendroff method\n");
         exit(1);
 //      // Compute the source term.
 //      SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
-//  #pragma omp parallel for
+//#pragma omp parallel for
 //      for (int i=1; i<=mx; i++)
 //      for (int j=1; j<=my; j++)
 //      {
 //          for (int m=1; m<=meqn; m++)
 //          {
-//              double tmp = -(F.get(i+1, j,   m) - F.get(i, j, m) ) / dx;
-//              tmp =  tmp   -(G.get(i,   j+1, m) - G.get(i, j, m) ) / dy;
+//              double tmp = -(Fhat.get(i+1, j,   m) - Fhat.get(i, j, m) ) / dx;
+//              tmp =  tmp   -(Ghat.get(i,   j+1, m) - Ghat.get(i, j, m) ) / dy;
 //              Lstar.set(i,j, m, Lstar.get(i,j,m) + tmp );
 //          }
 //      }
@@ -412,7 +373,7 @@ assert_eq( mbc, 3 );
             {
                 double tmp = -(Fhat.get(i+1,j,  m) - Fhat.get(i,j,m) ) / dx;
                 tmp =  tmp   -(Ghat.get(i,  j+1,m) - Ghat.get(i,j,m) ) / dy;
-                Lstar.set(i,j, m, tmp );
+                Lstar.set(i,j,m, tmp );
             }
         }
     }
@@ -420,23 +381,6 @@ assert_eq( mbc, 3 );
     // ---------------------------------------------------------
     // Add extra contributions to Lstar
     // ---------------------------------------------------------
-    // LstarExtra(node,aux,q,Lstar);
+    // LstarExtra(aux,q,Lstar);
 
 }
-
-void ConvertTranspose( const dTensor2& qin, dTensor2& qout )
-{
-    const int m1 = qin.getsize(1);
-    const int m2 = qin.getsize(2);
-    assert_eq( m1, qout.getsize(2) );
-    assert_eq( m2, qout.getsize(1) );
-
-    for( int i=1; i<= m1; i++ )
-    for( int j=1; j<= m2; j++ )
-    {
-        qout.set(j,i, qin.get(i,j) );
-    }
-
-}
-
-

@@ -42,10 +42,11 @@ void FinSolveLxW(
 
     // Allocate storage for this solver
 
-    dTensorBC3 auxstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
+    dTensorBC3 auxstar(mx, my, maux, mbc);   // right hand side (for Euler steps)
     dTensorBC3   qstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
     dTensorBC3   Lstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
     dTensorBC3       F(mx, my, meqn, mbc );  // time-integrated flux
+    dTensorBC3       G(mx, my, meqn, mbc );  // time-integrated flux
 
     // Set initialize qstar and auxstar values
     // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
@@ -96,12 +97,22 @@ void FinSolveLxW(
 
             // ---------------------------------------------------------
             // Take a full time step of size dt
-            BeforeStep(dt,aux,qnew);
+            BeforeStep(dt, aux, qnew);
             SetBndValues(aux, qnew);
-//          ConstructIntegratedF( dt, aux, qnew, smax, F);
-//          ConstructL( aux, qnew, F, Lstar, smax);  // <-- "new" method
-            // ConstructL( aux, qnew, Lstar, smax);  // <-- Euler method
-            AfterStep(dt,aux,qnew);
+            ConstructIntegratedR( dt, aux, qnew, smax, F, G);
+// TODO
+SetBndValues(aux, F);
+SetBndValues(aux, G);
+
+//  for( int k=0; k < numel; k++ )
+//  {
+//      //assert_almost_eq( F.vget(k), 0. );
+//      //assert_almost_eq( G.vget(k), 0. );
+//      G.vset(k, F.vget(k) );
+//      F.vset(k, 0.        );
+//  }
+            ConstructLxWL( aux, qnew, F, G, Lstar, smax);  // <-- "new" method
+            AfterStep(dt, aux, qnew);
 
             // Update the solution:
 #pragma omp parallel for
