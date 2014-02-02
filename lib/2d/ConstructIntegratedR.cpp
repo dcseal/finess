@@ -63,8 +63,13 @@ void ConstructIntegratedR( double dt,
               dTensorBC4& Fout,
         void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&));
 
-    // Problem dimensions (TODO - the boundary data either a) needs one more
-    // point, or b) needs to double the number of ghost cells )
+    // Problem dimensions TODO - the boundary data either: 
+    //     a) needs one more point, or 
+    //     b) needs to double the number of ghost cells, or
+    //     c) One-sided differences at the boundary.
+    //
+    // I would prefer to run with option (c).  (-DS).
+
     const int mx     = dogParamsCart2.get_mx();
     const int my     = dogParamsCart2.get_my();
     const int meqn   = dogParams.get_meqn();
@@ -171,7 +176,7 @@ const int ndim = 2;
         {
 
             // Hessian
-            dTensor5 H( 1, meqn, meqn, meqn, ndim );
+            dTensor5 H( 1, meqn, meqn, meqn, 2 );
             D2FluxFunc(xpts, q_transpose, a_transpose, H);
 
             // ----------------------------------- //
@@ -194,8 +199,8 @@ const int ndim = 2;
             Diff2( dy, Gvals,  gyy_val  );
 
             // Cross - derivaties
-            dTensor1 fxy_val  ( meqn );
-            dTensor1 gxy_val  ( meqn );
+            dTensor1 fxy_val  ( meqn );  fxy_val.setall(0.);
+            dTensor1 gxy_val  ( meqn );  gxy_val.setall(0.);
             // TODO - Define the stencil and compute these derivatives!
 
             // Compute terms that get multiplied by 
@@ -246,7 +251,7 @@ const int ndim = 2;
             }
 
             // ----------------------------------------------- //
-            // Part II: Add in contributions from
+            // Part III: Add in contributions from
             //      f''(q) * (fx_plus_gy, fx_plus_gy ) and 
             //      g''(q) * (fx_plus_gy, fx_plus_gy ).
             // ----------------------------------------------- //
@@ -269,7 +274,7 @@ const int ndim = 2;
 
         }
 
-        // Second order-accuracy:
+        // FINAL STEP: save the time-integrated values:
         for( int m=1; m<=meqn; m++ )
         {
             F.set(i,j,m, R.get(i,j,m,1) + 0.5*dt*(f_t.get(m) + dt/3.0*f_tt.get(m)) );
