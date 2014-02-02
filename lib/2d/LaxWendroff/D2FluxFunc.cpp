@@ -9,13 +9,13 @@
 //
 //     Dummy Function Call if not using LaxWendroff
 //
-void D2FluxFunc(const dTensor1& xpts, 
+void D2FluxFunc(const dTensor2& xpts, 
 		const dTensor2& Q,
 		const dTensor2& Aux,
-		dTensor4& D2flux)
+		dTensor5& D2flux)
 {
 
-    const int numpts=xpts.getsize();
+    const int numpts=xpts.getsize(2);
     D2flux.setall(0.);
 
 }

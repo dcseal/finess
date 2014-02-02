@@ -99,7 +99,7 @@ SampleFunction       = $(LIB2D)/SampleFunction
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
-#D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
+D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
 
 # TODO - these should be added in at a later time (-DS)
 #DogSolveLxW          = $(LIB2D)/DogSolveLxW
@@ -132,6 +132,7 @@ LIB2D_OBJECTS = \
   $(AfterFullTimeStep).o \
   $(LIB2D)/UpdateSoln.o \
   $(DFluxFunc).o \
+  $(D2FluxFunc).o \
 # $(AfterUpdateSoln).o \
 # $(ApplyLimiter).o \
 # $(ApplyPosLimiter).o \
@@ -166,6 +167,7 @@ LIB2D_SOURCES = \
   $(AfterFullTimeStep).cpp \
   $(LIB2D)/UpdateSoln.cpp \
   $(DFluxFunc).cpp \
+  $(D2FluxFunc).cpp \
 # $(AfterUpdateSoln).cpp \
 # $(ApplyLimiter).cpp \
 # $(ApplyPosLimiter).cpp \
