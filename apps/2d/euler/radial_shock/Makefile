@@ -7,6 +7,7 @@ include $(FINESS)/lib/2d/Makefile.defs
 #
 #AfterQinit  =  AfterQinit
 InitApp      = InitApp
+DFluxFunc    = DFluxFunc
 
 ALL_OBJECTS = $(COMMON_OBJECTS) \
 EulerParams.o \

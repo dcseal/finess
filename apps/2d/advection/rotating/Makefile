@@ -23,7 +23,7 @@ include $(FINESS)/lib/2d/Makefile.defs
 ## ------------------------------------------------------------------------- ##
 # These time derivatives are required for the Lax-Wendroff (and
 # two-derivative) code:
-#DFluxFunc              = DFluxFunc
+DFluxFunc              = DFluxFunc
 #D2FluxFunc             = D2FluxFunc
 ## ------------------------------------------------------------------------- ##
 

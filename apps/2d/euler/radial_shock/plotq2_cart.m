@@ -61,7 +61,13 @@ set(gca,'ytick',-1:0.5:1);
 set(gca,'fontsize',16);
 t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
-    
+
+% Print the pretty pictures!    
+if( exist( [outputdir,'/photos'], 'dir' ) )
+  folder_name = strcat( outputdir, '/photos/' );
+  fname = strcat( strcat('density', num2str(n1, '%03d') ), '.eps' );
+  print(1,'-depsc', strcat(folder_name, fname ) );
+end
 
 fids  = fopen(['../../../1d/euler/shock_tube_radial/output/qhelp.dat'],'r');
 if (fids>0)

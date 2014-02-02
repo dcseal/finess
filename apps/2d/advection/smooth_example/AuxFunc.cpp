@@ -19,5 +19,6 @@ void AuxFunc(const dTensor2& xpts,
       
       // v:  2-component of the advection velocity
       auxvals.set(i,2, 1.0);
+
     }
 }

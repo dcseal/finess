@@ -17,10 +17,11 @@ nout        = 1          ; number of output times to print results
 tfinal      = 1.00       ; final time
 dtv(1)      = %(dt)e     ; initial dt
 dtv(2)      = 1.0e0      ; max allowable dt 
-cflv(1)     = 0.85      ; max allowable Courant number
-cflv(2)     = 0.8      ; desired Courant number
+cflv(1)     = 0.15      ; max allowable Courant number
+cflv(2)     = 0.1      ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
-time_stepping_method = Runge-Kutta ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
+;time_stepping_method = Runge-Kutta ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
+time_stepping_method = Lax-Wendroff ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
 limiter_method = moment ; (e.g., moment, viscosity)
 space_order = %(s_order)i   ; =method(1)= order of accuracy in space
 time_order  = %(t_order)i   ; =method(2)= order of accuracy in time
