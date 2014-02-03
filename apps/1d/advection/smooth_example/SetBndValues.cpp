@@ -2,7 +2,6 @@
 
 // Periodic boundary conditions
 //
-// TODO - this should be modified.  the WENO q and aux are smaller arrays.
 void SetBndValues(
     const dTensor2& node, 
     dTensorBC2& aux, 

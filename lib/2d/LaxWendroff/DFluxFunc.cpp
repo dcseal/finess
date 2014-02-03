@@ -15,12 +15,15 @@ void DFluxFunc(const dTensor2& xpts,
 	       dTensor4& Dflux)
 {
 
-    const int numpts=xpts.getsize(1);
+    const int numpts = xpts.getsize(1);
     for(int i=1; i<=numpts; i++)
     {
-        double x = xpts.get(i);
-        Dflux.set(i,1,1,1,0. );  // First component of flux func
-        Dflux.set(i,1,1,2,0. );  // Second component of flux func
+
+        double x = xpts.get(i,1);
+        double y = xpts.get(i,2);
+
+        Dflux.set(i,1,1,1, 0. );  // First component of flux func
+        Dflux.set(i,1,1,2, 0. );  // Second component of flux func
     }
 
 }
