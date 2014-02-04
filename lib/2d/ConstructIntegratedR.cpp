@@ -201,7 +201,20 @@ const int ndim = 2;
             // Cross - derivaties
             dTensor1 fxy_val  ( meqn );  fxy_val.setall(0.);
             dTensor1 gxy_val  ( meqn );  gxy_val.setall(0.);
-            // TODO - Define the stencil and compute these derivatives!
+
+            // 2nd-order stencil (for mixed derivatives)
+            for( int m=1; m <= meqn; m++ )
+            {
+                double tmp1  = 0.5*(R.get(i+1,j+1,m,1)-R.get(i-1,j+1,m,1))/dx;
+                       tmp1 -= 0.5*(R.get(i+1,j-1,m,1)-R.get(i-1,j-1,m,1))/dx;
+                       tmp1 *= 0.5/dy;
+                fxy_val.set(m, tmp1);
+
+                double tmp2  = 0.5*(R.get(i+1,j+1,m,2)-R.get(i-1,j+1,m,2))/dx;
+                       tmp2 -= 0.5*(R.get(i+1,j-1,m,2)-R.get(i-1,j-1,m,2))/dx;
+                       tmp2 *= 0.5/dy;
+                gxy_val.set(m, tmp2);
+            }
 
             // Compute terms that get multiplied by 
             //     \pd2{ f }{ q } and \pd2{ g }{ q }.

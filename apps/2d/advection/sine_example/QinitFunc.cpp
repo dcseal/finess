@@ -22,7 +22,7 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
         }
         else
         {  qvals.set(i,1, 0.0 ); }
-        qvals.set(i,1, sin( 2.0*pi*x ) * sin( 4.0*pi*y ) );
+        qvals.set(i,1, 0.5 + 0.5*sin( 2.0*pi*x ) * sin( 4.0*pi*y ) );
 
     }
 }

@@ -20,7 +20,6 @@ dtv(2)      = 1.0e0      ; max allowable dt
 cflv(1)     = 0.4        ; max allowable Courant number
 cflv(2)     = 0.35      ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
-;time_stepping_method = Runge-Kutta; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
 time_stepping_method = Lax-Wendroff ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
 limiter_method = moment ; (e.g., moment, viscosity)
 space_order = %(s_order)i   ; =method(1)= order of accuracy in space
