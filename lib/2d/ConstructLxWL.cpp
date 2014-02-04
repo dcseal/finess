@@ -95,7 +95,7 @@ assert_eq( mbc, 3 );
             double tmp = 0.5*( q.get(i,j,m) + q.get(i-1,j,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg( maux );
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i-1,j,ma) );
@@ -107,7 +107,7 @@ assert_eq( mbc, 3 );
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1         );
 
         // Flux function "f" and "g" in q_t + f_x + g_y = 0:
         dTensor2 f( meqn, ws+1 ), g( meqn, ws+1 );
@@ -148,7 +148,7 @@ assert_eq( mbc, 3 );
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(2), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl( maux ), Auxr( maux );
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
 
@@ -158,7 +158,7 @@ assert_eq( mbc, 3 );
             Qr.set(m, q.get(i  , j, m) );
         }
 
-        for( int m=1; m<= maux; m++)
+        for( int m=1; m<=maux; m++)
         {
             Auxl.set(m, aux.get(i-1, j, m) );
             Auxr.set(m, aux.get(i  , j, m) );
@@ -225,7 +225,7 @@ assert_eq( mbc, 3 );
             double tmp = 0.5*( q.get(i,j,m) + q.get(i,j-1,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg(maux );
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i,j-1,ma) );
@@ -237,7 +237,7 @@ assert_eq( mbc, 3 );
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1         );
         dTensor2 xvals( ws+1, 2 );
 
         // Flux function in q_t + f_x + g_y = 0:
@@ -278,7 +278,7 @@ assert_eq( mbc, 3 );
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(2), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl(maux), Auxr(maux);
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
         for( int m=1; m<= meqn; m++)
