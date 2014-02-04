@@ -82,22 +82,22 @@ def parse_input( help_message ):
     parser.add_argument('-f','--frames',
                       type    = int,
                       nargs   = 2,
-                      default = [10, 7],
+                      default = [50, 7],
                       metavar = ('MX_START', 'N_FRAMES'),
                       help    = 
 ''' Refinment parameters:
 Produce N_FRAMES of refinements, starting with 
 MX_START grid points.
-(default: [10, 7] )''')
+(default: [50, 7] )''')
 
     parser.add_argument('-t', '--order',
                       type = int,
                       nargs   = 2,
-                      default = [4, 4],
+                      default = [5, 3],
                       metavar = ('S_ORDER', 'T_ORDER'),
                       help = 
 '''Order of accuracy in space S_ORDER, and time T_ORDER.
-(default: [4,4])''')
+(default: [5,3])''')
   
     return parser.parse_args()
 

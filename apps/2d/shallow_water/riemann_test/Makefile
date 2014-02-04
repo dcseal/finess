@@ -7,6 +7,8 @@ include $(FINESS)/lib/2d/Makefile.defs
 # overridden library objects
 #
 #Output               = Output
+DFluxFunc             = DFluxFunc
+D2FluxFunc            = D2FluxFunc
 
 # place to add object modules
 #
