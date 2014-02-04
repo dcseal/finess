@@ -1,21 +1,17 @@
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
-//      ZEROTH ORDER EXTRAPOLATION BOUNDARY CONDITIONS
+//      DOUBLE PERIODIC BOUNDARY CONDITIONS
 //
-void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValues(dTensorBC3& aux, dTensorBC3& q)
 {
 
-    int i,j,m;
-
-    const int mx   = dogParamsCart2.get_mx();
-    const int my   = dogParamsCart2.get_my();
-    const int meqn = dogParams.get_meqn();
-    const int mbc  = dogParamsCart2.get_mbc();
-    const int maux = dogParams.get_maux();
+    const int mx   = q.getsize(1);
+    const int my   = q.getsize(2);
+    const int meqn = q.getsize(3);
+    const int mbc  = q.getmbc();
+    const int maux = aux.getsize(3);
 
     // -----------------------
     // BOUNDARY CONDITION LOOP
@@ -24,23 +20,23 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
     // ***********************************************
     // LEFT BOUNDARY
     // ***********************************************
-    for (i=0; i>=(1-mbc); i--)
+    for(int i=0; i>=(1-mbc); i--)
     {
-        for (j=1; j<=my; j++)
+        for(int j=1; j<=my; j++)
         {           
             // q values
-            for (m=1; m<=meqn; m++)
+            for(int m=1; m<=meqn; m++)
             {
-                double tmp = q.get(1,j,m);
+                double tmp = q.get(i+mx,j,m);
                 q.set(i,j,m, tmp );
             }
+
             // aux values
-            for (m=1; m<=maux; m++)
+            for(int m=1; m<=maux; m++)
             {
-                double tmp = q.get(1,j,m);
+                double tmp = aux.get(i+mx,j,m);
                 aux.set(i,j,m, tmp );
             }
-
         }
     }
     // ***********************************************
@@ -50,23 +46,23 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
     // ***********************************************
     // RIGHT BOUNDARY
     // ***********************************************
-    for( i=(mx+1); i<=(mx+mbc); i++ )
+    for(int i=(mx+1); i<=(mx+mbc); i++)
     {
-        for( j=1; j<=my; j++ )
+        for(int j=1; j<=my; j++)
         {           
             // q values
-            for (m=1; m<=meqn; m++)
-            {
-                double tmp = q.get(mx,j,m);                    
-                q.set(i,j,m, tmp );
-            }
-            // aux values
-            for (m=1; m<=maux; m++)
-            {
-                double tmp = q.get(mx,j,m);                    
-                aux.set(i,j,m, tmp );
-            }
+            for(int m=1; m<=meqn; m++)
+                {
+                    double tmp = q.get(i-mx,j,m);
+                    q.set(i,j,m, tmp );
+                }
 
+            // aux values
+            for(int m=1; m<=maux; m++)
+                {
+                    double tmp = aux.get(i-mx,j,m);
+                    aux.set(i,j,m, tmp );
+                }
         }
     }
     // ***********************************************
@@ -76,37 +72,123 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
     // ***********************************************
     // BOTTOM BOUNDARY
     // ***********************************************
-    for( j=0; j >= (1-mbc); j--)
+    for(int j=0; j>=(1-mbc); j--)
     {
-        for( i= 1; i <= mx; i++)
+        for(int i=1; i<=mx; i++)
         {           
             // q values
-            for (m=1; m<=meqn; m++)
-            {
-                double tmp = q.get(i, 1, m);                    
-                q.set(i, j, m, tmp );
-            }
+            for(int m=1; m<=meqn; m++)
+                {
+                    double tmp = q.get(i,j+my,m);
+                    q.set(i,j,m, tmp );
+                }               
+
+            // aux values
+            for(int m=1; m<=maux; m++)
+                {
+                    double tmp = aux.get(i,j+my,m);
+                    aux.set(i,j,m, tmp );
+                }
         }
     }
     // ***********************************************
+
 
 
     // ***********************************************
     // TOP BOUNDARY
     // ***********************************************
-    for( j=(my+1); j<=(my+mbc); j++)
+    for(int j=(my+1); j<=(my+mbc); j++)
     {
-        for( i= 1; i<= mx; i++ )
+        for(int i=1; i<=mx; i++)
         {           
             // q values
-            for (m=1; m<=meqn; m++)
-            {
-                double tmp = q.get(i,my,m);                    
-                q.set(i,j,m, tmp );
-            }
+            for(int m=1; m<=meqn; m++)
+                {
+                    double tmp = q.get(i,j-my,m);
+                    q.set(i,j,m, tmp );
+                }
+
+            // aux values
+            for(int m=1; m<=maux; m++)
+                {
+                    double tmp = aux.get(i,j-my,m);
+                    aux.set(i,j,m, tmp );
+                }
         }
     }
     // ***********************************************
 
-// TODO - cross terms!?
+
+    // ***********************************************
+    // BOTTOM LEFT CORNER
+    // ***********************************************
+    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(1-i,1-j,m, q.get(mx+1-i,my+1-j,m) );
+                }
+            for(int m=1; m<=maux; m++)
+                {     
+                    aux.set(1-i,1-j,m, aux.get(mx+1-i,my+1-j,m) );
+                }
+        }
+    // ***********************************************
+
+
+    // ***********************************************
+    // BOTTOM RIGHT CORNER
+    // ***********************************************
+    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(mx+i,1-j,m, q.get(i,my+1-j,m) );
+                }
+            for(int m=1; m<=maux; m++)
+                {     
+                    aux.set(mx+i,1-j,m, aux.get(i,my+1-j,m) );
+                }
+        }
+    // ***********************************************
+
+
+    // ***********************************************
+    // TOP RIGHT CORNER
+    // ***********************************************
+    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(mx+i,my+j,m, q.get(i,j,m) );
+                }
+            for(int m=1; m<=maux; m++)
+                {     
+                    aux.set(mx+i,my+j,m, aux.get(i,j,m) );
+                }
+        }
+    // ***********************************************
+
+
+    // ***********************************************
+    // TOP LEFT CORNER
+    // ***********************************************
+    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(1-i,my+j,m, q.get(mx+1-i,j,m) );
+                }
+            for(int m=1; m<=maux; m++)
+                {     
+                    aux.set(1-i,my+j,m, aux.get(mx+1-i,j,m) );
+                }
+        }
+    // ***********************************************
+
 }
