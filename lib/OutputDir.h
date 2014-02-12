@@ -7,6 +7,13 @@
 // Used to create output directory and copy a few files (Makefiles,
 // parameters.ini, ... ) into the output folder.
 // -------------------------------------------------------------------------- //
+///@brief A class that parses command line options.
+///
+///- Poorly named.  Should have been called CommandLineOptions.
+///  See #OutputDir::parse_arguments(int, char**) for details.
+///- Poorly organized.  #parse_arguments(int, char**) does all the job, 
+///  and it does so by setting global variables and returns <tt>void</tt> (!!!)
+///@todo Merge this with #IniDocument into a common program-options class.
 class OutputDir
 {
 
@@ -19,6 +26,7 @@ class OutputDir
         // level.
         // ------------------------------------------------------------------ //
         static void parse_arguments(int argc, char**argv);
+        ///@brief Returns OutputDir::outputdir
         static const char* get_outputdir() {return outputdir;}
         virtual ~OutputDir();
 

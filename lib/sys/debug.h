@@ -25,7 +25,10 @@
   #undef DEBUG_ON_
 #endif
 
-// singleton
+///@brief A namespace-like class whose only functionality is to wrap its static member #level.
+///
+///- Other than the call from OutputDir::parse_arguments(int, char**), only places it gets used are
+///  #dout1, #dout2, #dout3, and #doutn.
 class DebugLevel
 {
 private:
@@ -35,6 +38,8 @@ private:
   DebugLevel(const DebugLevel&); // prevent copy-construction
   DebugLevel& operator=(const DebugLevel&); // prevent assignment
 public:
+  ///@brief The constructor that should have never existed at all.
+  ///@todo Remove it.
   DebugLevel(int level_){ level=level_; } // "constructor" sets (default) level.
   static void set(int level_) { level=level_; }
   static int get() { return level; }

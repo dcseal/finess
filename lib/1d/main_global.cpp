@@ -5,8 +5,8 @@
 #include "IniDocument.h"
 #include "OutputDir.h"
 
-/*
- * Common main function that's called by every (1D) application.
+/**
+ * @brief Common main function that's called by every (1D) application.
  *
  * Each application has its own main file, and Makefile that builds that local
  * main.  When the code is built in any application directory, every (1D) 

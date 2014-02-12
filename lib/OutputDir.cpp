@@ -16,27 +16,47 @@ static int get_ndims()
 // -------------------------------------------------------------------------- //
 
 // convenience accessor
+///@brief Name of output directory
+///
+///- Initialized to 0 so that OutputDir::set_outputdir(...) behave normally;
+///- Static member that serves as a global variable.
+///  Values can be read by OutputDir::get_outputdir(), which has syncronym ::get_outputdir();
+///- OutputDir::parse_arguments sets it to <tt>\<output_some_other_directory\></tt>,
+///  if <tt>-o \<output_some_other_directory\> </tt> is provided in command line,
+///  and to <tt>output</tt> by default.
 char* OutputDir::outputdir   = 0;
+///@brief Syncronym to OutputDir::get_outputdir().
 const char* get_outputdir() { return OutputDir::get_outputdir(); }
 
+///@brief Sets OutputDir::outputdir to <tt>arg</tt>.
+///
+///- Implementation detail: would fail if Output::outputdir was not initialized to be 0.
 void OutputDir::set_outputdir(const char* arg)
 {
     free(outputdir);
     outputdir = strdup(arg);
 }
 
+///@brief Default destructor.
 OutputDir::~OutputDir()
 { }
 
+///@brief Parses arguments from command line
+///
+///- Supports <tt>-o \<output_some_other_directory\></tt> and <tt>-d \<debug_level\></tt>;
 // -------------------------------------------------------------------------- //
-// This function parses user supplied arguments when running the code.
-//   e.g., this function parses the section "-o output_some_other_directory"
-//   when the user calls "./dog.exe -o output_some_other_directory"
-// 
-// TODO - apparently DEBUG options can be specified from the command line.
-// Because there's no documentation for this, I don't know what all options are
-// available (-DS).
+///
+///- (Old comments in code, by DS) This function parses user supplied arguments when running the code.
+///   e.g., this function parses the section "-o output_some_other_directory"
+///   when the user calls "./dog.exe -o output_some_other_directory"
+/// 
+/// TODO - apparently DEBUG options can be specified from the command line.
+/// Because there's no documentation for this, I don't know what all options are
+/// available (-DS).
 // -------------------------------------------------------------------------- //
+///
+///- It invokes DebugLevel::set(int) upon parsing <tt><tt>-d \<debug_level\></tt></tt>
+///@todo Clean up the code.
 void OutputDir::parse_arguments(int argc,char**argv)
 {
 

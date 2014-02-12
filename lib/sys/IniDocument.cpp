@@ -3,6 +3,7 @@
 using namespace std;
 
 // declare global instance of ini_doc
+///@todo Document this global variable.
 IniDocument ini_doc;
 
 // === code to parse lines ===

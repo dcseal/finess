@@ -98,6 +98,9 @@ const char *dog_basename (const char *name)
    - create personalized assert which email the user.
  */
 
+///@brief (Global) Debug level.
+///
+///- Initialized to 2.
 int DebugLevel::level=2;  // set default debug level.
 
 // int debug_level=2; /* default debug level */

@@ -664,7 +664,9 @@ WARN_LOGFILE           =
 INPUT                  = /home/xiaofeng/projects/recent-finess/finess/apps/1d/euler/harten_shock_tube \
                          /home/xiaofeng/projects/recent-finess/finess/lib \
                          /home/xiaofeng/projects/recent-finess/finess/lib/sys \
-                         /home/xiaofeng/projects/recent-finess/finess/lib/1d
+                         /home/xiaofeng/projects/recent-finess/finess/lib/1d \
+                         apps/1d/euler/harten_shock_tube/parameters.ini \
+                         scripts/startscript
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -1904,4 +1906,3 @@ GENERATE_LEGEND        = YES
 # the various graphs.
 
 DOT_CLEANUP            = YES
-
