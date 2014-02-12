@@ -5,20 +5,20 @@
 #include "DogParamsCart1.h"
 using namespace std;
 
-// All-purpose routine for sampling a function, and saving its data into a
-// single tensor.
-//
-// ---------------------------------------------------------------------
-// Inputs should have the following sizes:   
-//           dTensor2    node(mnodes,1)
-//           dTensorBC2 auxin(1-mbc:mnodes+mbc, maux    )
-//           dTensorBC2   qin(1-mbc:mnodes+mbc, meqn    )
-//           dTensorBC2  Fout(1-mbc:mnodes+mbc, mlength )
-// ---------------------------------------------------------------------
-//
-// The reason there is an extra awkward parameter, mpoints in here is to keep
-// the same user interface that DoGPack uses.
-//
+
+///@brief  All-purpose routine for sampling a function, and saving its data into a
+///        single tensor.
+///
+///- (Old comments) Inputs should have the following sizes:    <br>
+///           dTensor2    node(mnodes,1)   <br>
+///           dTensorBC2 auxin(1-mbc:mnodes+mbc, maux    ) <br>
+///           dTensorBC2   qin(1-mbc:mnodes+mbc, meqn    ) <br>
+///           dTensorBC2  Fout(1-mbc:mnodes+mbc, mlength ) <br>
+/// The reason there is an extra awkward parameter, mpoints in here is to keep
+/// the same user interface that DoGPack uses.
+///
+/// 
+///@todo Clarify the reference to mpoints --- even the name doesn't appear anywhere in this function.
 void SampleFunction( 
     int istart, int iend,
     const dTensor2& node,

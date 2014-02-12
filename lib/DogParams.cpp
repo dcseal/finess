@@ -748,6 +748,9 @@ void DogParams::reportParameters()
 // -------------------------------------------------------------------------- //
 
 // -------------------------------------------------------------------------- //
+///@brief  Writes data to outputdir/qhelp.dat (which is then used by plotting routines)
+///
+///@sa DogParamsCart1::append_qhelp(const char* filename)
 void DogParams::write_qhelp(const char* filename)
 {
     FILE* file = fopen(filename,"w"); 

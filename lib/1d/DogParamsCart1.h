@@ -20,6 +20,9 @@
 
 class IniDocument;   // The parser used in DoGPack for reading parameters.ini
 
+///@brief Similar to DogParams.  Processes 1D-specific parts of the parameters.
+///
+///@todo Rewrite this class.  See #DogParams.
 struct DogParamsCart1
 {
 

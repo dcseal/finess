@@ -1,4 +1,24 @@
-/*
+/**
+ * @file lib/1d/RunFinpack.cpp
+ */
+
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+#include "dog_math.h"
+#include "dogdefs.h"
+#include "DogParams.h"            // accessors for the parameters.ini file
+#include "DogParamsCart1.h"       // accessors for the parameters.ini file
+#include "IniDocument.h"
+#include "RunFinpack.h"           // Function declarations
+
+
+
+/**
+ * @brief Top level function.
+ * 
+ * - (Old comments)
  * Top level function to RunFinpack.  Briefly, this function calls the
  * following functions in the following order:
  *
@@ -7,8 +27,8 @@
  * 2.) Call InitApp.  (additional application specific parameters)
  *
  * 3.) Write qhelp.dat to the output directory.  This is a total of two
- * functions calls: one on dogParams.write_qhelp and one on
- * dogParamsCart1.write_qhelp.
+ * functions calls: one on dogParams::write_qhelp and one on
+ * dogParamsCart1::append_qhelp.
  *
  * 4.) Call GridSetup.  For a 1D grid, this sets up a single array called
  * node containing cell edges, and a second array called prim_vol containing
@@ -32,18 +52,15 @@
  *
  *     b.) Call Output to print data to file
  *
+ *
+ *@note 
+ *- 2.) above: InitApp(...) in @link apps/1d/euler/harten_shock_tube/InitApp.cpp @endlink,
+ *      not the one in @link lib/1d/InitApp.cpp @endlink;
+ *- 3.) above: qhelp.dat is used for plotting;
+ *- 
+ *@todo  Clean up dogParams and dogParamsCart1
+ *@todo  Understand plotting routine.  
  */
-
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
-#include "dog_math.h"
-#include "dogdefs.h"
-#include "DogParams.h"            // accessors for the parameters.ini file
-#include "DogParamsCart1.h"       // accessors for the parameters.ini file
-#include "IniDocument.h"
-#include "RunFinpack.h"           // Function declarations
 
 int RunFinpack(string outputdir)
 {

@@ -8,6 +8,7 @@
 /**
  * @brief Common main function that's called by every (1D) application.
  *
+ * (Old comments)
  * Each application has its own main file, and Makefile that builds that local
  * main.  When the code is built in any application directory, every (1D) 
  * application links to this common main function, that executes the code.

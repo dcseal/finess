@@ -99,7 +99,9 @@ void DogParamsCart1::checkParameters()
     }
 }
 
-// append data to outputdir/qhelp.dat (which is then used by plotting routines)
+///@brief Appends data to outputdir/qhelp.dat (which is then used by plotting routines)
+///
+///@sa DogParams::write_qhelp(...)
 void DogParamsCart1::append_qhelp(const char* filename)
 {
     //dogParams.write_qhelp(filename);

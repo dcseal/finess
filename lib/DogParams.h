@@ -26,6 +26,11 @@ namespace SplittingType
 
 enum DataFmt {ASCII=1,HDF5=5};
 
+///@brief Packs parameters from parameters.ini, parsed by IniDocument, 
+///       and writes to qhelp.dat for use in plotting.
+///
+///@todo Rewrite this class.  Data storage and querying should be one class.
+///      Reading and writing should be separate from that.
 struct DogParams
 {
 
