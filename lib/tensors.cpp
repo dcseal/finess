@@ -4,8 +4,13 @@
 // elsewhere in the code one can choose whether to use
 // the in-line or bounds-checking versions of get and set
 #ifndef CHECK_BOUNDS
+///@def CHECK_BOUNDS
+///@brief Switch on bounds-check for the tensor classes.
+///The bounds-check behavior makes use of compiler-dependent handling of redefined class methods.
+///@todo Clean up the compiler-dependent behavior.
 #define CHECK_BOUNDS
 #endif
+//#define CHECK_BOUNDS
 #include "tensors.h"
 #include "debug.h"
 #include "assert.h"
@@ -132,6 +137,7 @@ void iTensor3::set(int n1, int n2, int n3, int value)
 
 // class iTensorBase
 
+///@brief Initilizes #vec to an array of size #size.
 void iTensorBase::init()
 {
     assert_printf(size>=0, "size=%d", size);
@@ -154,11 +160,14 @@ iTensorBase::~iTensorBase()
     delete[] vec;
 }
 
+
+
 const int& iTensorBase::vget(int k) const
 {
     assert_ge(k,0); assert_lt(k,size);
     return vec[k];
 }
+
 
 int& iTensorBase::vfetch(int k)
 {
@@ -185,6 +194,8 @@ void iTensorBase::setall(int value)
 
 // class dTensorBase
 
+///@brief Allocate memory for #vec, an <tt>double</tt> array of size #size.
+///@todo Clarify intents inside @code #ifdef CHECK_INIT ... #endif @endcode
 void dTensorBase::init()
 {
     assert_printf(size>=0, "size=%d", size);
@@ -195,6 +206,12 @@ void dTensorBase::init()
 #endif
 }
 
+///@brief (Mostly) Copy constructor.
+///@param in
+///The source tensor.
+///@param copyMode
+///#CopyMode::DIMS  Does not copy, only allocates memory for a new array of same size;
+///#CopyMode::DEEP  Copies from <tt>in</tt> by invoking #copyfrom(...).
 dTensorBase::dTensorBase(const dTensorBase& in, CopyMode::Enum copyMode) :
     size(in.size)
 {
@@ -205,9 +222,11 @@ dTensorBase::dTensorBase(const dTensorBase& in, CopyMode::Enum copyMode) :
         //  vec(in.vec);
         //  break;
         case CopyMode::DIMS:
+        ///@bug Memory leak.
             vec = new double[size];
             break;
         case CopyMode::DEEP:
+        ///@bug Memory leak.
             vec = new double[size];
             copyfrom(in);
             break;
@@ -216,6 +235,8 @@ dTensorBase::dTensorBase(const dTensorBase& in, CopyMode::Enum copyMode) :
     }
 }
 
+
+///@brief Copies from <tt>in</tt> if sizes are equal; gives assert error if not.
 void dTensorBase::copyfrom(const dTensorBase& in)
 {
     if(this!=&in)
@@ -229,11 +250,15 @@ void dTensorBase::copyfrom(const dTensorBase& in)
     }
 }
 
+///@brief Releases memory for #vec.
 dTensorBase::~dTensorBase()
 {
     delete[] vec;
 }
 
+///@brief Returns (<tt>const</tt> reference to) the <tt>k</tt>-th element.
+///
+///@todo Explain the code snippet that gets compiled if #CHECK_INIT is set.
 const double& dTensorBase::vget(int k) const
 {
     assert_ge(k,0); assert_lt(k,size);
@@ -264,6 +289,7 @@ void dTensorBase::vset(int k, double value)
     vec[k]=value;
 }
 
+///@brief Set all elements of #vec to be <tt>value</tt>.
 void dTensorBase::setall(double value)
 {
     if(size<PARALLEL_SIZE)
@@ -273,6 +299,10 @@ void dTensorBase::setall(double value)
         for (int i=0; i<size; i++) vec[i] = value;
 }
 
+///@brief I don't understand what this is doing.
+///
+///- Never called anywhere in the code.
+///@todo Clarify the intent.
 bool dTensorBase::check()
 {
     if(size<PARALLEL_SIZE)
@@ -559,6 +589,9 @@ void dTensor2d::set(int n1,int n2,double value)
     vec[k] = value;
 }
 
+///@brief Copys from <tt>in</tt>.
+///
+///- Asserts equality of beginning index, in addition to assertions in #dTensorBase::copyfrom(...).
 void dTensor1d::copyfrom(const dTensor1d& in)
 {
     ae(b1,in.b1);
@@ -694,7 +727,9 @@ dTensorBC2::dTensorBC2(int S1i, int S2i,
 }
 
 // class dTensorBC1
-
+///@brief Copies from <tt>in</tt>.
+///
+///- Invokes #dTensor1d::copyfrom(...), with additional asserts on equality of #mbc and #ndims
 void dTensorBC1::copyfrom(const dTensorBC1& in)
 {
     assert_eq(mbc,in.mbc); assert_eq(ndims,in.ndims);
@@ -702,6 +737,15 @@ void dTensorBC1::copyfrom(const dTensorBC1& in)
 }
 
 // ndims: number of dimensions that have mbc layers of boundary cells
+///@brief Constructs a one-dimensional array with boundary cells.
+///
+///@param S1i Number of non-boundary cells;
+///@param mbcin Number of boundary cells on each of the two ends of the dimensions that need boundary cells;
+///@param ndimsin Number of dimensions that need boundary cells.
+///
+///- If <tt>ndimsin</tt>==1, then resulting array has high-level indexing {1-<tt>mbcin</tt>, ..., <tt>S1i</tt>+<tt>mbcin</tt>};
+///- If <tt>ndimsin</tt>==0, then resulting array has high-level indexing {1, <tt>S1i</tt>};
+///- In either case, the non-boundary cells has indices {1, ..., <tt>S1i</tt>}
 dTensorBC1::dTensorBC1(int S1i,
         int mbcin, int ndimsin) :
     S1(S1i),

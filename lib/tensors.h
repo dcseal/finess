@@ -42,6 +42,8 @@
 //   #include "tensors.h" in files that have already been
 //   debugged.)
 
+
+///@todo Document this class
 class iTensor2
 {
     public:
@@ -88,6 +90,7 @@ class iTensor2
         int size;
 };
 
+///@todo Document this class
 class iTensor3
 {
     public:
@@ -140,6 +143,7 @@ class iTensor3
 
 // --- section: multidimensional tensor base classes ---
 
+///@todo Document this class
 class dTensor5d : public dTensorBase
 {
     // data
@@ -196,6 +200,7 @@ class dTensor5d : public dTensorBase
 #endif
 };
 
+///@todo Document this class
 class dTensor4d : public dTensorBase
 {
     // data
@@ -250,6 +255,7 @@ class dTensor4d : public dTensorBase
 #endif
 };
 
+///@todo Document this class.
 class dTensor3d : public dTensorBase
 {
     // data
@@ -299,6 +305,7 @@ class dTensor3d : public dTensorBase
 #endif
 };
 
+///@todo Document this class.
 class dTensor2d : public dTensorBase
 {
     // data
@@ -351,6 +358,7 @@ class dTensor2d : public dTensorBase
 
 // --- section: multidimensional 1-based tensor classes ---
 
+///@todo Document this class.
 class dTensor5 : public dTensor5d
 {
     private: // disabled
@@ -379,6 +387,8 @@ class dTensor5 : public dTensor5d
 #endif
 };
 
+
+///@todo Document this class.
 class dTensor4 : public dTensor4d
 {
     public:
@@ -389,6 +399,7 @@ class dTensor4 : public dTensor4d
         dTensor4& operator=(const dTensor4& in){ copyfrom(in); return *this; }
 };
 
+///@todo Document this class
 class dTensor3 : public dTensor3d
 {
     public:
@@ -399,6 +410,7 @@ class dTensor3 : public dTensor3d
         dTensor3& operator=(const dTensor3& in){ copyfrom(in); return *this; }
 };
 
+///@todo Document this class
 class dTensor2 : public dTensor2d
 {
     public:
@@ -411,6 +423,7 @@ class dTensor2 : public dTensor2d
 
 // --- section: multidimensional boundary condition (BC) tensor classes ---
 
+///@todo Document this class
 class dTensorBC5 : public dTensor5d
 {
     private: // disabled
@@ -442,6 +455,7 @@ class dTensorBC5 : public dTensor5d
 };
 
 // Class with boundary conditions and four indices.
+///@todo Document this class
 class dTensorBC4 : public dTensor4d
 {
 
@@ -477,6 +491,7 @@ class dTensorBC4 : public dTensor4d
 
 };
 
+///@todo Document this class
 class dTensorBC3 : public dTensor3d
 {
     private: // disabled
@@ -502,6 +517,7 @@ class dTensorBC3 : public dTensor3d
         int ndims;
 };
 
+///@todo Document this class
 class dTensorBC2 : public dTensor2d
 {
     private: // disabled
