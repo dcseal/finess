@@ -1,3 +1,5 @@
+///@file lib/1d/ConSoln.cpp
+
 #include <cmath>
 #include <sstream>
 #include <fstream>
@@ -10,6 +12,12 @@
 
 using namespace std;
 
+///@brief Outputs the conserved quantities to file.
+///
+///Appends (unless <tt>t</tt>=0, in which case creates and writes) to <tt>\<outputdir\>/conservation.dat</tt> a line: <br>
+/// \<t\>             @f$ (\sum_q^{\mathrm{mx}}(q_m)_i C_i \mathrm{dx})_{m=1, \ldots, \mathrm{meqn}} @f$  <br>
+///where @f$ q_m @f$ is the m-th column of <tt>q</tt>,
+///and @f$ C_i @f$ is the capacity function values, which are 1 if dogParams.get_mcapa() returns 0, and <tt>aux[i, dogParams.get_mcapa()]</tt> otherwise.
 void ConSoln( 
     const dTensorBC2& aux,
     const dTensorBC2& q, 
@@ -25,7 +33,7 @@ void ConSoln(
     const double xlow = dogParamsCart1.get_xlow();
 
     string fname1 = outputdir+"/conservation.dat";
-    ofstream write_file1,write_file2;
+    ofstream write_file1,write_file2;   //write_file2 is not used!!
     dTensor1 qsum(meqn);
     dTensor1 res_sum(meqn);
 
@@ -49,7 +57,7 @@ void ConSoln(
 
             for (int i=1; i<=mx; i++)
             {
-                const double x    = xlow + (double(i)-0.5)*dx;
+                const double x    = xlow + (double(i)-0.5)*dx;   //not used!!
                 const double qtmp = q.get(i, m);
 
                 qsum.set(m, qsum.get(m) + dx*qtmp );

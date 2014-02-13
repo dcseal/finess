@@ -1,3 +1,5 @@
+///@file lib/1d/FinSolveRK.cpp
+
 #include <iostream>
 #include <iomanip>
 #include "dog_math.h"
@@ -9,6 +11,16 @@
 
 using namespace std;
 
+
+///@brief Main solver
+///
+///
+///@param nv  Maximum number of allowed time steps.
+///           The function terminates program with error if this is exceeded in time-stepping loop.
+///
+///@note <tt>qold</tt> does get changed, so does <tt>aux</tt>, and <tt>smax</tt>
+///@todo Complete this documentation.
+///@todo Clarify the use of <tt>node</tt> and <tt>prim_vol</tt>
 void FinSolveRK(
     const dTensor2& node, const dTensor1& prim_vol,      // TODO - remove these params
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 

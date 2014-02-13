@@ -18,7 +18,8 @@ using namespace std;
 /// the same user interface that DoGPack uses.
 ///
 /// 
-///@todo Clarify the reference to mpoints --- even the name doesn't appear anywhere in this function.
+///@note The local variable <tt>mpoints</tt> is set to be constant 1.
+///@todo Clarify use of <tt>node</tt> -- it is never used in this function!!
 void SampleFunction( 
     int istart, int iend,
     const dTensor2& node,

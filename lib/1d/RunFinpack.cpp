@@ -133,6 +133,13 @@ int RunFinpack(string outputdir)
 
     // Set initial data on computational grid
     // Set values and apply L2-projection
+    //
+    // Intent of this call:
+    //   1. QinitFunc refers to the wrapper function at end of this file,
+    //      which calls the user-supplied QinitFunc(const dTensor1&, dTensor2&);
+    //   2. SampleFunction discarded values in node. The wrapper QinitFunc discarded qnew, qaux.
+    //      So what this does, in the 1D Euler Harten Shock Tube problem, is:
+    //      fill qnew with (Qinit_j( xlow + (i-1/2)*dx )), for i in 1-mbc,...,mx+mbc,  j in 1..5
     SampleFunction( 1-mbc, mx+mbc, node, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
@@ -145,7 +152,17 @@ int RunFinpack(string outputdir)
     // Compute conservation and print to file
     ConSoln( aux, qnew, 0.0, outputdir);
 
+
+
     // Main loop for time stepping
+    //
+    // XF:
+    // Do the following nout times:
+    //    Call time-stepping function, with tstart=0+i*dtout, and tend=0+(i+1)*dtout,
+    //      Thus state of q at tend is stored in qnew,
+    //           and state of auxiliary functions at tend is stored in aux.
+    //    Outputs a snapshot of current state by calling Output(...);
+    //    Outputs a message to console.
     double tstart = 0.0;
     double tend   = 0.0;
     double dtout = tfinal/double(nout);    
