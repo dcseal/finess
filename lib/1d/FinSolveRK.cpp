@@ -40,7 +40,6 @@ using namespace std;
 ///@note <tt>qold</tt> *does* get changed, so does <tt>aux</tt>, and <tt>smax</tt>
 ///@todo Complete this documentation.
 ///@todo Clarify the use of <tt>node</tt> and <tt>prim_vol</tt>
-///@todo Clarify the use of <tt>dtv[2]</tt>
 void FinSolveRK(
     const dTensor2& node, const dTensor1& prim_vol,      // TODO - remove these params
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 

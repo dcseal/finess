@@ -1,6 +1,11 @@
 #include "tensors.h"
 #include "RKinfo.h"
 
+
+///@brief Sets Runge-Kutta information to a struct.
+///
+///@param method2
+///@todo Finish documenting this function. 
 void SetRKinfo(int method2, RKinfo& rk)
 {
     rk.mstage = 0;
