@@ -10,10 +10,10 @@ defaults_file = "$FINESS/config/dogParams_defaults.ini"
 ndims       = 1             ; 1 or 2
 mesh_type   = Cartesian     ; (either Cartesian or Unstructured) 
 nout        = 1             ; number of output times to print results
-tfinal      = 0.10          ; final time 
+tfinal      = 1.591549430918953e-01 ; final time 
 dtv(1)      = 0.001         ; initial dt
 dtv(2)      = 1e10          ; max allowable dt 
-cflv(1)     = 0.44          ; max allowable Courant number
+cflv(1)     = 0.84          ; max allowable Courant number
 cflv(2)     = %(cfl)f       ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
@@ -34,7 +34,7 @@ datafmt     = 1   ; 1 for ascii, 5 for hdf5.
 mx    =  %(mx)i  ; number of grid elements in x-direction
 mbc   =      3   ; number of ghost cells on each boundary
 xlow  =  0.0e0   ; left end point
-xhigh =  1.0e0   ; right end point
+xhigh =  2.0e0   ; right end point
 '''
 
 def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start):

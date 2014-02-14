@@ -22,6 +22,6 @@ void QinitFunc(const dTensor1& xpts,
     for(int i=1; i<=numpts; i++)
     {
         double x = xpts.get(i);
-        qvals.set(i,1, 0.5 + sin(2.0*pi*x) );
+        qvals.set(i,1, 0.5 + sin(pi*x) );
     }
 }

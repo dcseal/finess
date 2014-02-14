@@ -25,7 +25,7 @@ pz=plot(xc,qsoln(:,m),'bo');
 hold off;
 axis on; box on; grid off;
 %axis([0 1 -0.6 1.6]);
-axis([0 1 -1.1+0.5 1.1+0.5]);
+axis([0 2 -1.1+0.5 1.1+0.5]);
 set(gca,'plotboxaspectratio',[2 1 1]);
 set(gca,'xtick',-2:0.25:2);
 set(gca,'ytick',-2:0.5:2);
@@ -95,17 +95,18 @@ set(t1,'fontsize',16);
 
  % Parameters used for computing the exact solution
  t = time;
- q0 = @(z)(0.5 + sin(2*pi*z));
- qp = @(z)(2*pi*cos(2*pi*z));
+ q0 = @(z)(0.5 + sin(pi*z));
+ qp = @(z)(pi*cos(pi*z));
  f  = @(z)(q0(z)*t + z - xc);
  fp = @(z)(qp(z)*t + 1.0);
 
  % Convergence parameters:
  tol = 1e-14;
  max_iter = 1000;
+ tfinal = 0.5/pi;
 
  % Only check for exact solution at the final time
- if( abs(t-0.10) < 1e-10 )
+ if( abs(t-tfinal) < 1e-10 )
 %  disp('  Computing exact solution: comment out this section of plotq1 if not desired');
    xi  = xc;   % initial guess
    err = max(abs( f(xi) ) );
@@ -132,32 +133,32 @@ set(t1,'fontsize',16);
 
 %  disp(['   min(xi) = ', num2str(min(xi)), '    max(xi) = ', num2str(max(xi))]);
 
-  %  print error in exact vs computed solution
-   err2 = norm(qsoln-qex,2)/norm(qex,2);
-%  err2 = dx*norm(qsoln-qex,2);
-%  disp(dx*norm(qex,2))
+    % print error in exact vs computed solution
+    err1 = norm(qsoln-qex,1)/norm(qex,1);
+    err2 = norm(qsoln-qex,2)/norm(qex,2);
+    erri = max( abs( qsoln-qex ) ) / max( abs( qex ) );
 
-   % Friendly helper message: (commented to pull convergence numbers more easily)
-%  disp(' ');
-%  disp(['   dx = ',num2str(dx,'%2.15e'),['         err2 = ' ...
-%                      ''],num2str(err2,'%2.15e')]);
-%  fprintf(1, 'err2 = %2.15e\n', err2 );
-   fprintf(1, '%d %2.15e\n', mx, err2 );
+    % Friendly helper message: (commented to pull convergence numbers more easily)
+    fprintf(1, '%d %2.4e %2.4e %2.4e\n', mx, err1, err2, erri );
+
+    fid = fopen('errors.dat', 'a' );
+    fprintf(fid, '%d %2.15e %2.15e %2.15e\n', mx, err1, err2, erri );
+    fclose( fid );
 
     % Plot the error
-    figure(4);
-    clf;
-    pz=plot(xc, qsoln(:,m)-qex, 'bo');
-    set(pz,'linewidth',2);
-    hold off;
-    axis on; box on; grid off;
-    axis auto;
-    set(gca,'plotboxaspectratio',[2 1 1]);
-    set(gca,'xtick',-2:0.25:2);
-    set(gca,'ytick',-2:0.5:2);
-    set(gca,'fontsize',16);
-    t1 = title(['q(x,t) - qex(x,t) at t = ',num2str(time),'     [DoGPack]']); 
-    set(t1,'fontsize',16);
+%   figure(4);
+%   clf;
+%   pz=plot(xc, qsoln(:,m)-qex, 'bo');
+%   set(pz,'linewidth',2);
+%   hold off;
+%   axis on; box on; grid off;
+%   axis auto;
+%   set(gca,'plotboxaspectratio',[2 1 1]);
+%   set(gca,'xtick',-2:0.25:2);
+%   set(gca,'ytick',-2:0.5:2);
+%   set(gca,'fontsize',16);
+%   t1 = title(['q(x,t) - qex(x,t) at t = ',num2str(time),'     [DoGPack]']); 
+%   set(t1,'fontsize',16);
 
  end
 
