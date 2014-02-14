@@ -157,11 +157,11 @@ int RunFinpack(string outputdir)
     // Main loop for time stepping
     //
     // XF:
-    // Do the following nout times:
+    // Do the following <nout> times:
     //    Call time-stepping function, with tstart=0+i*dtout, and tend=0+(i+1)*dtout,
     //      Thus state of q at tend is stored in qnew,
     //           and state of auxiliary functions at tend is stored in aux.
-    //    Outputs a snapshot of current state by calling Output(...);
+    //    Outputs a snapshot of state at time <tend> by calling Output(...);
     //    Outputs a message to console.
     double tstart = 0.0;
     double tend   = 0.0;

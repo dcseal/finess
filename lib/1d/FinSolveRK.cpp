@@ -14,13 +14,33 @@ using namespace std;
 
 ///@brief Main solver
 ///
-///
+///@param aux Two-dimensional array. Allocated and passed by caller, i.e. RunFinpack(...).
+///           Index ranges, as initialized in caller: {1-mbc, ..., mx+mbc}*{1, max{1, maux}}.
+///@param qold Two-dimensional array. Allocated and passed by caller, i.e. RunFinpack(...).
+///            Index ranges, as initialized in caller: {1-mbc, ..., mx+mbc}*{1, ..., meqn}.
+///@param qnew Two-dimensional array. Allocated and passed by caller, i.e. RunFinpack(...).
+///            Index ranges, as initialized in caller: {1-mbc, ..., mx+mbc}*{1, ..., meqn}.
+///@param smax One-dimensional array.  Allocated and passed by caller, i.e. RunFinpack(...).
+///            Index ranges, as initialized in caller: {1-mbc, ..., mx+mbc}
+///@param tstart Start time
+///@param tend End time
 ///@param nv  Maximum number of allowed time steps.
-///           The function terminates program with error if this is exceeded in time-stepping loop.
-///
-///@note <tt>qold</tt> does get changed, so does <tt>aux</tt>, and <tt>smax</tt>
+///           The function terminates program with error if number of steps exceeds <tt>nv</tt> in the main loop
+///@param dtv[] One-dimensional array containing two parameters: 
+///- <tt>dtv[1]</tt>  Time-step from last run of #FinSolveRK(...).
+///                   Note: <em>This function adjusts time-step automatically, 
+///                         and writes back the chosen time-step to <tt>dtv[1]</tt>.</em>
+///- <tt>dtv[2]</tt>  Maximum allowed time-step
+///@param cflv[] One-dimensional array containing two parameters,
+///              which are read from <tt>parameters.ini</tt> by the caller,
+///              and stays constant ever after
+///- <tt>cflv[1]</tt>  Maximum allowed Courant number
+///- <tt>cflv[2]</tt>  Desired Courant number
+///@param outputdir Directory of output file
+///@note <tt>qold</tt> *does* get changed, so does <tt>aux</tt>, and <tt>smax</tt>
 ///@todo Complete this documentation.
 ///@todo Clarify the use of <tt>node</tt> and <tt>prim_vol</tt>
+///@todo Clarify the use of <tt>dtv[2]</tt>
 void FinSolveRK(
     const dTensor2& node, const dTensor1& prim_vol,      // TODO - remove these params
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
