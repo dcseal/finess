@@ -4,7 +4,9 @@
 
 ///@brief Sets Runge-Kutta information to a struct.
 ///
-///@param method2
+///@param method2 Time order.  Currently, only call to SetRKinfo(...) passes what is read from parameters.ini
+///@param rk      Struct to store RK information.
+///
 ///@todo Finish documenting this function. 
 void SetRKinfo(int method2, RKinfo& rk)
 {

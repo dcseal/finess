@@ -1,6 +1,8 @@
 #include "tensors.h"
 
-// Function that is called before a full time step
+///@brief Function that is called before a full time step
+///
+///Currently does nothing.  Reserved for future use.
 void BeforeFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol,
 		       dTensorBC2& auxold, dTensorBC2& aux, 
 		       dTensorBC2& qold,   dTensorBC2& q)

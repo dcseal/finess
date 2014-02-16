@@ -5,14 +5,37 @@
 #include "tensors.h"
 #include "dog_math.h"
 
-// Right-hand side for hyperbolic PDE in divergence form
-//
-//       q_t + f(q,x,t)_x = Psi(q,x,t)
-//
+///@brief Constructs right-hand side for hyperbolic PDE in divergence form
+///       @f$ q_t + f(q,x,t)_x = \psi(q,x,t) @f$
+///
+///@param node Only use: passed to SetBndValues(...) and SampleFunction(...), 
+///            but it is not used there either.
+///@param aux  Two-dimensional array.
+///            Two values ever passed:
+///            - <tt>aux</tt> from FinSolveRK(...), which is passed from RunFinpack(...).
+///              Index range: {1-mbc, ..., mx+mbc}*{1, ..., max{1,maux}}
+///            - <tt>auxstar</tt> from FinSolveRK(...).
+///              Index range: {1-mbc, ..., mx+mbc}*{1, ..., maux}
+///@param q    Two-dimensional array.  Modified in this function only in a call to SetBndValues(...).
+///            Three values ever passed:
+///            - <tt>qnew</tt> from FinSolveRK(...), which is passed from RunFinpack(...).
+///              Index range: {1-mbc, ..., mx+mbc}*{1, ..., meqn}
+///            - <tt>qstar</tt> from FinSolveRK(...).
+///              Index range: {1-mbc, ..., mx+mbc)*{1, ..., meqn}
+///            - <tt>q1</tt> from FinSolveRK(...).
+///              Index range: {1-mbc, ..., mx+mbc}*{1, ..., meqn}
+///@param Lstar Two-dimensional array, to store the constructed L values.
+///@param smax  One-dimensional array,
+///             to store information to be used in a call to GetCFL(...) in FinSolveRK(...).
+///
+///@note mx, mbc, maux in the description of parameters are read from parameters.ini.
+///
+///@todo Be precise on the description of <tt>smax</tt>
+///@todo Finish documenting this class.  
 void ConstructL(
         const dTensor2& node,
-        dTensorBC2& aux,
-        dTensorBC2& q,      // setbndy conditions modifies q
+        const dTensorBC2& aux,
+        dTensorBC2& q,      // setbndy conditions modifies q 
         dTensorBC2& Lstar,
         dTensorBC1& smax)
 {
@@ -49,6 +72,16 @@ void ConstructL(
     const int     mx = q.getsize(1);
     const int   meqn = q.getsize(2);
     const int   maux = aux.getsize(2);
+    //< This, and the definition of auxstar in FinSolveRK(...),
+    //  makes it possible that this maux is not the maux read from parameters.ini.
+    //  i.e.  When maux read from parameters.ini is 0,
+    //        aux in FinSolveRK(...) has index range {...}*{1}, 
+    //        while auxstar in FinSolve(...) has index range {...}*{}.
+    //        Thus if, in addition, auxstar is passed as the argument aux to the current function,
+    //        maux in the current function is 0.
+    //        This happens only once, because there is only one call in FinSolveRK(...)
+    //        to the current function with auxstar in FinSolveRK(...) 
+    //        as the argument aux to the current function.
     const int    mbc = q.getmbc();
 
 // TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
@@ -78,7 +111,7 @@ assert_eq( mbc, 3 );
         // Part I: Compute Roe Averages
         //         TODO - the User may want to replace this ...
         // --------------------------------------------------------------------
-        dTensor1 Qavg(meqn);
+        dTensor1 Qavg(meqn); //Used only as parameter to ProjectLeftEig(...) and ProjectRightEig(...)
         for( int m=1; m <= meqn; m++ )
         {
             double tmp = 0.5*( q.get(i,m) + q.get(i-1,m) );

@@ -1,6 +1,10 @@
+///@file apps/1d/euler/harten_shock_tube/SetBndValues.cpp
+
 #include "tensors.h"
 
-// Zeroth order extrapolation boundary conditions
+///@brief Zeroth order extrapolation boundary conditions
+///
+///In this problem, SetBndValues(...) simply copies q-values at each of two ends to ghost cells on that end.
 void SetBndValues(
         const dTensor2& node, 
         dTensorBC2& aux, 

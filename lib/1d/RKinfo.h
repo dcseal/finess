@@ -53,7 +53,10 @@ struct RKinfo
 	///@todo Remove it.  This is used only in FinSolveRK(...),
 	///      and only serves as a local iteration variable -- why then do we store it here?
 	int mstage;
-	///@brief Number of stages in Runge-Kutta method
+	///@brief Number of stages in Runge-Kutta method.
+	///
+	///This is never used after being set in SetRKinfo(...)
+	///@todo Either redesign the way RK method is implemented, or remove this member.
 	int num_stages;
 	dTensor1* alpha1;
 	dTensor1* alpha2;

@@ -1,6 +1,8 @@
 #include "tensors.h"
 
-// Function that is called before each time step
+///@brief Function that is called before each time step
+///
+///Currently does nothing.  Reserved for future use.
 void BeforeStep(double dt, const dTensor2& node, dTensorBC2& aux, dTensorBC2& q)
 {
     const int     mx = q.getsize(1);
@@ -8,6 +10,9 @@ void BeforeStep(double dt, const dTensor2& node, dTensorBC2& aux, dTensorBC2& q)
     const int   maux = aux.getsize(2);  
 }
 
+///@brief Function that is called before each time step
+///
+///Currently does nothing.  Reserved for future use.
 void BeforeStep(double dt, const dTensor2& node, dTensorBC2& aux, dTensorBC2& q, 
         void* data)
 {

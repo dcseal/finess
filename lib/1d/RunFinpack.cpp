@@ -207,6 +207,8 @@ int RunFinpack(string outputdir)
 
 // Wrapper functions to make the calls to Qinit and AuxFunc make sense when
 // passed into SampleFunction
+
+///@brief Wrapper function to QinitFunc(const dTensor1&, dTensor2&).
 void QinitFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals)
 {
@@ -214,6 +216,7 @@ void QinitFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
     QinitFunc(xpts,qvals);
 }
 
+///@brief Wrapper function to AuxFunc(const dTensor1&, dTensor2&).
 void AuxFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& auxvals)
 {

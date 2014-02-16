@@ -14,14 +14,14 @@ using namespace std;
 
 ///@brief Main solver
 ///
-///@param aux Two-dimensional array. Allocated and passed by caller, i.e. RunFinpack(...).
-///           Index ranges, as initialized in caller: {1-mbc, ..., mx+mbc}*{1, max{1, maux}}.
-///@param qold Two-dimensional array. Allocated and passed by caller, i.e. RunFinpack(...).
+///@param aux Two-dimensional array. 
+///           Index ranges, as initialized in caller(RunFinpack(...)): {1-mbc, ..., mx+mbc}*{1, ..., max{1, maux}}.
+///@param qold Two-dimensional array.
 ///            Index ranges, as initialized in caller: {1-mbc, ..., mx+mbc}*{1, ..., meqn}.
-///@param qnew Two-dimensional array. Allocated and passed by caller, i.e. RunFinpack(...).
-///            Index ranges, as initialized in caller: {1-mbc, ..., mx+mbc}*{1, ..., meqn}.
-///@param smax One-dimensional array.  Allocated and passed by caller, i.e. RunFinpack(...).
-///            Index ranges, as initialized in caller: {1-mbc, ..., mx+mbc}
+///@param qnew Two-dimensional array.
+///            Index ranges, as initialized in caller(RunFinpack(...)): {1-mbc, ..., mx+mbc}*{1, ..., meqn}.
+///@param smax One-dimensional array.
+///            Index ranges, as initialized in caller(RunFinpack(...)): {1-mbc, ..., mx+mbc}
 ///@param tstart Start time
 ///@param tend End time
 ///@param nv  Maximum number of allowed time steps.
@@ -37,7 +37,7 @@ using namespace std;
 ///- <tt>cflv[1]</tt>  Maximum allowed Courant number
 ///- <tt>cflv[2]</tt>  Desired Courant number
 ///@param outputdir Directory of output file
-///@note <tt>qold</tt> *does* get changed, so does <tt>aux</tt>, and <tt>smax</tt>
+///@note <tt>qold</tt> will get changed, so will <tt>aux</tt>, and <tt>smax</tt>
 ///@todo Complete this documentation.
 ///@todo Clarify the use of <tt>node</tt> and <tt>prim_vol</tt>
 void FinSolveRK(
@@ -55,8 +55,8 @@ void FinSolveRK(
 
     double t            = tstart;
     double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max   CFL number
-    double CFL_target   = cflv[2];  // targe CFL number
+    const double CFL_max      = cflv[1];  // max   CFL number
+    const double CFL_target   = cflv[2];  // targe CFL number
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
@@ -109,7 +109,8 @@ void FinSolveRK(
         {
 
             // set current time
-            double told = t;
+            double told = t;    //XF: This variable does get used later in the function
+                                //    other than the following three lines.
             if (told+dt > tend)
             { dt = tend - told; }
             t = told + dt;

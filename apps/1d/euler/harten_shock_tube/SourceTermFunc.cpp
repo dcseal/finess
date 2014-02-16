@@ -1,6 +1,10 @@
 #include "tensors.h"
 
 // This is a user-supplied routine that sets the source term
+
+///@brief A user-supplied routine that sets the source term.
+///
+///In this problem, source term is the zero function.
 void SourceTermFunc(const dTensor1& xpts, 
 		    const dTensor2& qvals, 
 		    const dTensor2& auxvals,
