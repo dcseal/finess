@@ -21,6 +21,8 @@ void FinSolveRK(
     const int time_order = dogParams.get_time_order();
     RKinfo rk;
     SetRKinfo(time_order, rk);
+printf("Starting RK solver\n");
+exit(1);
 
     double t            = tstart;
     double dt           = dtv[1];   // Start with time step from last frame
@@ -137,15 +139,26 @@ void FinSolveRK(
 
                 case 3:  // Third order in time  (low-storage SSP method)
 
+//     qnew = alpha1 * qstar + alpha2 * qnew + beta * dt * L( qstar )
+
+// alpha1 = 1.0
+// alpha2 = 0.0
+// beta   = 1.0
+
                     // ---------------------------------------------------------
                     // Stage #1
                     rk.mstage = 1;
+dogParams.set_time( told );
                     BeforeStep(dt,aux,qnew);    
                     ConstructL(aux,qnew,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
                     AfterStep(dt,auxstar,qstar);
 
+dogParams.set_time( told + dt );
+// alpha1 = 0.75
+// alpha2 = 0.25
+// beta   = 0.25
                     // ---------------------------------------------------------
                     // Stage #2
                     rk.mstage = 2;
@@ -155,6 +168,10 @@ void FinSolveRK(
                             rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
                     AfterStep(dt,auxstar,qstar);
 
+dogParams.set_time( told + (2.0/3.0)*dt );
+// alpha1 = 2/3
+// alpha2 = 1/3
+// beta   = 2/3
                     // ---------------------------------------------------------
                     // Stage #3
                     rk.mstage = 3;
