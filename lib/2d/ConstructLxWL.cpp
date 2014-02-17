@@ -58,7 +58,7 @@ void ConstructLxWL(
 // (Derived parameters? -DS)
 const int  r = 3;       // order = 2*r-1
 const int ws = 5;       // Number of points for the weno-reconstruction
-assert_eq( mbc, 3 );
+assert_ge( mbc, 3 );
 
     // The flux, f_{i-1/2, j} and g_{i, j-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in

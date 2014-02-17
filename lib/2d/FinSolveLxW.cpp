@@ -85,6 +85,8 @@ void FinSolveLxW(
 
             // set current time
             double told = t;
+            dogParams.set_time( t );
+
             if (told+dt > tend)
             { dt = tend - told; }
             t = told + dt;
@@ -100,9 +102,6 @@ void FinSolveLxW(
             BeforeStep(dt, aux, qnew);
             SetBndValues(aux, qnew);
             ConstructIntegratedR( dt, aux, qnew, smax, F, G);
-// TODO
-SetBndValues(aux, F);
-SetBndValues(aux, G);
 
 //  for( int k=0; k < numel; k++ )
 //  {

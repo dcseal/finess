@@ -61,7 +61,7 @@ void ConstructL(
 // (Derived parameters? -DS)
 const int  r = 3;       // order = 2*r-1
 const int ws = 5;       // Number of points for the weno-reconstruction
-assert_eq( mbc, 3 );
+assert_ge( mbc, 3 );
 
     // The flux, f_{i-1/2, j} and g_{i, j-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
@@ -386,21 +386,19 @@ assert_eq( mbc, 3 );
     if( dogParams.get_source_term() )
     {
 
-        printf("Error: source-term not implemented for Lax-Wendroff method\n");
-        exit(1);
-//      // Compute the source term.
-//      SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
-//  #pragma omp parallel for
-//      for (int i=1; i<=mx; i++)
-//      for (int j=1; j<=my; j++)
-//      {
-//          for (int m=1; m<=meqn; m++)
-//          {
-//              double tmp = -(F.get(i+1, j,   m) - F.get(i, j, m) ) / dx;
-//              tmp =  tmp   -(G.get(i,   j+1, m) - G.get(i, j, m) ) / dy;
-//              Lstar.set(i,j, m, Lstar.get(i,j,m) + tmp );
-//          }
-//      }
+        // Compute the source term.
+        SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
+#pragma omp parallel for
+        for (int i=1; i<=mx; i++)
+        for (int j=1; j<=my; j++)
+        {
+            for (int m=1; m<=meqn; m++)
+            {
+                double tmp = -(Fhat.get(i+1, j,   m) - Fhat.get(i, j, m) ) / dx;
+                tmp =  tmp   -(Ghat.get(i,   j+1, m) - Ghat.get(i, j, m) ) / dy;
+                Lstar.set(i,j, m, Lstar.get(i,j,m) + tmp );
+            }
+        }
     }
     else  // No source term
     {
@@ -438,5 +436,3 @@ void ConvertTranspose( const dTensor2& qin, dTensor2& qout )
     }
 
 }
-
-

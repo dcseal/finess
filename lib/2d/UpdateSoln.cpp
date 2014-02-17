@@ -8,6 +8,8 @@
 //     qnew = alpha1*qstar + alpha2*qnew + beta*dt*Lstar.
 //
 // The main loop covers all elements (including boundary cells) of the arrays.
+//
+// See also: RKinfo.h and SetRKinfo.cpp
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
         const dTensorBC3& aux,
         const dTensorBC3& qstar, 

@@ -90,16 +90,17 @@ void ConstructIntegratedR( double dt,
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
 // TODO  - allow for different sized stencils
-const int      mpts_sten = 2*mbc-1;  assert_eq( mpts_sten,      5 );
-const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
+const int mbc_small      = 3;
+const int      mpts_sten = 5;
+const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
 const int ndim = 2;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
 #pragma omp parallel for
-    for( int i = 1; i <= mx; i++ )
-    for( int j = 1; j <= my; j++ )
+    for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
+    for( int j = 1-mbc_small; j <= my+mbc_small; j++ )
     {
 
         // Physical location for this current value:
@@ -296,12 +297,5 @@ const int ndim = 2;
 
 
     }
-
-    // TODO - something needs to be done about the boundary data!!!
-    // For now, we'll assume F satisfies the same boundary conditions that Q
-    // does (but this is not true!!)
-//void SetBndValues(dTensorBC3&, dTensorBC3&);
-//SetBndValues(aux, F );
-//SetBndValues(aux, G );
 
 }
