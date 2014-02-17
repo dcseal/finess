@@ -30,6 +30,23 @@ press = (gamma-1)*(qsoln(:,5)-0.5*(qsoln(:,2).^2+...
                                    qsoln(:,3).^2+...
                                    qsoln(:,4).^2)./qsoln(:,1));
 
+% -------------------------------------------- %
+% Exact solution (at the final time):
+% Uncomment if not desired.  The data for this 
+% file was produced by HYPERPYWS.
+fids = fopen('exact_soln.dat', 'r' );
+if(fids == -1)
+  disp(['File  ', 'exact_soln.dat','  not found.']);
+else
+    qex = fscanf(fids,'%e',[4,inf]);
+    fclose( fids );
+    mx_ex = length( qex );
+    xex = qex( 1, : )';  qex = qex( 2:4, : )';
+
+    pex = (gamma-1)*(qex(:,3)-0.5*(qex(:,2).^2)./qex(:,1));
+end    
+% -------------------------------------------- %
+
 figure(1);
 clf;
 pz=plot(xc,qsoln(:,1),'bo');
@@ -37,41 +54,59 @@ set(pz,'linewidth',1);
 set(pz,'markersize',6);
 hold off;
 axis on; box on; grid off;
-axis([0 1 0.29 1.4]);
+axis([-0.01 1.01 0.29 1.4]);
 set(gca,'plotboxaspectratio',[1.5 1 1]);
-set(gca,'xtick',-2:0.50:5);
-set(gca,'ytick',-3:1.0:12);
+set(gca,'xtick',-2:0.2:5);
+set(gca,'ytick',-3:0.2:12);
 set(gca,'fontsize',16);
 t1 = title(['Density at t = ',num2str(time),'     [DoGPack]']); 
 set(t1,'fontsize',16);
+if(fids ~= -1)
+    hold on;
+    plot( xex, qex(:,1), '-r' );
+    hold off;
+end
 
 figure(2);
 clf;
-pz=plot(xc,press,'bo');
+pz=plot(xc, press, 'bo');
 set(pz,'linewidth',1);
 set(pz,'markersize',6);
 hold off;
 axis on; box on; grid off;
-axis([-0.01 1.01 -0.11 1.66]);
+axis([-0.01 1.01  0.4 3.66]);
 
 set(gca,'plotboxaspectratio',[1.5 1 1]);
-set(gca,'xtick',-2:1.0:5);
-set(gca,'ytick',-0:20.0:100);
+set(gca,'xtick',-2:0.20:5);
+set(gca,'ytick',-0:0.5:40);
 set(gca,'fontsize',16);
 t1 = title(['Pressure at t = ',num2str(time),'     [DoGPack]']); 
 set(t1,'fontsize',16);
 
+if(fids ~= -1)
+    hold on;
+    plot( xex, pex, '-r' );
+    hold off;
+end
+
 figure(3);
 clf;
-pz=plot(xc,qsoln(:,2)./qsoln(:,1),'bo');
+pz=plot(xc, qsoln(:,2)./qsoln(:,1), 'bo');
 set(pz,'markersize',6);
 set(pz,'linewidth',1);
 hold off;
 axis on; box on; grid off;
-axis([0 5 -0.05 4.05]);
+axis([-0.01 1.01 -0.01 1.66]);
 set(gca,'plotboxaspectratio',[1.5 1 1]);
-set(gca,'xtick',-2:1:5);
-set(gca,'ytick',-1:1:5);
+set(gca,'xtick',-2:0.2:5);
+set(gca,'ytick',-1:0.5:5);
 set(gca,'fontsize',16);
 t1 = title(['u^1(x,t) at t = ',num2str(time),'     [DoGPack]']); 
 set(t1,'fontsize',16);
+
+
+if(fids ~= -1)
+    hold on;
+    plot( xex, qex(:,2)./qex(:,1), '-r' );
+    hold off;
+end
