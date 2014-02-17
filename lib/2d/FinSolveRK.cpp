@@ -21,8 +21,6 @@ void FinSolveRK(
     const int time_order = dogParams.get_time_order();
     RKinfo rk;
     SetRKinfo(time_order, rk);
-printf("Starting RK solver\n");
-exit(1);
 
     double t            = tstart;
     double dt           = dtv[1];   // Start with time step from last frame
