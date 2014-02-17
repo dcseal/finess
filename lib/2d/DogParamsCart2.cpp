@@ -140,7 +140,7 @@ void DogParamsCart2::append_qhelp(const char* filename)
     fprintf(file,"%16d : my\n", my);
     fprintf(file,"%16.8e : xlow\n", xlow);
     fprintf(file,"%16.8e : xhigh\n",xhigh);
-    fprintf(file,"%16.8e : ylow\n", xlow);
-    fprintf(file,"%16.8e : yhigh\n",xhigh);
+    fprintf(file,"%16.8e : ylow\n", ylow);
+    fprintf(file,"%16.8e : yhigh\n",yhigh);
     fclose(file);
 }
