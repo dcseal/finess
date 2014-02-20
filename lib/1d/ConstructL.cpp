@@ -24,17 +24,15 @@
 ///              Index range: {1-mbc, ..., mx+mbc)*{1, ..., meqn}
 ///            - <tt>q1</tt> from FinSolveRK(...).
 ///              Index range: {1-mbc, ..., mx+mbc}*{1, ..., meqn}
-///@param Lstar Two-dimensional array, to store the constructed L values.
+///@param Lstar Two-dimensional array, (1-mbc:mx+mbc, 1:meqn), to store the constructed L values.
 ///@param smax  One-dimensional array,
-///             to store information to be used in a call to GetCFL(...) in FinSolveRK(...).
+///             to store local speeds.  This will be used in determining CFL number.
 ///
 ///@note mx, mbc, maux in the description of parameters are read from parameters.ini.
 ///
-///@todo Be precise on the description of <tt>smax</tt>
-///@todo Finish documenting this class.  
 void ConstructL(
         const dTensor2& node,
-        const dTensorBC2& aux,
+        dTensorBC2& aux,    // setbndy conditions modifies qux
         dTensorBC2& q,      // setbndy conditions modifies q 
         dTensorBC2& Lstar,
         dTensorBC1& smax)
@@ -108,7 +106,7 @@ assert_eq( mbc, 3 );
     {
 
         // --------------------------------------------------------------------
-        // Part I: Compute Roe Averages
+        // Part I: Compute Roe Averages   --- Is this the Roe average?? -- XF
         //         TODO - the User may want to replace this ...
         // --------------------------------------------------------------------
         dTensor1 Qavg(meqn); //Used only as parameter to ProjectLeftEig(...) and ProjectRightEig(...)

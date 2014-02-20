@@ -8,6 +8,19 @@
 //
 //     Euler equations for gas dynamics
 //
+///@brief A user-supplied routine that sets the wave speed.
+///
+///@param xedge  One-dimensional array of length 1, which holds xlow+(i-0.5)*dx
+///@param Ql     One-dimensional array of length meqn, which holds (i-1)-th row of <tt>q</tt> in ConstructL(...)
+///@param Qr     One-dimensional array of length meqn, which holds i-th row of <tt>q</tt> in ConstructL(...)
+///@param Auxl   One-dimensional array of length max(1, maux in ConstructL(...)),
+///              which holds (i-1)-th row of <tt>aux</tt> in ConstructL(...).
+///@param Auxr   One-dimensional array of length max(1, maux in ConstructL(...)),
+///              which holds i-th row of <tt>aux</tt> in ConstructL(...).
+///@param s1     To store the velocity of wave going leftwards at xlow+(i-1)*dx
+///@param s2     To store the velocity of wave going rightwards at xlow+i*dx
+///
+///@todo Check the description of the parameters.
 void SetWaveSpd(const dTensor1& xedge,
         const dTensor1& Ql,
         const dTensor1& Qr,

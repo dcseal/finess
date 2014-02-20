@@ -2,23 +2,28 @@
 @mainpage FINESS
 Documentation on the code needed to compile and run @c apps/1d/euler/harten_shock_tube.
 
-By running @verbatim make -n @endverbatim under @c apps/1d/euler/harten_shock_tube, we can see that, at current settings, a typical compile command is
-@verbatim time g++ -O4 -c -I$FINESS/lib/1d -I$FINESS/lib -I$FINESS/lib/sys -I /usr/include/x86_64-linux-gnu/c++/4.8  main.cpp -o main.o @endverbatim
-and that the link command does not have any special flags.
 
-@note
-- @c lib/1d precedes @c lib in the include paths, this implies in particular that in @c lib/tensors1d.h, @verbatim #include <dimdefs.h> @endverbatim refers to @c lib/1d/dimdefs.h, which defines @c NDIMS to be @c 1, NOT to @c lib/dimdefs.h, which defines @c NDIMS to be @c 0.
+Note on the in-source documentation:
+- All the documentation are at definitions, not at declarations.  This is because the current documentation is intended for developers, not users.  So it is easier to see the intent of a function at its definition, than at its declaration.
+
+
+
+
+
+@note (Supposedly, to get an app running) You should not have to modify this part of the code.
+       To change parameters, modify the following files:
+-# apps/1d/euler/harten_shock_tube/parameters.ini -- basic data file, can modify
+                  number of grid points, time step, order of
+                  accuracy in both space and time, etc...
+-# apps/1d/euler/harten_shock_tube/QinitFunc.cpp -- initial condition file
+-# apps/1d/euler/harten_shock_tube/AuxFunc.cpp -- auxiliary variable file
+-# apps/1d/euler/harten_shock_tube/SourceTermFunc.cpp -- source term file
+-# apps/1d/euler/harten_shock_tube/FluxFunc.cpp -- flux function file
+-# apps/1d/euler/harten_shock_tube/SetWaveSpd.cpp -- eigenvalues of flux Jacobian file
+-# apps/1d/euler/harten_shock_tube/ProjectLeftEig.cpp -- left eigenvectors of flux Jacobian file
+-# apps/1d/euler/harten_shock_tube/ProjectRightEig.cpp -- right eigenvectors of flux Jacobian file
+-# apps/1d/euler/harten_shock_tube/SetBndValues.cpp -- boundary conditions files
+
+
 
 */
-
-
-///Note on the in-source documentation:
-///- All the documentation are at definitions, not at declarations.  This is because the current documentation is intended for developers, not users.  So it is easier to see the intent of a function at its definition, than at its declaration.
-
-
-///@def CHECK_INIT
-///@brief If set, #dTensorBase will initialize the internal array with <tt>NaN</tt> and do some weird checkings at dTensorBase::vget(...), dTensorBase::vfetch(...), and dTensorBase::vset(...).
-///
-///- Not defined anywhere in the code, or in the <tt>Makefile</tt>'s.
-///@todo Explain the weird checkings.
-#define CHECK_INIT

@@ -1,0 +1,27 @@
+/**
+@page Surprises  Some hard-to-understand mechanisms in the code.
+
+By running @verbatim make -n @endverbatim under @c apps/1d/euler/harten_shock_tube, we can see that, at current settings, a typical compile command is
+@verbatim time g++ -O4 -c -I$FINESS/lib/1d -I$FINESS/lib -I$FINESS/lib/sys -I /usr/include/x86_64-linux-gnu/c++/4.8  main.cpp -o main.o @endverbatim
+and that the link command does not have any special flags.
+
+@note
+- @c lib/1d precedes @c lib in the include paths, this implies in particular that in @c lib/tensors1d.h, @verbatim #include <dimdefs.h> @endverbatim refers to @c lib/1d/dimdefs.h, which defines @c NDIMS to be @c 1, NOT to @c lib/dimdefs.h, which defines @c NDIMS to be @c 0.
+
+
+
+*/
+
+/**
+Below are things that have no better place to go.
+*/
+/**
+@def CHECK_INIT
+@brief If set, #dTensorBase will initialize the internal array with <tt>NaN</tt> and do some weird checkings at dTensorBase::vget(...), dTensorBase::vfetch(...), and dTensorBase::vset(...).
+
+- Not defined anywhere in the code, or in the <tt>Makefile</tt>'s.
+*/
+///@todo Explain the weird checkings.
+#define CHECK_INIT
+
+

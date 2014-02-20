@@ -16,6 +16,26 @@
 //
 //   Wvals( 1:meqn, 1:numpts )
 //
+
+///@brief User-supplied that transforms physical quantities into characteristic variables
+///
+///@param Aux_ave  One-dimensional array.  Index range: {1, ..., maux}.
+///                Stores @f$ \mathrm{aux}_{i-1/2} @f$, the average of aux[i, :] and aux[i-1, :]
+///@param Q_ave    One-dimensional array.  Index range: {1, ..., meqn}.
+///                Stores @f$ q_{i-1/2} @f$, the average of q[1, :] and q[i-1, :]
+///@param Qvals    Two-dimensional array.  Index range: {1, ..., meqn}*{1, ..., 2r}
+///                Physical quantities (q, or f) at @f$ x_{i-r}, ..., x_{i+(r-1)}@f$.
+///@param Wvals    Two-dimensional array to store the characteristic variables.
+///                Index range: {1, ..., meqn}*{1, ..., 2r}
+///                Will hold w-values (if Qvals holds q-values),
+///                                 or g-values (ifQvals hold f-values).
+///
+///Conceptually, does the following:
+///-# Compute @f$ f'(q_{i-1/2}) @f$ based on <tt>Aux_ave</tt> and <tt>Q_ave</tt>.
+///-# Decompose @f$ f'(q_{i-1/2}) = R\Lambda R^{-1}@f$, where @f$ \Lambda @f$ is diagonal.
+///-# @f$ \textrm{Wvals} \leftarrow R^{-1} \cdot \textrm{Qvals} @f$
+///
+///Implementation is more compact than the conceptual description.
 void ProjectLeftEig(
     const dTensor1& Aux_ave, 
     const dTensor1& Q_ave,

@@ -18,13 +18,15 @@ namespace CopyMode
     };
 }
 
+
+
 /**
 @brief Wrapper class for a flat array of integer type.
 
+This class is to be used only as a base class to other classes.
+
 - The <tt>iTensor</tt> classes are used only in #fprint_tensor(...), #str_into_tensor(...);
 - Uses a heavily compiler-dependent mechanism to do bounds-checking.  @sa CHECK_BOUNDS.
-
-@todo Document the members.
 */
 class iTensorBase
 {
@@ -65,7 +67,6 @@ class iTensorBase
 ///@brief A 1d integer array with designated starting index and size.
 ///
 ///- Never used anywhere.
-///@todo Document members.
 class iTensor1d : public iTensorBase
 {
     // data
@@ -95,7 +96,6 @@ class iTensor1d : public iTensorBase
 ///@brief A 1d integer array, with starting index=1.
 ///
 ///- Never used anywhere.
-///@todo Document members.
 class iTensor1 : public iTensor1d
 {
     public:
@@ -106,6 +106,8 @@ class iTensor1 : public iTensor1d
 // === major section: dtensors (arrays of double) ===
 
 ///@brief A flat array of <tt>double</tt> type.  Starting index=0.
+///
+///This class is to be used only as a base class to other tensor classes.
 ///
 ///- Bounds-check uses a heavily compiler-dependent mechanism.  See #CHECK_BOUNDS.
 ///  As a consequence, #vget and #vfetch in the current document do not necessarily correspond to

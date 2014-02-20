@@ -27,6 +27,16 @@
 //     u = { u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2} },
 //
 // and then reconstructs the value u_{i+1/2} with this method.
+
+
+///@brief Fifth-order WENO reconstruction.
+///
+///@param g       Two-dimensional array, (1:meqn, 1:5).
+///@param diff_g  Two-dimensional array, (1:meqn, 1:1).
+///
+///Suppose @f$ g(m, :) = { u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2} } @f$.
+///<tt>diff_g</tt>(m, 1) will hold @f$ u_{i+1/2} @f$ constructed by WENO5 method, 
+///using @f$ { u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2} } @f$ as the stencil.
 void WenoReconstruct( const dTensor2& g, dTensor2& diff_g )
 {
 

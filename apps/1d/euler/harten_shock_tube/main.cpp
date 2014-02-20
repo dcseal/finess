@@ -30,25 +30,10 @@
 
 ///@brief Calls #main_global(int, char*[]) and returns its return value.
 ///
-///@note (Supposedly, to get an app running) You should not have to modify this part of the code.
-///       To change parameters, modify the following files:
-///-# parameters.ini -- basic data file, can modify
-///                  number of grid points, time step, order of
-///                  accuracy in both space and time, etc...
-///-# QinitFunc.cpp -- initial condition file
-///-# AuxFunc.cpp -- auxiliary variable file
-///-# SourceTermFunc.cpp -- source term file
-///-# FluxFunc.cpp -- flux function file
-///-# SetWaveSpd.cpp -- eigenvalues of flux Jacobian file
-///-# ProjectLeftEig.cpp -- left eigenvectors of flux Jacobian file
-///-# ProjectLeftEig.cpp -- right eigenvectors of flux Jacobian file
-///-# SetBndValues.cpp -- boundary conditions files
 //
 int main(int argc, char* argv[])
 {
-  ///@todo Move this to main page.
-
-  
+ 
   int m;
   int main_global(int argc, char* argv[]);
   m = main_global(argc,argv);

@@ -1,7 +1,6 @@
 ///@file lib/tensors.h
 ///@todo Create a group/page for the tensor classes
 ///
-
 #ifndef _TENSORS_H_
 #define _TENSORS_H_
 #include "tensors1d.h"
@@ -47,7 +46,48 @@
 //   debugged.)
 
 
-///@todo Document this class
+///@defgroup tensors Tensor Classes
+///@brief Multi-dimensional array classes, inherited from DoGPack.
+///
+///For every R=i, d, and every N=1, ..., 5, the following classes is defined,
+///each representing an N-dimensional array of type integer (R=i) or double (R=d).
+///- <tt>RTensorNd</tt>  Index of dimension K = bK:(bK + sK - 1), for some (possibly negative) 
+///                      integers bK and a positive integer sK.
+///- <tt>RTensorN</tt>   Index of dimension K = 1:sK, for some positive integer sK.
+///- <tt>RTensorBCN</tt> Index of dimension K = (1-mbc):(number of points in K-th dimension + mbc),
+///                      where mbc is the number of layers of ghost cells,
+///                      if K <= #NDIMS;
+///                      or 1:(size of K-th dimension), if K > NDIMS,
+///                      i.e. if K-th dimension is not a spatial dimension, such as index to equations, etc.
+///
+///In addtion, <tt>RTensorBase</tt> is defined, which provides a wrapper over a one-dimensional
+/// C-style array, and serves only as the base class to other tensor classes.
+///
+///So for example, the following tensor classes are defined for dimension=2, and type=double:
+///- #dTensor2d    General flexible indexing array
+///- #dTensor2     Array with index-base = 1 in each dimension
+///- #dTensorBC2   Array with ghost-cells padded in first #NDIMS dimensions
+///
+///Element access.  Assuming <tt>A</tt> is a two-dimensional double tensor, of any kind above.
+///- <tt>A.get(i, j)</tt>  Returns the element in position (i,j)
+///- <tt>A.fetch(i, j)</tt>  Returns a reference to the element in position (i,j)
+///- <tt>A.set(i, j, val)</tt>  Sets the element in position (i,j) to <tt>val</tt>
+///
+///Constructor.
+///- Parameters to constructor are interpreted very differently in different kind of tensor classes.
+///
+///Associated information.  Assuming Assuming <tt>A</tt> is a two-dimensional double tensor, of any kind above.
+///- If <tt>A</tt> is a #dTensorBC2, then <tt>A.getmbc()</tt> returns number of layers of ghost cells.
+///- <tt>A.getsize(i)</tt> returns the "size" of the i-th dimension,
+///  where "size" is the number of elements in that dimension, unless
+///  <tt>A</tt> is a #dTensorBC2 and <tt>i\<=</tt>#NDIMS,
+///  in which case "size" is the number of elements that are not ghost cells.
+
+
+
+
+
+
 class iTensor2
 {
     public:
@@ -94,7 +134,7 @@ class iTensor2
         int size;
 };
 
-///@todo Document this class
+
 class iTensor3
 {
     public:
@@ -147,7 +187,7 @@ class iTensor3
 
 // --- section: multidimensional tensor base classes ---
 
-///@todo Document this class
+
 class dTensor5d : public dTensorBase
 {
     // data
@@ -204,7 +244,7 @@ class dTensor5d : public dTensorBase
 #endif
 };
 
-///@todo Document this class
+
 class dTensor4d : public dTensorBase
 {
     // data
@@ -259,7 +299,7 @@ class dTensor4d : public dTensorBase
 #endif
 };
 
-///@todo Document this class.
+.
 class dTensor3d : public dTensorBase
 {
     // data
@@ -309,7 +349,7 @@ class dTensor3d : public dTensorBase
 #endif
 };
 
-///@todo Document this class.
+.
 class dTensor2d : public dTensorBase
 {
     // data
@@ -362,7 +402,7 @@ class dTensor2d : public dTensorBase
 
 // --- section: multidimensional 1-based tensor classes ---
 
-///@todo Document this class.
+.
 class dTensor5 : public dTensor5d
 {
     private: // disabled
@@ -392,7 +432,7 @@ class dTensor5 : public dTensor5d
 };
 
 
-///@todo Document this class.
+.
 class dTensor4 : public dTensor4d
 {
     public:
@@ -403,7 +443,7 @@ class dTensor4 : public dTensor4d
         dTensor4& operator=(const dTensor4& in){ copyfrom(in); return *this; }
 };
 
-///@todo Document this class
+
 class dTensor3 : public dTensor3d
 {
     public:
@@ -414,7 +454,7 @@ class dTensor3 : public dTensor3d
         dTensor3& operator=(const dTensor3& in){ copyfrom(in); return *this; }
 };
 
-///@todo Document this class
+
 class dTensor2 : public dTensor2d
 {
     public:
@@ -427,7 +467,7 @@ class dTensor2 : public dTensor2d
 
 // --- section: multidimensional boundary condition (BC) tensor classes ---
 
-///@todo Document this class
+
 class dTensorBC5 : public dTensor5d
 {
     private: // disabled
@@ -459,7 +499,7 @@ class dTensorBC5 : public dTensor5d
 };
 
 // Class with boundary conditions and four indices.
-///@todo Document this class
+
 class dTensorBC4 : public dTensor4d
 {
 
@@ -495,7 +535,7 @@ class dTensorBC4 : public dTensor4d
 
 };
 
-///@todo Document this class
+
 class dTensorBC3 : public dTensor3d
 {
     private: // disabled
@@ -521,7 +561,7 @@ class dTensorBC3 : public dTensor3d
         int ndims;
 };
 
-///@todo Document this class
+
 class dTensorBC2 : public dTensor2d
 {
     private: // disabled
