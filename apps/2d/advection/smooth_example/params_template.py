@@ -10,18 +10,17 @@
 dogpack_data_template = '''
 ; Parameters common to dogpack applications
 [dogParams]
-defaults_file = "$DOGPACK/config/dogParams_defaults.ini"
+defaults_file = "$FINESS/config/dogParams_defaults.ini"
 ndims       = 2          ; 1 or 2
 mesh_type   = Cartesian  ; (either Cartesian or Unstructured) 
 nout        = 1          ; number of output times to print results
 tfinal      = 1.00       ; final time
-dtv(1)      = %(dt)e     ; initial dt
+dtv(1)      = 1.00       ; initial dt
 dtv(2)      = 1.0e0      ; max allowable dt 
-cflv(1)     = 0.01       ; max allowable Courant number
-cflv(2)     = 0.008      ; desired Courant number
+cflv(1)     = 1.00       ; max allowable Courant number
+cflv(2)     = %(cfl)f       ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
-time_stepping_method = User-Defined ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
-;time_stepping_method = Lax-Wendroff ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
+time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
 limiter_method = moment ; (e.g., moment, viscosity)
 space_order = %(s_order)i   ; =method(1)= order of accuracy in space
 time_order  = %(t_order)i   ; =method(2)= order of accuracy in time
@@ -40,11 +39,9 @@ datafmt     = 1   ; 1 for ascii, 5 for hdf5.
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
 my    =  %(my)i  ; number of grid elements in y-direction
-mbc   =   2      ; number of ghost cells on each boundary
+mbc   =   5      ; number of ghost cells on each boundary
 xlow  =   0.0e0  ; left end point
 xhigh =   1.0e0  ; right end point
 ylow  =   0.0e0  ; lower end point
 yhigh =   1.0e0  ; upper end point
 '''
-
-

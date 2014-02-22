@@ -1,5 +1,6 @@
 #include <cmath>
 #include "dogdefs.h"
+#include "constants.h"
 
 // This is a user-supplied routine that sets the
 // initial conditions at all the points "xpts"
