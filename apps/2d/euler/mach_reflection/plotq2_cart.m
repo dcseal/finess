@@ -28,10 +28,13 @@
 % gas constant
 fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
 if fids==-1
-  error(['File  ',outputdir,'/eulerhelp.dat  not found.']);
+  disp(['File  ',outputdir,'/eulerhelp.dat  not found.']);
+  disp(['Setting gamma = 1.4']);
+  gamma = 1.4;
+else
+  gamma_gas  = fscanf(fids,'%e',1);
+  fclose(fids);
 end
-gamma_gas  = fscanf(fids,'%e',1);
-fclose(fids);
 
 figure(1);
 clf;
