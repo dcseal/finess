@@ -216,9 +216,6 @@ void FinSolveRK(
                     ConstructL(node,aux,q1,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,node,aux,q2,Lstar,q1);
-//                  if (dogParams.using_moment_limiter())
-//                  {  ApplyLimiter(node,aux,q1,
-//                          &ProjectRightEig,&ProjectLeftEig);  }
                     AfterStep(dt,node,aux,q1);
 
                     // CopyQ(q1,qnew);
@@ -248,9 +245,6 @@ void FinSolveRK(
                                 rk.delta->get(s), rk.beta->get(s),
                                 dt, node, aux, qold, Lstar, q1, q2);
 
-//                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(node,aux,q1,
-//                              &ProjectRightEig,&ProjectLeftEig);  }
                         AfterStep(dt,node,aux,q1);
                     }
 
@@ -309,7 +303,6 @@ void FinSolveRK(
                 }
 
                 // copy qold into qnew
-                // CopyQ(qold, qnew);
                 qnew.copyfrom( qold );
             }
 

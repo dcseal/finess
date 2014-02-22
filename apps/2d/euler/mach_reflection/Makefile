@@ -5,7 +5,7 @@ include $(FINESS)/lib/2d/Makefile.defs
 
 # overridden library objects
 #
-#AfterQinit  =  AfterQinit
+AfterQinit  =  AfterQinit
 InitApp      = InitApp
 DFluxFunc    = DFluxFunc
 D2FluxFunc   = D2FluxFunc

@@ -28,10 +28,13 @@
 % gas constant
 fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
 if fids==-1
-  error(['File  ',outputdir,'/eulerhelp.dat  not found.']);
+  disp(['File  ',outputdir,'/eulerhelp.dat  not found.']);
+  disp('Setting gamma = 1.4');
+  gamma_gas = 1.4;
+else
+  gamma_gas  = fscanf(fids,'%e',1);
+  fclose(fids);
 end
-gamma_gas  = fscanf(fids,'%e',1);
-fclose(fids);
 
 figure(1);
 clf;
@@ -44,8 +47,9 @@ axis([-0.05 3.25 -0.05 1.05]);
 set(gca,'xtick',-4:0.5:4);
 set(gca,'ytick',-4:0.5:4);
 set(gca,'fontsize',16);
-%t1 = title(['\rho(t = ', num2str(time,'%2.2e'), ', x)     [DoGPack]']); 
-t1 = title(['\rho(t, x)     [DoGPack]']); 
+%t1 = title(['\rho(t = ', num2str(time,'%2.2e'), ', x)     [FINESS]']); 
+%t1 = title(['\rho(t, x, y)     [FINESS]']); 
+t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 colorbar;
 caxis([1,25]);
@@ -62,14 +66,18 @@ caxis([1,25]);
    %  
    figure(3);
    clf;
-   contour(xl, yl, qaug(:,:,m), linspace(1.3965, 22.682,30), '-k' );
+   %contour(xl, yl, qaug(:,:,m), linspace(1.3965, 22.682,30), '-k' );
+   % Woodward and Collela's contour lines:
+   contour(xl, yl, qaug(:,:,m), linspace(1.728, 20.74,30), '-k' );
    axis on; box on; grid off;
    axis('equal');
    axis([-0.05 3.25 -0.05 1.05]);
    set(gca,'xtick',-4:0.5:4);
    set(gca,'ytick',-4:0.5:4);
    set(gca,'fontsize',16);
-   t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [DoGPack]']); 
+   %t1 = title(['\rho(t,x,y) at t = ',num2str(time),'     [FINESS]']); 
+   %t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
+   t1 = title(['Density']);
    set(t1,'fontsize',16);
  
 figure(1)
@@ -77,5 +85,6 @@ figure(1)
 % n1 = frame number
 fname = strcat( strcat( 'density', num2str(n1, '%02d' ) ), '.jpg' );
 print(1, '-djpeg', fname );
-print(3, '-dpdf', 'euler-density-contour.pdf' );
+fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
+print(3, '-deps', fname  );
 

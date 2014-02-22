@@ -1,16 +1,18 @@
 /*
 #include <iostream>
 #include <iomanip>
-#include "dogdefs.h"
 #include "DogParams.h"
 */
 
-#include "DogSolverCart2.h"
+//#include "DogSolverCart2.h"
+#include "dogdefs.h"
 #include <string.h>          // For strcpy and strcat (some compilers don't need this)
 #include "EulerParams.h"
 
+const char* get_outputdir();
+
 // Function that is called after initial condition
-void AfterQinit(DogSolverCart2& solver)
+void AfterQinit(dTensorBC3& aux, dTensorBC3& q)
 {
 
 //  DogStateCart2& state = solver.fetch_state();
@@ -26,7 +28,7 @@ void AfterQinit(DogSolverCart2& solver)
 
     // Output parameters to file in outputdir
     char eulerhelp[200];
-    strcpy( eulerhelp, solver.get_outputdir() );
+    strcpy( eulerhelp, get_outputdir() );
     strcat( eulerhelp, "/eulerhelp.dat");
     eulerParams.write_eulerhelp( eulerhelp );
 

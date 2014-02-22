@@ -28,10 +28,10 @@ void EulerParams::init(IniDocument& ini_doc)
   // Store information in global parameter values
   //
   gamma = 1.6666666666666667;
-  x0 = 1.0/6.0;
+  x0    = 1.0/6.0;
 
   is_gamma >> gamma;  
-  is_x0 >> x0;
+  is_x0    >> x0;
 
   //
   // Output values to screen

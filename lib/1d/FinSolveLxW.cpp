@@ -68,7 +68,6 @@ void FinSolveLxW(
         }        
 
         // copy qnew into qold
-        // CopyQ(qnew, qold);
         qold.copyfrom( qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
@@ -93,7 +92,6 @@ void FinSolveLxW(
             SetBndValues(node, aux, qnew);
             ConstructIntegratedF( dt, node, aux, qnew, smax, F);
             ConstructL( node, aux, qnew, F, Lstar, smax);  // <-- "new" method
-            // ConstructL( node, aux, qnew, Lstar, smax);  // <-- Euler method
 
             // Update the solution:
 #pragma omp parallel for
@@ -149,7 +147,6 @@ void FinSolveLxW(
                 }
 
                 // copy qold into qnew
-                // CopyQ(qold, qnew);
                 qnew.copyfrom( qold  );
             }
 
