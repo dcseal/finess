@@ -41,6 +41,8 @@ int RunFinpack(string outputdir)
     InitApp( ini_doc );
     cout << endl;
 
+    // Quick error check (WENO methods)
+
     const string time_stepping_method = dogParams.get_time_stepping_method();
     const int&     nout     = dogParams.get_nout();
     const double&  tfinal   = dogParams.get_tfinal();
