@@ -299,7 +299,7 @@ class dTensor4d : public dTensorBase
 #endif
 };
 
-.
+
 class dTensor3d : public dTensorBase
 {
     // data
@@ -349,7 +349,7 @@ class dTensor3d : public dTensorBase
 #endif
 };
 
-.
+
 class dTensor2d : public dTensorBase
 {
     // data
@@ -402,7 +402,7 @@ class dTensor2d : public dTensorBase
 
 // --- section: multidimensional 1-based tensor classes ---
 
-.
+
 class dTensor5 : public dTensor5d
 {
     private: // disabled
@@ -432,7 +432,7 @@ class dTensor5 : public dTensor5d
 };
 
 
-.
+
 class dTensor4 : public dTensor4d
 {
     public:
