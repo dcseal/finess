@@ -1,5 +1,7 @@
+#include <cmath>
 #include "tensors.h"
 #include "EulerParams.h"
+#include "assert.h"
 
 // This is a user-supplied routine that sets the
 // Derivative of the Jacobian of the Flux Function.  
@@ -40,91 +42,151 @@ void D2FluxFunc(const dTensor1& xpts,
         double x = xpts.get(i);      
 
         // (Characteristic) Variables
-        const double rho    = Q.get(i,1);
-        const double u1     = Q.get(i,2)/rho;
-        const double u2     = Q.get(i,3)/rho;
-        const double u3     = Q.get(i,4)/rho;
-        const double energy = Q.get(i,5);
-        const double press  = (gamma-1.0e0)*(energy-0.5e0*rho*(u1*u1+u2*u2+u3*u3));
+//      const double rho    = Q.get(i,1);
+//      const double u1     = Q.get(i,2)/rho;
+//      const double u2     = Q.get(i,3)/rho;
+//      const double u3     = Q.get(i,4)/rho;
+//      const double energy = Q.get(i,5);
+//      const double press  = (gamma-1.0e0)*(energy-0.5e0*rho*(u1*u1+u2*u2+u3*u3));
 
-        const double umag2 = u1*u1 + u2*u2 + u3*u3;
+        // (Conserved) Variables
+        const double q1 = Q.get(i,1);
+        const double q2 = Q.get(i,2);
+        const double q3 = Q.get(i,3);
+        const double q4 = Q.get(i,4);
+        const double q5 = Q.get(i,5);
 
-        // Derivatives with respect to f2:
-        D2flux.set(i,2,1,1, -(gm1*umag2 - 2.0*u1*u1) / rho );
-
-        D2flux.set(i,2,2,1, u1*( gamma-3.0 ) / rho );        
-        D2flux.set(i,2,1,2, D2flux.get(i,2,2,1)    );
-
-        D2flux.set(i,2,2,2, (3.0-gamma)/rho );
-
-        D2flux.set(i,2,3,1, gm1*u2/rho );    
-        D2flux.set(i,2,1,3, D2flux.get(i,2,3,1) );
-
-        D2flux.set(i,2,3,3, -gm1/rho );
-
-        D2flux.set(i,2,4,1, gm1*u3/rho          ); 
-        D2flux.set(i,2,1,4, D2flux.get(i,2,4,1) );
-
-        D2flux.set(i,2,4,4, -gm1 / rho ); 
-
-        // Derivatives with respect to f3:
-        D2flux.set(i,3,1,1, 2.0*u1*u2/rho );
-
-        D2flux.set(i,3,2,1, -u2/rho           );  
-        D2flux.set(i,3,1,2, D2flux.get(i,3,2,1) );
-
-        D2flux.set(i,3,3,1, -u1/rho           );  
-        D2flux.set(i,3,1,3, D2flux.get(i,3,3,1) );
-
-        D2flux.set(i,3,3,2, 1.0/rho           );  
-        D2flux.set(i,3,2,3, D2flux.get(i,3,3,2) );
-
-        
-        // Derivatives with respect to f4:
-        D2flux.set(i,4,1,1, 2.0*u1*u3/rho );
-
-        D2flux.set(i,4,2,1, -u3/rho       ); 
-        D2flux.set(i,4,1,2, -u3/rho       );
-
-        D2flux.set(i,4,4,1, -u1/rho     ); 
-        D2flux.set(i,4,1,4, -u1/rho     );
-
-        D2flux.set(i,4,4,2, 1.0/rho       ); 
-        D2flux.set(i,4,2,4, 1.0/rho       );
+        // Computing the Hessian of the flux function: f''(q)
+        D2flux.set(i,1,1,1, 0);
+        D2flux.set(i,1,1,2, 0);
+        D2flux.set(i,1,1,3, 0);
+        D2flux.set(i,1,1,4, 0);
+        D2flux.set(i,1,1,5, 0);
+        D2flux.set(i,1,2,1, 0);
+        D2flux.set(i,1,2,2, 0);
+        D2flux.set(i,1,2,3, 0);
+        D2flux.set(i,1,2,4, 0);
+        D2flux.set(i,1,2,5, 0);
+        D2flux.set(i,1,3,1, 0);
+        D2flux.set(i,1,3,2, 0);
+        D2flux.set(i,1,3,3, 0);
+        D2flux.set(i,1,3,4, 0);
+        D2flux.set(i,1,3,5, 0);
+        D2flux.set(i,1,4,1, 0);
+        D2flux.set(i,1,4,2, 0);
+        D2flux.set(i,1,4,3, 0);
+        D2flux.set(i,1,4,4, 0);
+        D2flux.set(i,1,4,5, 0);
+        D2flux.set(i,1,5,1, 0);
+        D2flux.set(i,1,5,2, 0);
+        D2flux.set(i,1,5,3, 0);
+        D2flux.set(i,1,5,4, 0);
+        D2flux.set(i,1,5,5, 0);
          
-
-
-        // Derivatives with respect to f5:
-        D2flux.set(i,5,1,1, u1*( 2.0*gamma*energy - 3.0*rho*gm1*umag2 ) / (rho*rho) );
-
-        // TODO - this one is NOT correct:
-        D2flux.set(i,5,2,1, -( gamma*energy/rho - (gm1)*(umag2) - 2.0*gm1*u1*u1 )/rho );
-        D2flux.set(i,5,1,2, D2flux.get(i,5,2,1) );
-
-        D2flux.set(i,5,2,2, -3.0*gm1*u1/rho );
-
-        D2flux.set(i,5,3,1, 2.0*u1*gm1*u2/rho );
-        D2flux.set(i,5,1,3, D2flux.get(i,5,3,1) );
-
-        D2flux.set(i,5,3,2, -gm1*u2/rho );
-        D2flux.set(i,5,2,3, D2flux.get(i,5,3,2) );
-
-        D2flux.set(i,5,3,3, -gm1*u1/rho );
-
-        D2flux.set(i,5,4,1, 2.0*u1*gm1*u3/rho );
-        D2flux.set(i,5,1,4, D2flux.get(i,5,4,1) );
-
-        D2flux.set(i,5,4,2, -u3*gm1/rho       );
-        D2flux.set(i,5,2,4, D2flux.get(i,5,4,2) );
-
-        D2flux.set(i,5,4,4, -gm1*u1/rho       );
-
-        D2flux.set(i,5,5,1, -u1*gamma/rho     );
-        D2flux.set(i,5,1,5, D2flux.get(i,5,5,1) );
-
-        D2flux.set(i,5,5,2, gamma/rho         );
-        D2flux.set(i,5,2,5, D2flux.get(i,5,5,2) );
-
+        D2flux.set(i,2,1,1, -gamma*pow( q2, 2 )/pow( q1, 3 ) - gamma*pow( q3, 2 )/pow( q1, 3 ) - gamma*pow( q4, 2 )/pow( q1, 3 ) + 3.0*pow( q2, 2 )/pow( q1, 3 ) + pow( q3, 2 )/pow( q1, 3 ) + pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,2,1,2, gamma*q2/pow( q1, 2 ) - 3.0*q2/pow( q1, 2 ));
+        D2flux.set(i,2,1,3, gamma*q3/pow( q1, 2 ) - q3/pow( q1, 2 ));
+        D2flux.set(i,2,1,4, gamma*q4/pow( q1, 2 ) - q4/pow( q1, 2 ));
+        D2flux.set(i,2,1,5, 0);
+        D2flux.set(i,2,2,1, gamma*q2/pow( q1, 2 ) - 3.0*q2/pow( q1, 2 ));
+        D2flux.set(i,2,2,2, -gamma/q1 + 3.0/q1);
+        D2flux.set(i,2,2,3, 0);
+        D2flux.set(i,2,2,4, 0);
+        D2flux.set(i,2,2,5, 0);
+        D2flux.set(i,2,3,1, gamma*q3/pow( q1, 2 ) - q3/pow( q1, 2 ));
+        D2flux.set(i,2,3,2, 0);
+        D2flux.set(i,2,3,3, -gamma/q1 + 1/q1);
+        D2flux.set(i,2,3,4, 0);
+        D2flux.set(i,2,3,5, 0);
+        D2flux.set(i,2,4,1, gamma*q4/pow( q1, 2 ) - q4/pow( q1, 2 ));
+        D2flux.set(i,2,4,2, 0);
+        D2flux.set(i,2,4,3, 0);
+        D2flux.set(i,2,4,4, -gamma/q1 + 1/q1);
+        D2flux.set(i,2,4,5, 0);
+        D2flux.set(i,2,5,1, 0);
+        D2flux.set(i,2,5,2, 0);
+        D2flux.set(i,2,5,3, 0);
+        D2flux.set(i,2,5,4, 0);
+        D2flux.set(i,2,5,5, 0);
+         
+        D2flux.set(i,3,1,1, 2.0*q2*q3/pow( q1, 3 ));
+        D2flux.set(i,3,1,2, -q3/pow( q1, 2 ));
+        D2flux.set(i,3,1,3, -q2/pow( q1, 2 ));
+        D2flux.set(i,3,1,4, 0);
+        D2flux.set(i,3,1,5, 0);
+        D2flux.set(i,3,2,1, -q3/pow( q1, 2 ));
+        D2flux.set(i,3,2,2, 0);
+        D2flux.set(i,3,2,3, 1/q1);
+        D2flux.set(i,3,2,4, 0);
+        D2flux.set(i,3,2,5, 0);
+        D2flux.set(i,3,3,1, -q2/pow( q1, 2 ));
+        D2flux.set(i,3,3,2, 1/q1);
+        D2flux.set(i,3,3,3, 0);
+        D2flux.set(i,3,3,4, 0);
+        D2flux.set(i,3,3,5, 0);
+        D2flux.set(i,3,4,1, 0);
+        D2flux.set(i,3,4,2, 0);
+        D2flux.set(i,3,4,3, 0);
+        D2flux.set(i,3,4,4, 0);
+        D2flux.set(i,3,4,5, 0);
+        D2flux.set(i,3,5,1, 0);
+        D2flux.set(i,3,5,2, 0);
+        D2flux.set(i,3,5,3, 0);
+        D2flux.set(i,3,5,4, 0);
+        D2flux.set(i,3,5,5, 0);
+         
+        D2flux.set(i,4,1,1, 2.0*q2*q4/pow( q1, 3 ));
+        D2flux.set(i,4,1,2, -q4/pow( q1, 2 ));
+        D2flux.set(i,4,1,3, 0);
+        D2flux.set(i,4,1,4, -q2/pow( q1, 2 ));
+        D2flux.set(i,4,1,5, 0);
+        D2flux.set(i,4,2,1, -q4/pow( q1, 2 ));
+        D2flux.set(i,4,2,2, 0);
+        D2flux.set(i,4,2,3, 0);
+        D2flux.set(i,4,2,4, 1/q1);
+        D2flux.set(i,4,2,5, 0);
+        D2flux.set(i,4,3,1, 0);
+        D2flux.set(i,4,3,2, 0);
+        D2flux.set(i,4,3,3, 0);
+        D2flux.set(i,4,3,4, 0);
+        D2flux.set(i,4,3,5, 0);
+        D2flux.set(i,4,4,1, -q2/pow( q1, 2 ));
+        D2flux.set(i,4,4,2, 1/q1);
+        D2flux.set(i,4,4,3, 0);
+        D2flux.set(i,4,4,4, 0);
+        D2flux.set(i,4,4,5, 0);
+        D2flux.set(i,4,5,1, 0);
+        D2flux.set(i,4,5,2, 0);
+        D2flux.set(i,4,5,3, 0);
+        D2flux.set(i,4,5,4, 0);
+        D2flux.set(i,4,5,5, 0);
+         
+        D2flux.set(i,5,1,1, 2.0*q5*gamma*q2/pow( q1, 3 ) - 2.0*q5*q2/pow( q1, 3 ) - 3.0*gamma*pow( q2, 3 )/pow( q1, 4 ) - 3.0*gamma*q2*pow( q3, 2 )/pow( q1, 4 ) - 3.0*gamma*q2*pow( q4, 2 )/pow( q1, 4 ) + 2.0*q2*q5/pow( q1, 3 ) + 3.0*pow( q2, 3 )/pow( q1, 4 ) + 3.0*q2*pow( q3, 2 )/pow( q1, 4 ) + 3.0*q2*pow( q4, 2 )/pow( q1, 4 ));
+        D2flux.set(i,5,1,2, -q5*gamma/pow( q1, 2 ) + q5/pow( q1, 2 ) + 3.0*gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - q5/pow( q1, 2 ) - 3.0*pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,5,1,3, 2.0*gamma*q2*q3/pow( q1, 3 ) - 2.0*q2*q3/pow( q1, 3 ));
+        D2flux.set(i,5,1,4, 2.0*gamma*q2*q4/pow( q1, 3 ) - 2.0*q2*q4/pow( q1, 3 ));
+        D2flux.set(i,5,1,5, -q2/pow( q1, 2 ));
+        D2flux.set(i,5,2,1, -q5*gamma/pow( q1, 2 ) + q5/pow( q1, 2 ) + 3.0*gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - q5/pow( q1, 2 ) - 3.0*pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,5,2,2, -3.0*gamma*q2/pow( q1, 2 ) + 3.0*q2/pow( q1, 2 ));
+        D2flux.set(i,5,2,3, -gamma*q3/pow( q1, 2 ) + q3/pow( q1, 2 ));
+        D2flux.set(i,5,2,4, -gamma*q4/pow( q1, 2 ) + q4/pow( q1, 2 ));
+        D2flux.set(i,5,2,5, 1/q1);
+        D2flux.set(i,5,3,1, 2.0*gamma*q2*q3/pow( q1, 3 ) - 2.0*q2*q3/pow( q1, 3 ));
+        D2flux.set(i,5,3,2, -gamma*q3/pow( q1, 2 ) + q3/pow( q1, 2 ));
+        D2flux.set(i,5,3,3, -gamma*q2/pow( q1, 2 ) + q2/pow( q1, 2 ));
+        D2flux.set(i,5,3,4, 0);
+        D2flux.set(i,5,3,5, 0);
+        D2flux.set(i,5,4,1, 2.0*gamma*q2*q4/pow( q1, 3 ) - 2.0*q2*q4/pow( q1, 3 ));
+        D2flux.set(i,5,4,2, -gamma*q4/pow( q1, 2 ) + q4/pow( q1, 2 ));
+        D2flux.set(i,5,4,3, 0);
+        D2flux.set(i,5,4,4, -gamma*q2/pow( q1, 2 ) + q2/pow( q1, 2 ));
+        D2flux.set(i,5,4,5, 0);
+        D2flux.set(i,5,5,1, -q2/pow( q1, 2 ));
+        D2flux.set(i,5,5,2, 1/q1);
+        D2flux.set(i,5,5,3, 0);
+        D2flux.set(i,5,5,4, 0);
+        D2flux.set(i,5,5,5, 0);
+ 
     }
 
 }
