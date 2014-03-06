@@ -4,14 +4,43 @@
 #include "stdlib.h"
 #include "dogdefs.h"
 #include "DogParams.h"
-#include "RKinfo.h"
-
-// If we want to use DogSolver from the top-level library, this needs to be
-// written:
-// #include "DogState1d.h"  
 
 using namespace std;
 
+// ------------------------------------------------------------
+// Function definitions
+void ConSoln( 
+    const dTensorBC2& aux,
+    const dTensorBC2& q, 
+    double t, string outputdir);
+
+// RK functions
+void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+void ConstructL( 
+        dTensorBC2& aux,
+        dTensorBC2& q,      // setbndy conditions modifies q
+        dTensorBC2& Lstar,
+        dTensorBC1& smax);
+void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+
+double GetCFL(double dt, double dtmax,
+        const dTensorBC2& aux,
+        const dTensorBC1& smax);
+
+void BeforeFullTimeStep(double dt, 
+		       dTensorBC2& auxold, dTensorBC2& aux, 
+		       dTensorBC2& qold,   dTensorBC2& q);
+void AfterFullTimeStep(double dt, 
+		       dTensorBC2& auxold, dTensorBC2& aux, 
+		       dTensorBC2& qold,   dTensorBC2& q);
+// ------------------------------------------------------------
+
+
+// ------------------------------------------------------------
+// Example function that describes how the main time stepping loop works.
+// 
+// This routine will terminate the code upon entrance.
+// ------------------------------------------------------------
 void DogSolveUser(
         dTensorBC2& aux, 
         dTensorBC2& qold,
@@ -21,35 +50,41 @@ void DogSolveUser(
         double dtv[], const double cflv[],string outputdir)
 {
 
-/*
-    // define local variables
-    int j,n_step,m_accept,mtmp;
-    double t,dt,CFL_max,CFL_target,dtmin,dtmax;
-    double told,cfl;
-    n_step = 0;
-    t = tstart;
-    dt = dtv[1];
-    CFL_max = cflv[1];
-    CFL_target = cflv[2];
-    cfl = 0.0;
-    dtmin = dt;
-    dtmax = dt;
-    int melems = qold.getsize(1);
-    int meqn   = qold.getsize(2);
-    int maux   = aux.getsize(2);
-    int mbc = qnew.getmbc();
-    dTensorBC3   qstar(melems,meqn,method[1],mbc);
-    dTensorBC3 auxstar(melems,maux,method[1],mbc);
-    dTensorBC3   Lstar(melems,meqn,method[1],mbc);    
+    double t            = tstart;
+    double dt           = dtv[1];   // Start with time step from last frame
+    double CFL_max      = cflv[1];  // max   CFL number
+    double CFL_target   = cflv[2];  // target CFL number
+    double cfl          = 0.0;      // current CFL number
+    double dtmin        = dt;       // Counters for max and min time step taken
+    double dtmax        = dt;
+
+    const int mx    = qold.getsize(1);
+    const int meqn  = qold.getsize(2);
+    const int maux  = aux.getsize(2);
+    const int mbc   = qnew.getmbc();
+
+
+    // Allocate storage for this solver
+    dTensorBC2   qstar(mx, meqn, mbc);
+    dTensorBC2 auxstar(mx, maux, mbc);
+    dTensorBC2   Lstar(mx, meqn, mbc);
+    dTensorBC2    Lold(mx, meqn, mbc);
+    dTensorBC2      q1(mx, meqn, mbc);
+    dTensorBC2      q2(mx, meqn, mbc);
 
     // Set initialize qstar and auxstar values
-    CopyQ(qold,qstar);
-    CopyQ(aux,auxstar);
+    qstar.copyfrom( qold );
+    auxstar.copyfrom( aux );
 
+
+    // ---------------------------------------------- //
+    // -- MAIN TIME STEPPING LOOP (for this frame) -- //
+    // ---------------------------------------------- //
+    int n_step = 0;
     while (t<tend)
     {
         // initialize time step
-        m_accept = 0;      
+        int m_accept = 0;      
         n_step = n_step + 1;
 
         // check if max number of time steps exceeded
@@ -64,21 +99,21 @@ void DogSolveUser(
         }        
 
         // copy qnew into qold
-        CopyQ(qnew,qold);
+        qold.copyfrom( qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while (m_accept==0)
         {
             // set current time
-            told = t;
+            double told = t;
             if (told+dt > tend)
             { dt = tend - told; }
             t = told + dt;
 
             // Set initial maximum wave speed to zero
-            for (j=1-mbc; j<=(melems+mbc); j++)
-            { smax.set(j, 0.0e0 ); }
+            smax.setall(0.);
 
+//          BeforeFullTimeStep(dt, auxstar, aux, qold, qnew);
             // ----------------------------------------------------------------
             //
             //    THIS IS WHERE THE USER-DEFINED TIME-STEPPING SCHEME
@@ -94,13 +129,13 @@ void DogSolveUser(
             // ----------------------------------------------------------------
 
             // do any extra work      
-            AfterFullTimeStep(dt,auxstar,aux,qold,qnew);
+//          AfterFullTimeStep(dt,auxstar,aux,qold,qnew);
 
             // compute cfl number
-            cfl = GetCFL(dt,dtv[2],method,aux,smax);
+            cfl = GetCFL(dt,dtv[2],aux,smax);
 
             // output time step information
-            if (method[4]>0) 
+            if( dogParams.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "DogSolve1D ... Step" << setw(5) << n_step;
@@ -129,27 +164,25 @@ void DogSolveUser(
                 //reject
             {   
                 t = told;
-                if (method[4]>0)
+                if( dogParams.get_verbosity() )
                 {
-                    cout<<"DogSolve1D rejecting step...";
+                    cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";
                     cout<<endl;
                 }
 
                 // copy qold into qnew
-                CopyQ(qold,qnew);
+                qold.copyfrom( qnew );
             }
 
         }
 
         // compute conservation and print to file
-        ConSoln(method,aux,qnew,t,outputdir);
+        ConSoln(aux, qnew, t, outputdir);
 
     }
 
     // set initial time step for next call to DogSolve
     dtv[1] = dt;
-
-*/
 
 }
