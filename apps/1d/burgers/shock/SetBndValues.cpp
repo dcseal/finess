@@ -1,7 +1,7 @@
 #include "tensors.h"
 
 // Zeroth order extrapolation
-void SetBndValues(const dTensor2& node, 
+void SetBndValues(
 		  dTensorBC2& aux, 
 		  dTensorBC2& q)
 {
