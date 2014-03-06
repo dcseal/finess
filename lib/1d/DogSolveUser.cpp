@@ -12,8 +12,7 @@
 
 using namespace std;
 
-void DogSolveUser(const dTensor2& node, 
-        const dTensor1& prim_vol, 
+void DogSolveUser(
         dTensorBC2& aux, 
         dTensorBC2& qold,
         dTensorBC2& qnew,
@@ -22,34 +21,7 @@ void DogSolveUser(const dTensor2& node,
         double dtv[], const double cflv[],string outputdir)
 {
 
-
 /*
-    // ------------------------------------------------------------
-    // Function definitions
-    void CopyQ(const dTensorBC3&,dTensorBC3&);
-    void ConSoln(const int[],const dTensor2&,const dTensorBC3&,const dTensorBC3&,double,string);
-    void BeforeStep(double,const dTensor2&,dTensorBC3&,dTensorBC3&);
-    void AfterStep(double,const dTensor2&,dTensorBC3&,dTensorBC3&);
-    void ApplyLimiter(const dTensor2&,const dTensorBC3&,dTensorBC3&,
-            void (*ProjectRightEig)(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&),
-            void (*ProjectLeftEig)(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&));
-    void ViscousLimiter(const dTensor2& node, const dTensorBC3& aux, 
-            const dTensorBC3& qold, const dTensorBC3& q, dTensorBC3& Lstar,
-            void (*ProjectRightEig)(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&),
-            void (*ProjectLeftEig)(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&));
-    void ProjectRightEig(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&);
-    void ProjectLeftEig(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&);
-    void ConstructL(const int[],const dTensor2&,const dTensorBC3&,const dTensorBC3&,
-            dTensorBC3&,dTensorBC1&);
-    void UpdateSoln(double,double,double,double,const dTensor2&,const dTensorBC3&,
-            const dTensorBC3&, const dTensorBC3&,dTensorBC3&);
-    double GetCFL(double,double,const dTensor1&,const int[],const dTensorBC3&,const dTensorBC1&);
-    void SetBndValues(const dTensor2&,dTensorBC3&,dTensorBC3&);
-    void AfterFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol,
-            dTensorBC3& auxstar, dTensorBC3& aux, 
-            dTensorBC3& qold, dTensorBC3& q);
-    // ------------------------------------------------------------
-
     // define local variables
     int j,n_step,m_accept,mtmp;
     double t,dt,CFL_max,CFL_target,dtmin,dtmax;
@@ -122,10 +94,10 @@ void DogSolveUser(const dTensor2& node,
             // ----------------------------------------------------------------
 
             // do any extra work      
-            AfterFullTimeStep(dt,node,prim_vol,auxstar,aux,qold,qnew);
+            AfterFullTimeStep(dt,auxstar,aux,qold,qnew);
 
             // compute cfl number
-            cfl = GetCFL(dt,dtv[2],prim_vol,method,aux,smax);
+            cfl = GetCFL(dt,dtv[2],method,aux,smax);
 
             // output time step information
             if (method[4]>0) 
@@ -171,7 +143,7 @@ void DogSolveUser(const dTensor2& node,
         }
 
         // compute conservation and print to file
-        ConSoln(method,node,aux,qnew,t,outputdir);
+        ConSoln(method,aux,qnew,t,outputdir);
 
     }
 

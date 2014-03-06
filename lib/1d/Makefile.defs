@@ -89,7 +89,6 @@ InitApp              = $(LIB1D)/InitApp
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
 DogSolveUser         = $(LIB1D)/DogSolveUser
-GridSetup            = $(LIB1D)/GridSetup
 SampleFunction       = $(LIB1D)/SampleFunction
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
@@ -99,6 +98,7 @@ D2FluxFunc           = $(LIB1D)/LaxWendroff/D2FluxFunc
 # TODO - these should be added in at a later time (-DS)
 FinSolveLxW           = $(LIB1D)/FinSolveLxW
 ConstructIntegratedF  = $(LIB1D)/ConstructIntegratedF
+FinSolveTD            = $(LIB1D)/FinSolveTD
 #LaxWendroff          = $(LIB1D)/LaxWendroff/LaxWendroff
 #LaxWendroffTD        = $(LIB1D)/LaxWendroff/LaxWendroffTD
 #RiemannSolveLxW      = $(LIB1D)/LaxWendroff/RiemannSolveLxW_LLF
@@ -108,13 +108,13 @@ LIB1D_OBJECTS = \
   $(LIB1D)/main_global.o \
   $(RunFinpack).o \
   $(LIB1D)/DogParamsCart1.o \
-  $(GridSetup).o \
   $(SampleFunction).o \
   $(Output).o \
   $(Output_Extra).o \
   $(ConSoln).o \
   $(LIB1D)/FinSolveRK.o \
   $(FinSolveLxW).o \
+  $(FinSolveTD).o \
   $(DogSolveUser).o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
@@ -143,13 +143,13 @@ LIB1D_SOURCES = \
   $(LIB1D)/main_global.cpp \
   $(RunFinpack).cpp \
   $(LIB1D)/DogParamsCart1.cpp \
-  $(GridSetup).cpp \
   $(SampleFunction).cpp \
   $(Output).cpp \
   $(Output_Extra).cpp \
   $(ConSoln).cpp \
   $(LIB1D)/FinSolveRK.cpp \
   $(FinSolveLxW).cpp \
+  $(FinSolveTD).cpp \
   $(DogSolveUser).cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \

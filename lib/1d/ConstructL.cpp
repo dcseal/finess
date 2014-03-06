@@ -10,7 +10,6 @@
 //       q_t + f(q,x,t)_x = Psi(q,x,t)
 //
 void ConstructL(
-        const dTensor2& node,
         dTensorBC2& aux,
         dTensorBC2& q,      // setbndy conditions modifies q
         dTensorBC2& Lstar,
@@ -20,8 +19,8 @@ void ConstructL(
     // Boundary conditions
     //
     // TODO - this should be moved before ConstructL is called (-DS)
-    void SetBndValues(const dTensor2&, dTensorBC2&, dTensorBC2&);
-    SetBndValues(node, aux, q);
+    void SetBndValues(dTensorBC2&, dTensorBC2&);
+    SetBndValues(aux, q);
 
     // User supplied functions:
     void FluxFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
@@ -34,7 +33,7 @@ void ConstructL(
             double& s1,double& s2);
     void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
     void SampleFunction( int istart, int iend,
-        const dTensor2& node, const dTensorBC2& qin, 
+        const dTensorBC2& qin, 
         const dTensorBC2& auxin,  dTensorBC2& Fout,
         void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
 
@@ -63,7 +62,7 @@ assert_eq( mbc, 3 );
     // that vector than on the original grid.
     dTensorBC2  fhat(mx+1, meqn, mbc );
 
-    // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
+    // Grid spacing
     const double   xlow = dogParamsCart1.get_xlow();
     const double     dx = dogParamsCart1.get_dx();
 
@@ -212,7 +211,7 @@ assert_eq( mbc, 3 );
     if( dogParams.get_source_term() )
     {
         // Compute the source term.
-        SampleFunction( 1-mbc, mx+mbc, node, q, aux, Lstar, &SourceTermFunc);
+        SampleFunction( 1-mbc, mx+mbc, q, aux, Lstar, &SourceTermFunc);
 #pragma omp parallel for
         for (int i=1; i<=mx; i++)
         {
@@ -236,7 +235,7 @@ assert_eq( mbc, 3 );
     // ---------------------------------------------------------
     // Add extra contributions to Lstar
     // ---------------------------------------------------------
-    // LstarExtra(node,aux,q,Lstar);
+    // LstarExtra(aux,q,Lstar);
 
 }
 
@@ -263,7 +262,6 @@ void ConvertTranspose( const dTensor2& qin, dTensor2& qout )
 // EXPERIMENTAL CODE - This routine performs the Lax-Friedrich's flux
 // splitting on a modified flux function, F.
 void ConstructL(
-        const dTensor2& node,
         const dTensorBC2& aux,
         const dTensorBC2& q,
         const dTensorBC2& F,  // <-- new term: integrated flux
@@ -307,7 +305,7 @@ assert_eq( mbc, 3 );
     // that vector than on the original grid.
     dTensorBC2  fhat(mx+1, meqn, mbc );
 
-    // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
+    // Grid spacing
     const double   xlow = dogParamsCart1.get_xlow();
     const double     dx = dogParamsCart1.get_dx();
 

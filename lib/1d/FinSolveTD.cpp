@@ -5,11 +5,11 @@
 #include "dogdefs.h"
 #include "DogParams.h"
 #include "DogParamsCart1.h"
-#include "FinSolveLxW.h"   // functions directly called from this routine
+#include "FinSolveLxW.h"        // functions directly called from this routine
 
 using namespace std;
 
-void FinSolveLxW(
+void FinSolveTD(
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
     dTensorBC1& smax,
     double tstart, double tend, int nv,
@@ -87,10 +87,10 @@ void FinSolveLxW(
 
             // ---------------------------------------------------------
             // Take a full time step of size dt
-            BeforeStep(dt,aux,qnew);
-            SetBndValues(aux, qnew);
-            ConstructIntegratedF( dt, aux, qnew, smax, F);
-            ConstructL( aux, qnew, F, Lstar, smax);  // <-- "new" method
+//          BeforeStep(dt,aux,qnew);
+//          SetBndValues(aux, qnew);
+//          ConstructIntegratedF( dt, aux, qnew, smax, F);
+//          ConstructL( aux, qnew, F, Lstar, smax);  // <-- "new" method
 
             // Update the solution:
 #pragma omp parallel for
@@ -101,11 +101,11 @@ void FinSolveLxW(
             }
 
             // Perform any extra work required:
-            AfterStep(dt,aux,qnew);
+//          AfterStep(dt,aux,qnew);
             // ---------------------------------------------------------
 
             // do any extra work (TODO - add this in later)
-            AfterFullTimeStep(dt, auxold, aux, qold, qnew);
+//          AfterFullTimeStep(dt, auxold, aux, qold, qnew);
 
             // compute cfl number
             cfl = GetCFL(dt, dtv[2], aux, smax);

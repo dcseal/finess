@@ -7,11 +7,13 @@
 using namespace std;
 
 double GetCFL(double dt, double dtmax,
-        const dTensor1& prim_vol,
         const dTensorBC2& aux,
         const dTensorBC1& smax)
 {
-    const int mx = dogParamsCart1.get_mx();
+
+    const int    mx = dogParamsCart1.get_mx();
+    const double dx = dogParamsCart1.get_dx();
+
     double cfl   = -100.0;
 
     if( dt > dtmax )
@@ -27,7 +29,7 @@ double GetCFL(double dt, double dtmax,
 //#pragma omp parallel for
     for (int j=1; j<=mx; j++)
     {
-        cfl = Max( dt*smax.get(j) / prim_vol.get(j), cfl);  
+        cfl = Max( dt*smax.get(j) / dx, cfl);  
     }
 
     if (cfl>1.0e8)

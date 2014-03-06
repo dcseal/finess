@@ -1,7 +1,7 @@
 #include "tensors.h"
 
 // Function that is called before a full time step
-void BeforeFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol,
+void BeforeFullTimeStep(double dt, 
 		       dTensorBC2& auxold, dTensorBC2& aux, 
 		       dTensorBC2& qold,   dTensorBC2& q)
 {

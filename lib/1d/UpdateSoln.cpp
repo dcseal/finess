@@ -2,7 +2,6 @@
 
 // Update the solution using the constructed Lstar
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
-        const dTensor2& node, 
         const dTensorBC2& aux,
         const dTensorBC2& qstar, 
         const dTensorBC2& Lstar,
@@ -23,12 +22,12 @@ void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
     }
 
     // Optional call to modify updated solution
-//  void AfterUpdateSoln(const dTensor2& node,
+//  void AfterUpdateSoln(
 //          const dTensorBC2& aux,
 //          dTensorBC2& q,
 //          double dt,
 //          double beta);
-//  AfterUpdateSoln(node, aux, qnew, dt, beta); 
+//  AfterUpdateSoln( aux, qnew, dt, beta); 
 
 }
 
@@ -36,7 +35,6 @@ void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
 void UpdateSoln(
     double g1,double g2, double g3, double delta, 
     double beta,double dt,
-    const dTensor2& node, 
     const dTensorBC2& aux,
     const dTensorBC2& qold, const dTensorBC2& Lstar,
     dTensorBC2& q1, dTensorBC2& q2)
@@ -62,11 +60,11 @@ void UpdateSoln(
     //
     // TODO - include this call
     //
-//  void AfterUpdateSoln(const dTensor2& node,
+//  void AfterUpdateSoln(
 //          const dTensorBC3& aux,
 //          dTensorBC3& q,
 //          double dt,
 //          double beta);
-//  AfterUpdateSoln(node,aux,q1,dt,beta); 
+//  AfterUpdateSoln(aux,q1,dt,beta); 
 
 }

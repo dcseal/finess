@@ -34,7 +34,7 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
 //     q^{n+1} = q^n - \dt F_x.
 //
 // See also: DFluxFunc and D2FluxFunc.
-void ConstructIntegratedF( double dt, const dTensor2& node, 
+void ConstructIntegratedF( double dt, 
     dTensorBC2& aux, dTensorBC2& q,
     dTensorBC1& smax, dTensorBC2& F)
 {
@@ -49,7 +49,6 @@ void ConstructIntegratedF( double dt, const dTensor2& node,
     // Used for construcing the flux function
     void SampleFunction( 
         int istart, int iend,
-        const dTensor2& node,
         const dTensorBC2& qin, 
         const dTensorBC2& auxin,  
         dTensorBC2& Fout,
@@ -76,7 +75,7 @@ void ConstructIntegratedF( double dt, const dTensor2& node,
     // If "1st-order" (Euler step), then this completes this function call.
     //
     dTensorBC2 f( mx, meqn, mbc );  // place-holder
-    SampleFunction( 1-mbc, mx+mbc, node, q, aux, f, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, q, aux, f, &FluxFunc );
 
 // TODO  - allow for different sized stencils
 const int      mpts_sten = 2*mbc-1;  assert_eq( mpts_sten,      5 );
@@ -208,7 +207,7 @@ const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
     // TODO - something needs to be done about the boundary data!!!
     // For now, we'll assume F satisfies the same boundary conditions that Q
     // does (but this is not true!!)
-void SetBndValues(const dTensor2&, dTensorBC2&, dTensorBC2&);
-SetBndValues(node, aux, F );
+void SetBndValues(dTensorBC2&, dTensorBC2&);
+SetBndValues(aux, F );
 
 }

@@ -9,7 +9,7 @@
 #include "DogParamsCart1.h"
 using namespace std;
 
-void Output(const dTensor2& node, 
+void Output(
         const dTensorBC2& aux,
         const dTensorBC2& q,
         double t,
@@ -56,12 +56,12 @@ void Output(const dTensor2& node,
     aux_file.close();
 
     // Output additional information if needed - TODO reintroduce this call
-    void Output_Extra(const dTensor2& node, 
+    void Output_Extra(
             const dTensorBC2& aux,
             const dTensorBC2& q,
             double t,
             int nframe,
             string outputdir);
-    Output_Extra(node,aux,q,t,nframe,outputdir);
+    Output_Extra(aux,q,t,nframe,outputdir);
 
 }

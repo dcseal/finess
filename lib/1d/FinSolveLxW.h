@@ -3,7 +3,7 @@
 
 // ------------------------------------------------------------
 // Function definitions
-void SetBndValues(const dTensor2& node, dTensorBC2& aux, dTensorBC2& q);
+void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
 
 void CopyQ(const dTensorBC2&, dTensorBC2&);
 
@@ -12,19 +12,18 @@ void ConSoln(
     const dTensorBC2& q, 
     double t, string outputdir);
 
-void BeforeStep(double dt, const dTensor2& node, dTensorBC2& aux, dTensorBC2& q);
-void AfterStep(double dt, const dTensor2& node, dTensorBC2& aux, dTensorBC2& q);
+void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
 
 double GetCFL(double dt, double dtmax,
-        const dTensor1& prim_vol,
         const dTensorBC2& aux,
         const dTensorBC1& smax);
 
 // TODO - add these calls in later
-void BeforeFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol,
+void BeforeFullTimeStep(double dt, 
 		       dTensorBC2& auxold, dTensorBC2& aux, 
 		       dTensorBC2& qold,   dTensorBC2& q);
-void AfterFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol,
+void AfterFullTimeStep(double dt, 
 		       dTensorBC2& auxold, dTensorBC2& aux, 
 		       dTensorBC2& qold,   dTensorBC2& q);
 
@@ -36,15 +35,10 @@ void AfterFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol
 
 // ------------------------------------------------------------
 // LxW functions -- See LaxWendroff/
-//  void ConstructIntegratedL( double dt, const dTensor2& node, 
-//      const dTensorBC2& aux, const dTensorBC2& q,
-//      dTensorBC2& f, dTensorBC2& fx, dTensorBC2& fxx, dTensorBC2&
-//      qx, dTensorBC1& smax, dTensorBC2& F);
-void ConstructIntegratedF( double dt, const dTensor2& node, 
+void ConstructIntegratedF( double dt, 
     dTensorBC2& aux, dTensorBC2& q,
     dTensorBC1& smax, dTensorBC2& F);
 void ConstructL(
-        const dTensor2& node,
         const dTensorBC2& aux,
         const dTensorBC2& q,
         const dTensorBC2& F,  // <-- new term: integrated flux
@@ -54,7 +48,6 @@ void ConstructL(
 
 
 //  void ConstructL(
-//          const dTensor2& node,
 //          dTensorBC2& aux,
 //          dTensorBC2& q,      // setbndy conditions modifies q
 //          dTensorBC2& Lstar,

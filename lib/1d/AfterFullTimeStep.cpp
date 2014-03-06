@@ -3,7 +3,7 @@
 // *TEMPLATE*
 //
 // Function that is called after a full time step (i.e., after all stages are complete)
-void AfterFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol,
+void AfterFullTimeStep(double dt, 
 		       dTensorBC2& auxold, dTensorBC2& aux, 
 		       dTensorBC2& qold,   dTensorBC2& q)
 {

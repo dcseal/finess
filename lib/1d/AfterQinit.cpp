@@ -4,7 +4,7 @@
 //
 // This function is called ONCE per simulation, after 
 // the initial conditions are set
-void AfterQinit(const dTensor2& node, dTensorBC2& aux, dTensorBC2& q)
+void AfterQinit(dTensorBC2& aux, dTensorBC2& q)
 {
     const int melems = q.getsize(1);
     const int   meqn = q.getsize(2);

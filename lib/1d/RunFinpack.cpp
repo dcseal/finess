@@ -10,21 +10,17 @@
  * functions calls: one on dogParams.write_qhelp and one on
  * dogParamsCart1.write_qhelp.
  *
- * 4.) Call GridSetup.  For a 1D grid, this sets up a single array called
- * node containing cell edges, and a second array called prim_vol containing
- * the volume (length) of each element.
- * 
- * 5.) Call L2Project.  This Projects initial conditions onto basis functions.
+ * 4.) Call L2Project.  This Projects initial conditions onto basis functions.
  *
- * 6.) Call AfterQinit.  This is called once per simulation and can be used to
+ * 5.) Call AfterQinit.  This is called once per simulation and can be used to
  * set up extra variables.
  *
- * 7.) Call Output - output initial conditions to the output directory.
+ * 6.) Call Output - output initial conditions to the output directory.
  *
- * 8.) Call ConSoln - this is a call for saving 'conserved' quantities.  This
+ * 7.) Call ConSoln - this is a call for saving 'conserved' quantities.  This
  * function is called once per time step.
  *
- * 9.) Run the main time stepping loop.  This consists of calling the
+ * 8.) Run the main time stepping loop.  This consists of calling the
  * following two functions, once for each frame the user requested:
  *
  *     a.) Call DogSolve[TS-method], where TS-method is a valid time-stepping
@@ -90,7 +86,6 @@ int RunFinpack(string outputdir)
     const double&  xhigh    = dogParamsCart1.get_xhigh();
     const double&  dx       = dogParamsCart1.get_dx();
     const int&     mrestart = dogParams.get_mrestart();
-    const int        mnodes = mx + 1;
 
     // Output helpful stuff to qhelp.dat for plotting purposes
     string qhelp;
@@ -99,31 +94,26 @@ int RunFinpack(string outputdir)
     dogParamsCart1.append_qhelp(qhelp.c_str());
 
     // Dimension arrays
-    dTensor2      node(mnodes, mdim);
-    dTensor1      prim_vol(mx);
     dTensorBC2    qnew(mx, meqn, mbc);
     dTensorBC2    qold(mx, meqn, mbc);
     dTensorBC1    smax(mx, mbc);
     dTensorBC2    aux (mx, iMax(maux, 1), mbc);
 
-    // Construct 1D grid (trivial for uniform case)
-    GridSetup( node, prim_vol);
-
     // Set any auxiliary variables on computational grid
     // Set values and apply L2-projection
     if(maux >0)
-    {  SampleFunction(1-mbc, mx+mbc, node, qnew, aux, aux, &AuxFunc);  }
+    {  SampleFunction(1-mbc, mx+mbc, qnew, aux, aux, &AuxFunc);  }
 
     // Set initial data on computational grid
     // Set values and apply L2-projection
-    SampleFunction( 1-mbc, mx+mbc, node, qnew, aux, qnew, &QinitFunc);
+    SampleFunction( 1-mbc, mx+mbc, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
-    AfterQinit(node, aux, qnew);
+    AfterQinit( aux, qnew);
 
     // Output initial data to file
     // For each element, we output ``method[1]'' number of values
-    Output(node, aux, qnew, 0.0, 0, outputdir);
+    Output( aux, qnew, 0.0, 0, outputdir);
 
     // Compute conservation and print to file
     ConSoln( aux, qnew, 0.0, outputdir);
@@ -141,24 +131,24 @@ int RunFinpack(string outputdir)
         if (time_stepping_method == "Runge-Kutta")
         {  
             // Runge-Kutta time-stepping scheme
-            FinSolveRK(node, prim_vol, aux, qold, qnew, smax, tstart, tend, 
+            FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
         else if( time_stepping_method == "Lax-Wendroff")
         {
-            FinSolveLxW( node, prim_vol,      // TODO - remove these params 
+            FinSolveLxW( 
                 aux, qold, qnew, smax, tstart, tend, 
                 nv, dtv, cflv, outputdir);
         }
         else if (time_stepping_method == "User-Defined")
         {
             // User-defined time-stepping scheme
-            DogSolveUser(node,  prim_vol, aux, qold, qnew, smax, tstart, tend, 
+            DogSolveUser( aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
 
         // Output data to file
-        Output(node, aux, qnew, tend, n, outputdir);
+        Output( aux, qnew, tend, n, outputdir);
 
         // Done with solution from tstart to tend
         cout << setprecision(5);

@@ -2,7 +2,6 @@
 
 // Zeroth order extrapolation boundary conditions
 void SetBndValues(
-        const dTensor2& node, 
         dTensorBC2& aux, 
         dTensorBC2& q)
 {

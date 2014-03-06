@@ -10,7 +10,6 @@ using namespace std;
 //
 // ---------------------------------------------------------------------
 // Inputs should have the following sizes:   
-//           dTensor2    node(mnodes,1)
 //           dTensorBC2 auxin(1-mbc:mnodes+mbc, maux    )
 //           dTensorBC2   qin(1-mbc:mnodes+mbc, meqn    )
 //           dTensorBC2  Fout(1-mbc:mnodes+mbc, mlength )
@@ -19,9 +18,11 @@ using namespace std;
 // The reason there is an extra awkward parameter, mpoints in here is to keep
 // the same user interface that DoGPack uses.
 //
+// TODO - what if we want to only sample the function over a small part of the
+// domain?
+//
 void SampleFunction( 
     int istart, int iend,
-    const dTensor2& node,
     const dTensorBC2& qin, 
     const dTensorBC2& auxin,  
     dTensorBC2& Fout,
