@@ -215,6 +215,7 @@ SetBndValues(aux, F );
 
 
 void LocalIntegrate( 
+    int nterms,
     double dx, double xc, int meqn, int maux, int mpts_sten, int half_mpts_sten,
     const int i, const dTensorBC2& q, const dTensorBC2& aux, const dTensorBC2& f, dTensor1& f_t, dTensor1& f_tt )
 {
@@ -277,52 +278,52 @@ void LocalIntegrate(
         }
 
         // ---  Third-order terms --- //
-//      if( dogParams.get_time_order() > 2 )
-//      {
+        if( nterms > 2 )
+        {
 
-//          // Hessian
-//          dTensor4 H( 1, meqn, meqn, meqn );
-//          D2FluxFunc(xpts, q_transpose, a_transpose, H);
+            // Hessian
+            dTensor4 H( 1, meqn, meqn, meqn );
+            D2FluxFunc(xpts, q_transpose, a_transpose, H);
 
-//          // Compute terms that get multiplied by \pd2{ f }{ q }.
-//          dTensor1 tmp_vec( meqn );
-//          for( int m =1; m <= meqn; m++ )
-//          {
-//              double tmp1 = 0.;
-//              double tmp2 = 0.;
-//              for( int m1=1; m1 <= meqn; m1++ )
-//              for( int m2=1; m2 <= meqn; m2++ )
-//              {
-//                  tmp1 += H.get(1,m,m1,m2) * fx_val.get(m1)*fx_val.get(m2);
-//                  tmp2 += H.get(1,m,m1,m2) * qx_val.get(m1)*fx_val.get(m2);
-//              }
-//              f_tt.set( m, tmp1 );
-//              tmp_vec.set( m, tmp2 );
-//          }
+            // Compute terms that get multiplied by \pd2{ f }{ q }.
+            dTensor1 tmp_vec( meqn );
+            for( int m =1; m <= meqn; m++ )
+            {
+                double tmp1 = 0.;
+                double tmp2 = 0.;
+                for( int m1=1; m1 <= meqn; m1++ )
+                for( int m2=1; m2 <= meqn; m2++ )
+                {
+                    tmp1 += H.get(1,m,m1,m2) * fx_val.get(m1)*fx_val.get(m2);
+                    tmp2 += H.get(1,m,m1,m2) * qx_val.get(m1)*fx_val.get(m2);
+                }
+                f_tt.set( m, tmp1 );
+                tmp_vec.set( m, tmp2 );
+            }
 
-//          // Add in the third term that gets multiplied by A:
-//          for( int m1=1; m1 <= meqn; m1++ )
-//          {
-//              double tmp = 0.;
-//              for( int m2=1; m2 <= meqn; m2++ )
-//              {
-//                  tmp += A.get(1,m1,m2)*fxx_val.get(m2);
-//              }
-//              tmp_vec.set( m1, tmp_vec.get(m1) + tmp );
-//          }
+            // Add in the third term that gets multiplied by A:
+            for( int m1=1; m1 <= meqn; m1++ )
+            {
+                double tmp = 0.;
+                for( int m2=1; m2 <= meqn; m2++ )
+                {
+                    tmp += A.get(1,m1,m2)*fxx_val.get(m2);
+                }
+                tmp_vec.set( m1, tmp_vec.get(m1) + tmp );
+            }
 
-//          // Multiply final term by A:
-//          for( int m1=1; m1 <= meqn; m1++ )
-//          {
-//              double tmp = 0.;
-//              for( int m2=1; m2 <= meqn; m2++ )
-//              {
-//                  tmp += A.get(1,m1,m2)*tmp_vec.get(m2);
-//              }
-//              f_tt.set( m1, f_tt.get(m1) + tmp );
-//          }
+            // Multiply final term by A:
+            for( int m1=1; m1 <= meqn; m1++ )
+            {
+                double tmp = 0.;
+                for( int m2=1; m2 <= meqn; m2++ )
+                {
+                    tmp += A.get(1,m1,m2)*tmp_vec.get(m2);
+                }
+                f_tt.set( m1, f_tt.get(m1) + tmp );
+            }
 
-//      }
+        }
 
 }
 
@@ -377,10 +378,10 @@ const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
         dTensor1 f2_tt( meqn );   f2_tt.setall(0.);
 
         double xc = xlow + double(i)*dx - 0.5*dx;
-        LocalIntegrate( dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
+        LocalIntegrate( 2, dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
             i, q1, aux1, f1, f1_t, f1_tt );
 
-        LocalIntegrate( dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
+        LocalIntegrate( 2, dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
             i, q2, aux2, f2, f2_t, f2_tt );
 
         // Second/Third-order accuracy:
@@ -388,6 +389,82 @@ const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
         {
             F.set( i, m, alpha1*f1.get(i,m) + beta1*dt*(f1_t.get(m)) + 
                          alpha2*f2.get(i,m) + beta2*dt*(f2_t.get(m)) );
+        }
+
+
+    }
+
+    // TODO - something needs to be done about the boundary data!!!
+    // For now, we'll assume F satisfies the same boundary conditions that Q
+    // does (but this is not true!!)
+void SetBndValues(dTensorBC2&, dTensorBC2&);
+SetBndValues(aux1, F );
+
+}
+
+void ConstructIntegratedF( double dt, 
+    double alpha1, double beta1, double charlie1,
+    dTensorBC2& aux1, dTensorBC2& q1,
+    double alpha2, double beta2, double charlie2,
+    dTensorBC2& aux2, dTensorBC2& q2,
+    dTensorBC1& smax, dTensorBC2& F)
+{
+
+
+    // Problem dimensions. TODO - the boundary data either:
+    //
+    //     a) needs one more point, or 
+    //     b) needs to double the number of ghost cells, or
+    //     c) One-sided differences at the boundary.
+    //
+    // See above note.  I want to go with option (b).
+
+    const int mx     = q1.getsize(1);
+    const int meqn   = q1.getsize(2);
+    const int maux   = aux1.getsize(2);
+    const int mbc    = q1.getmbc();
+
+    // Needed to define derivatives
+    const double dx    = dogParamsCart1.get_dx();
+    const double xlow  = dogParamsCart1.get_xlow();
+
+    // Sample the flux function on the entire domain:
+    //
+    // If "1st-order" (Euler step), then this completes this function call.
+    //
+    dTensorBC2 f1( mx, meqn, mbc );
+    dTensorBC2 f2( mx, meqn, mbc );
+    SampleFunction( 1-mbc, mx+mbc, q1, aux1, f1, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, q2, aux2, f2, &FluxFunc );
+
+// TODO  - allow for different sized stencils
+const int      mpts_sten = 2*mbc-1;  assert_eq( mpts_sten,      5 );
+const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
+
+    // Compute finite difference approximations on all of the conserved
+    // variables:
+#pragma omp parallel for
+    for( int i = 1; i <= mx; i++ )
+    {
+
+        dTensor1 f1_t( meqn );    f1_t.setall(0.);
+        dTensor1 f1_tt( meqn );   f1_tt.setall(0.);
+        dTensor1 f2_t( meqn );    f2_t.setall( 0.);
+        dTensor1 f2_tt( meqn );   f2_tt.setall(0.);
+
+        double xc = xlow + double(i)*dx - 0.5*dx;
+        LocalIntegrate( 3, dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, q1, aux1, f1, f1_t, f1_tt );
+
+        LocalIntegrate( 3, dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, q2, aux2, f2, f2_t, f2_tt );
+
+        // Second/Third-order accuracy:
+        for( int m=1; m<=meqn; m++ )
+        {
+            F.set( i, m, 
+                alpha1*f1.get(i,m) + beta1*dt*(f1_t.get(m)) + charlie1*dt*dt*f1_tt.get(m) +
+                alpha2*f2.get(i,m) + beta2*dt*(f2_t.get(m)) + charlie2*dt*dt*f2_tt.get(m) );
         }
 
 
