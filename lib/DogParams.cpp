@@ -458,9 +458,9 @@ void DogParams::checkParameters1()
     if (!str_eq(time_stepping_method, "Runge-Kutta") &&
             !str_eq(time_stepping_method, "SDC") &&
             !str_eq(time_stepping_method, "Lax-Wendroff") &&
-            !str_eq(time_stepping_method, "User-Defined") &&
-            !str_eq(time_stepping_method, "LxW_synch") &&
-            !str_eq(time_stepping_method, "LxW_asynch"))
+            !str_eq(time_stepping_method, "Multiderivative") &&
+            !str_eq(time_stepping_method, "User-Defined") )
+            
     {
         derr << "the time-stepping method " << time_stepping_method 
             << " has not been implemented. " << endl << endl
@@ -468,7 +468,8 @@ void DogParams::checkParameters1()
             << "   1. Runge-Kutta " << endl
             << "   2. SDC " << endl
             << "   3. Lax-Wendroff " << endl
-            << "   4. User-Defined " << endl;
+            << "   4. Multiderivative " << endl
+            << "   5. User-Defined " << endl;
     }
 
     // checks per time_stepping_method
@@ -491,6 +492,13 @@ void DogParams::checkParameters1()
         if (get_time_order()<0 || (get_time_order()>5 ) )
         {
             derr << "Lax-Wendroff must have time_order = 1, 2, 3, 4, or 5 " << endl;
+        }
+    }
+    else if (str_eq(time_stepping_method, "Multiderivative" ) )
+    {
+        if (get_time_order()<4 || (get_time_order()>5 ) )
+        {
+            derr << "Multiderivative must have time_order = 4, or 5 " << endl;
         }
     }
 
@@ -529,8 +537,10 @@ void DogParams::checkParameters2()
     // check time_stepping_method
     if (!str_eq(time_stepping_method, "Runge-Kutta") &&
             !str_eq(time_stepping_method, "SDC") &&
-            !str_eq(time_stepping_method, "Lax-Wendroff") && 
+            !str_eq(time_stepping_method, "Lax-Wendroff") &&
+            !str_eq(time_stepping_method, "Multiderivative") &&
             !str_eq(time_stepping_method, "User-Defined") )
+            
     {
         derr << "the time-stepping method " << time_stepping_method 
             << " has not been implemented. " << endl << endl
@@ -538,7 +548,8 @@ void DogParams::checkParameters2()
             << "   1. Runge-Kutta " << endl
             << "   2. SDC " << endl
             << "   3. Lax-Wendroff " << endl
-            << "   4. User-Defined " << endl;
+            << "   4. Multiderivative " << endl
+            << "   5. User-Defined " << endl;
     }
 
     // check time_order per time_stepping_method
@@ -563,6 +574,14 @@ void DogParams::checkParameters2()
             derr << "Lax-Wendroff must have time_order = 1, 2, or 3 " << endl;
         }
     }
+    else if (str_eq(time_stepping_method, "Multiderivative" ) )
+    {
+        if (get_time_order()<4 || (get_time_order()>5 ) )
+        {
+            derr << "Multiderivative must have time_order = 4, or 5 " << endl;
+        }
+    }
+
 
     // check limiter method
     if (!str_eq(limiter_method, "moment") &&
@@ -756,7 +775,9 @@ void DogParams::write_qhelp(const char* filename)
     fprintf(file,"%16d : meqn\n", meqn);
     fprintf(file,"%16d : maux\n", get_maux());
     fprintf(file,"%16d : nout\n", nout);
-    fprintf(file,"%16d : space_order\n", 1 );  // TODO!!!
+    fprintf(file,"%16d : space_order\n", 1 );  // TODO This was changed to be
+                                               // in order to use DoGPack
+                                               // plotting routines.  -DS !!!
 //  fprintf(file,"%16d : space_order\n", get_space_order());
     fprintf(file,"%16d : datafmt\n", get_datafmt());
     fclose(file);

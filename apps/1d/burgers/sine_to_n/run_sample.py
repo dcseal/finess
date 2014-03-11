@@ -11,10 +11,10 @@ ndims       = 1             ; 1 or 2
 mesh_type   = Cartesian     ; (either Cartesian or Unstructured) 
 nout        = 1             ; number of output times to print results
 tfinal      = 1.591549430918953e-01 ; final time 
-dtv(1)      = 0.001         ; initial dt
+dtv(1)      = 1.00          ; initial dt
 dtv(2)      = 1e10          ; max allowable dt 
 cflv(1)     = 0.84          ; max allowable Courant number
-cflv(2)     = %(cfl)f       ; desired Courant number
+cflv(2)     = %(cfl)g       ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
 limiter_method = moment ; (e.g., moment, viscosity)
@@ -48,13 +48,12 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
     data_file = 'parameters.ini'
     ratio = 2
 
-    integrators   = ['Runge-Kutta', 'SDC', 'Lax-Wendroff', 'User-Defined']
+    integrators   = ['Runge-Kutta', 'SDC', 'Lax-Wendroff', 'Multiderivative', 'User-Defined']
     ts_method_str = integrators[ts_method]
     print(ts_method_str)
 
     for i in range(iterations):
         mx_now = mx_start * ratio**i
-
         # we want to do:
         #   data = open('dogpack.data','w')
         #   print >> data, dogpack_data_template % { 'mx': mx_now, 'ts_method': ts_method} 
@@ -107,7 +106,8 @@ def parse_input( help_message ):
   0. Runge-Kutta
   1. SDC
   2. Lax-Wendroff
-  3. 'User-Defined' time integrator.  (See Makefile for what gets linked to)
+  3. Multiderivative
+  4. 'User-Defined' time integrator.  (See Makefile for what gets linked to)
 (default: 0)''')
 
     parser.add_argument('-f','--frames',

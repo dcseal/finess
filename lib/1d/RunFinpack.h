@@ -30,6 +30,12 @@ void FinSolveLxW(
     double tstart, double tend, int nv,
     double dtv[], const double cflv[], string outputdir);
 
+void FinSolveMD(
+    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
+    dTensorBC1& smax,
+    double tstart, double tend, int nv,
+    double dtv[], const double cflv[], string outputdir);
+
 void DogSolveUser(
         dTensorBC2& aux, 
         dTensorBC2& qold,
