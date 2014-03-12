@@ -25,7 +25,6 @@ void SampleFunction(
     dTensorBC2& Fout,
     void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
 
-
 // This function computes the (linear) finite difference approximation to the
 // integrated flux function on the conserved variables.  It requires knowledge
 // of FluxFunc (1st-order), DFluxFunc (2nd-order) and D2FluxFunc (3rd-order)
@@ -198,14 +197,7 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
     }
 
-    // TODO - something needs to be done about the boundary data!!!
-    // For now, we'll assume F satisfies the same boundary conditions that Q
-    // does (but this is not true!!)
-void SetBndValues(dTensorBC2&, dTensorBC2&);
-SetBndValues(aux, F );
-
 }
-
 
 void LocalIntegrate( 
     int nterms,
@@ -328,15 +320,6 @@ void ConstructIntegratedF( double dt,
     dTensorBC1& smax, dTensorBC2& F)
 {
 
-
-    // Problem dimensions. TODO - the boundary data either:
-    //
-    //     a) needs one more point, or 
-    //     b) needs to double the number of ghost cells, or
-    //     c) One-sided differences at the boundary.
-    //
-    // See above note.  I want to go with option (b).
-
     const int mx     = q1.getsize(1);
     const int meqn   = q1.getsize(2);
     const int maux   = aux1.getsize(2);
@@ -355,14 +338,15 @@ void ConstructIntegratedF( double dt,
     SampleFunction( 1-mbc, mx+mbc, q1, aux1, f1, &FluxFunc );
     SampleFunction( 1-mbc, mx+mbc, q2, aux2, f2, &FluxFunc );
 
-// TODO  - allow for different sized stencils
-const int      mpts_sten = 2*mbc-1;  assert_eq( mpts_sten,      5 );
-const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
+// TODO  - allow for different sized stencils for different orders (-DS)
+const int mbc_small      = 3;
+const int      mpts_sten = 5;
+const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
     // Compute finite difference approximations on all of the conserved
     // variables:
 #pragma omp parallel for
-    for( int i = 1; i <= mx; i++ )
+    for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
     {
 
         dTensor1 f1_t( meqn );    f1_t.setall(0.);
@@ -387,12 +371,6 @@ const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
 
     }
 
-    // TODO - something needs to be done about the boundary data!!!
-    // For now, we'll assume F satisfies the same boundary conditions that Q
-    // does (but this is not true!!)
-void SetBndValues(dTensorBC2&, dTensorBC2&);
-SetBndValues(aux1, F );
-
 }
 
 void ConstructIntegratedF( double dt, 
@@ -402,15 +380,6 @@ void ConstructIntegratedF( double dt,
     dTensorBC2& aux2, dTensorBC2& q2,
     dTensorBC1& smax, dTensorBC2& F)
 {
-
-
-    // Problem dimensions. TODO - the boundary data either:
-    //
-    //     a) needs one more point, or 
-    //     b) needs to double the number of ghost cells, or
-    //     c) One-sided differences at the boundary.
-    //
-    // See above note.  I want to go with option (b).
 
     const int mx     = q1.getsize(1);
     const int meqn   = q1.getsize(2);
@@ -430,14 +399,15 @@ void ConstructIntegratedF( double dt,
     SampleFunction( 1-mbc, mx+mbc, q1, aux1, f1, &FluxFunc );
     SampleFunction( 1-mbc, mx+mbc, q2, aux2, f2, &FluxFunc );
 
-// TODO  - allow for different sized stencils
-const int      mpts_sten = 2*mbc-1;  assert_eq( mpts_sten,      5 );
-const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
+// TODO  - allow for different sized stencils for different orders (-DS)
+const int mbc_small      = 3;
+const int      mpts_sten = 5;
+const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
     // Compute finite difference approximations on all of the conserved
     // variables:
 #pragma omp parallel for
-    for( int i = 1; i <= mx; i++ )
+    for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
     {
 
         dTensor1 f1_t( meqn );    f1_t.setall(0.);
@@ -462,11 +432,5 @@ const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
 
 
     }
-
-    // TODO - something needs to be done about the boundary data!!!
-    // For now, we'll assume F satisfies the same boundary conditions that Q
-    // does (but this is not true!!)
-void SetBndValues(dTensorBC2&, dTensorBC2&);
-SetBndValues(aux1, F );
 
 }
