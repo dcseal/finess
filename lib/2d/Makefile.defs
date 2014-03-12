@@ -93,6 +93,7 @@ BeforeFullTimeStep   = $(LIB2D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB2D)/AfterFullTimeStep
 FinSolveRK           = $(LIB2D)/FinSolveRK
 FinSolveLxW          = $(LIB2D)/FinSolveLxW
+FinSolveMD           = $(LIB2D)/FinSolveMD
 DogSolveUser         = $(LIB2D)/DogSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
@@ -119,6 +120,7 @@ LIB2D_OBJECTS = \
   $(ConSoln).o \
   $(FinSolveRK).o \
   $(FinSolveLxW).o \
+  $(FinSolveMD).o \
   $(LIB2D)/SetRKinfo.o \
   $(LIB2D)/GetCFL.o \
   $(AfterQinit).o \
@@ -154,6 +156,7 @@ LIB2D_SOURCES = \
   $(ConSoln).cpp \
   $(FinSolveRK).cpp \
   $(FinSolveLxW).cpp \
+  $(FinSolveMD).cpp \
   $(LIB2D)/SetRKinfo.cpp \
   $(LIB2D)/GetCFL.cpp \
   $(AfterQinit).cpp \

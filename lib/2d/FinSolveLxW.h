@@ -60,7 +60,7 @@ void ConstructLxWL(
         dTensorBC3& smax);
 
 void ConstructIntegratedR( double dt, 
-    dTensorBC3& aux, dTensorBC3& q,
+    const dTensorBC3& aux, const dTensorBC3& q,
     dTensorBC3& smax, 
     dTensorBC3& F, dTensorBC3& G);
 

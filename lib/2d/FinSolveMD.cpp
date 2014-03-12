@@ -7,9 +7,30 @@
 #include "DogParams.h"
 #include "DogParamsCart2.h"
 
+// ------------------------------------------------------------
+// Multiderivative integration
+//
+// These functions are for the two-stage methods.  One contains
+// two-derivatives, and the second contains three derivatives.
+void ConstructIntegratedR( double dt, 
+    double alpha1, double beta1,
+    const dTensorBC3& aux1, const dTensorBC3& q1,
+    double alpha2, double beta2,
+    const dTensorBC3& aux2, const dTensorBC3& q2,
+    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
+
+//  void ConstructIntegratedF( double dt, 
+//      double alpha1, double beta1, double charlie1,
+//      const dTensorBC2& aux1, const dTensorBC2& q1,
+//      double alpha2, double beta2, double charlie2,
+//      const dTensorBC2& aux2, const dTensorBC2& q2,
+//      dTensorBC1& smax, dTensorBC2& F);
+// ------------------------------------------------------------
+
+
 using namespace std;
 
-void FinSolveLxW(
+void FinSolveMD(
     dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
@@ -97,8 +118,125 @@ void FinSolveLxW(
             // do any extra work
             BeforeFullTimeStep(dt, aux, aux, qold, qnew);
 
+            SetBndValues(aux,      qnew);
+            SetBndValues(auxstar, qstar);
+
             // ---------------------------------------------------------
             // Take a full time step of size dt
+            switch( dogParams.get_time_order() )
+            {
+
+
+                case 4:
+
+                // -- Stage 1 -- //
+                ConstructIntegratedR( 0.5*dt, aux, qnew, smax, F, G);
+
+                // That call is equivalent to the following call:
+                // Note that the dt has been rescaled in order to retain the
+                // correct units for the flux splitting that will occur in a
+                // second.
+//              ConstructIntegratedR( 0.5*dt, 
+//                  1.0, 0.5, aux,     qnew, 
+//                  0.0, 0.0, auxstar, qstar,
+//                  smax, F, G);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, G, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + 0.5*dt*Lstar.vget(k);
+                    qstar.vset(k, tmp );
+                }
+
+                // Perform any extra work required:
+                AfterStep(dt, auxstar, qstar );
+
+                SetBndValues(aux,      qnew);
+                SetBndValues(auxstar, qstar);
+
+                // -- Stage 2 -- //
+                ConstructIntegratedR( dt, 
+                    1.0, (1.0/6.0), aux, qnew, 
+                    0.0, (1.0/3.0), auxstar, qstar,
+                    smax, F, G);
+                ConstructLxWL( auxstar, qstar, F, G, Lstar, smax);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+
+                // Perform any extra work required:
+                AfterStep(dt, auxstar, qstar );
+
+                break;
+
+/*
+                case 5:
+
+// Coeffients chosen to optimize region of absolute stability along the
+// imaginary axis.
+//
+// rho = 8.209945182837015e-02 chosen to maximize range of abs. stab. region
+
+                // -- Stage 1 -- //
+                ConstructIntegratedF( 2.0/5.0*dt, 
+                    1.0, 0.5, 125./8.*8.209945182837015e-02, aux, qnew, 
+                    0.0, 0.0, 0.0,                           auxstar, qstar,
+                    smax, F);
+
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + (2.0/5.0*dt)*Lstar.vget(k);
+                    qstar.vset(k, tmp );
+                }
+
+                // Perform any extra work required:
+                AfterStep(dt, auxstar, qstar );
+
+                SetBndValues(aux,      qnew);
+                SetBndValues(auxstar, qstar);
+
+                // -- Stage 2 -- //
+                ConstructIntegratedF( dt, 
+                    1.0, 0.5, (1.0/16.0),     aux, qnew, 
+                    0.0, 0.0, (5.0/48.0), auxstar, qstar,
+                    smax, F);
+                ConstructLxWL( auxstar, qstar, F, Lstar, smax);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+
+                SetBndValues(aux,      qnew);
+                SetBndValues(auxstar, qstar);
+
+                // Perform any extra work required:
+                AfterStep(dt, auxstar, qstar );
+
+                break;
+*/
+
+                default:
+                printf("Error.  Time order %d not implemented for multiderivative\n", dogParams.get_time_order() );
+                exit(1);
+
+            }
+
+
             BeforeStep(dt, aux, qnew);
             SetBndValues(aux, qnew);
             ConstructIntegratedR( dt, aux, qnew, smax, F, G);

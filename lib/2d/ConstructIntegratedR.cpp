@@ -22,9 +22,6 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
 //     G := g - dt/2 ( B (f_x + g_y ) )
 //            + \cdots.
 //
-// TODO - include the extra terms in here.  For now, I will work on the
-//        2nd-order method only.  (-DS).
-//
 // Where the flux Jacobian and Hessian are defined as:
 //
 //      A := \partial   f / \partial q,   and 
@@ -42,12 +39,13 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
 //
 // See also: DFluxFunc and D2FluxFunc.
 void ConstructIntegratedR( double dt, 
-    dTensorBC3& aux, dTensorBC3& q,
+    const dTensorBC3& aux, const dTensorBC3& q,
     dTensorBC3& smax, 
     dTensorBC3& F, dTensorBC3& G)
 {
 
-
+    // User supplied functions defining the Flux function, Jacobian, and
+    // Hessian of the flux function.
     void FluxFunc(const dTensor2&,const dTensor2&,const dTensor2&,dTensor3&);
     void DFluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux,
         dTensor4& Dflux);
@@ -89,7 +87,7 @@ void ConstructIntegratedR( double dt,
     dTensorBC4 R( mx, my, meqn, 2, mbc );  // place-holder for the flux function
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
-// TODO  - allow for different sized stencils
+// TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
 const int      mpts_sten = 5;
 const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
@@ -298,4 +296,15 @@ const int ndim = 2;
 
     }
 
+}
+
+void ConstructIntegratedR( double dt, 
+    double alpha1, double beta1,
+    const dTensorBC3& aux1, const dTensorBC3& q1,
+    double alpha2, double beta2,
+    const dTensorBC3& aux2, const dTensorBC3& q2,
+    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
+{
+    // TODO - write this function
+    printf("You need to write this function\n");
 }
