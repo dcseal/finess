@@ -110,7 +110,8 @@ void FinSolveMD(
 
     // Set initialize qstar and auxstar values
     qstar.copyfrom( qnew );   
-    auxstar.copyfrom( aux );
+    if( maux > 0 )
+    { auxstar.copyfrom( aux  ); }
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //

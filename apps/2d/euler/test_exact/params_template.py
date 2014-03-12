@@ -10,14 +10,14 @@
 dogpack_data_template = '''
 ; Parameters common to dogpack applications
 [dogParams]
-defaults_file = "$DOGPACK/config/dogParams_defaults.ini"
+defaults_file = "$FINESS/config/dogParams_defaults.ini"
 ndims       = 2          ; 1 or 2
 mesh_type   = Cartesian  ; (either Cartesian or Unstructured) 
 nout        = 1          ; number of output times to print results
 tfinal      = 2.0        ; final time
 dtv(1)      = 1.0e0     ; initial dt
 dtv(2)      = 1.1e0      ; max allowable dt 
-cflv(1)     = 0.22       ; max allowable Courant number
+cflv(1)     = 1.00       ; max allowable Courant number
 cflv(2)     = %(cfl)f       ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
@@ -40,7 +40,7 @@ ic_quad_order = 20  ; order of quadrature for L2-projection of initial condition
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
 my    =  %(my)i  ; number of grid elements in y-direction
-mbc   =   2      ; number of ghost cells on each boundary
+mbc   =   5      ; number of ghost cells on each boundary
 xlow  =   0.0e0  ; left end point
 xhigh =   2.0e0  ; right end point
 ylow  =   0.0e0  ; lower end point

@@ -16,7 +16,7 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
     data_file = 'parameters.ini'
     ratio = 2
 
-    integrators   = ['Runge-Kutta', 'SDC', 'Lax-Wendroff', 'User-Defined']
+    integrators   = ['Runge-Kutta', 'SDC', 'Lax-Wendroff', 'Multiderivative', 'User-Defined']
     ts_method_str = integrators[ts_method]
     print(ts_method_str)
 
@@ -76,7 +76,8 @@ def parse_input( help_message ):
   0. Runge-Kutta
   1. SDC
   2. Lax-Wendroff
-  3. 'User-Defined' time integrator.  (See Makefile for what gets linked to)
+  3. Multiderivative
+  4. 'User-Defined' time integrator.  (See Makefile for what gets linked to)
 (default: 0)''')
 
     parser.add_argument('-f','--frames',
@@ -114,38 +115,3 @@ if __name__ == '__main__':
 
     main( args.CFL, args.t_stepper, 
         args.order[0], args.order[1], args.frames[1], args.frames[0], 0 )
-
-    """
-
-if __name__ == '__main__':
-    import optparse
-    parser = optparse.OptionParser(
-        usage='''%%prog (-h | [-i ITERATIONS] [-x MX_START] [-w MY_START] 
-                        [-t DT_START] [-s SPACE_ORDER] [-n N_START])
-    
-%s''' % main.__doc__)
-
-    parser.add_option('-i', '--iterations', type='int', default=6, 
-                       help='''number of times we wish to run computation.
-                       Default = 6''')
-    parser.add_option('-x', '--mx-start', type='int', default=4, 
-                       help='''MX_START = number of grid points to start
-                       computation with''')
-    parser.add_option('-t', '--dt-start', type='float', default=0.44,
-                       help='''DT_START = starting dt value''')
-    parser.add_option('-s', '--space-order', type='int', default=5,
-                       help='''SPACE_ORDER = spatial order of accuracy''')
-    parser.add_option('-p', '--time-order', type='int', default=2,
-                       help='''TIME_ORDER = time order of accuracy''')
-    parser.add_option('-n', '--n-start', type='int', default=0, 
-                       help='''N_START = folder number to start output from.
-                       Folders are named output000i with 
-                       i = N_START...N_START- 1.  The default value is 0''')
-    opts, args = parser.parse_args()
-
-#    check that the user provided enough arguments...
-#    if not opts.infile or not opts.outfile:
-#        parser.error('Both options -i and -o are required. Try -h for help.')
-    main(opts.space_order, opts.time_order, opts.iterations, opts.mx_start,
-        opts.dt_start, opts.n_start)
-"""

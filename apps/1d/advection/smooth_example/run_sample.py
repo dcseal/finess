@@ -33,7 +33,7 @@ withPyClawPlotting = 0; (1-yes, 0-no)
 
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
-mbc   =      3   ; number of ghost cells on each boundary
+mbc   =      5   ; number of ghost cells on each boundary
 xlow  =  0.0e0   ; left end point
 xhigh =  1.0e0   ; right end point
 '''
