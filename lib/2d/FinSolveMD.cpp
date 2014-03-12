@@ -73,6 +73,7 @@ void FinSolveMD(
     // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
     if( maux > 0 )
     { auxstar.copyfrom( aux  ); }
+    qstar.copyfrom( qnew );   
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -99,6 +100,7 @@ void FinSolveMD(
         // copy qnew into qold
         // CopyQ(qnew, qold);
         qold.copyfrom( qnew );
+        qstar.copyfrom( qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
@@ -128,6 +130,9 @@ void FinSolveMD(
 
 
                 case 4:
+
+                SetBndValues(aux,      qnew);
+                SetBndValues(auxstar, qstar);
 
                 // -- Stage 1 -- //
                 ConstructIntegratedR( 0.5*dt, aux, qnew, smax, F, G);
@@ -171,6 +176,9 @@ void FinSolveMD(
                     qnew.vset(k, tmp );
                 }
 
+                SetBndValues(aux,      qnew);
+                SetBndValues(auxstar, qstar);
+
                 // Perform any extra work required:
                 AfterStep(dt, auxstar, qstar );
 
@@ -178,10 +186,14 @@ void FinSolveMD(
 
                 case 5:
 
-// Coeffients chosen to optimize region of absolute stability along the
-// imaginary axis.
-//
-// rho = 8.209945182837015e-02 chosen to maximize range of abs. stab. region
+                // Coeffients chosen to optimize region of absolute stability 
+                // along the imaginary axis.
+                //
+                // rho = 8.209945182837015e-02 chosen to maximize range of 
+                //                             absolute stability region
+
+                SetBndValues(aux,      qnew);
+                SetBndValues(auxstar, qstar);
 
                 // -- Stage 1 -- //
                 ConstructIntegratedR( 2.0/5.0*dt, 
@@ -233,25 +245,6 @@ void FinSolveMD(
                 exit(1);
 
             }
-
-
-            BeforeStep(dt, aux, qnew);
-            SetBndValues(aux, qnew);
-            ConstructIntegratedR( dt, aux, qnew, smax, F, G);
-
-            ConstructLxWL( aux, qnew, F, G, Lstar, smax);  // <-- "new" method
-
-            // Update the solution:
-#pragma omp parallel for
-            for( int k=0; k < numel; k++ )
-            {
-                double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
-                qnew.vset(k, tmp );
-            }
-
-            // Perform any extra work required:
-            AfterStep(dt,aux,qnew);
-            // ---------------------------------------------------------
 
             // do any extra work
             AfterFullTimeStep(dt, auxstar, aux, qold, qnew);

@@ -118,7 +118,7 @@ int RunFinpack(string outputdir)
         else if (time_stepping_method == "Multiderivative" )
         {
             // User-defined time-stepping scheme
-            FinSolveLxW(aux, qold, qnew, smax, tstart, tend, 
+            FinSolveMD(aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
         else if (time_stepping_method == "User-Defined")

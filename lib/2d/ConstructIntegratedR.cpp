@@ -539,7 +539,7 @@ const int ndim = 2;
     for( int j = 1-mbc_small; j <= my+mbc_small; j++ )
     {
 
-        // Compute the product: f'(q)*(f_x+g_y) + g'(q)*(f_x+g_y)
+        // Time derivatives of the flux function
         dTensor1 f1_t( meqn ), g1_t( meqn );
         dTensor1 f2_t( meqn ), g2_t( meqn );
 
@@ -635,10 +635,11 @@ const int ndim = 2;
 
             F.set( i, j, m, alpha1*R1.get(i,j,m,1) + beta1*dt*(f1_t.get(m)) + 
                             alpha2*R2.get(i,j,m,1) + beta2*dt*(f2_t.get(m)) + 
-                    charlie1*dt*dt*f1_tt.get(m) + charlie2*dt*dt*f2_tt.get(m) );
+                            charlie1*dt*dt*f1_tt.get(m) + charlie2*dt*dt*f2_tt.get(m) );
+
             G.set( i, j, m, alpha1*R1.get(i,j,m,2) + beta1*dt*(g1_t.get(m)) + 
                             alpha2*R2.get(i,j,m,2) + beta2*dt*(g2_t.get(m)) +
-                    charlie1*dt*dt*g1_tt.get(m) + charlie2*dt*dt*g2_tt.get(m) );
+                            charlie1*dt*dt*g1_tt.get(m) + charlie2*dt*dt*g2_tt.get(m) );
         }
 
     }
