@@ -17,7 +17,7 @@ void ConSoln(
 // RK functions
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
 
-void ConstructL(
+void ConstructLxWL(
         const dTensorBC2& aux,
         const dTensorBC2& q,
         const dTensorBC2& F,  // <-- new term: integrated flux
@@ -173,7 +173,7 @@ void FinSolveMD(
 //                  smax, F);
 
                 // Update the solution:
-                ConstructL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
@@ -192,7 +192,7 @@ void FinSolveMD(
                     1.0, (1.0/6.0), aux, qnew, 
                     0.0, (1.0/3.0), auxstar, qstar,
                     smax, F);
-                ConstructL( auxstar, qstar, F, Lstar, smax);
+                ConstructLxWL( auxstar, qstar, F, Lstar, smax);
 
                 // Update the solution:
 #pragma omp parallel for
@@ -223,7 +223,7 @@ void FinSolveMD(
                     0.0, 0.0, 0.0,                           auxstar, qstar,
                     smax, F);
 
-                ConstructL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
 
                 // Update the solution:
 #pragma omp parallel for
@@ -244,7 +244,7 @@ void FinSolveMD(
                     1.0, 0.5, (1.0/16.0),     aux, qnew, 
                     0.0, 0.0, (5.0/48.0), auxstar, qstar,
                     smax, F);
-                ConstructL( auxstar, qstar, F, Lstar, smax);
+                ConstructLxWL( auxstar, qstar, F, Lstar, smax);
 
                 // Update the solution:
 #pragma omp parallel for

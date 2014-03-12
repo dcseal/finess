@@ -5,15 +5,16 @@
 #include "tensors.h"
 #include "dog_math.h"
 
-// Right-hand side for hyperbolic PDE in divergence form
+// Time-integrated right-hand side for hyperbolic PDE in divergence form
 //
 //       q_t + f(q,x,t)_x = Psi(q,x,t)
 //
-// It is expected that the user sets the boundary conditions before calling this
-// routine.
-void ConstructL(
+// This routine performs the Lax-Friedrich's flux
+// splitting on a modified flux function, F.
+void ConstructLxWL(
         const dTensorBC2& aux,
         const dTensorBC2& q,
+        const dTensorBC2& F,  // <-- new term: integrated flux
         dTensorBC2& Lstar,
         dTensorBC1& smax)
 {
@@ -28,10 +29,6 @@ void ConstructL(
             const dTensor1& Qr, const dTensor1& Auxl, const dTensor1& Auxr,
             double& s1,double& s2);
     void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-    void SampleFunction( int istart, int iend,
-        const dTensorBC2& qin, 
-        const dTensorBC2& auxin,  dTensorBC2& Fout,
-        void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
 
     // Routine for WENO reconstrution
     void WenoReconstruct( const dTensor2& gin, dTensor2& diff_g );
@@ -46,12 +43,11 @@ void ConstructL(
     const int   maux = aux.getsize(2);
     const int    mbc = q.getmbc();
 
-// @todo - TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
+// TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
 // should equal mbc.  This should be added somewhere in the code. 
 // (Derived parameters? -DS)
 const int  r = 3;  // order = 2*r-1
 const int ws = 5;  // Number of points for the weno-reconstruction
-assert_ge( mbc, 3 );
 
     // The flux, f_{i-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
@@ -94,6 +90,7 @@ assert_ge( mbc, 3 );
         dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
         dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
         dTensor1 xvals( ws+1 );
+        dTensor2 fvals( meqn, ws+1 );
         for( int s=1; s <= ws+1; s++ )
         {
             // Index into the large array
@@ -102,30 +99,16 @@ assert_ge( mbc, 3 );
             // TODO - check that this is the correct value ...
             double xi = xlow + double( is )*dx - 0.5*dx;
             xvals.set( s, xi );
-
             for( int m=1; m <= meqn; m++ )
             {
                 qvals.set( m, s, q.get(is, m ) );
+                fvals.set( m, s, F.get(is, m ) ); // <-- NEW part (sample integrated flux)
             }
             for( int ma=1; ma <= maux; ma++ )
             {
                 auxvals.set( ma, s, aux.get(is, ma ) );
             }
         }
-
-        // The format of Flux and ProjectLeftEig/ProjectRightEig do not
-        // contain the same order.  That is, Flux assumes q(1:npts, 1:meqn),
-        // whereas the other functions assume q(1:meqn, 1:npts).  For
-        // consistency, I will copy back to the latter, because the WENO
-        // reconstruction *should* be faster if the list of points is second.
-        // (-DS)
-        ConvertTranspose( qvals,   qvals_t   );
-        ConvertTranspose( auxvals, auxvals_t );
-
-        // Sample f over the stencil:
-        dTensor2 fvals( meqn, ws+1 );  dTensor2 fvals_t( ws+1, meqn );
-        FluxFunc( xvals, qvals_t, auxvals_t, fvals_t );
-        ConvertTranspose( fvals_t, fvals );
 
         // Project entire stencil onto the characteristic variables:
         dTensor2 wvals( meqn, ws+1  ), gvals( meqn, ws+1 );
@@ -206,16 +189,18 @@ assert_ge( mbc, 3 );
     // --------------------------------------------------------------------- //
     if( dogParams.get_source_term() )
     {
+        printf("Error: source-term not implemented for Lax-Wendroff method\n");
+        exit(1);
         // Compute the source term.
-        SampleFunction( 1-mbc, mx+mbc, q, aux, Lstar, &SourceTermFunc);
-#pragma omp parallel for
-        for (int i=1; i<=mx; i++)
-        {
-            for (int m=1; m<=meqn; m++)
-            {
-                Lstar.set(i,m, Lstar.get(i,m) -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
-            }
-        }
+//      SampleFunction( 1-mbc, mx+mbc, node, q, aux, Lstar, &SourceTermFunc);
+//  #pragma omp parallel for
+//          for (int i=1; i<=mx; i++)
+//          {
+//              for (int m=1; m<=meqn; m++)
+//              {
+//                  Lstar.set(i,m, Lstar.get(i,m) -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
+//              }
+//          }
     }
     else
     {
@@ -228,24 +213,10 @@ assert_ge( mbc, 3 );
             }
         }
     }
+
     // ---------------------------------------------------------
     // Add extra contributions to Lstar
     // ---------------------------------------------------------
     // LstarExtra(aux,q,Lstar);
-
-}
-
-void ConvertTranspose( const dTensor2& qin, dTensor2& qout )
-{
-    const int m1 = qin.getsize(1);
-    const int m2 = qin.getsize(2);
-    assert_eq( m1, qout.getsize(2) );
-    assert_eq( m2, qout.getsize(1) );
-
-    for( int i=1; i<= m1; i++ )
-    for( int j=1; j<= m2; j++ )
-    {
-        qout.set(j,i, qin.get(i,j) );
-    }
 
 }

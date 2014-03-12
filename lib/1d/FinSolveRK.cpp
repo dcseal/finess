@@ -96,6 +96,7 @@ void FinSolveRK(
                     // --------------------------------------------------------
                     // Stage #1 (the only one in this case)
                     rk.mstage = 1;
+                    SetBndValues(aux, qnew);
                     BeforeStep(dt,aux,qnew);
                     ConstructL(aux, qnew, Lstar, smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
@@ -110,6 +111,7 @@ void FinSolveRK(
                     // ---------------------------------------------------------
                     // Stage #1
                     rk.mstage = 1;
+                    SetBndValues(aux, qnew);
                     BeforeStep(dt,aux,qnew);
                     ConstructL(aux,qnew,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
@@ -118,6 +120,7 @@ void FinSolveRK(
                     // ---------------------------------------------------------
                     // Stage #2
                     rk.mstage = 2;
+                    SetBndValues(auxstar, qstar);
                     BeforeStep(dt,auxstar,qstar);
                     ConstructL(aux,qstar,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
@@ -132,6 +135,7 @@ void FinSolveRK(
                     // ---------------------------------------------------------
                     // Stage #1
                     rk.mstage = 1;
+                    SetBndValues(aux, qnew);
                     BeforeStep(dt,aux,qnew);    
                     ConstructL(aux,qnew,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
@@ -141,6 +145,7 @@ void FinSolveRK(
                     // ---------------------------------------------------------
                     // Stage #2
                     rk.mstage = 2;
+                    SetBndValues(auxstar, qstar);
                     BeforeStep(dt,auxstar,qstar);
                     ConstructL(aux,qstar,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
@@ -150,6 +155,7 @@ void FinSolveRK(
                     // ---------------------------------------------------------
                     // Stage #3
                     rk.mstage = 3;
+                    SetBndValues(auxstar, qstar);
                     BeforeStep(dt,auxstar,qstar);
                     ConstructL(auxstar,qstar,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
@@ -162,8 +168,6 @@ void FinSolveRK(
                 case 4:  // Fourth order in time (10-stages)
 
                     // -----------------------------------------------
-                    //CopyQ(qnew,q1);
-                    //CopyQ(q1,q2);
                     q1.copyfrom( qnew );
                     q2.copyfrom( qnew );
 
@@ -171,6 +175,7 @@ void FinSolveRK(
                     for (int s=1; s<=5; s++)
                     {
                         rk.mstage = s;
+                        SetBndValues(aux, q1);
                         BeforeStep(dt,aux,q1);
                         ConstructL(aux,q1,Lstar,smax);
                         if (s==1)
@@ -180,9 +185,6 @@ void FinSolveRK(
                         }
                         UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                                 rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
-//                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(aux,q1,
-//                              &ProjectRightEig,&ProjectLeftEig);  }
                         AfterStep(dt,aux,q1);
                     }
 
@@ -199,25 +201,23 @@ void FinSolveRK(
                     for (int s=6; s<=9; s++)
                     {
                         rk.mstage = s;
+                        SetBndValues(aux, q1);
                         BeforeStep(dt,aux,q1);
                         ConstructL(aux,q1,Lstar,smax);
                         UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                                 rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
-//                      if (dogParams.using_moment_limiter())
-//                      {  ApplyLimiter(aux,q1,
-//                              &ProjectRightEig,&ProjectLeftEig);  }
                         AfterStep(dt,aux,q1);
                     }
 
                     // Stage: 10
                     rk.mstage = 10;
+                    SetBndValues(aux, q1);
                     BeforeStep(dt,aux,q1);
                     ConstructL(aux,q1,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,aux,q2,Lstar,q1);
                     AfterStep(dt,aux,q1);
 
-                    // CopyQ(q1,qnew);
                     qnew.copyfrom( q1 );
                     // -----------------------------------------------          
                     break;
@@ -232,6 +232,7 @@ void FinSolveRK(
                     for (int s=1; s<=8; s++)
                     {
                         rk.mstage = s;
+                        SetBndValues(aux, q1);
                         BeforeStep(dt,aux,q1);
                         ConstructL(aux,q1,Lstar,smax);
                         if (s==1)
@@ -246,8 +247,6 @@ void FinSolveRK(
 
                         AfterStep(dt,aux,q1);
                     }
-
-                    // CopyQ(q1, qnew);
                     qnew.copyfrom( q1 );
                     // -----------------------------------------------          
                     break;

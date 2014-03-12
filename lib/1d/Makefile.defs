@@ -85,6 +85,7 @@ AfterUpdateSoln      = $(LIB1D)/AfterUpdateSoln
 ApplyLimiter         = $(LIB1D)/ApplyLimiter
 ApplyPosLimiter      = $(LIB1D)/ApplyPosLimiter
 ConstructL           = $(LIB1D)/ConstructL
+ConstructLxWL        = $(LIB1D)/ConstructLxWL
 InitApp              = $(LIB1D)/InitApp
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
@@ -133,6 +134,7 @@ LIB1D_OBJECTS = \
   $(LIB1D)/ConvertQtoW.o \
   $(LIB1D)/ConvertWtoQ.o \
   $(ConstructL).o \
+  $(ConstructLxWL).o \
   $(LIB1D)/UpdateSoln.o \
   $(LIB1D)/ResInt.o \
   $(LIB1D)/GetCFL.o \
@@ -168,6 +170,7 @@ LIB1D_SOURCES = \
   $(LIB1D)/ConvertQtoW.cpp \
   $(LIB1D)/ConvertWtoQ.cpp \
   $(ConstructL).cpp \
+  $(ConstructLxWL).cpp \
   $(LIB1D)/UpdateSoln.cpp \
   $(LIB1D)/ResInt.cpp \
   $(LIB1D)/GetCFL.cpp \

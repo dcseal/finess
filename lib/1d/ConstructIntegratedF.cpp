@@ -54,14 +54,6 @@ void ConstructIntegratedF( double dt,
     dTensorBC1& smax, dTensorBC2& F)
 {
 
-
-    // Problem dimensions. TODO - the boundary data either:
-    //     a) needs one more point, or 
-    //     b) needs to double the number of ghost cells, or
-    //     c) One-sided differences at the boundary.
-    //
-    // I want to run with option (b).  (-DS).
-
     const int mx     = q.getsize(1);
     const int meqn   = q.getsize(2);
     const int maux   = aux.getsize(2);
@@ -78,14 +70,15 @@ void ConstructIntegratedF( double dt,
     dTensorBC2 f( mx, meqn, mbc );  // place-holder
     SampleFunction( 1-mbc, mx+mbc, q, aux, f, &FluxFunc );
 
-// TODO  - allow for different sized stencils
-const int      mpts_sten = 2*mbc-1;  assert_eq( mpts_sten,      5 );
-const int half_mpts_sten =   mbc;    assert_eq( half_mpts_sten, 3 );
+// TODO  - allow for different sized stencils for different orders (-DS)
+const int mbc_small      = 3;
+const int      mpts_sten = 5;
+const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
     // Compute finite difference approximations on all of the conserved
     // variables:
 #pragma omp parallel for
-    for( int i = 1; i <= mx; i++ )
+    for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
     {
 
         // Physical location for this current value:

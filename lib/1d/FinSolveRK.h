@@ -3,6 +3,8 @@
 
 // ------------------------------------------------------------
 // Function definitions
+void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
+
 void CopyQ(const dTensorBC2&, dTensorBC2&);
 
 void ConSoln( 
@@ -14,8 +16,8 @@ void ConSoln(
 // the Runge-Kutta method:
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
 void ConstructL( 
-        dTensorBC2& aux,
-        dTensorBC2& q,      // setbndy conditions modifies q
+        const dTensorBC2& aux,
+        const dTensorBC2& q,      // setbndy conditions modifies q
         dTensorBC2& Lstar,
         dTensorBC1& smax);
 // orders 1-4 time stepping:

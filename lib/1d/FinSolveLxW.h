@@ -38,20 +38,12 @@ void AfterFullTimeStep(double dt,
 void ConstructIntegratedF( double dt, 
     dTensorBC2& aux, dTensorBC2& q,
     dTensorBC1& smax, dTensorBC2& F);
-void ConstructL(
+void ConstructLxWL(
         const dTensorBC2& aux,
         const dTensorBC2& q,
         const dTensorBC2& F,  // <-- new term: integrated flux
         dTensorBC2& Lstar,
         dTensorBC1& smax);
 
-
-
-//  void ConstructL(
-//          dTensorBC2& aux,
-//          dTensorBC2& q,      // setbndy conditions modifies q
-//          dTensorBC2& Lstar,
-//          dTensorBC1& smax);
-// ------------------------------------------------------------
 
 #endif

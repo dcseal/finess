@@ -90,7 +90,7 @@ void FinSolveLxW(
             BeforeStep(dt,aux,qnew);
             SetBndValues(aux, qnew);
             ConstructIntegratedF( dt, aux, qnew, smax, F);
-            ConstructL( aux, qnew, F, Lstar, smax);  // <-- "new" method
+            ConstructLxWL( aux, qnew, F, Lstar, smax);  // <-- "new" method
 
             // Update the solution:
 #pragma omp parallel for
@@ -104,7 +104,7 @@ void FinSolveLxW(
             AfterStep(dt,aux,qnew);
             // ---------------------------------------------------------
 
-            // do any extra work (TODO - add this in later)
+            // do any extra work
             AfterFullTimeStep(dt, auxold, aux, qold, qnew);
 
             // compute cfl number
