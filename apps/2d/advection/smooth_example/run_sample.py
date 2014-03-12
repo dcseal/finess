@@ -16,7 +16,7 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
     data_file = 'parameters.ini'
     ratio = 2
 
-    integrators   = ['Runge-Kutta', 'SDC', 'Lax-Wendroff', 'User-Defined']
+    integrators   = ['Runge-Kutta', 'SDC', 'Lax-Wendroff', 'Multiderivative', 'User-Defined']
     ts_method_str = integrators[ts_method]
     print(ts_method_str)
 
@@ -76,7 +76,8 @@ def parse_input( help_message ):
   0. Runge-Kutta
   1. SDC
   2. Lax-Wendroff
-  3. 'User-Defined' time integrator.  (See Makefile for what gets linked to)
+  3. Multiderivative
+  4. 'User-Defined' time integrator.  (See Makefile for what gets linked to)
 (default: 0)''')
 
     parser.add_argument('-f','--frames',
