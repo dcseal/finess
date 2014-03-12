@@ -5,11 +5,28 @@
 #include "DogParamsCart2.h"
 #include "assert.h"
 
-// EXPERIMENTAL CODE
-
-// See $FINESS/lib/WenoReconstruct.cpp for these central finite difference methods.
+// Central difference formulae
+// see $FINESS/lib/WenoReconstruct.cpp
 void Diff1( double dx, const dTensor2& f, dTensor1& fx );
 void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
+
+// User supplied functions defining the Flux function, Jacobian, and
+// Hessian of the flux function.
+void FluxFunc(const dTensor2&,const dTensor2&,const dTensor2&,dTensor3&);
+void DFluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux,
+    dTensor4& Dflux);
+void D2FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux,
+    dTensor5& D2flux);
+
+// Used for construcing the flux function
+void SampleFunction( 
+    int istart, int iend,
+    int jstart, int jend,
+    const dTensorBC3& qin, 
+    const dTensorBC3& auxin,  
+          dTensorBC4& Fout,
+    void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&));
+
 
 // This function computes the (linear) finite difference approximation to the
 // integrated flux function on the conserved variables.  It requires knowledge
@@ -44,30 +61,7 @@ void ConstructIntegratedR( double dt,
     dTensorBC3& F, dTensorBC3& G)
 {
 
-    // User supplied functions defining the Flux function, Jacobian, and
-    // Hessian of the flux function.
-    void FluxFunc(const dTensor2&,const dTensor2&,const dTensor2&,dTensor3&);
-    void DFluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux,
-        dTensor4& Dflux);
-    void D2FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux,
-    	dTensor5& D2flux);
-
-    // Used for construcing the flux function
-    void SampleFunction( 
-        int istart, int iend,
-        int jstart, int jend,
-        const dTensorBC3& qin, 
-        const dTensorBC3& auxin,  
-              dTensorBC4& Fout,
-        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&));
-
-    // Problem dimensions TODO - the boundary data either: 
-    //     a) needs one more point, or 
-    //     b) needs to double the number of ghost cells, or
-    //     c) One-sided differences at the boundary.
-    //
-    // I would prefer to run with option (c).  (-DS).
-
+    // Grid and problem information
     const int mx     = dogParamsCart2.get_mx();
     const int my     = dogParamsCart2.get_my();
     const int meqn   = dogParams.get_meqn();
@@ -298,6 +292,18 @@ const int ndim = 2;
 
 }
 
+void LocalIntegrate( 
+    int nterms, double dx, double dy, double xc, double yc,
+    int meqn, int maux, int mpts_sten, int half_mpts_sten,
+    const int i, const int j, const dTensorBC3& q, const dTensorBC3& aux, 
+    const dTensorBC4& R, 
+    dTensor1& f_t, dTensor1& f_tt,
+    dTensor1& g_t, dTensor1& g_tt
+    )
+{
+    // TODO - write me!
+}
+
 void ConstructIntegratedR( double dt, 
     double alpha1, double beta1,
     const dTensorBC3& aux1, const dTensorBC3& q1,
@@ -305,6 +311,69 @@ void ConstructIntegratedR( double dt,
     const dTensorBC3& aux2, const dTensorBC3& q2,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
 {
-    // TODO - write this function
-    printf("You need to write this function\n");
+
+    // Grid and problem information
+    const int mx     = dogParamsCart2.get_mx();
+    const int my     = dogParamsCart2.get_my();
+    const int meqn   = dogParams.get_meqn();
+    const int maux   = dogParams.get_maux();
+    const int mbc    = dogParamsCart2.get_mbc();
+
+    // Needed to define derivatives
+    const double dx    = dogParamsCart2.get_dx();
+    const double dy    = dogParamsCart2.get_dy();
+    const double xlow  = dogParamsCart2.get_xlow();
+    const double ylow  = dogParamsCart2.get_ylow();
+
+    // Sample the flux function on the entire domain:
+    //
+    // If "1st-order" (Euler step), then this completes this function call.
+    //
+    dTensorBC4 R1( mx, my, meqn, 2, mbc );  // place-holder for the flux function
+    dTensorBC4 R2( mx, my, meqn, 2, mbc );  // place-holder for the flux function
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
+
+// TODO  - allow for different sized stencils for different orders (-DS)
+const int mbc_small      = 3;
+const int      mpts_sten = 5;
+const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
+
+const int ndim = 2;
+
+    // Compute finite difference approximations on all of the conserved
+    // variables:
+#pragma omp parallel for
+    for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
+    for( int j = 1-mbc_small; j <= my+mbc_small; j++ )
+    {
+
+        // Compute the product: f'(q)*(f_x+g_y) + g'(q)*(f_x+g_y)
+        dTensor1 f1_t( meqn ), g1_t( meqn );
+        dTensor1 f2_t( meqn ), g2_t( meqn );
+
+        dTensor1 f1_tt( meqn ), g1_tt( meqn );
+        dTensor1 f2_tt( meqn ), g2_tt( meqn );
+
+        double xc = xlow + double(i)*dx - 0.5*dx;
+        double yc = ylow + double(j)*dy - 0.5*dy;
+
+        LocalIntegrate( 2, dx, dy, xc, yc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, j, q1, aux1, R1, f1_t, f1_tt, g1_t, g1_tt );
+
+        LocalIntegrate( 2, dx, dy, xc, yc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, j, q2, aux2, R2, f2_t, f2_tt, g2_t, g2_tt );
+
+        // Two-stage, two-derivative method:
+        for( int m=1; m<=meqn; m++ )
+        {
+
+            F.set( i, j, m, alpha1*R1.get(i,j,m,1) + beta1*dt*(f1_t.get(m)) + 
+                            alpha2*R2.get(i,j,m,1) + beta2*dt*(f2_t.get(m)) );
+            G.set( i, j, m, alpha1*R1.get(i,j,m,2) + beta1*dt*(g1_t.get(m)) + 
+                            alpha2*R2.get(i,j,m,2) + beta2*dt*(g2_t.get(m)) );
+        }
+
+    }
+
 }
