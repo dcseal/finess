@@ -19,12 +19,12 @@ void ConstructIntegratedR( double dt,
     const dTensorBC3& aux2, const dTensorBC3& q2,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
-//  void ConstructIntegratedF( double dt, 
-//      double alpha1, double beta1, double charlie1,
-//      const dTensorBC2& aux1, const dTensorBC2& q1,
-//      double alpha2, double beta2, double charlie2,
-//      const dTensorBC2& aux2, const dTensorBC2& q2,
-//      dTensorBC1& smax, dTensorBC2& F);
+void ConstructIntegratedR( double dt, 
+    double alpha1, double beta1, double charlie1,
+    const dTensorBC3& aux1, const dTensorBC3& q1,
+    double alpha2, double beta2, double charlie2,
+    const dTensorBC3& aux2, const dTensorBC3& q2,
+    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 // ------------------------------------------------------------
 
 
@@ -176,7 +176,6 @@ void FinSolveMD(
 
                 break;
 
-/*
                 case 5:
 
 // Coeffients chosen to optimize region of absolute stability along the
@@ -185,12 +184,12 @@ void FinSolveMD(
 // rho = 8.209945182837015e-02 chosen to maximize range of abs. stab. region
 
                 // -- Stage 1 -- //
-                ConstructIntegratedF( 2.0/5.0*dt, 
+                ConstructIntegratedR( 2.0/5.0*dt, 
                     1.0, 0.5, 125./8.*8.209945182837015e-02, aux, qnew, 
                     0.0, 0.0, 0.0,                           auxstar, qstar,
-                    smax, F);
+                    smax, F, G);
 
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qnew, F, G, Lstar, smax);
 
                 // Update the solution:
 #pragma omp parallel for
@@ -207,11 +206,11 @@ void FinSolveMD(
                 SetBndValues(auxstar, qstar);
 
                 // -- Stage 2 -- //
-                ConstructIntegratedF( dt, 
+                ConstructIntegratedR( dt, 
                     1.0, 0.5, (1.0/16.0),     aux, qnew, 
                     0.0, 0.0, (5.0/48.0), auxstar, qstar,
-                    smax, F);
-                ConstructLxWL( auxstar, qstar, F, Lstar, smax);
+                    smax, F, G);
+                ConstructLxWL( auxstar, qstar, F, G, Lstar, smax);
 
                 // Update the solution:
 #pragma omp parallel for
@@ -228,7 +227,6 @@ void FinSolveMD(
                 AfterStep(dt, auxstar, qstar );
 
                 break;
-*/
 
                 default:
                 printf("Error.  Time order %d not implemented for multiderivative\n", dogParams.get_time_order() );

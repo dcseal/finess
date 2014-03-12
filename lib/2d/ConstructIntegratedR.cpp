@@ -301,7 +301,198 @@ void LocalIntegrate(
     dTensor1& g_t, dTensor1& g_tt
     )
 {
-    // TODO - write me!
+
+    // Problem dimension (used for setting xpts)
+    const int ndim = 2;
+
+    // Physical location for this current value:
+    dTensor2 xpts( 1, ndim );
+    xpts.set( 1, 1, xc );
+    xpts.set( 1, 2, yc );
+
+    // Save the flux function:
+    dTensor2 Fvals  ( meqn, mpts_sten );
+    dTensor2 Gvals  ( meqn, mpts_sten );
+    dTensor2 qvalsx ( meqn, mpts_sten );
+    dTensor2 qvalsy ( meqn, mpts_sten );
+
+    for( int m=1; m <= meqn; m++ )
+    {
+        int s = -half_mpts_sten+1;
+        for( int r = 1; r <= mpts_sten; r++ )
+        {
+            Fvals.set( m, r, R.get( i+s, j, m, 1 ) ); // for computing f_x
+            Gvals.set( m, r, R.get( i, j+s, m, 2 ) ); // for computing g_y
+            qvalsx.set( m, r, q.get( i+s, j, m ) );
+            qvalsy.set( m, r, q.get( i, j+s, m ) );
+            s++;
+        }
+    }
+
+    // Storage for local derivatives:
+    dTensor1 fx_val  ( meqn ), qx_val( meqn );
+    dTensor1 gy_val  ( meqn ), qy_val( meqn );
+
+    // Compute a FD approximation to the derivatives:
+    Diff1( dx, Fvals,  fx_val  );
+    Diff1( dx, qvalsx, qx_val  );
+
+    Diff1( dy, Gvals,  gy_val  );
+    Diff1( dy, qvalsy, qy_val  );
+
+    // Construct the first product: A f_x:
+    dTensor4 A( 1, meqn, meqn, 2 );             // ( f'(q), g'(q) )
+    dTensor2 q_transpose( 1, meqn );
+    dTensor2 a_transpose( 1, maux );
+
+    for( int m=1; m <= meqn; m++ )
+    {
+        q_transpose.set(1, m, q.get(i,j,m) );
+    }
+    for( int m=1; m <= maux; m++ )
+    {
+        a_transpose.set(1, m, aux.get(i,j,m) );
+    }
+
+    // Compute the Jacobian:
+    DFluxFunc(xpts, q_transpose, a_transpose, A);
+
+    // Compute the product: f'(q)*(f_x+g_y) + g'(q)*(f_x+g_y)
+    for( int m1=1; m1 <= meqn; m1++ )
+    {
+        double tmp1 = 0.;
+        double tmp2 = 0.;
+        for( int m2=1; m2 <= meqn; m2++ )
+        {
+            tmp1 += -(A.get(1, m1, m2, 1)) * ( fx_val.get(m2) + gy_val.get(m2));
+            tmp2 += -(A.get(1, m1, m2, 2)) * ( fx_val.get(m2) + gy_val.get(m2));
+        }
+        f_t.set( m1, tmp1 );
+        g_t.set( m1, tmp2 );
+    }
+
+    // ---  Third-order terms --- //
+    if( nterms > 2 )
+    {
+
+        // Hessian
+        dTensor5 H( 1, meqn, meqn, meqn, 2 );
+        D2FluxFunc(xpts, q_transpose, a_transpose, H);
+
+        // ----------------------------------- //
+        // Part I: Compute (f_x + g_y)_{,t}
+        // ----------------------------------- //
+
+        dTensor1 fx_plus_gy_t( meqn ); fx_plus_gy_t.setall(0.);
+
+        // Start with a term that get's used frequently:
+        dTensor1 fx_plus_gy( meqn );
+        for( int m =1; m <= meqn; m++ )
+        {
+            double tmp = fx_val.get(m) + gy_val.get(m);
+            fx_plus_gy.set(m, tmp );
+        }
+
+        // Second-derivatives:
+        dTensor1 fxx_val( meqn ), gyy_val( meqn );
+        Diff2( dx, Fvals,  fxx_val  );
+        Diff2( dy, Gvals,  gyy_val  );
+
+        // Cross - derivaties
+        dTensor1 fxy_val  ( meqn );  fxy_val.setall(0.);
+        dTensor1 gxy_val  ( meqn );  gxy_val.setall(0.);
+
+        // 2nd-order stencil (for mixed derivatives)
+        for( int m=1; m <= meqn; m++ )
+        {
+            double tmp1  = 0.5*(R.get(i+1,j+1,m,1)-R.get(i-1,j+1,m,1))/dx;
+                   tmp1 -= 0.5*(R.get(i+1,j-1,m,1)-R.get(i-1,j-1,m,1))/dx;
+                   tmp1 *= 0.5/dy;
+            fxy_val.set(m, tmp1);
+
+            double tmp2  = 0.5*(R.get(i+1,j+1,m,2)-R.get(i-1,j+1,m,2))/dx;
+                   tmp2 -= 0.5*(R.get(i+1,j-1,m,2)-R.get(i-1,j-1,m,2))/dx;
+                   tmp2 *= 0.5/dy;
+            gxy_val.set(m, tmp2);
+        }
+
+        // Compute terms that get multiplied by 
+        //     \pd2{ f }{ q } and \pd2{ g }{ q }.
+        for( int m =1; m <= meqn; m++ )
+        {
+            double tmp = 0.;
+
+            // Terms that get multiplied by the Hessian:
+            for( int m1=1; m1 <= meqn; m1++ )
+            for( int m2=1; m2 <= meqn; m2++ )
+            {
+
+                tmp += H.get(1,m,m1,m2,1)*qx_val.get(m1)*fx_plus_gy.get(m2);
+                tmp += H.get(1,m,m1,m2,2)*qy_val.get(m1)*fx_plus_gy.get(m2);
+            }
+
+            // Terms that get multiplied by f'(q) and g'(q):
+            for( int m1=1; m1 <= meqn; m1++ )
+            {
+
+                tmp += A.get(1,m,m1,1)*( fxx_val.get(m1)+gxy_val.get(m1) );
+                tmp += A.get(1,m,m1,2)*( fxy_val.get(m1)+gyy_val.get(m1) );
+            }
+
+            fx_plus_gy_t.set( m, tmp );
+        }
+
+
+        // ----------------------------------- //
+        // Part II: Compute 
+        //      f'(q) * fx_plus_gy_t and 
+        //      g'(q) * fx_plus_gy_t
+        // ----------------------------------- //
+
+        // Add in the third term that gets multiplied by A:
+        for( int m1=1; m1 <= meqn; m1++ )
+        {
+            double tmp1 = 0.;
+            double tmp2 = 0.;
+            for( int m2=1; m2 <= meqn; m2++ )
+            {
+                tmp1 += A.get(1,m1,m2,1)*fx_plus_gy_t.get(m2);
+                tmp2 += A.get(1,m1,m2,2)*fx_plus_gy_t.get(m2);
+            }
+            f_tt.set( m1, tmp1 );
+            g_tt.set( m1, tmp2 );
+        }
+
+        // ----------------------------------------------- //
+        // Part III: Add in contributions from
+        //      f''(q) * (fx_plus_gy, fx_plus_gy ) and 
+        //      g''(q) * (fx_plus_gy, fx_plus_gy ).
+        // ----------------------------------------------- //
+        for( int m =1; m <= meqn; m++ )
+        {
+            double tmp1 = 0.;
+            double tmp2 = 0.;
+
+            // Terms that get multiplied by the Hessian:
+            for( int m1=1; m1 <= meqn; m1++ )
+            for( int m2=1; m2 <= meqn; m2++ )
+            {
+                tmp1 += H.get(1,m,m1,m2,1)*fx_plus_gy.get(m1)*fx_plus_gy.get(m2);
+                tmp2 += H.get(1,m,m1,m2,2)*fx_plus_gy.get(m1)*fx_plus_gy.get(m2);
+            }
+
+            f_tt.set( m, f_tt.get(m) + tmp1 );
+            g_tt.set( m, g_tt.get(m) + tmp2 );
+        }
+
+    }
+    else
+    {
+        // f_tt and g_tt not used.  Set to zero to be safe
+        f_tt.setall(0.);
+        g_tt.setall(0.);
+    }
+
 }
 
 void ConstructIntegratedR( double dt, 
@@ -372,6 +563,82 @@ const int ndim = 2;
                             alpha2*R2.get(i,j,m,1) + beta2*dt*(f2_t.get(m)) );
             G.set( i, j, m, alpha1*R1.get(i,j,m,2) + beta1*dt*(g1_t.get(m)) + 
                             alpha2*R2.get(i,j,m,2) + beta2*dt*(g2_t.get(m)) );
+        }
+
+    }
+
+}
+
+void ConstructIntegratedR( double dt, 
+    double alpha1, double beta1, double charlie1, 
+    const dTensorBC3& aux1, const dTensorBC3& q1,
+    double alpha2, double beta2, double charlie2,
+    const dTensorBC3& aux2, const dTensorBC3& q2,
+    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
+{
+
+    // Grid and problem information
+    const int mx     = dogParamsCart2.get_mx();
+    const int my     = dogParamsCart2.get_my();
+    const int meqn   = dogParams.get_meqn();
+    const int maux   = dogParams.get_maux();
+    const int mbc    = dogParamsCart2.get_mbc();
+
+    // Needed to define derivatives
+    const double dx    = dogParamsCart2.get_dx();
+    const double dy    = dogParamsCart2.get_dy();
+    const double xlow  = dogParamsCart2.get_xlow();
+    const double ylow  = dogParamsCart2.get_ylow();
+
+    // Sample the flux function on the entire domain:
+    //
+    // If "1st-order" (Euler step), then this completes this function call.
+    //
+    dTensorBC4 R1( mx, my, meqn, 2, mbc );  // place-holder for the flux function
+    dTensorBC4 R2( mx, my, meqn, 2, mbc );  // place-holder for the flux function
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
+
+// TODO  - allow for different sized stencils for different orders (-DS)
+const int mbc_small      = 3;
+const int      mpts_sten = 5;
+const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
+
+const int ndim = 2;
+
+    // Compute finite difference approximations on all of the conserved
+    // variables:
+#pragma omp parallel for
+    for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
+    for( int j = 1-mbc_small; j <= my+mbc_small; j++ )
+    {
+
+        // Compute the product: f'(q)*(f_x+g_y) + g'(q)*(f_x+g_y)
+        dTensor1 f1_t( meqn ), g1_t( meqn );
+        dTensor1 f2_t( meqn ), g2_t( meqn );
+
+        dTensor1 f1_tt( meqn ), g1_tt( meqn );
+        dTensor1 f2_tt( meqn ), g2_tt( meqn );
+
+        double xc = xlow + double(i)*dx - 0.5*dx;
+        double yc = ylow + double(j)*dy - 0.5*dy;
+
+        LocalIntegrate( 3, dx, dy, xc, yc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, j, q1, aux1, R1, f1_t, f1_tt, g1_t, g1_tt );
+
+        LocalIntegrate( 3, dx, dy, xc, yc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, j, q2, aux2, R2, f2_t, f2_tt, g2_t, g2_tt );
+
+        // Two-stage, two-derivative method:
+        for( int m=1; m<=meqn; m++ )
+        {
+
+            F.set( i, j, m, alpha1*R1.get(i,j,m,1) + beta1*dt*(f1_t.get(m)) + 
+                            alpha2*R2.get(i,j,m,1) + beta2*dt*(f2_t.get(m)) + 
+                    charlie1*dt*dt*f1_tt.get(m) + charlie2*dt*dt*f2_tt.get(m) );
+            G.set( i, j, m, alpha1*R1.get(i,j,m,2) + beta1*dt*(g1_t.get(m)) + 
+                            alpha2*R2.get(i,j,m,2) + beta2*dt*(g2_t.get(m)) +
+                    charlie1*dt*dt*g1_tt.get(m) + charlie2*dt*dt*g2_tt.get(m) );
         }
 
     }

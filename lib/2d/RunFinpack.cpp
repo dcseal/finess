@@ -115,11 +115,22 @@ int RunFinpack(string outputdir)
             FinSolveLxW(aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
         }
+        else if (time_stepping_method == "Multiderivative" )
+        {
+            // User-defined time-stepping scheme
+            FinSolveLxW(aux, qold, qnew, smax, tstart, tend, 
+                    nv, dtv, cflv, outputdir);
+        }
         else if (time_stepping_method == "User-Defined")
         {
             // User-defined time-stepping scheme
             DogSolveUser(  aux, qold, qnew, smax, tstart, tend, 
                     nv, dtv, cflv, outputdir);
+        }
+        else
+        {
+            printf("Time stepping method not implemented\n");
+            exit(1);
         }
 
         // Output data to file
