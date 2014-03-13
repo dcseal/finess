@@ -9,6 +9,7 @@
 // see $FINESS/lib/WenoReconstruct.cpp
 void Diff1( double dx, const dTensor2& f, dTensor1& fx );
 void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
+double Diff1( double dx, double f1, double f2, double f3, double f4, double f5 );
 
 // User supplied functions defining the Flux function, Jacobian, and
 // Hessian of the flux function.
@@ -403,17 +404,19 @@ void LocalIntegrate(
         dTensor1 gxy_val  ( meqn );  gxy_val.setall(0.);
 
         // 2nd-order stencil (for mixed derivatives)
+        //
+        // TODO - this is a clunky way to compute these derivatives!
         for( int m=1; m <= meqn; m++ )
         {
-            double tmp1  = 0.5*(R.get(i+1,j+1,m,1)-R.get(i-1,j+1,m,1))/dx;
-                   tmp1 -= 0.5*(R.get(i+1,j-1,m,1)-R.get(i-1,j-1,m,1))/dx;
-                   tmp1 *= 0.5/dy;
-            fxy_val.set(m, tmp1);
-
-            double tmp2  = 0.5*(R.get(i+1,j+1,m,2)-R.get(i-1,j+1,m,2))/dx;
-                   tmp2 -= 0.5*(R.get(i+1,j-1,m,2)-R.get(i-1,j-1,m,2))/dx;
-                   tmp2 *= 0.5/dy;
-            gxy_val.set(m, tmp2);
+            dTensor1 tmpF(5);
+            dTensor1 tmpG(5);
+            for( int m1=-2; m1 <= 2; m1++ )
+            {
+                tmpF.set(m1+3, Diff1( dx, R.get(i-2,j+m1,m,1), R.get(i-1,j+m1,m,1), R.get(i,j+m1,m,1), R.get(i+1,j+m1,m,1), R.get(i+2,j+m1,m,1) ) );
+                tmpG.set(m1+3, Diff1( dx, R.get(i-2,j+m1,m,2), R.get(i-1,j+m1,m,2), R.get(i,j+m1,m,2), R.get(i+1,j+m1,m,2), R.get(i+2,j+m1,m,2) ) );
+            }
+            fxy_val.set(m, Diff1( dy, tmpF.get(1), tmpF.get(2), tmpF.get(3), tmpF.get(4), tmpF.get(5) ) );
+            gxy_val.set(m, Diff1( dy, tmpG.get(1), tmpG.get(2), tmpG.get(3), tmpG.get(4), tmpG.get(5) ) );
         }
 
         // Compute terms that get multiplied by 
@@ -558,11 +561,13 @@ const int ndim = 2;
         // Two-stage, two-derivative method:
         for( int m=1; m<=meqn; m++ )
         {
+            F.set( i, j, m, 
+                alpha1*R1.get(i,j,m,1) + dt*(beta1*f1_t.get(m)) + 
+                alpha2*R2.get(i,j,m,1) + dt*(beta2*f2_t.get(m)) );
 
-            F.set( i, j, m, alpha1*R1.get(i,j,m,1) + beta1*dt*(f1_t.get(m)) + 
-                            alpha2*R2.get(i,j,m,1) + beta2*dt*(f2_t.get(m)) );
-            G.set( i, j, m, alpha1*R1.get(i,j,m,2) + beta1*dt*(g1_t.get(m)) + 
-                            alpha2*R2.get(i,j,m,2) + beta2*dt*(g2_t.get(m)) );
+            G.set( i, j, m, 
+                alpha1*R1.get(i,j,m,2) + dt*(beta1*g1_t.get(m)) +
+                alpha2*R2.get(i,j,m,2) + dt*(beta2*g2_t.get(m)) );
         }
 
     }
@@ -613,7 +618,7 @@ const int ndim = 2;
     for( int j = 1-mbc_small; j <= my+mbc_small; j++ )
     {
 
-        // Compute the product: f'(q)*(f_x+g_y) + g'(q)*(f_x+g_y)
+        // Time derivatives of the flux function
         dTensor1 f1_t( meqn ), g1_t( meqn );
         dTensor1 f2_t( meqn ), g2_t( meqn );
 
@@ -629,17 +634,17 @@ const int ndim = 2;
         LocalIntegrate( 3, dx, dy, xc, yc, meqn, maux, mpts_sten, half_mpts_sten,
             i, j, q2, aux2, R2, f2_t, f2_tt, g2_t, g2_tt );
 
-        // Two-stage, two-derivative method:
+        // Time-averaged flux function
         for( int m=1; m<=meqn; m++ )
         {
 
-            F.set( i, j, m, alpha1*R1.get(i,j,m,1) + beta1*dt*(f1_t.get(m)) + 
-                            alpha2*R2.get(i,j,m,1) + beta2*dt*(f2_t.get(m)) + 
-                            charlie1*dt*dt*f1_tt.get(m) + charlie2*dt*dt*f2_tt.get(m) );
+            F.set( i, j, m, 
+                alpha1*R1.get(i,j,m,1) + dt*(beta1*f1_t.get(m) + charlie1*dt*f1_tt.get(m)) + 
+                alpha2*R2.get(i,j,m,1) + dt*(beta2*f2_t.get(m) + charlie2*dt*f2_tt.get(m)) );
 
-            G.set( i, j, m, alpha1*R1.get(i,j,m,2) + beta1*dt*(g1_t.get(m)) + 
-                            alpha2*R2.get(i,j,m,2) + beta2*dt*(g2_t.get(m)) +
-                            charlie1*dt*dt*g1_tt.get(m) + charlie2*dt*dt*g2_tt.get(m) );
+            G.set( i, j, m, 
+                alpha1*R1.get(i,j,m,2) + dt*(beta1*g1_t.get(m) + charlie1*dt*g1_tt.get(m)) +
+                alpha2*R2.get(i,j,m,2) + dt*(beta2*g2_t.get(m) + charlie2*dt*g2_tt.get(m)) );
         }
 
     }

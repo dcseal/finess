@@ -46,7 +46,8 @@ void WenoReconstruct( const dTensor2& g, dTensor2& diff_g )
 
 // TODO - make this a user-defined input (add a [weno] section to the
 // parameters file)
-const double eps = 1.0e-12;  
+//const double eps = 1.0e-12;  
+const double eps = 1.0e-6;  
 
     for( int m=1; m <= meqn; m++ )
     {
@@ -117,6 +118,20 @@ void Diff1( double dx, const dTensor2& f, dTensor1& fx )
 
 }
 
+// Central Finite difference approximations:
+//
+// First-derivative (using a 5 point central stencil)
+//
+// This is the scalar version of the above routine
+double Diff1( double dx, 
+    double f1, double f2, double f3, double f4, double f5 )
+{
+
+    double tmp = (  f1 - f5 )*(1.0/12.0);
+    tmp       += ( -f2 + f4 )*(2.0/ 3.0);
+    return tmp/dx;
+
+}
 // Central Finite difference approximations:
 //
 // Second-derivative (using a 5 point central stencil)
