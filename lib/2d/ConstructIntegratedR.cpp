@@ -403,20 +403,42 @@ void LocalIntegrate(
         dTensor1 fxy_val  ( meqn );  fxy_val.setall(0.);
         dTensor1 gxy_val  ( meqn );  gxy_val.setall(0.);
 
-        // 2nd-order stencil (for mixed derivatives)
+        // Stencil for mixed derivatives
         //
         // TODO - this is a clunky way to compute these derivatives!
+//      for( int m=1; m <= meqn; m++ )
+//      {
+//          dTensor1 tmpF(5);
+//          dTensor1 tmpG(5);
+//          for( int m1=-2; m1 <= 2; m1++ )
+//          {
+//              tmpF.set(m1+3, Diff1( dx, R.get(i-2,j+m1,m,1), R.get(i-1,j+m1,m,1), R.get(i,j+m1,m,1), R.get(i+1,j+m1,m,1), R.get(i+2,j+m1,m,1) ) );
+//              tmpG.set(m1+3, Diff1( dx, R.get(i-2,j+m1,m,2), R.get(i-1,j+m1,m,2), R.get(i,j+m1,m,2), R.get(i+1,j+m1,m,2), R.get(i+2,j+m1,m,2) ) );
+//          }
+//          fxy_val.set(m, Diff1( dy, tmpF.get(1), tmpF.get(2), tmpF.get(3), tmpF.get(4), tmpF.get(5) ) );
+//          gxy_val.set(m, Diff1( dy, tmpG.get(1), tmpG.get(2), tmpG.get(3), tmpG.get(4), tmpG.get(5) ) );
+//      }
+
+        // Clean, minimal stencil for computing u_xy using the smallest
+        // fourth-order stencil available.
         for( int m=1; m <= meqn; m++ )
         {
-            dTensor1 tmpF(5);
-            dTensor1 tmpG(5);
-            for( int m1=-2; m1 <= 2; m1++ )
-            {
-                tmpF.set(m1+3, Diff1( dx, R.get(i-2,j+m1,m,1), R.get(i-1,j+m1,m,1), R.get(i,j+m1,m,1), R.get(i+1,j+m1,m,1), R.get(i+2,j+m1,m,1) ) );
-                tmpG.set(m1+3, Diff1( dx, R.get(i-2,j+m1,m,2), R.get(i-1,j+m1,m,2), R.get(i,j+m1,m,2), R.get(i+1,j+m1,m,2), R.get(i+2,j+m1,m,2) ) );
-            }
-            fxy_val.set(m, Diff1( dy, tmpF.get(1), tmpF.get(2), tmpF.get(3), tmpF.get(4), tmpF.get(5) ) );
-            gxy_val.set(m, Diff1( dy, tmpG.get(1), tmpG.get(2), tmpG.get(3), tmpG.get(4), tmpG.get(5) ) );
+            // Second-order terms
+            double tmp = 0.25*(R.get(i+1,j+1,m,1) - R.get(i-1,j+1,m,1) - R.get(i+1,j-1,m,1) + R.get(i-1,j-1,m,1));
+            // Higher-order terms:
+            tmp -= (1./24.)*(
+                R.get(i+2,j+1,m,1) + R.get(i-2,j-1,m,1) - R.get(i+2,j-1,m,1) - R.get(i-2,j+1,m,1) -
+                R.get(i+1,j+2,m,1) - R.get(i-1,j-2,m,1) + R.get(i+1,j-2,m,1) + R.get(i-1,j+2,m,1) );
+            tmp *= (1./(dx*dy));
+            fxy_val.set(m, tmp );
+
+            tmp = 0.25*(R.get(i+1,j+1,m,2) - R.get(i-1,j+1,m,2) - R.get(i+1,j-1,m,2) + R.get(i-1,j-1,m,2));
+            tmp -= (1./24.)*(
+                R.get(i+2,j+1,m,2) + R.get(i-2,j-1,m,2) - R.get(i+2,j-1,m,2) - R.get(i-2,j+1,m,2) -
+                R.get(i+1,j+2,m,2) - R.get(i-1,j-2,m,2) + R.get(i+1,j-2,m,2) + R.get(i-1,j+2,m,2) );
+            tmp *= (1./(dx*dy));
+            gxy_val.set(m, tmp);
+
         }
 
         // Compute terms that get multiplied by 
