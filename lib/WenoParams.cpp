@@ -57,7 +57,7 @@ void WENOParams::init(IniDocument& ini_doc){
 	if(!s_epsilon.empty())
 		epsilon = stod(s_epsilon);
 	if(!s_power_param.empty())
-		power_param = stoi(s_power_param);
+		power_param = stod(s_power_param);
 	if(!s_alpha_scaling.empty())
 		alpha_scaling = stod(s_alpha_scaling);
 
