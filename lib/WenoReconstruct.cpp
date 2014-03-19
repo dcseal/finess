@@ -1,6 +1,14 @@
 #include <cmath>
+#include <stdexcept>
+
 #include "assert.h"
 #include "tensors.h"
+
+#include "WenoParams.h"
+#include "DogParams.h"
+
+
+
 
 // All purpose routine for computing a conservative finite difference
 // approximation to the derivative of the function.
@@ -27,7 +35,7 @@
 //     u = { u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2} },
 //
 // and then reconstructs the value u_{i+1/2} with this method.
-void WenoReconstruct( const dTensor2& g, dTensor2& diff_g )
+static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
 {
 
     // Stencil and the smaller three point derivatives:
@@ -151,3 +159,12 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
     }
 
 }
+
+void WenoReconstruct(const dTensor2& g, dTensor2& diff_g){
+    if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 5){
+        WenoReconstruct_JS5(g, diff_g);
+        return;
+    }
+    throw(std::logic_error("Requested WENO Reconstruction not implemented."));
+}
+
