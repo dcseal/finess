@@ -49,9 +49,9 @@ void ConstructL(
 // @todo - TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
 // should equal mbc.  This should be added somewhere in the code. 
 // (Derived parameters? -DS)
-    const int ws = dogParams.get_space_order();
-    const int r = (ws + 1) / 2;
-    assert_ge( mbc, r );
+const int  r = 3;  // order = 2*r-1
+const int ws = 5;  // Number of points for the weno-reconstruction
+assert_ge( mbc, 3 );
 
     // The flux, f_{i-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
