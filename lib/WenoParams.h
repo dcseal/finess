@@ -9,7 +9,7 @@ public:
 		FD, JS, Z
 	} weno_version;
 	double epsilon;
-	double power_param;
+	int power_param;
 	double alpha_scaling;
 
 	void init(IniDocument& ini_doc);
