@@ -55,7 +55,9 @@ static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
 // TODO - make this a user-defined input (add a [weno] section to the
 // parameters file)
 //const double eps = 1.0e-12;  
-const double eps = 1.0e-6;  
+    const double eps = wenoParams.epsilon;  
+    const double power_param = wenoParams.power_param;
+
 
     for( int m=1; m <= meqn; m++ )
     {
@@ -93,9 +95,9 @@ const double eps = 1.0e-6;
         // eps   = cls._eps
         
         // Compute nonlinear weights and normalize their sum to 1
-        omt0 = g0*pow(eps+beta0,-2);
-        omt1 = g1*pow(eps+beta1,-2);
-        omt2 = g2*pow(eps+beta2,-2);
+        omt0 = g0*pow(eps+beta0,-power_param);
+        omt1 = g1*pow(eps+beta1,-power_param);
+        omt2 = g2*pow(eps+beta2,-power_param);
         omts = omt0+omt1+omt2;
 
         // # Return 5th-order conservative reconstruction
