@@ -38,6 +38,8 @@
 static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
 {
 
+    assert_eq( g.getsize(2), 5 );
+
     // Stencil and the smaller three point derivatives:
     double uim2,uim1,ui,uip1,uip2;
     double u1,u2,u3;
@@ -50,7 +52,6 @@ static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
     g0 = 0.1; g1 = 0.6; g2 = 0.3;
 
     const int meqn = g.getsize(1);
-    assert_eq( g.getsize(2), 5 );
 
 // TODO - make this a user-defined input (add a [weno] section to the
 // parameters file)
@@ -108,6 +109,60 @@ static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
 
 }
 
+static void WenoReconstruct_JS7( const dTensor2& g, dTensor2& diff_g )
+{
+    assert_eq(g.getsize(2), 7);
+    double uim3, uim2, uim1, ui, uip1, uip2, uip3;
+    double u1, u2, u3, u4;
+    
+    double beta0, beta1, beta2, beta3;
+    double omt0, omt1, omt2, omt3, omts;
+
+    const double g0 = 1./35., g1 = 12./35., g2 = 18./35., g3 = 4./35.;
+
+    const int meqn = g.getsize(1);
+    
+    const double eps = wenoParams.epsilon;  
+    const double power_param = wenoParams.power_param;
+
+
+    for(int m = 1; m <= meqn; m++){
+        uim3 = g.get(m, 1);
+        uim2 = g.get(m, 2);
+        uim1 = g.get(m, 3);
+        ui   = g.get(m, 4);
+        uip1 = g.get(m, 5);
+        uip2 = g.get(m, 6);
+        uip3 = g.get(m, 7);
+
+        beta0 = uim3*(  547.*uim3 -  3882.*uim2  + 4642.*uim1 - 1854.*ui) + 
+                uim2*( 7043.*uim2 - 17246.*uim1  + 7042.*ui) +              
+                uim1*(11003.*uim1 -  9402.*ui  ) + 2107. * pow(ui, 2);
+        beta1 = uim2*(  267.*uim2 - 1642.*uim1   + 1602.*ui - 494.*uip1) + 
+                uim1*( 2843.*uim1 - 5966.*ui     + 1922.*uip1) +
+                ui*(   3443.*ui   - 2522.*uip1 ) + 547. * pow(uip1, 2);
+        beta2 = uim1*( 547.*uim1 - 2522.*ui     + 1922.*uip1 - 494.*uip2) + 
+                ui  *(3443.*ui   - 5966.*uip1   + 1602.*uip2 )   + 
+                uip1*(2843.*uip1 - 1642.*uip2 ) + 267.*pow(uip2, 2);
+        beta3 = ui*  ( 2107.*ui   -  9402.*uip1   + 7042.*uip2 - 1854.*uip3 ) + 
+                uip1*(11003.*uip1 - 17246.*uip2   + 4642.*uip3 )              + 
+                uip2*( 7043.*uip2 -  3882.*uip3 ) + 547.*pow(uip3, 2);
+        u1 = (-1./4. )*uim3 + (13./12.)*uim2 - (23./12.)*uim1 + (25./12.)*ui;
+        u2 = ( 1./12.)*uim2 - ( 5./12.)*uim1 + (13./12.)*ui   + ( 1./4. )*uip1;
+        u3 = (-1./12.)*uim1 + ( 7./12.)*ui   + ( 7./12.)*uip1 - ( 1./12.)*uip2;
+        u4 = ( 1./4. )*ui   + (13./12.)*uip1 - ( 5./12.)*uip2 + ( 1./12.)*uip3;
+
+        omt0 = g0*pow(eps+beta0, -power_param);
+        omt1 = g1*pow(eps+beta1, -power_param);
+        omt2 = g2*pow(eps+beta2, -power_param);
+        omt3 = g3*pow(eps+beta3, -power_param);
+        omts = omt0 + omt1 + omt2 + omt3;
+
+        diff_g.set(m, 1, (omt0*u1 + omt1*u2 + omt2*u3 + omt3*u4)/omts);
+    }
+}
+
+
 
 // Central Finite difference approximations:
 //
@@ -163,10 +218,11 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
 }
 
 void WenoReconstruct(const dTensor2& g, dTensor2& diff_g){
-    if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 5){
+    if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 5)
         WenoReconstruct_JS5(g, diff_g);
-        return;
-    }
-    throw(std::logic_error("Requested WENO Reconstruction not implemented."));
+    else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 7)
+        WenoReconstruct_JS7(g, diff_g);
+    else
+        throw(std::logic_error("Requested WENO Reconstruction not implemented."));
 }
 
