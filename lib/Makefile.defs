@@ -45,7 +45,8 @@ INCLUDE_LIBS= $(TOPLIB_INCLUDE)
 ALL_SOURCES = $(TOPLIB_SOURCES)
 ALL_OBJECTS = $(TOPLIB_OBJECTS)
 
-CLEAN_FILES = *.o
+# Compiled files (these will be deleted locally)
+CLEAN_FILES = *.o *.pyc
 
 CLEANALL_FILES = \
 	*.log *.aux *.dvi *.pdf \
