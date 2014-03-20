@@ -22,7 +22,7 @@
 //
 // Output:
 //
-/
+//
 //      reconstructed_g( 1:meqn, 1 ) - The reconstructed value of g evaluated at 
 //                          the 'right' half of the stencil, i+1/2.  To get the 
 //                          other value at i-1/2, reverse the stencil, and call 
