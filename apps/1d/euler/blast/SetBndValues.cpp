@@ -16,13 +16,15 @@ void SetBndValues(
     // ***********************************************
     for (int i=0; i>=(1-mbc); i--)
     {        
-        // q values
+        // q values (mirror image for all variables except momentum)
         for (int m=1; m<=meqn; m++)
         {
-            double tmp = q.get(1,m);
-
-            q.set(i,m, tmp );
+            double tmp = q.get(1-i,m);
+            q.set(i, m, tmp );
         }
+
+        // Flip the momentum
+        q.set(i, 2, -q.get(i,2) );
 
         // aux values
         for (int m=1; m<=maux; m++)
@@ -43,10 +45,12 @@ void SetBndValues(
         // q values
         for (int m=1; m<=meqn; m++)
         {
-            double tmp = q.get(mx,m);
-
-            q.set(i,m, tmp );
+            double tmp = q.get(2*mx+1-i,m);
+            q.set(i, m, tmp );
         }
+
+        // Flip the momentum
+        q.set(i, 2, -q.get(i,2) );
 
         // aux values
         for (int m=1; m<=maux; m++)
