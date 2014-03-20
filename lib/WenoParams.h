@@ -1,6 +1,9 @@
 #ifndef _WENOPARAMS_H_
 #define _WENOPARAMS_H_
 
+// TODO - write some documention for this module.  For example, how does a
+// user access this stuff?  See also statements?
+
 #include "IniDocument.h"
 
 class WENOParams{

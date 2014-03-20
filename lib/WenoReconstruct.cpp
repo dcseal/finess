@@ -7,11 +7,12 @@
 #include "WenoParams.h"
 #include "DogParams.h"
 
-
-
-
-// All purpose routine for computing a conservative finite difference
-// approximation to the derivative of the function.
+// All purpose routine for computing a conservative WENO reconstruction that
+// is based on matching polynomials with cell averages.  Upon taking
+// differences of these values, you get a high-order approximation to the
+// derivative.
+//
+// For example, g_x( x_i ) \approx ( g_{i+1/2} - g_{i-1/2} ) / dx.
 //
 // Input:
 //
@@ -21,14 +22,12 @@
 //
 // Output:
 //
-//      TODO - this comment is not correct.  When you take differences of
-//      these, ( g_{i+1/2} - g_{i-1/2} ) / dx, only THEN do you get a finite
-//      difference approximation to g_x( x_i ).
+/
+//      reconstructed_g( 1:meqn, 1 ) - The reconstructed value of g evaluated at 
+//                          the 'right' half of the stencil, i+1/2.  To get the 
+//                          other value at i-1/2, reverse the stencil, and call 
+//                          this same function again.
 //
-//      diff_g( 1:meqn, 1 ) - The derivative of g evaluated at the 'right' half
-//                          of the stencil, i+1/2.  To get the same derivative
-//                          at i-1/2, reverse the stencil, and call this same
-//                          function again.
 //
 // For example, in WENO5, one passes in the following stencil:
 //
@@ -53,12 +52,8 @@ static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
 
     const int meqn = g.getsize(1);
 
-// TODO - make this a user-defined input (add a [weno] section to the
-// parameters file)
-//const double eps = 1.0e-12;  
-    const double eps = wenoParams.epsilon;  
-    const double power_param = wenoParams.power_param;
-
+    const double eps         = wenoParams.epsilon;       // Default: 1e-6
+    const double power_param = wenoParams.power_param;   // Default: p=2
 
     for( int m=1; m <= meqn; m++ )
     {
@@ -104,6 +99,48 @@ static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
         // # Return 5th-order conservative reconstruction
         // return om[0]*u1 + om[1]*u2 + om[2]*u3
         diff_g.set(m, 1, (omt0*u1 + omt1*u2 + omt2*u3)/omts );
+
+    }
+
+}
+
+static void LinearReconstruct_FD5( const dTensor2& g, dTensor2& diff_g )
+{
+
+    assert_eq( g.getsize(2), 5 );
+
+    // Stencil and the smaller three point derivatives:
+    double uim2,uim1,ui,uip1,uip2;
+    double u1,u2,u3;
+
+    double beta0, beta1, beta2;  // smoothness indicators
+    double omt0, omt1, omt2, omts;
+
+    // linear weights
+    double g0, g1, g2;           
+    g0 = 0.1; g1 = 0.6; g2 = 0.3;
+
+    const int meqn = g.getsize(1);
+
+    const double eps         = wenoParams.epsilon;       // Default: 1e-6
+    const double power_param = wenoParams.power_param;   // Default: p=2
+
+    for( int m=1; m <= meqn; m++ )
+    {
+
+        uim2 = g.get(m,1);
+        uim1 = g.get(m,2);
+        ui   = g.get(m,3);
+        uip1 = g.get(m,4);
+        uip2 = g.get(m,5);
+
+        // -- central finite difference reconstruction -- //
+        u1 = ( 1./3.)*uim2 - (7./6.)*uim1 + (11./6.)*ui;
+        u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1;
+        u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2;
+
+        // 5th-order reconstruction (linear weights)
+        diff_g.set(m, 1, 0.1*u1+0.6*u2+0.3*u3 );
 
     }
 
@@ -236,10 +273,6 @@ static void WenoReconstruct_JS9( const dTensor2& g, dTensor2& diff_g )
     }
 }
 
-
-
-
-
 // Central Finite difference approximations:
 //
 // First-derivative (using a 5 point central stencil)
@@ -273,6 +306,7 @@ double Diff1( double dx,
     return tmp/dx;
 
 }
+
 // Central Finite difference approximations:
 //
 // Second-derivative (using a 5 point central stencil)
@@ -293,6 +327,8 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
 
 }
 
+// TODO - move this selection step outside of the massive for loops that
+// repeatedly call these functions.
 void WenoReconstruct(const dTensor2& g, dTensor2& diff_g){
     if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 5)
         WenoReconstruct_JS5(g, diff_g);
