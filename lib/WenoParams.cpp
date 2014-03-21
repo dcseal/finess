@@ -11,7 +11,13 @@
 
 #include "WenoParams.h"
 
-
+///@brief Global variable that stores the information read from [weno] section of parameters.ini
+///
+///How to use this variable:
+///- Place a [weno] section in parameters.ini
+///- Call <tt>wenoParams.init(ini_doc)</tt> right after calling <tt>dogParams.init(ini_doc)</tt>.
+///  Currently, these are in RunFinpack().
+///- Access the member variables of <tt>wenoParams</tt> directly.
 WENOParams wenoParams;
 
 
@@ -32,6 +38,10 @@ static WENOParams::WENOVersion stowv(std::string s){
 			return wva[i].first;
 	}
 	throw std::runtime_error("Unknown WENOVersion string " + s);
+}
+
+static double stod(string s){
+	return atof(s.c_str());
 }
 
 
