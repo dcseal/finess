@@ -34,9 +34,6 @@ static WENOParams::WENOVersion stowv(std::string s){
 	throw std::runtime_error("Unknown WENOVersion string " + s);
 }
 
-static double stod(string s){
-	return atof(s.c_str());
-}
 
 
 void WENOParams::init(IniDocument& ini_doc){
