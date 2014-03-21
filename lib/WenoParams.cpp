@@ -3,6 +3,7 @@
 #include <utility>
 #include <algorithm>
 #include <string>
+#include <cstdlib>
 
 #include <stdexcept>
 
@@ -14,10 +15,8 @@
 WENOParams wenoParams;
 
 
-static std::vector<std::pair<WENOParams::WENOVersion, std::string>>
-		wva = {{WENOParams::WENOVersion::FD, "FD"}, 
-			   {WENOParams::WENOVersion::JS, "JS"},
-			   {WENOParams::WENOVersion::Z, "Z"}};
+static std::vector<std::pair<WENOParams::WENOVersion, std::string> >
+		wva;
 
 static std::string wvtos(WENOParams::WENOVersion wv){
 	for(int i = 0; i < wva.size(); ++i){
@@ -35,10 +34,19 @@ static WENOParams::WENOVersion stowv(std::string s){
 	throw std::runtime_error("Unknown WENOVersion string " + s);
 }
 
+static double stod(string s){
+	return atof(s.c_str());
+}
 
 
 void WENOParams::init(IniDocument& ini_doc){
 	using namespace std;
+
+	wva.push_back(make_pair(WENOParams::FD, "FD"));
+	wva.push_back(make_pair(WENOParams::JS, "JS"));
+	wva.push_back(make_pair(WENOParams::Z, "Z"));
+
+
 	weno_version = JS;
 	epsilon = 1e-06;
 	power_param = 2;
