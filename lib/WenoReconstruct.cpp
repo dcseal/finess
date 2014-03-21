@@ -7,7 +7,7 @@
 #include "WenoParams.h"
 #include "DogParams.h"
 
-
+#include "WenoReconstruct.h"
 
 
 // All purpose routine for computing a conservative finite difference
@@ -35,7 +35,7 @@
 //     u = { u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2} },
 //
 // and then reconstructs the value u_{i+1/2} with this method.
-static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
+void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
 {
 
     assert_eq( g.getsize(2), 5 );
@@ -109,7 +109,7 @@ static void WenoReconstruct_JS5( const dTensor2& g, dTensor2& diff_g )
 
 }
 
-static void WenoReconstruct_JS7( const dTensor2& g, dTensor2& diff_g )
+void WenoReconstruct_JS7( const dTensor2& g, dTensor2& diff_g )
 {
     assert_eq(g.getsize(2), 7);
     double uim3, uim2, uim1, ui, uip1, uip2, uip3;
@@ -163,7 +163,7 @@ static void WenoReconstruct_JS7( const dTensor2& g, dTensor2& diff_g )
 }
 
 
-static void WenoReconstruct_JS9( const dTensor2& g, dTensor2& diff_g )
+void WenoReconstruct_JS9( const dTensor2& g, dTensor2& diff_g )
 {
     assert_eq(g.getsize(2), 9);
     double uim4, uim3, uim2, uim1, ui, uip1, uip2, uip3, uip4;
