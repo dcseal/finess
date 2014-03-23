@@ -161,7 +161,6 @@ void ConstructL(
         const double l_alpha = 1.1*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
-
         dTensor2 gp( meqn, ws ), gm( meqn, ws );
         for( int m=1; m <= meqn; m++ )
         for( int s=1; s <= ws; s++ )
