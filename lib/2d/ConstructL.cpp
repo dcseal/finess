@@ -4,6 +4,7 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "DogParamsCart2.h"
+#include "WenoParams.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -18,7 +19,8 @@ void ConstructL(
 
     // Boundary conditions
     //
-    // TODO - this should be moved before ConstructL is called (-DS)
+    // @todo TODO - this should be moved before ConstructL is called, and q
+    // and aux should be changed to const values (-DS)
     void SetBndValues(dTensorBC3& aux, dTensorBC3& q);
     SetBndValues( aux, q );
 
@@ -43,7 +45,7 @@ void ConstructL(
         void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
 
     // Routine for WENO reconstrution
-    void WenoReconstruct( const dTensor2& gin, dTensor2& diff_g );
+    void WenoReconstruct( const dTensor2& gin, dTensor2& g_reconst );
 
     // Routine to deal with the silly mess where the Fluxes and the
     // Projections are all defined separately.
@@ -56,12 +58,10 @@ void ConstructL(
     const int     my = dogParamsCart2.get_my();
     const int    mbc = dogParamsCart2.get_mbc();
 
-// TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
-// should equal mbc.  This should be added somewhere in the code. 
-// (Derived parameters? -DS)
-const int  r = 3;       // order = 2*r-1
-const int ws = 5;       // Number of points for the weno-reconstruction
-assert_ge( mbc, 3 );
+    // Size of the WENO stencil
+    const int ws = dogParams.get_space_order();
+    const int r = (ws + 1) / 2;
+    assert_ge( mbc, r );
 
     // The flux, f_{i-1/2, j} and g_{i, j-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
@@ -191,7 +191,7 @@ assert_ge( mbc, 3 );
 
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
-        const double l_alpha = 1.1*alpha;  // extra safety factor added here
+        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -337,7 +337,7 @@ assert_ge( mbc, 3 );
 
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
-        const double l_alpha = 1.1*alpha;  // extra safety factor added here
+        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 

@@ -21,7 +21,7 @@ static bool invalid_value(const char* varname, const char* val);
 // -------------------------------------------------------------------------- //
 // Singleton used throughout the code for access to [dogParams]
 DogParams dogParams;  // see DogParams.h, allocated as: 
-                      // extern DogParams dogParams;
+// extern DogParams dogParams;
 // -------------------------------------------------------------------------- //
 
 // -------------------------------------------------------------------------- //
@@ -271,44 +271,44 @@ DogParams::~DogParams()
 // -------------------------------------------------------------------------- //
 void DogParams::set_kmax()
 {
-  switch(ndims)
+    switch(ndims)
     {
-    case 1:
-      kmax = get_space_order();
-      break;
-    case 2:
-      kmax = (get_space_order()*(get_space_order()+1))/2;
-      break;
-    case 3:
-      kmax = (get_space_order()*(get_space_order()+1)*(get_space_order()+2))/6;
-      break;
-      
-      // For future reference, in dimension d, a scheme with order M needs
-      // kmax = nchoosek( M+d-1, M ) polynomials, where nchoosek is the
-      // binomial coefficient.
-      // Purely split schemes require slightly more unkowns.
-      
-    default:
-      unsupported_value_error(ndims);
+        case 1:
+            kmax = get_space_order();
+            break;
+        case 2:
+            kmax = (get_space_order()*(get_space_order()+1))/2;
+            break;
+        case 3:
+            kmax = (get_space_order()*(get_space_order()+1)*(get_space_order()+2))/6;
+            break;
+
+            // For future reference, in dimension d, a scheme with order M needs
+            // kmax = nchoosek( M+d-1, M ) polynomials, where nchoosek is the
+            // binomial coefficient.
+            // Purely split schemes require slightly more unkowns.
+
+        default:
+            unsupported_value_error(ndims);
     }
 }
 
 // -------------------------------------------------------------------------- //
 void DogParams::set_kmax_divfree()
 {
-  switch(ndims)
+    switch(ndims)
     {
-    case 1:
-      kmax_divfree = -1;
-      break;
-    case 2:
-      kmax_divfree = get_space_order()*(get_space_order()+3)/2;
-      break;
-    case 3:
-      kmax_divfree = -1;
-      break;
-    default:
-      unsupported_value_error(ndims);
+        case 1:
+            kmax_divfree = -1;
+            break;
+        case 2:
+            kmax_divfree = get_space_order()*(get_space_order()+3)/2;
+            break;
+        case 3:
+            kmax_divfree = -1;
+            break;
+        default:
+            unsupported_value_error(ndims);
     }
 }
 // -------------------------------------------------------------------------- //
@@ -387,53 +387,53 @@ void DogParams::resetParameters()
 // -------------------------------------------------------------------------- //
 void DogParams::checkParameters()
 {
-  assert_divides(nout_per_restart,nout);
-  
-  // check cflv
-  if (cflv[2] >= cflv[1])
+    assert_divides(nout_per_restart,nout);
+
+    // check cflv
+    if (cflv[2] >= cflv[1])
     {
-      derr << "desired CFL must be strictly smaller than max CFL\n";
-    }
-  
-  int& space_order = method[1];
-  int& time_order  = method[2];
-  int& use_limiter = method[3];
-  int& verbosity   = method[4];
-  int& mcapa       = method[5];
-  int& maux        = method[6];
-  int& source_term = method[7];
-  
-  // check mcapa
-  if (mcapa > maux)
-    {
-      derr << "mcapa cannot be larger than maux " << endl;
-    }
-  
-  // check meqn
-  if (meqn < 1)
-    {
-      derr << "meqn must be at least 1 " << endl;
-    }
-  
-  if (use_limiter<0 || use_limiter>1)
-    {
-      derr << "use_limiter must be set either 0 or 1: use_limiter = " << use_limiter << endl;
+        derr << "desired CFL must be strictly smaller than max CFL\n";
     }
 
-  // Extra checks based on which dimension is being solved.
-  switch(ndims)
+    int& space_order = method[1];
+    int& time_order  = method[2];
+    int& use_limiter = method[3];
+    int& verbosity   = method[4];
+    int& mcapa       = method[5];
+    int& maux        = method[6];
+    int& source_term = method[7];
+
+    // check mcapa
+    if (mcapa > maux)
     {
-    case 1:
-      checkParameters1();
-      break;
-    case 2:
-      checkParameters2();
-      break;
-    case 3:
-      checkParameters3();
-      break;
-    default:
-      derr << " ERROR: number of dimensions must be set to 1 or 2.\n\n";
+        derr << "mcapa cannot be larger than maux " << endl;
+    }
+
+    // check meqn
+    if (meqn < 1)
+    {
+        derr << "meqn must be at least 1 " << endl;
+    }
+
+    if (use_limiter<0 || use_limiter>1)
+    {
+        derr << "use_limiter must be set either 0 or 1: use_limiter = " << use_limiter << endl;
+    }
+
+    // Extra checks based on which dimension is being solved.
+    switch(ndims)
+    {
+        case 1:
+            checkParameters1();
+            break;
+        case 2:
+            checkParameters2();
+            break;
+        case 3:
+            checkParameters3();
+            break;
+        default:
+            derr << " ERROR: number of dimensions must be set to 1 or 2.\n\n";
     }
 }
 
@@ -448,10 +448,11 @@ void DogParams::checkParameters1()
     }
 
     // check space_order
-    if (get_space_order()<1 || get_space_order() > 10 )
+    if( get_space_order() < 1 || get_space_order() > 9 || get_space_order()%2 == 0)
     {
-        derr << "incorrect spatial accuracy," 
-            << " must have space_order = 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10" << endl;
+        printf("hello\n");
+        derr << "invalid spatial accuracy,"
+            << " must have space_order = 3, 5, 7 or 9 " << endl;
     }  
 
     // check time_stepping_method
@@ -460,7 +461,7 @@ void DogParams::checkParameters1()
             !str_eq(time_stepping_method, "Lax-Wendroff") &&
             !str_eq(time_stepping_method, "Multiderivative") &&
             !str_eq(time_stepping_method, "User-Defined") )
-            
+
     {
         derr << "the time-stepping method " << time_stepping_method 
             << " has not been implemented. " << endl << endl
@@ -528,10 +529,10 @@ void DogParams::checkParameters1()
 void DogParams::checkParameters2()
 {
     // check space_order
-    if (get_space_order()<1 || get_space_order()>5 )
+    if( get_space_order() < 1 || get_space_order() > 9 || get_space_order()%2 == 0)
     {
         derr << "invalid spatial accuracy,"
-            << " must have space_order = 1, 2, 3, 4, or 5 " << endl;
+            << " must have space_order = 3, 5, 7 or 9 " << endl;
     }  
 
     // check time_stepping_method
@@ -540,7 +541,7 @@ void DogParams::checkParameters2()
             !str_eq(time_stepping_method, "Lax-Wendroff") &&
             !str_eq(time_stepping_method, "Multiderivative") &&
             !str_eq(time_stepping_method, "User-Defined") )
-            
+
     {
         derr << "the time-stepping method " << time_stepping_method 
             << " has not been implemented. " << endl << endl
@@ -621,84 +622,84 @@ void DogParams::checkParameters2()
 //
 void DogParams::checkParameters3()
 {
-  // check space_order
-  if (get_space_order()<1 || get_space_order()>4 )
+    // check space_order
+    if (get_space_order()<1 || get_space_order()>4 )
     {
-      derr << "invalid spatial accuracy,"
-	   << " must have space_order = 1, 2, 3, or 4 " << endl;
+        derr << "invalid spatial accuracy,"
+            << " must have space_order = 1, 2, 3, or 4 " << endl;
     }  
-  
-  // check time_stepping_method
-  if (!str_eq(time_stepping_method, "Runge-Kutta"))// &&
-    //      !str_eq(time_stepping_method, "SDC") &&
-    //      !str_eq(time_stepping_method, "Lax-Wendroff") && 
-    //      !str_eq(time_stepping_method, "User-Defined") )
+
+    // check time_stepping_method
+    if (!str_eq(time_stepping_method, "Runge-Kutta"))// &&
+        //      !str_eq(time_stepping_method, "SDC") &&
+        //      !str_eq(time_stepping_method, "Lax-Wendroff") && 
+        //      !str_eq(time_stepping_method, "User-Defined") )
     {
-      derr << "the time-stepping method " << time_stepping_method 
-	   << " has not been implemented. " << endl << endl
-	   << " The only currently available option is Runge-Kutta." << endl;
-	//	   << " The available options are " << endl
-	//	   << "   1. Runge-Kutta " << endl
-	//	   << "   2. SDC " << endl
-	//	   << "   3. Lax-Wendroff " << endl
-	//	   << "   4. User-Defined " << endl;
+        derr << "the time-stepping method " << time_stepping_method 
+            << " has not been implemented. " << endl << endl
+            << " The only currently available option is Runge-Kutta." << endl;
+        //	   << " The available options are " << endl
+        //	   << "   1. Runge-Kutta " << endl
+        //	   << "   2. SDC " << endl
+        //	   << "   3. Lax-Wendroff " << endl
+        //	   << "   4. User-Defined " << endl;
     }
 
-  // check time_order per time_stepping_method
-  if (str_eq(time_stepping_method, "Runge-Kutta") )
+    // check time_order per time_stepping_method
+    if (str_eq(time_stepping_method, "Runge-Kutta") )
     {
-      if (get_time_order()<0 || get_time_order()>4)
+        if (get_time_order()<0 || get_time_order()>4)
         {
-	  derr << "Runge-Kutta must have time_order = 1, 2, 3, or 4 " << endl;
+            derr << "Runge-Kutta must have time_order = 1, 2, 3, or 4 " << endl;
         }
     }
-  /*
-  else if (str_eq(time_stepping_method, "SDC"))
+    /*
+       else if (str_eq(time_stepping_method, "SDC"))
+       {
+       if (get_time_order()<0 || get_time_order()>5)
+       {
+       derr << "SDC must have time_order = 1, 2, 3, 4, or 5 " << endl;
+       }
+       }
+       else if (str_eq(time_stepping_method, "Lax-Wendroff"))
+       {
+       if (get_time_order()<0 || (get_time_order()>3 ) )
+       {
+       derr << "Lax-Wendroff must have time_order = 1, 2, or 3 " << endl;
+       }
+       }
+     */
+
+    // check limiter method
+    if (!str_eq(limiter_method, "moment"))// &&
+        //      !str_eq(limiter_method, "viscosity") &&
+        //  !str_eq(limiter_method, "positive"))
     {
-      if (get_time_order()<0 || get_time_order()>5)
-        {
-	  derr << "SDC must have time_order = 1, 2, 3, 4, or 5 " << endl;
-        }
-    }
-  else if (str_eq(time_stepping_method, "Lax-Wendroff"))
-    {
-      if (get_time_order()<0 || (get_time_order()>3 ) )
-        {
-	  derr << "Lax-Wendroff must have time_order = 1, 2, or 3 " << endl;
-        }
-    }
-  */
-  
-  // check limiter method
-  if (!str_eq(limiter_method, "moment"))// &&
-    //      !str_eq(limiter_method, "viscosity") &&
-    //  !str_eq(limiter_method, "positive"))
-    {
-      derr << "the limiter method " << limiter_method
-	   << " has not been implemented. " << endl << endl
-	   << " The only currently available option is moment." << endl;
-	  //            << " The available options are " << endl
-	  //            << "   1. moment " << endl
-	  //            << "   2. viscosity " << endl
-	  //            << "   3. positive " << endl;
+        derr << "the limiter method " << limiter_method
+            << " has not been implemented. " << endl << endl
+            << " The only currently available option is moment." << endl;
+        //            << " The available options are " << endl
+        //            << "   1. moment " << endl
+        //            << "   2. viscosity " << endl
+        //            << "   3. positive " << endl;
     }
 
-  // Quadrature order for initial data projection
-  if ( ic_quad_order == -100)
+    // Quadrature order for initial data projection
+    if ( ic_quad_order == -100)
     {
-      ic_quad_order = get_space_order();
+        ic_quad_order = get_space_order();
     }
-  else if ( ic_quad_order < 1 || ic_quad_order > 20 )
+    else if ( ic_quad_order < 1 || ic_quad_order > 20 )
     {
-      derr << " ic_quad_order must be an integer from 1 to 20,  ic_quad_order = " << ic_quad_order << endl;
+        derr << " ic_quad_order must be an integer from 1 to 20,  ic_quad_order = " << ic_quad_order << endl;
     }
-  
-  if (ic_quad_order < get_space_order())
+
+    if (ic_quad_order < get_space_order())
     {
-      derr << " ic_quad_order must be >= space_order, ic_quad_order = " << ic_quad_order << ", space_order = " 
-	   << get_space_order() << endl;
+        derr << " ic_quad_order must be >= space_order, ic_quad_order = " << ic_quad_order << ", space_order = " 
+            << get_space_order() << endl;
     }
-  
+
 }
 // -------------------------------------------------------------------------- //
 
@@ -776,9 +777,9 @@ void DogParams::write_qhelp(const char* filename)
     fprintf(file,"%16d : maux\n", get_maux());
     fprintf(file,"%16d : nout\n", nout);
     fprintf(file,"%16d : space_order\n", 1 );  // TODO This was changed to be
-                                               // in order to use DoGPack
-                                               // plotting routines.  -DS !!!
-//  fprintf(file,"%16d : space_order\n", get_space_order());
+    // in order to use DoGPack
+    // plotting routines.  -DS !!!
+    //  fprintf(file,"%16d : space_order\n", get_space_order());
     fprintf(file,"%16d : datafmt\n", get_datafmt());
     fclose(file);
 }

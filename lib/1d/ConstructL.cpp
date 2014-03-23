@@ -46,9 +46,7 @@ void ConstructL(
     const int   maux = aux.getsize(2);
     const int    mbc = q.getmbc();
 
-// @todo - TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
-// should equal mbc.  This should be added somewhere in the code. 
-// (Derived parameters? -DS)
+    // Size of the WENO stencil
     const int ws = dogParams.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
@@ -158,7 +156,7 @@ void ConstructL(
         SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, alpha  );
-        const double l_alpha = 1.1*alpha;  // extra safety factor added here
+        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
         dTensor2 gp( meqn, ws ), gm( meqn, ws );

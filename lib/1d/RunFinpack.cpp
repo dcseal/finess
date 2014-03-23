@@ -60,9 +60,7 @@ int RunFinpack(string outputdir)
     // Get parameters
     dogParams.init();
     dogParamsCart1.init(ini_doc);
-
     wenoParams.init(ini_doc);
-
     cout << endl;
 
     // Get addtional parameters

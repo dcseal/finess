@@ -15,6 +15,7 @@
 #include "DogParams.h"            // accessors for the parameters.ini file
 #include "DogParamsCart2.h"       // accessors for the parameters.ini file
 #include "IniDocument.h"
+#include "WenoParams.h"
 #include "RunFinpack.h"           // Function declarations
 
 int RunFinpack(string outputdir)
@@ -35,6 +36,7 @@ int RunFinpack(string outputdir)
     // Get parameters
     dogParams.init();
     dogParamsCart2.init(ini_doc);
+    wenoParams.init(ini_doc);
     cout << endl;
 
     // Get addtional parameters (application specific parameters)
