@@ -35,15 +35,20 @@ USE_H5CPP = 0
 # LINK = time g++ -O4
 
 # serial code with debugging options (this runs slow!)
-#LINK = time g++ -ggdb -DCHECK_BOUNDS
+# LINK = time g++ -ggdb -DCHECK_BOUNDS
 
-LINK = time g++-4.7 -O4 -fopenmp -lgomp
+#LINK = time g++ -std=c++11 -O4
 #LINK = time g++ -O4 -fopenmp -lgomp
+
+#LINK = time g++-4.7 -fopenmp -O4
+#LINK = time clang++ -O4 -std=c++11 -stdlib=libc++
+LINK = time clang++ -O4 -std=gnu++11 -stdlib=libc++ -fopenmp -lgomp
 
 # the following symbol is deprecated
 FFLAGS =  -c $(INCLUDE_LIBS)
 # in favor of
 COMPILE = $(LINK) $(FFLAGS) #$(COMPILE_FLAGS)
+
 # do not define COMPILE_FLAGS here;
 # applications and libraries will override it
 # COMPILE_FLAGS =

@@ -4,10 +4,11 @@
 #include "DogParamsCart1.h"
 #include "tensors.h"
 #include "dog_math.h"
+#include "WenoParams.h"        // for flux-splitting parameter
 
 // Time-integrated right-hand side for hyperbolic PDE in divergence form
 //
-//       q_t + f(q,x,t)_x = Psi(q,x,t)
+//       q_t + f(q,x,t)_x = 0.
 //
 // This routine performs the Lax-Friedrich's flux
 // splitting on a modified flux function, F.
@@ -43,11 +44,10 @@ void ConstructLxWL(
     const int   maux = aux.getsize(2);
     const int    mbc = q.getmbc();
 
-// TODO - "weno stencil" depends on dogParams.get_space_order(), and ws / 2
-// should equal mbc.  This should be added somewhere in the code. 
-// (Derived parameters? -DS)
-const int  r = 3;  // order = 2*r-1
-const int ws = 5;  // Number of points for the weno-reconstruction
+    // Determine size of WENO stencil
+    const int ws = dogParams.get_space_order(); // Number of points for the weno-reconstruction
+    const int r = (ws + 1) / 2;                 // order = 2*r-1
+    assert_ge( mbc, r );
 
     // The flux, f_{i-1/2}.  Recall that the
     // flux lives at the nodal locations, i-1/2, so there is one more term in
@@ -66,7 +66,7 @@ const int ws = 5;  // Number of points for the weno-reconstruction
     {
 
         // --------------------------------------------------------------------
-        // Part I: Compute Roe Averages
+        // Part I: Compute "Roe" Averages.  We use simple arithmetic averages.
         //         TODO - the User may want to replace this ...
         // --------------------------------------------------------------------
         dTensor1 Qavg(meqn);
@@ -141,7 +141,7 @@ const int ws = 5;  // Number of points for the weno-reconstruction
         SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, alpha  );
-        const double l_alpha = 1.1*alpha;  // extra safety factor added here
+        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -152,7 +152,6 @@ const int ws = 5;  // Number of points for the weno-reconstruction
             gp.set( m, s, 0.5*(gvals.get(m,s)      + l_alpha*wvals.get(m,s) )      );
             gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - l_alpha*wvals.get(m,ws-s+2) ) );
         }
-
 
         // --------------------------------------------------------------------
         // Part IV: Perform a WENO reconstruction on the characteristic vars.

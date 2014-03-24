@@ -47,6 +47,23 @@ TIME_OBJECTS = \
   $(LIB_SYS)/ext_time.o \
  #time_test.o \
 
+TEST_WENORECONSTRUCT_OBJECTS = \
+  test_wenoreconstruct.o
+
+TEST_WENORECONSTRUCT_DEPENDENCIES = \
+  $(TOPLIB)/tensors.o \
+  $(TOPLIB)/WenoParams.o \
+  $(TOPLIB)/DogParams.o  \
+  $(TOPLIB)/sys/assert.o \
+  $(TOPLIB)/sys/IniDocument.o \
+  $(TOPLIB)/sys/debug.o  \
+  $(TOPLIB)/dog_str.o  \
+  $(TOPLIB)/dog_io.o  \
+  $(TOPLIB)/dog_ini.o \
+  $(TOPLIB)/WenoReconstruct.o
+
+
+
 %.o : %.cpp
 	$(LINK) $(FFLAGS) $< -o $@
 
@@ -58,6 +75,7 @@ EXECUTABLES = \
   test_constants \
   test_dog_math \
   time_test \
+  test_wenoreconstruct
 
 all: $(EXECUTABLES)
 
@@ -76,6 +94,9 @@ test_tensors:  $(DOGDEFS_DEPENDENCIES) test_tensors.cpp test_tensors.o
 time_test: time_test.o $(TIME_OBJECTS) $(TIME_SOURCES)
 	$(COMPILE) $(TIME_FLAGS) time_test.cpp -o time_test.o
 	$(LINK) time_test.o $(TIME_OBJECTS) -o time_test
+
+test_wenoreconstruct: test_wenoreconstruct.o $(TEST_WENORECONSTRUCT_OBJECTS) $(TEST_WENORECONSTRUCT_DEPENDENCIES)
+	$(LINK) $(LFLAGS) $(TEST_WENORECONSTRUCT_OBJECTS) $(TEST_WENORECONSTRUCT_DEPENDENCIES) -o test_wenoreconstruct
 
 CLEAN_FILES = *.o $(EXECUTABLES)
 

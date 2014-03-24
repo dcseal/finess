@@ -34,7 +34,7 @@ nstart      = 0   ; if mrestart==1: from file q(nstart)_restart.dat
 datafmt     = 1   ; 1 for ascii, 5 for hdf5.
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
-mbc   =   3      ; number of ghost cells on each boundary
+mbc   =   5      ; number of ghost cells on each boundary
 xlow  =   0.0e0  ; left end point
 xhigh =   2.0e0  ; right end point
 ylow  =   0.0e0  ; lower end point

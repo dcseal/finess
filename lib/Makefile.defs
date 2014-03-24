@@ -26,6 +26,7 @@ TOPLIB_OBJECTS = \
   $(TOPLIB)/dog_io.o \
   $(TOPLIB)/WenoReconstruct.o \
   $(RunStartScript).o \
+  $(TOPLIB)/WenoParams.o
 #
 TOPLIB_SOURCES = \
   $(LIB_SYS_SOURCES) \
@@ -39,6 +40,7 @@ TOPLIB_SOURCES = \
   $(TOPLIB)/dog_io.cpp \
   $(TOPLIB)/WenoReconstruct.cpp \
   $(RunStartScript).cpp \
+  $(TOPLIB)/WenoParams.cpp
 
 # inheriting libraries and applications are expected to override these
 INCLUDE_LIBS= $(TOPLIB_INCLUDE)
