@@ -6,11 +6,11 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln):
     import numpy as np
 
     # Exact solution:
-    width = 0.1
-    xold  = (xc - time)%1.
+    width = 0.5
+    xold  = ( (1. + xc - time)%2. ) - 1.
     qex   = 0.*qsoln[:,0]
     for (i,x) in enumerate(xold):
-        if( abs(x-0.4) < width ):
+        if( abs(x) < width ):
             qex[i] = 1.0
 
     print("Linf-error = %2.15e" % max( abs(qsoln[:,0]-qex[:]) ) )

@@ -94,6 +94,7 @@ void ConSoln(
         for (int i=1; i<=mx; i++)
         {
             qsum.set(m, qsum.get(m) + fabs( q.get(i,m) - q.get(i-1,m) ) );
+//          printf("TF(%d) = %f\n", i, fabs(q.get(i,m)-q.get(i-1,m) ) );
         }
     }
 
