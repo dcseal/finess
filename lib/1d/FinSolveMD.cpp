@@ -319,6 +319,7 @@ void FinSolveMD(
         }
 
         // compute conservation and print to file
+        SetBndValues(aux, qnew);
         ConSoln(aux, qnew, t, outputdir);
 
     }

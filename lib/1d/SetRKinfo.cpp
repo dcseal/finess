@@ -47,7 +47,10 @@ void SetRKinfo(int method2, RKinfo& rk)
 
             break;
 
-        case 3: // third-order
+        case 3: // third-order low-storage SSP-RK(3,3)
+                // See: "High Order Strong Stability Preserving Time
+                // Discretizations", J. Sci. Comput., 2009.
+                // for a description.
 
             rk.alpha1->set(1, 1.0 );
             rk.alpha2->set(1, 0.0 );

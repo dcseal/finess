@@ -4,6 +4,7 @@
 #include "DogParamsCart1.h"
 #include "tensors.h"
 #include "dog_math.h"
+#include "WenoParams.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
