@@ -450,7 +450,6 @@ void DogParams::checkParameters1()
     // check space_order
     if( get_space_order() < 1 || get_space_order() > 9 || get_space_order()%2 == 0)
     {
-        printf("hello\n");
         derr << "invalid spatial accuracy,"
             << " must have space_order = 3, 5, 7 or 9 " << endl;
     }  
@@ -490,9 +489,9 @@ void DogParams::checkParameters1()
     }
     else if (str_eq(time_stepping_method, "Lax-Wendroff"))
     {
-        if (get_time_order()<0 || (get_time_order()>5 ) )
+        if (get_time_order()<0 || (get_time_order()>3 ) )
         {
-            derr << "Lax-Wendroff must have time_order = 1, 2, 3, 4, or 5 " << endl;
+            derr << "Lax-Wendroff must have time_order = 1, 2, or 3 " << endl;
         }
     }
     else if (str_eq(time_stepping_method, "Multiderivative" ) )
