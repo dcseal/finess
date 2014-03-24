@@ -31,7 +31,7 @@
 //      this same function again.
 //
 //
-// In WENO5, one passes in the following stencil:
+// For example, in WENO5, one passes in the following stencil:
 //
 //     u = { u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2} },
 //
@@ -39,6 +39,47 @@
 // value u_{i-1/2}, pass in the following stencil:
 //
 //     u_{i-1/2} = { u_{i+2}, u_{i+1}, u_i, u_{i-1}, u_{i-2} }.
+//
+// TODO - move this selection step outside of the massive for loops in 1- and
+// 2D codes in order to avoid the overhead with each of these checks.
+void WenoReconstruct(const dTensor2& g, dTensor2& g_reconst)
+{
+
+    // TODO - implement WENO3 and WENO-Z version
+    if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 5)
+        WenoReconstruct_JS5(g, g_reconst);
+    else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 7)
+        WenoReconstruct_JS7(g, g_reconst);
+    else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 9)
+        WenoReconstruct_JS9(g, g_reconst);
+    else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 5)
+        WenoReconstruct_FD5(g, g_reconst);
+    else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 7)
+        WenoReconstruct_FD7(g, g_reconst);
+    else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 9)
+        WenoReconstruct_FD9(g, g_reconst);
+    else
+        throw(std::logic_error("Requested WENO Reconstruction not implemented."));
+}
+
+
+// ---------------------------------------------------- // 
+// SECTION: WENO-JS reconstructions                     //
+// ---------------------------------------------------- // 
+
+// Fifth-order Jiang and Shu WENO reconstruction
+//
+//  See: G.-S. Jiang and C.-W. Shu, "Efficient Implementation of Weighted ENO 
+//       Schemes". J. Comput. Phys. 126 (1996), pp. 202-228. 
+//
+//  or Section 2.2 of the recent SIAM review paper:
+//
+//       C.-W. Shu, "High Order Weighted Essentially Nonoscillatory Schemes for
+//                   Convection Dominated Problems", SIAM Review, Vol. 51, 
+//                   No. 1, pp 82--126, (2009).
+//
+// See also: WenoReconstruct.  This routine requires a stencil of lenght 5 to
+// be passed in.
 void WenoReconstruct_JS5( const dTensor2& g, dTensor2& g_reconst )
 {
 
@@ -55,11 +96,11 @@ void WenoReconstruct_JS5( const dTensor2& g, dTensor2& g_reconst )
     double g0, g1, g2;           
     g0 = 0.1; g1 = 0.6; g2 = 0.3;
 
-    const int meqn = g.getsize(1);
 
     const double eps         = wenoParams.epsilon;       // Default: 1e-6
     const double power_param = wenoParams.power_param;   // Default: p=2
 
+    const int meqn = g.getsize(1);
     for( int m=1; m <= meqn; m++ )
     {
 
@@ -68,8 +109,6 @@ void WenoReconstruct_JS5( const dTensor2& g, dTensor2& g_reconst )
         ui   = g.get(m,3);
         uip1 = g.get(m,4);
         uip2 = g.get(m,5);
-
-        // -- Fifth-order Jiang and Shu WENO reconstruction -- //
 
         // Compute smoothness indicators (identical for left/right values):
         beta0 =(13./12.)*pow(uim2-2*uim1+ui,2)+0.25*pow(uim2-4*uim1+3*ui,2);
@@ -95,6 +134,13 @@ void WenoReconstruct_JS5( const dTensor2& g, dTensor2& g_reconst )
 }
 
 // 7th-order WENO reconstruction
+//
+// See: D.S. Balsara and C.-W. Shu, "Monotonicity Preserving Weighted 
+//      Essentially Non-oscillatory Schemes with Increasingly High Order of 
+//      Accuracy". J. Comput. Phys. 160 (2000), pp. 405-452.
+//
+// See also: WenoReconstruct.  This routine requires a stencil of length 7 to
+// be passed in.
 void WenoReconstruct_JS7( const dTensor2& g, dTensor2& g_reconst )
 {
     assert_eq(g.getsize(2), 7);
@@ -148,6 +194,9 @@ void WenoReconstruct_JS7( const dTensor2& g, dTensor2& g_reconst )
 }
 
 // 9th-order WENO reconstruction
+//
+// See also: WenoReconstruct.  This routine requires a stencil of length 9 to
+// be passed in.
 void WenoReconstruct_JS9( const dTensor2& g, dTensor2& g_reconst )
 {
     assert_eq(g.getsize(2), 9);
@@ -164,7 +213,9 @@ void WenoReconstruct_JS9( const dTensor2& g, dTensor2& g_reconst )
     const double eps         = wenoParams.epsilon;       // Default: 1e-6
     const double power_param = wenoParams.power_param;   // Default: p=2
 
-    for(int m = 1; m <= meqn; m++){
+    for(int m = 1; m <= meqn; m++)
+    {
+
         uim4 = g.get(m, 1);
         uim3 = g.get(m, 2);
         uim2 = g.get(m, 3);
@@ -220,6 +271,36 @@ void WenoReconstruct_JS9( const dTensor2& g, dTensor2& g_reconst )
     }
 }
 
+// ---------------------------------------------------- // 
+// SECTION: WENO-Z reconstruction                       //
+//                                                      //
+// TODO - write this section                            //
+// ---------------------------------------------------- // 
+
+// See: D.S. Balsara and C.-W. Shu, "Monotonicity Preserving Weighted 
+//      Essentially Non-oscillatory Schemes with Increasingly High Order of 
+//      Accuracy". J. Comput. Phys. 160 (2000), pp. 405-452.
+// and other references for examples.
+void WenoReconstruct_Z5( const dTensor2& g, dTensor2& g_reconst )
+{
+    throw(std::logic_error("Requested WENO Reconstruction not implemented."));
+}
+
+
+void WenoReconstruct_Z7( const dTensor2& g, dTensor2& g_reconst )
+{
+    throw(std::logic_error("Requested WENO Reconstruction not implemented."));
+}
+
+void WenoReconstruct_Z9( const dTensor2& g, dTensor2& g_reconst )
+{
+    throw(std::logic_error("Requested WENO Reconstruction not implemented."));
+}
+
+// ---------------------------------------------------- // 
+// SECTION: Upwinded reconstruction with linear weights //
+// ---------------------------------------------------- // 
+
 // Conservative reconstruction based on the *linear* weights.  Do not use for
 // problems with shocks.
 void WenoReconstruct_FD5( const dTensor2& g, dTensor2& g_reconst )
@@ -239,10 +320,6 @@ void WenoReconstruct_FD5( const dTensor2& g, dTensor2& g_reconst )
     // g0 = 0.1; g1 = 0.6; g2 = 0.3;
 
     const int meqn = g.getsize(1);
-
-//  const double eps         = wenoParams.epsilon;       // Default: 1e-6
-//  const double power_param = wenoParams.power_param;   // Default: p=2
-
     for( int m=1; m <= meqn; m++ )
     {
 
@@ -264,9 +341,79 @@ void WenoReconstruct_FD5( const dTensor2& g, dTensor2& g_reconst )
 
 }
 
-// Central Finite difference approximations:
-//
-// First-derivative (using a 5 point central stencil)
+void WenoReconstruct_FD7( const dTensor2& g, dTensor2& g_reconst )
+{
+    assert_eq(g.getsize(2), 7);
+    double uim3, uim2, uim1, ui, uip1, uip2, uip3;
+    double u1, u2, u3, u4;
+    
+    double beta0, beta1, beta2, beta3;
+    double omt0, omt1, omt2, omt3, omts;
+
+    const double g0 = 1./35., g1 = 12./35., g2 = 18./35., g3 = 4./35.;
+
+    const int meqn = g.getsize(1);
+    
+    for(int m = 1; m <= meqn; m++)
+    {
+
+        uim3 = g.get(m, 1);
+        uim2 = g.get(m, 2);
+        uim1 = g.get(m, 3);
+        ui   = g.get(m, 4);
+        uip1 = g.get(m, 5);
+        uip2 = g.get(m, 6);
+        uip3 = g.get(m, 7);
+
+        u1 = (-1./4. )*uim3 + (13./12.)*uim2 - (23./12.)*uim1 + (25./12.)*ui;
+        u2 = ( 1./12.)*uim2 - ( 5./12.)*uim1 + (13./12.)*ui   + ( 1./4. )*uip1;
+        u3 = (-1./12.)*uim1 + ( 7./12.)*ui   + ( 7./12.)*uip1 - ( 1./12.)*uip2;
+        u4 = ( 1./4. )*ui   + (13./12.)*uip1 - ( 5./12.)*uip2 + ( 1./12.)*uip3;
+
+        g_reconst.set(m, 1, (g0*u1 + g1*u2 + g2*u3 + g3*u4) );
+   }
+}
+
+// 9th-order reconstruction (linear weights)
+void WenoReconstruct_FD9( const dTensor2& g, dTensor2& g_reconst )
+{
+    assert_eq(g.getsize(2), 9);
+    double uim4, uim3, uim2, uim1, ui, uip1, uip2, uip3, uip4;
+    double u1, u2, u3, u4, u5;
+    
+    double beta0, beta1, beta2, beta3, beta4;
+    double omt0, omt1, omt2, omt3, omt4, omts;
+
+    const double g0 = 1.0/126.0, g1 = 10./63., g2 = 10./21., g3 = 20./63., g4 = 5./126.;
+
+    const int meqn = g.getsize(1);
+    for(int m = 1; m <= meqn; m++)
+    {
+        uim4 = g.get(m, 1);
+        uim3 = g.get(m, 2);
+        uim2 = g.get(m, 3);
+        uim1 = g.get(m, 4);
+        ui   = g.get(m, 5);
+        uip1 = g.get(m, 6);
+        uip2 = g.get(m, 7);
+        uip3 = g.get(m, 8);
+        uip4 = g.get(m, 9);
+
+        u1 = (1./5.)*uim4   + (-21./20.)*uim3 + (137./60.)*uim2 + (-163./60.)*uim1 + (137./60.)*ui;
+        u2 = (-1./20.)*uim3 + (17./60.)*uim2  + (-43./60.)*uim1 + (77./60.)*ui     + (1./5.)*uip1;
+        u3 = (1./30.)*uim2  + (-13./60.)*uim1 + (47./60.)*ui    + (9./20.)*uip1    + (-1./20.)*uip2;
+        u4 = (-1./20.)*uim1 + (9./20.)*ui     + (47./60.)*uip1  + (-13./60.)*uip2  + (1./30.)*uip3;
+        u5 = (1./5.)*ui     + (77./60.)*uip1  + (-43./60.)*uip2 + (17./60.)*uip3   + (-1./20.)*uip4;
+
+        g_reconst.set(m, 1, (g0*u1 + g1*u2 + g2*u3 + g3*u4 + g4*u5) );
+    }
+}
+
+// ------------------------------------------------- // 
+// SECTION: Central Finite difference approximations //
+// ------------------------------------------------- // 
+
+// First-derivative ( using a 5 point central stencil -> fourth-order )
 void Diff1( double dx, const dTensor2& f, dTensor1& fx )
 {
 
@@ -317,21 +464,3 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
     }
 
 }
-
-// TODO - move this selection step outside of the massive for loops that
-// repeatedly call these functions.
-void WenoReconstruct(const dTensor2& g, dTensor2& g_reconst){
-
-    // TODO - implement WENO-Z version, and FD (linear weights)
-    if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 5)
-        WenoReconstruct_JS5(g, g_reconst);
-    else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 7)
-        WenoReconstruct_JS7(g, g_reconst);
-    else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 9)
-        WenoReconstruct_JS9(g, g_reconst);
-    else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 5)
-        WenoReconstruct_FD5(g, g_reconst);
-    else
-        throw(std::logic_error("Requested WENO Reconstruction not implemented."));
-}
-
