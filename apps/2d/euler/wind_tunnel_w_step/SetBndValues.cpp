@@ -71,7 +71,7 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
     // TOP BOUNDARY
     // ********************************************************************* //
     for( int i=1-mbc; i<= mx+mbc; i++)
-    for( int j=my+1; j>=(my+mbc); j++ )
+    for( int j=my+1; j <= (my+mbc); j++ )
     {
         for (int m=1; m<=meqn; m++)
         {
@@ -121,7 +121,7 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
         for (int m=1; m<=meqn; m++)
         {
 
-            double tmp = q.get(i,1-j, m);                    
+            double tmp = q.get(2*istep-1-i, j, m);                    
             q.set(i,j,m, tmp );
 
         }
