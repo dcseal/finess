@@ -280,7 +280,7 @@ dogParams.set_time( told + (2.0/3.0)*dt );
             if( dogParams.get_verbosity() )
             {
                 cout << setprecision(3);
-                cout << "FinSolveRKRK2D ... Step" << setw(5) << n_step;
+                cout << "FinSolveRK2D ... Step" << setw(5) << n_step;
                 cout << "   CFL =" << setw(6) << fixed << cfl;
                 cout << "   dt =" << setw(11) << scientific << dt;
                 cout << "   t =" << setw(11) << scientific << t <<endl;
