@@ -5,10 +5,11 @@ include $(FINESS)/lib/2d/Makefile.defs
 
 # overridden library objects
 #
-AfterQinit  =  AfterQinit
-InitApp      = InitApp
-DFluxFunc    = DFluxFunc
-D2FluxFunc   = D2FluxFunc
+AfterQinit          =  AfterQinit
+InitApp             = InitApp
+DFluxFunc           = DFluxFunc
+D2FluxFunc          = D2FluxFunc
+AfterFullTimeStep   = AfterFullTimeStep
 
 ALL_OBJECTS = $(COMMON_OBJECTS) \
 EulerParams.o \
