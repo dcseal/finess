@@ -12,7 +12,7 @@ void SetBndValues(
     const int meqn   = q.getsize(2);
     const int maux   = aux.getsize(2);
     const int mbc    = q.getmbc();
-    
+
     { 
         // ***********************************************
         // LEFT BOUNDARY
