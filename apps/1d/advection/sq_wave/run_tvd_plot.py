@@ -13,34 +13,34 @@ def main( ):
     import ConfigParser, os
     config = ConfigParser.ConfigParser()
 
+    # Count the number of output directories:
     my_dictionary = {}
-    i = 0
+    i = 1
     while( 1 ):
 
         directory_num = my_dictionary['dir_num'] =  i
 
         folder = (os.getcwd() + '/output%(dir_num)04i/') % my_dictionary
-        print folder
         if( not os.path.exists(folder) ):
-#           print('    Did not find folder: %s' % folder )
             break
+        i = i+1
 
-        my_dictionary['curr_folder'] = folder
-        directory_num = i
+    tvd_vec = np.zeros( (i,1) )
+    print("found %i folders" % len(tvd_vec) )
+    for i in range( len(tvd_vec) ):
+
+        directory_num = my_dictionary['dir_num'] = i
+        folder = (os.getcwd() + '/output%(dir_num)04i/') % my_dictionary
 
         # Grab the current cfl number:
         config.readfp(open(folder + '/parameters.ini'))
-        cfl_now = float( config.get('dogParams','cflv(2)') ) )
+        cfl_now = float( config.get('dogParams','cflv(2)') )
 
-        try:
-            qex  = np.loadtxt(folder + "/q0000.dat")[1:]
-            qapp = np.loadtxt(folder + "/q0001.dat")[1:]
-        except IOError:
-            print('''Did not find the data file.
-Please Wait for simulation to finish running.''')
-            break
-
-        i = i + 1
+        data = np.loadtxt( folder + '/total-variation.dat' )
+        t    = data[:,0]
+        tv   = data[:,1]
+        dtv  = max( tv[1:] - tv[0:len(tv)-1] )
+        print("cfl, tvd-change = %2.3f, %2.5e" % ( cfl_now, dtv ) )
 
 if __name__ == '__main__':
     import optparse

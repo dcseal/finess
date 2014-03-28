@@ -10,10 +10,10 @@ defaults_file = "$FINESS/config/dogParams_defaults.ini"
 ndims       = 1             ; 1 or 2
 mesh_type   = Cartesian     ; (either Cartesian or Unstructured) 
 nout        = 1             ; number of output times to print results
-tfinal      = 0.2           ; final time
+tfinal      = %(t_final)f   ; final time
 dtv(1)      = 1.0           ; initial dt
 dtv(2)      = 1e10          ; max allowable dt 
-cflv(1)     = 1.5           ; max allowable Courant number
+cflv(1)     = 5.0           ; max allowable Courant number
 cflv(2)     = %(cfl)f       ; desired Courant number
 nv          = 500000        ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
@@ -43,7 +43,7 @@ epsilon       = 1e-29  ; regulization parameter  ( epsilon > 0.0        )
 alpha_scaling = 1.0    ; scaling parameter       ( alpha_scaling >= 1.0 )
 '''
     
-def main(cfl_vec, num_frames, ts_method, space_order, time_order, mx_start, n_start):
+def main(cfl_vec, num_frames, ts_method, space_order, time_order, mx_start, n_start, t_final ):
     '''Simple script for performing a CFL scan in order to compute total
     variation of the problem.
 '''
@@ -69,7 +69,8 @@ def main(cfl_vec, num_frames, ts_method, space_order, time_order, mx_start, n_st
                     'cfl' : cfl_vec[0] + i*dc,
                     'mx' : mx_start,
                     "i_now": (i+n_start),
-                    'ts_method_str' : ts_method_str }
+                    'ts_method_str' : ts_method_str,
+                    't_final' : t_final }
             print >> data, dogpack_data_template % my_dictionary
 
         # if you want to capture script output, do
@@ -128,7 +129,7 @@ def parse_input( help_message ):
 ''' Number of grid points.
 (default: 200 )''')
 
-    parser.add_argument('-t', '--order',
+    parser.add_argument('-o', '--order',
                       type = int,
                       nargs   = 2,
                       default = [5, 3],
@@ -136,7 +137,15 @@ def parse_input( help_message ):
                       help = 
 '''Order of accuracy in space S_ORDER, and time T_ORDER.
 (default: [5,3])''')
-  
+ 
+    parser.add_argument('-t', '--t_final',
+                        type = float,
+                        default = 0.2,
+                        metavar = 'T_FINAL',
+                        help =
+''' Final time of the simulation.
+(default: 0.2 )''')
+
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -150,4 +159,4 @@ if __name__ == '__main__':
     print(args)
     print('')
 
-    main( args.CFL_RANGE, args.num_frames, args.t_stepper, args.order[0], args.order[1], args.mx, 0 )
+    main( args.CFL_RANGE, args.num_frames, args.t_stepper, args.order[0], args.order[1], args.mx, 0, args.t_final )
