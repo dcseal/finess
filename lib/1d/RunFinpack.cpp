@@ -148,6 +148,12 @@ int RunFinpack(string outputdir)
                 aux, qold, qnew, smax, tstart, tend, 
                 nv, dtv, cflv, outputdir);
         }
+        else if( time_stepping_method == "SDC")
+        {
+            FinSolveSDC( 
+                aux, qold, qnew, smax, tstart, tend, 
+                nv, dtv, cflv, outputdir);
+        }
         else if (time_stepping_method == "User-Defined")
         {
             // User-defined time-stepping scheme
@@ -156,7 +162,7 @@ int RunFinpack(string outputdir)
         }
         else
         {
-            printf("Time stepping method not implemented\n");
+            printf("Error: RunFinpack.  Time stepping method not implemented\n" );
             exit(1);
         }
 

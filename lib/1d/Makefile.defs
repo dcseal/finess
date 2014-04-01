@@ -96,6 +96,12 @@ SampleFunction       = $(LIB1D)/SampleFunction
 DFluxFunc            = $(LIB1D)/LaxWendroff/DFluxFunc
 D2FluxFunc           = $(LIB1D)/LaxWendroff/D2FluxFunc
 
+# SDC methods
+FinSolveSDC           = $(LIB1D)/FinSolveSDC
+StepSDC               = $(LIB1D)/StepSDC
+TimeStepSDC           = $(LIB1D)/TimeStepSDC
+ResInt                = $(LIB1D)/ResInt
+
 # TODO - these should be added in at a later time (-DS)
 FinSolveLxW           = $(LIB1D)/FinSolveLxW
 ConstructIntegratedF  = $(LIB1D)/ConstructIntegratedF
@@ -115,6 +121,7 @@ LIB1D_OBJECTS = \
   $(Output_Extra).o \
   $(ConSoln).o \
   $(LIB1D)/FinSolveRK.o \
+  $(FinSolveSDC).o \
   $(FinSolveLxW).o \
   $(FinSolveMD).o \
   $(DogSolveUser).o \
@@ -136,9 +143,11 @@ LIB1D_OBJECTS = \
   $(ConstructL).o \
   $(ConstructLxWL).o \
   $(LIB1D)/UpdateSoln.o \
-  $(LIB1D)/ResInt.o \
   $(LIB1D)/GetCFL.o \
   $(LIB1D)/SetRKinfo.o \
+  $(StepSDC).o \
+  $(TimeStepSDC).o \
+  $(ResInt).o \
 
 LIB1D_SOURCES = \
   $(LIB1D)/*.h \
@@ -151,6 +160,7 @@ LIB1D_SOURCES = \
   $(Output_Extra).cpp \
   $(ConSoln).cpp \
   $(LIB1D)/FinSolveRK.cpp \
+  $(FinSolveSDC).cpp \
   $(FinSolveLxW).cpp \
   $(FinSolveMD).cpp \
   $(DogSolveUser).cpp \
@@ -172,7 +182,9 @@ LIB1D_SOURCES = \
   $(ConstructL).cpp \
   $(ConstructLxWL).cpp \
   $(LIB1D)/UpdateSoln.cpp \
-  $(LIB1D)/ResInt.cpp \
   $(LIB1D)/GetCFL.cpp \
   $(LIB1D)/SetRKinfo.cpp \
+  $(StepSDC).cpp \
+  $(TimeStepSDC).cpp \
+  $(ResInt).cpp \
 
