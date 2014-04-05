@@ -448,10 +448,10 @@ void DogParams::checkParameters1()
     }
 
     // check space_order
-    if( get_space_order() < 1 || get_space_order() > 9 || get_space_order()%2 == 0)
+    if( get_space_order() < 1 || get_space_order() > 11 || get_space_order()%2 == 0)
     {
         derr << "invalid spatial accuracy,"
-            << " must have space_order = 3, 5, 7 or 9 " << endl;
+            << " must have space_order = 3, 5, 7, 9 or 11 " << endl;
     }  
 
     // check time_stepping_method

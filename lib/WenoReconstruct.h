@@ -2,9 +2,10 @@
 #define _WENORECONSTRUCT_H_
 
 // -- Jiang and Shu reconstructions -- //
-void WenoReconstruct_JS5( const dTensor2& g, dTensor2& g_reconst );
-void WenoReconstruct_JS7( const dTensor2& g, dTensor2& g_reconst );
-void WenoReconstruct_JS9( const dTensor2& g, dTensor2& g_reconst );
+void WenoReconstruct_JS5 ( const dTensor2& g, dTensor2& g_reconst );
+void WenoReconstruct_JS7 ( const dTensor2& g, dTensor2& g_reconst );
+void WenoReconstruct_JS9 ( const dTensor2& g, dTensor2& g_reconst );
+void WenoReconstruct_JS11( const dTensor2& g, dTensor2& g_reconst );
 
 // -- WENO-Z reconstructions -- //
 void WenoReconstruct_Z5( const dTensor2& g, dTensor2& g_reconst );
@@ -21,5 +22,7 @@ void WenoReconstruct_FD9( const dTensor2& g, dTensor2& g_reconst );
 // Wrapper function that provides access to each of the above through looking
 // at the global variable wenoParams.
 void WenoReconstruct(const dTensor2& g, dTensor2& g_reconst);
+
+// TODO - these values should be pre-computed in order to save on FLOPs.
 
 #endif
