@@ -21,8 +21,6 @@ void WenoReconstruct_FD9( const dTensor2& g, dTensor2& g_reconst );
 
 // Wrapper function that provides access to each of the above through looking
 // at the global variable wenoParams.
-void WenoReconstruct(const dTensor2& g, dTensor2& g_reconst);
-
-// TODO - these values should be pre-computed in order to save on FLOPs.
+void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
 
 #endif

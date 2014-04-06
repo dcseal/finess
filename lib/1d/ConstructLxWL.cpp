@@ -32,7 +32,8 @@ void ConstructLxWL(
     void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
 
     // Routine for WENO reconstrution
-    void WenoReconstruct( const dTensor2& gin, dTensor2& diff_g );
+    void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
+    void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
 
     // Routine to deal with the silly mess where the Fluxes and the
     // Projections are all defined separately.

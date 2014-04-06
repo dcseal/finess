@@ -42,37 +42,36 @@
 //
 // TODO - move this selection step outside of the massive for loops in 1- and
 // 2D codes in order to avoid the overhead with each of these checks.
-void WenoReconstruct(const dTensor2& g, dTensor2& g_reconst)
+void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst)
 {
 
     // TODO - implement WENO3 and WENO-Z version
     if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 5)
-        WenoReconstruct_JS5(g, g_reconst);
+        return &WenoReconstruct_JS5;
     else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 7)
-        WenoReconstruct_JS7(g, g_reconst);
+        return &WenoReconstruct_JS7;
     else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 9)
-        WenoReconstruct_JS9(g, g_reconst);
+        return &WenoReconstruct_JS9;
     else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 11)
-        WenoReconstruct_JS11(g, g_reconst);
+        return &WenoReconstruct_JS11;
     else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 5)
-        WenoReconstruct_FD5(g, g_reconst);
+        return &WenoReconstruct_FD5;
     else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 7)
-        WenoReconstruct_FD7(g, g_reconst);
+        return &WenoReconstruct_FD7;
     else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 9)
-        WenoReconstruct_FD9(g, g_reconst);
+        return &WenoReconstruct_FD9;
     else if(wenoParams.weno_version == WENOParams::Z  && dogParams.get_space_order() == 5)
-        WenoReconstruct_Z5(g, g_reconst);
+        return &WenoReconstruct_Z5;
     else if(wenoParams.weno_version == WENOParams::Z  && dogParams.get_space_order() == 7)
-        WenoReconstruct_Z7(g, g_reconst);
+        return &WenoReconstruct_Z7;
     else if(wenoParams.weno_version == WENOParams::Z  && dogParams.get_space_order() == 9)
     {
         printf("Warning: we're not sure these are the correct coefficients for WENOZ-9!\n");
-        WenoReconstruct_Z9(g, g_reconst);
+        return &WenoReconstruct_Z9;
     }
     else
         throw(std::logic_error("Requested WENO Reconstruction not implemented."));
 }
-
 
 // ---------------------------------------------------- // 
 // SECTION: WENO-JS reconstructions                     //
