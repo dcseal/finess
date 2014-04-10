@@ -42,7 +42,8 @@
 //
 // TODO - move this selection step outside of the massive for loops in 1- and
 // 2D codes in order to avoid the overhead with each of these checks.
-void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst)
+//void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst)
+reconstruct_t GetWenoReconstruct()
 {
 
     // TODO - implement WENO3 and WENO-Z version
