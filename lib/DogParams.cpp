@@ -13,8 +13,6 @@
 
 // -------------------------------------------------------------------------- //
 // Is it possible to move these static function declarations elsewhere? (-DS)
-static SplittingType::Enum get_splitting_type(const char* s_splitting);
-static const char* print(SplittingType::Enum splitting);
 static bool invalid_value(const char* varname, const char* val);
 // -------------------------------------------------------------------------- //
 
@@ -73,7 +71,6 @@ void DogParams::init()
     option_names_list.push_back("maux"                );
     option_names_list.push_back("source_term"         );
     option_names_list.push_back("flux_term"           );
-    option_names_list.push_back("splitting"           );
     option_names_list.push_back("meqn"                );
     option_names_list.push_back("mrestart"            ); // deprecated
     option_names_list.push_back("nstart"              );
@@ -85,7 +82,6 @@ void DogParams::init()
     option_names_list.push_back("num_subintervals"    );
     option_names_list.push_back("use_divfree"         );
     option_names_list.push_back("ic_quad_order"       );
-    //option_names_list.push_back("withPyClawPlotting"  );
     //option_names_list.push_back("nout_per_plot"       ); //default: empty string
     //option_names_list.push_back("which_compnt_divfree"); //default: empty string
 
@@ -112,7 +108,6 @@ void DogParams::init()
     const char* s_maux                 = ini_sec["maux"                ].c_str();
     const char* s_source_term          = ini_sec["source_term"         ].c_str();
     const char* s_flux_term            = ini_sec["flux_term"           ].c_str();
-    const char* s_splitting            = ini_sec["splitting"           ].c_str();
     const char* s_meqn                 = ini_sec["meqn"                ].c_str();
     const char* s_mrestart             = ini_sec["mrestart"            ].c_str();
     const char* s_nstart               = ini_sec["nstart"              ].c_str();
@@ -126,7 +121,6 @@ void DogParams::init()
     const char* s_use_divfree          = ini_sec["use_divfree"         ].c_str();
     const char* s_which_compnt_divfree = ini_sec["which_compnt_divfree"].c_str();
     const char* s_ic_quad_order        = ini_sec["ic_quad_order"       ].c_str();
-    //const char* s_withPyClawPlotting   = ini_sec["withPyClawPlotting"  ].c_str();
 
     int& space_order = method[1];
     int& time_order  = method[2];
@@ -170,8 +164,6 @@ void DogParams::init()
     sscanf(s_num_subintervals,"%d", &num_subintervals)
         || invalid_value("num_subintervals" , s_num_subintervals);
     sscanf(s_use_divfree,"%d", &use_divfree)|| invalid_value("use_divfree", s_use_divfree);
-    //sscanf(s_withPyClawPlotting,"%d", &withPyClawPlotting)
-    //  || invalid_value("withPyClawPlotting", s_withPyClawPlotting);
     sscanf(s_ic_quad_order,"%d", &ic_quad_order)|| invalid_value("ic_quad_order", s_ic_quad_order);
 
     datafmt   = (DataFmt)datafmt_in;
@@ -189,8 +181,6 @@ void DogParams::init()
         flux_term = true;
     else
         invalid_value_error(s_flux_term);
-
-    splitting = ::get_splitting_type(s_splitting);
 
     // parse lists of numbers
     //
@@ -269,31 +259,7 @@ DogParams::~DogParams()
 // -------------------------------------------------------------------------- //
 // Methods used for defining derived parameters
 // -------------------------------------------------------------------------- //
-void DogParams::set_kmax()
-{
-    switch(ndims)
-    {
-        case 1:
-            kmax = get_space_order();
-            break;
-        case 2:
-            kmax = (get_space_order()*(get_space_order()+1))/2;
-            break;
-        case 3:
-            kmax = (get_space_order()*(get_space_order()+1)*(get_space_order()+2))/6;
-            break;
 
-            // For future reference, in dimension d, a scheme with order M needs
-            // kmax = nchoosek( M+d-1, M ) polynomials, where nchoosek is the
-            // binomial coefficient.
-            // Purely split schemes require slightly more unkowns.
-
-        default:
-            unsupported_value_error(ndims);
-    }
-}
-
-// -------------------------------------------------------------------------- //
 void DogParams::set_kmax_divfree()
 {
     switch(ndims)
@@ -316,7 +282,7 @@ void DogParams::set_kmax_divfree()
 // -------------------------------------------------------------------------- //
 void DogParams::setDerivedParameters()
 {
-    set_kmax();
+
     set_kmax_divfree();
     // set generic_components lookup table
     // (and how_many_generic_components)
@@ -448,10 +414,10 @@ void DogParams::checkParameters1()
     }
 
     // check space_order
-    if( get_space_order() < 1 || get_space_order() > 11 || get_space_order()%2 == 0)
+    if( get_space_order() < 5 || get_space_order() > 11 || get_space_order()%2 == 0)
     {
         derr << "invalid spatial accuracy,"
-            << " must have space_order = 3, 5, 7, 9 or 11 " << endl;
+            << " must have space_order = 5, 7, 9 or 11 " << endl;
     }  
 
     // check time_stepping_method
@@ -528,10 +494,10 @@ void DogParams::checkParameters1()
 void DogParams::checkParameters2()
 {
     // check space_order
-    if( get_space_order() < 1 || get_space_order() > 9 || get_space_order()%2 == 0)
+    if( get_space_order() < 5 || get_space_order() > 11 || get_space_order()%2 == 0)
     {
         derr << "invalid spatial accuracy,"
-            << " must have space_order = 3, 5, 7 or 9 " << endl;
+            << " must have space_order = 5, 7, 9 or 11 " << endl;
     }  
 
     // check time_stepping_method
@@ -726,16 +692,13 @@ void DogParams::reportParameters()
             get_time_order(),get_space_order(),
             time_stepping_method,limiter_method,
             get_use_limiter()?"yes":"no",cflv[2]);
-    if(!get_source_term()||!get_flux_term()||!splitting)
+    if( !get_source_term() || !get_flux_term() )
     {
 
         printf(
                 "                    source_term:  %d\n"
-                "                      flux_term:  %d\n" 
-                "                      splitting:  %s\n",
-                get_source_term(),
-                get_flux_term(),
-                print(splitting));
+                "                      flux_term:  %d\n",
+                get_source_term(), get_flux_term() );
     }
     if(nrestart>=0)
         printf(
@@ -749,19 +712,6 @@ void DogParams::reportParameters()
         printf(
                 "               report_frame_idx:  %d\n",
                 report_frame_idx);
-    if(use_divfree){
-        printf(
-                "                    use_divfree:  %d\n"
-                "       how_many_vectors_divfree:  %d\n"
-                "           which_compnt_divfree:  ",
-                use_divfree,how_many_vectors_divfree);
-        fprint_array(stdout,which_compnt_divfree,1,how_many_vectors_divfree);
-        printf(
-                "    how_many_generic_components:  %d\n"
-                "             generic_components:  ",
-                how_many_generic_components);
-        fprint_array(stdout,generic_components,1,how_many_generic_components);
-    }
     printf("\n");
 }
 // -------------------------------------------------------------------------- //
@@ -822,49 +772,5 @@ bool DogParams::using_viscosity_limiter()
 bool DogParams::using_relax_limiter()
 {
     return (get_use_limiter()==1 && str_eq(get_limiter_method(),"relax"));
-}
-// -------------------------------------------------------------------------- //
-
-// -------------------------------------------------------------------------- //
-// ??? I don't know what this part is for ... (-DS)
-// -------------------------------------------------------------------------- //
-static const char* print(SplittingType::Enum splitting)
-{
-    using namespace SplittingType;
-    switch(splitting)
-    {
-        // are these a list of splitting options? (-DS)
-        case none:
-            return "none";
-        case sf:
-            return "sf";
-        case fs:
-            return "fs";
-        case sfs:
-            return "sfs";
-        case fsf:
-            return "fsf";
-        default:
-            unsupported_value_error(splitting);
-    }
-    return "error";
-}
-// -------------------------------------------------------------------------- //
-
-// -------------------------------------------------------------------------- //
-static SplittingType::Enum get_splitting_type(const char* s_splitting)
-{
-    using namespace SplittingType;
-    if(!strcmp(s_splitting,"none"))
-        return none;
-    if(!strcmp(s_splitting,"sf"))
-        return sf;
-    if(!strcmp(s_splitting,"fs"))
-        return fs;
-    if(!strcmp(s_splitting,"sfs"))
-        return sfs;
-    if(!strcmp(s_splitting,"fsf"))
-        return fsf;
-    eprintf("unsupported value for parameter splitting: %s", s_splitting);
 }
 // -------------------------------------------------------------------------- //
