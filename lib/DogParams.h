@@ -18,12 +18,6 @@
 
 using namespace std;
 
-// What's this namespace used for? (-DS)
-namespace SplittingType
-{
-    enum Enum{ none=0, sf=1, fs=2, sfs=3, fsf=4 };
-}
-
 enum DataFmt {ASCII=1,HDF5=5};
 
 struct DogParams
@@ -74,10 +68,7 @@ struct DogParams
         int    get_maux()             const{ return method[6];}
         int    get_source_term()      const{ return method[7];}
 
-        // ?? 
-        SplittingType::Enum get_splitting() const{ return splitting;}
-
-        // ??
+        // ?? What's this used for? -DS //
         bool   get_flux_term()        const{ return flux_term;}
 
 
@@ -147,7 +138,7 @@ struct DogParams
             use_divfree(0), how_many_vectors_divfree(0), which_compnt_divfree(NULL),
             how_many_generic_components(0), generic_components(NULL),
             kmax(0),kmax_divfree(0), withPyClawPlotting(0),
-            flux_term(true), splitting(SplittingType::none)
+            flux_term(true)
     {}
 
 
@@ -163,7 +154,6 @@ struct DogParams
         char* time_stepping_method;
         char* limiter_method;
         int method[7+1];
-        SplittingType::Enum splitting;
         bool flux_term;
         int meqn;
         int nrestart;
