@@ -85,4 +85,6 @@ void WENOParams::init(IniDocument& ini_doc){
 
 void WENOParams::append_wenohelp(const char* filename){
 //TODO Implement (if it makes sense).
+// Not necessary because these parameters can be parsed from parameters.ini
+// which is already saved in the output directory
 }

@@ -27,8 +27,8 @@ void AfterFullTimeStep(double dt,
         exit(1);
     }
 
-    const int istep = 0.6 / dx;
-    const int jstep = 0.2 / dy;
+    const int istep = (mx / 5);
+    const int jstep = (my / 5)+1;
 
     // Reset the domain inside the wedge to be the initial conditions.
     //
@@ -36,13 +36,24 @@ void AfterFullTimeStep(double dt,
     void QinitFunc(const dTensor2& xpts,
         const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
         dTensor2& qvals);
-    void SampleFunction( 
-        int istart, int iend,
-        int jstart, int jend,
-        const dTensorBC3& qin, 
-        const dTensorBC3& auxin,  
-              dTensorBC3& Fout,
-        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
-    SampleFunction( istep+1, mx+mbc, 1-mbc, jstep-1, q, aux, q, &QinitFunc );
+//  void SampleFunction( 
+//      int istart, int iend,
+//      int jstart, int jend,
+//      const dTensorBC3& qin, 
+//      const dTensorBC3& auxin,  
+//            dTensorBC3& Fout,
+//      void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+//  SampleFunction( istep+1, mx+mbc, 1-mbc, jstep-1, q, aux, q, &QinitFunc );
+
+    for( int i = istep+1; i <= mx+mbc; i++)
+    for( int j = jstep-1; j >= 1-mbc; j-- )
+    {
+        for (int m=1; m<=meqn; m++)
+        {
+
+            q.set(i,j,m, 0.0 );
+        }
+    }
+
 
 }

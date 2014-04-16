@@ -10,9 +10,9 @@ class WENOParams{
 public:
     ///@brief Reconstruction method.
     ///
-    ///- <tt>FD</tt>  Finite difference (??)
-    ///- <tt>JS</tt>  Jiang and Shu
-    ///- <tt>Z</tt>   Z
+    ///- <tt>FD</tt>  Conservative reconstruction (linear weights)
+    ///- <tt>JS</tt>  Jiang and Shu smoothness indicators
+    ///- <tt>Z</tt>   Z (WENO-Z - improved order of accuracy)
     enum WENOVersion {
         FD, JS, Z
     } weno_version;

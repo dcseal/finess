@@ -57,8 +57,10 @@ caxis([0.8,10]);
 % Grey scale figure plot that you see in a lot of papers.
 figure(3);
 clf;
-%contour(xl, yl, qaug(:,:,m), linspace(1.3965, 22.682,30), '-k' );
-contour(xl, yl, qaug(:,:,m), linspace(0.2805, 7.717,30), '-k' );
+contour(xl, yl, qaug(:,:,m), linspace(0.2365, 5.647,30), '-k' );
+%contour(xl, yl, qaug(:,:,m), linspace(0.2568, 6.607,30), '-k' );
+%contour(xl, yl, qaug(:,:,m), linspace(0.2805, 7.717,30), '-k' );
+%contour(xl, yl, qaug(:,:,m), linspace(0.090338, 6.2365, 30), '-k' );
 axis on; box on; grid off;
 axis('equal');
 axis([-0.05 3.05 -0.05 1.05]);
@@ -73,8 +75,8 @@ set(t1,'fontsize',16);
 figure(1)
 
 % n1 = frame number
-fname = strcat( strcat( 'density', num2str(n1, '%02d' ) ), '.jpg' );
-print(1, '-djpeg', fname );
-fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
-print(3, '-deps', fname  );
+%fname = strcat( strcat( 'density', num2str(n1, '%02d' ) ), '.jpg' );
+%print(1, '-djpeg', fname );
+%fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
+%print(3, '-deps', fname  );
 
