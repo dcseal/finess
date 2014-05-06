@@ -8,7 +8,9 @@ include $(FINESS)/lib/1d/Makefile.defs
 # overridden library objects
 #
 # DogSolveUser           = DogSolveUser
-ConSoln                = ConSoln
+ConSoln                 = ConSoln
+WenoReconstruct         = WenoReconstruct
+ConstructIntegratedF    = ConstructIntegratedF
 
 ## ------------------------------------------------------------------------- ##
 # These time derivatives are required for the Lax-Wendroff (and

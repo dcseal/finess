@@ -13,7 +13,8 @@ LFLAGS = $(HDF5_LIBRARIES)
 TOPLIB_INCLUDE = -I$(TOPLIB) $(LIB_SYS_INCLUDE)
 #
 
-RunStartScript = $(TOPLIB)/RunStartScript
+RunStartScript  = $(TOPLIB)/RunStartScript
+WenoReconstruct = $(TOPLIB)/WenoReconstruct
 
 TOPLIB_OBJECTS = \
   $(LIB_SYS_OBJECTS) \
@@ -24,9 +25,9 @@ TOPLIB_OBJECTS = \
   $(TOPLIB)/dog_math.o \
   $(TOPLIB)/dog_str.o \
   $(TOPLIB)/dog_io.o \
-  $(TOPLIB)/WenoReconstruct.o \
+  $(TOPLIB)/WenoParams.o \
+  $(WenoReconstruct).o \
   $(RunStartScript).o \
-  $(TOPLIB)/WenoParams.o
 #
 TOPLIB_SOURCES = \
   $(LIB_SYS_SOURCES) \
@@ -38,9 +39,9 @@ TOPLIB_SOURCES = \
   $(TOPLIB)/dog_math.cpp \
   $(TOPLIB)/dog_str.cpp \
   $(TOPLIB)/dog_io.cpp \
-  $(TOPLIB)/WenoReconstruct.cpp \
+  $(TOPLIB)/WenoParams.cpp \
+  $(WenoReconstruct).cpp \
   $(RunStartScript).cpp \
-  $(TOPLIB)/WenoParams.cpp
 
 # inheriting libraries and applications are expected to override these
 INCLUDE_LIBS= $(TOPLIB_INCLUDE)

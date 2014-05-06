@@ -5,7 +5,9 @@
 #include "DogParamsCart1.h"
 #include "assert.h"
 
-// Time-integrated flux-function.
+// Time-integrated flux-function.  This one uses new "Diff1" and "Diff2" to try
+// and define a PIF-WENO method that is TVD below a certain threshold on the CFL
+// number.
 //
 // See: "The Picard integral formulation of weighted essentially non-oscillatory
 // schemes" available on arxiv: http://arxiv.org/abs/1403.1282
@@ -56,6 +58,11 @@ void ConstructIntegratedF( double dt,
     dTensorBC1& smax, dTensorBC2& F)
 {
 
+// TODO - this shouldn't really be placed here ... -DS
+const double speed = aux.get(1,1);
+const double s2    = speed*speed;
+const double s3    = speed*s2;
+
     const int mx     = q.getsize(1);
     const int meqn   = q.getsize(2);
     const int maux   = aux.getsize(2);
@@ -65,20 +72,16 @@ void ConstructIntegratedF( double dt,
     const double dx    = dogParamsCart1.get_dx();
     const double xlow  = dogParamsCart1.get_xlow();
 
-    // Sample the flux function on the entire domain:
-    //
-    // If "1st-order" (Euler step), then this completes this function call.
-    //
-    dTensorBC2 f( mx, meqn, mbc );  // place-holder
-    SampleFunction( 1-mbc, mx+mbc, q, aux, f, &FluxFunc );
+    // Compute the first derivative, q_x (and/or f_x)
+    dTensorBC2 q_x (mx, meqn, mbc );
+    dTensorBC2 q_xx(mx, meqn, mbc );
 
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
 const int      mpts_sten = 5;
 const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
-    // Compute finite difference approximations on all of the conserved
-    // variables:
+    // Compute finite difference approximation to q_x
 #pragma omp parallel for
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
     {
@@ -88,7 +91,6 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
         xpts.set( 1, xlow + double(i)*dx - 0.5*dx );
 
         // Save the flux function:
-        dTensor2 Fvals( meqn, mpts_sten );
         dTensor2 qvals( meqn, mpts_sten );
 
         for( int m=1; m <= meqn; m++ )
@@ -96,107 +98,68 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
             int s = -half_mpts_sten+1;
             for( int r = 1; r <= mpts_sten; r++ )
             {
-                Fvals.set( m, r, f.get( i+s, m ) );
                 qvals.set( m, r, q.get( i+s, m ) );
                 s++;
             }
         }
 
         // Storage for local derivatives:
-        dTensor1 fx_val  ( meqn );
         dTensor1 qx_val  ( meqn );
-        dTensor1 fxx_val ( meqn );
 
         // Compute a FD approximation to the derivatives:
-        Diff1( dx, Fvals, fx_val  );
         Diff1( dx, qvals, qx_val  );
-        Diff2( dx, Fvals, fxx_val );
-
-        // Construct the first product: A f_x:
-        dTensor3 A( 1, meqn, meqn );
-        dTensor2 q_transpose( 1, meqn );
-        dTensor2 a_transpose( 1, maux );
-
-        for( int m=1; m <= meqn; m++ )
-        {
-            q_transpose.set(1, m, q.get(i,m) );
-        }
-        for( int m=1; m <= maux; m++ )
-        {
-            a_transpose.set(1, m, aux.get(i,m) );
-        }
-
-        // Compute the Jacobian:
-        DFluxFunc(xpts, q_transpose, a_transpose, A);
 
         // Compute the product: A f_x
-        dTensor1 f_t( meqn );
         for( int m1=1; m1 <= meqn; m1++ )
         {
-            double tmp = 0.;
-            for( int m2=1; m2 <= meqn; m2++ )
-            {
-                tmp += -A.get(1, m1, m2) * fx_val.get(m2);
-            }
-            f_t.set( m1, tmp );
-        }
-
-        // ---  Third-order terms --- //
-        dTensor1 f_tt( meqn );   f_tt.setall(0.);
-        if( dogParams.get_time_order() > 2 )
-        {
-
-            // Hessian
-            dTensor4 H( 1, meqn, meqn, meqn );
-            D2FluxFunc(xpts, q_transpose, a_transpose, H);
-
-            // Compute terms that get multiplied by \pd2{ f }{ q }.
-            dTensor1 tmp_vec( meqn );
-            for( int m =1; m <= meqn; m++ )
-            {
-                double tmp1 = 0.;
-                double tmp2 = 0.;
-                for( int m1=1; m1 <= meqn; m1++ )
-                for( int m2=1; m2 <= meqn; m2++ )
-                {
-                    tmp1 += H.get(1,m,m1,m2) * fx_val.get(m1)*fx_val.get(m2);
-                    tmp2 += H.get(1,m,m1,m2) * qx_val.get(m1)*fx_val.get(m2);
-                }
-                f_tt.set( m, tmp1 );
-                tmp_vec.set( m, tmp2 );
-            }
-
-            // Add in the third term that gets multiplied by A:
-            for( int m1=1; m1 <= meqn; m1++ )
-            {
-                double tmp = 0.;
-                for( int m2=1; m2 <= meqn; m2++ )
-                {
-                    tmp += A.get(1,m1,m2)*fxx_val.get(m2);
-                }
-                tmp_vec.set( m1, tmp_vec.get(m1) + tmp );
-            }
-
-            // Multiply final term by A:
-            for( int m1=1; m1 <= meqn; m1++ )
-            {
-                double tmp = 0.;
-                for( int m2=1; m2 <= meqn; m2++ )
-                {
-                    tmp += A.get(1,m1,m2)*tmp_vec.get(m2);
-                }
-                f_tt.set( m1, f_tt.get(m1) + tmp );
-            }
-
-
+            q_x.set( i, m1, qx_val.get( m1 ) );
         }
 
         // Second/Third-order accuracy:
         for( int m=1; m<=meqn; m++ )
         {
-            F.set( i, m, f.get(i,m) + 0.5*dt*(f_t.get(m) + dt/3.0*f_tt.get(m)) );
+//          F.set( i, m, speed*q.get(i,m) + 0.5*dt*(speed*speed*q_x.get(m) + dt/3.0*f_tt.get(m)) );
+            F.set( i, m, speed*q.get(i,m) - 0.5*dt*(s2*q_x.get(i,m) ) );
         }
 
+
+    }
+
+
+    // Compute the second-derivative (using non-conservative WENO
+    // differentiation)
+    for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
+    {
+
+        // Physical location for this current value:
+        dTensor1 xpts( 1 );
+        xpts.set( 1, xlow + double(i)*dx - 0.5*dx );
+
+        // Save the flux function:
+        dTensor2 q_vals( meqn, mpts_sten );
+        dTensor2 qx_vals( meqn, mpts_sten );
+
+        for( int m=1; m <= meqn; m++ )
+        {
+            int s = -half_mpts_sten+1;
+            for( int r = 1; r <= mpts_sten; r++ )
+            {
+                qx_vals.set( m, r, q_x.get( i+s, m ) );
+                s++;
+            }
+        }
+
+        // Storage for local derivatives:
+        dTensor1 qxx_val  ( meqn );
+
+        // Compute a FD approximation to the derivatives:
+        Diff1( dx, qx_vals, qxx_val  );
+
+        for( int m=1; m<=meqn; m++ )
+        {
+//          F.set( i, m, speed*q.get(i,m) + 0.5*dt*(speed*speed*q_x.get(m) + dt/3.0*f_tt.get(m)) );
+            F.set( i, m, speed*q.get(i,m) - 0.5*dt*(s2*q_x.get(i,m) + dt/3.*s3*qxx_val.get(m) ) );
+        }
 
     }
 
