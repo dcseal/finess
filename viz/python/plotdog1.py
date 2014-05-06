@@ -2,9 +2,7 @@
 def plotdog1(points_per_dir_in="1",outputdir="output"):
     """
 Generic code for plotting DoGPack output in matplotlib.
-    """
 
-    """
 Execute via
 
     $ python $FINESS/viz/python/plotdog1.py
@@ -118,7 +116,7 @@ to see a list of options.
 
     kn = 0;
 
-    n = 0;
+    n  = 0;
     nf = 0;
     n1 = -1;
 
