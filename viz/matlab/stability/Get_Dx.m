@@ -1,5 +1,9 @@
 function [Dx,Dxx]  = Get_Dx( mx )
-% Compute the time derivative of the large system.
+%Get matrices for centered finite difference approximations.
+%
+% This routine returns a (sparse) matrix using the stencil of minimal size.
+%
+% See also: Get_Qt.
 
     dx = 1./mx;
 
@@ -20,6 +24,7 @@ function [Dx,Dxx]  = Get_Dx( mx )
     Dx(mx-1, 1   )  = Lx(5);
     Dx(mx,   1:2 )  = Lx(4:5);
 
+    % Second derivative 
     Dxx = spdiags( e*Lxx, [-2 -1 0 1 2], mx, mx );
 
     % Periodic boundary conditions
