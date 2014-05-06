@@ -723,6 +723,61 @@ double Diff1( double dx,
 
 }
 
+// First-derivative non-conservative, based on WENO differentation (not
+// WENO-reconstruction).
+void Diff1NC( double dx, const dTensor2& g, dTensor1& fx )
+{
+
+    assert_eq( g.getsize(2), 5 );
+
+    // Stencil and the smaller three point derivatives:
+    double uim2,uim1,ui,uip1,uip2;
+    double u1,u2,u3;
+
+    double beta0, beta1, beta2;  // smoothness indicators
+    double omt0, omt1, omt2, omts;
+
+    // linear weights
+    double g0, g1, g2;           
+    g0 = 1./6.; g1 = 2./3.; g2 = 1./6.;
+
+    const double eps         = wenoParams.epsilon;       // Default: 1e-6
+    const double power_param = wenoParams.power_param;   // Default: p=2
+
+    const int meqn = g.getsize(1);
+    for( int m=1; m <= meqn; m++ )
+    {
+
+        uim2 = g.get(m,1);
+        uim1 = g.get(m,2);
+        ui   = g.get(m,3);
+        uip1 = g.get(m,4);
+        uip2 = g.get(m,5);
+
+        // Compute smoothness indicators (identical for left/right values):
+        beta0 = pow(uim2-2.*uim1+ui,2);
+        beta1 = pow(uim1-2.*ui+uip1,2);
+        beta2 = pow(ui-2.*uip1+uip2,2);
+
+        // 3rd-order reconstructions using small 3-point stencils
+        u1 = ( 0.5  )*uim2 - (2.   )*uim1 + ( 1.5  )*ui;
+        u2 = (-0.5  )*uim1 + (0.   )*ui   + ( 0.5  )*uip1;
+        u3 = (-1.5  )*ui   + (2.   )*uip1 - ( 0.5  )*uip2;
+        
+        // Compute nonlinear weights and normalize their sum to 1
+        omt0 = g0*pow(eps+beta0,-power_param);
+        omt1 = g1*pow(eps+beta1,-power_param);
+        omt2 = g2*pow(eps+beta2,-power_param);
+        omts = omt0+omt1+omt2;
+
+        // # Return 5th-order approximation to derivative
+        fx.set(m, ( (omt0*u1 + omt1*u2 + omt2*u3)/omts) / dx );
+
+    }
+
+}
+
+
 // Central Finite difference approximations:
 //
 // Second-derivative (using a 5 point central stencil)
