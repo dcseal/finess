@@ -9,7 +9,7 @@ include $(FINESS)/lib/1d/Makefile.defs
 #
 # DogSolveUser           = DogSolveUser
 ConSoln                 = ConSoln
-WenoReconstruct         = WenoReconstruct
+#WenoReconstruct         = WenoReconstruct
 ConstructIntegratedF    = ConstructIntegratedF
 
 ## ------------------------------------------------------------------------- ##
