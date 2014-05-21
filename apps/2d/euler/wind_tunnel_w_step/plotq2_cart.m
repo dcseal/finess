@@ -58,9 +58,7 @@ caxis([0.8,10]);
 figure(3);
 clf;
 contour(xl, yl, qaug(:,:,m), linspace(0.2365, 5.647,30), '-k' );
-%contour(xl, yl, qaug(:,:,m), linspace(0.2568, 6.607,30), '-k' );
-%contour(xl, yl, qaug(:,:,m), linspace(0.2805, 7.717,30), '-k' );
-%contour(xl, yl, qaug(:,:,m), linspace(0.090338, 6.2365, 30), '-k' );
+contour(xl, yl, qaug(:,:,m), linspace(0.2568, 6.607,30), '-k' );  % Jiang and Shu lines
 axis on; box on; grid off;
 axis('equal');
 axis([-0.05 3.05 -0.05 1.05]);
