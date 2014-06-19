@@ -3,17 +3,16 @@
 # default/library definitions
 include $(FINESS)/lib/1d/Makefile.defs
 
+# Default (application level) definintions
+include $(FINESS)/apps/1d/burgers/lib/Makefile.defs
+
 # overridden library objects
 #
-DFluxFunc     =  DFluxFunc
-D2FluxFunc    =  D2FluxFunc
-
-RiemannSolve = $(FINESS)/lib/1d/RiemannSolveLLF
 
 # place to add object modules
 #
-#ALL_OBJECTS = $(COMMON_OBJECTS) ...
-#ALL_SOURCES = $(COMMON_SOURCES) ...
+ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
+ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES)
 
 ### targets ###
 

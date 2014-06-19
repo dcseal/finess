@@ -1,19 +1,16 @@
-
 ### definitions ###
 
 # default/library definitions
 include $(FINESS)/lib/1d/Makefile.defs
 
 # Default (application level) definintions
-include $(FINESS)/apps/1d/shallow_water/lib/Makefile.defs
+include $(FINESS)/apps/1d/buckley_lev/lib/Makefile.defs
 
 # overridden library objects
 #
-#DogSolveUser           = $(FINESS)/lib/1d/DogSolveTDRK
-
-# Experimental new method that uses WENO *differentiation* on the interior of
-# the time-integrated flux function.
-#ConstructIntegratedF    = ConstructIntegratedF
+#DogSolveUser  = $(DOGPACK)/lib/1d/DogSolveRK4
+ConSoln       = ConSoln
+ConstructIntegratedF        = ConstructIntegratedF
 
 # place to add object modules
 #
@@ -22,6 +19,6 @@ include $(FINESS)/apps/1d/shallow_water/lib/Makefile.defs
 
 ### targets ###
 
-include $(FINESS)/lib/1d/Makefile.targets
+include $(DOGPACK)/lib/1d/Makefile.targets
 
 ### DO NOT remove this line - make depends on it ###
