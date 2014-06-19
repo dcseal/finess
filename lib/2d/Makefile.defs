@@ -97,6 +97,7 @@ FinSolveMD           = $(LIB2D)/FinSolveMD
 DogSolveUser         = $(LIB2D)/DogSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
+GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
@@ -123,6 +124,7 @@ LIB2D_OBJECTS = \
   $(FinSolveMD).o \
   $(LIB2D)/SetRKinfo.o \
   $(LIB2D)/GetCFL.o \
+  $(GlobalWaveSpd).o \
   $(AfterQinit).o \
   $(DogSolveUser).o \
   $(BeforeFullTimeStep).o \
@@ -159,6 +161,7 @@ LIB2D_SOURCES = \
   $(FinSolveMD).cpp \
   $(LIB2D)/SetRKinfo.cpp \
   $(LIB2D)/GetCFL.cpp \
+  $(GlobalWaveSpd).cpp \
   $(AfterQinit).cpp \
   $(DogSolveUser).cpp \
   $(BeforeFullTimeStep).cpp \

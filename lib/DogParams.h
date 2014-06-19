@@ -67,6 +67,7 @@ struct DogParams
         int    get_mcapa()            const{ return method[5];}
         int    get_maux()             const{ return method[6];}
         int    get_source_term()      const{ return method[7];}
+        int    get_use_global_alpha() const{ return global_alpha; }
 
         // ?? What's this used for? -DS //
         bool   get_flux_term()        const{ return flux_term;}
@@ -99,6 +100,8 @@ struct DogParams
         int get_generic_component(int i)
             const{ return generic_components[i]; }
 
+        int get_global_alpha() const{ return global_alpha; }
+
         // TODO remove these depracated calls, and make sure the rest of the
         // code still functions:
         // deprecated; this is in the DogState class.
@@ -116,13 +119,6 @@ struct DogParams
         bool using_relax_limiter();
         bool using_positive_limiter();
 
-        // pyclaw stuff
-        int  get_withPyClawPlotting() const{ return withPyClawPlotting; }
-        void set_withPyClawPlotting(const int in) { withPyClawPlotting=in; }
-
-        // quadrature order used for projecting the initial conditions
-        int get_ic_quad_order() const{ return ic_quad_order; }
-
         // Destructor
         ~DogParams();
 
@@ -137,8 +133,8 @@ struct DogParams
             is_initialized(false), nout_per_plot(NULL),
             use_divfree(0), how_many_vectors_divfree(0), which_compnt_divfree(NULL),
             how_many_generic_components(0), generic_components(NULL),
-            kmax(0),kmax_divfree(0), withPyClawPlotting(0),
-            flux_term(true)
+            kmax(0),kmax_divfree(0), 
+            flux_term(true), global_alpha(0)
     {}
 
 
@@ -174,11 +170,8 @@ struct DogParams
 
         int use_divfree;
         int how_many_vectors_divfree; int* which_compnt_divfree;
-        int ic_quad_order; // james: this is new thing
 
-        // flag indicating whether or not to print contents to the output
-        // directory that conform with PyClaw's plotting routines:
-        int withPyClawPlotting;
+        int global_alpha;
 
         // derived parameters
         //

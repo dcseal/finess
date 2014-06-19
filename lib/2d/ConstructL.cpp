@@ -5,6 +5,7 @@
 #include "dog_math.h"
 #include "DogParamsCart2.h"
 #include "WenoParams.h"
+#include "ConstructL.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -21,36 +22,11 @@ void ConstructL(
     //
     // @todo TODO - this should be moved before ConstructL is called, and q
     // and aux should be changed to const values (-DS)
-    void SetBndValues(dTensorBC3& aux, dTensorBC3& q);
     SetBndValues( aux, q );
-
-    // --- User supplied functions --- //
-    void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
-    void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-        const dTensor2& Qvals, dTensor2& Wvals);
-    void ProjectRightEig(int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-                         const dTensor2& Wvals, dTensor2& Qvals);
-    void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge, 
-        const dTensor1& Ql,   const dTensor1& Qr, 
-        const dTensor1& Auxl, const dTensor1& Auxr,
-        double& s1,double& s2);
-    void SourceTermFunc(const dTensor2& xpts, const dTensor2& qvals, 
-                const dTensor2& auxvals, dTensor2& source);
-
-    void SampleFunction( 
-        int istart, int iend,
-        int jstart, int jend,
-        const dTensorBC3& qin, 
-        const dTensorBC3& auxin,  dTensorBC3& Fout,
-        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
     void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
-
-    // Routine to deal with the silly mess where the Fluxes and the
-    // Projections are all defined separately.
-    void ConvertTranspose( const dTensor2& qin, dTensor2& qout );
 
     // Parameters for the current grid
     const int   meqn = dogParams.get_meqn();
@@ -76,6 +52,14 @@ void ConstructL(
     const double     dy = dogParamsCart2.get_dy();
     const double   xlow = dogParamsCart2.get_xlow();
     const double   ylow = dogParamsCart2.get_ylow();
+
+    double alpha1 = 0.;
+    double alpha2 = 0.;
+    if( dogParams.get_global_alpha() )
+    {
+        // Global wave speed
+        GlobalWaveSpd( q, aux, alpha1, alpha2);
+    }
 
     // Normal vector.  This is a carry-over from the DG code.
     dTensor1 nvec(2);
@@ -170,9 +154,10 @@ void ConstructL(
 
         // -- Compute a local wave speed -- //
 
-        dTensor1 xedge(1), Ql(meqn), Qr(meqn);
+        dTensor1 xedge(2), Ql(meqn), Qr(meqn);
         dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
+        xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
 
         for( int m=1; m<= meqn; m++)
         {
@@ -187,12 +172,15 @@ void ConstructL(
         }
 
         // Compute an approximate "fastest" wave speed.
+        // TODO - this is redundant in the case of a global value of alpha ...
+        // (-DS 6/19/2014)
         double s1,s2;
         SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
 
-        const double alpha = Max( abs(s1), abs(s2) );
+        const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
         const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+
 
         // -- Flux splitting -- //
 
@@ -333,11 +321,13 @@ void ConstructL(
         }
 
         // Compute an approximate "fastest" wave speed.
+        // TODO - this is redundant in the case of a global value of alpha ...
+        // (-DS 6/19/2014)
         double s1,s2;
         SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
 
-        const double alpha = Max( abs(s1), abs(s2) );
-        smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
+        const double alpha = Max( alpha2, Max( abs(s1), abs(s2) ) );
+        smax.set( i, j, 2, Max( smax.get(i,j,1), alpha )  );
         const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //

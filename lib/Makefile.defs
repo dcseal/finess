@@ -1,6 +1,5 @@
 # inherit from sys (sub)directory
 #
-#include $(FINESS)/config/Makefile.config #(by implication)
 include $(FINESS)/lib/sys/Makefile.defs
 
 # where this library lives

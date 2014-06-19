@@ -81,9 +81,7 @@ void DogParams::init()
     option_names_list.push_back("nout_per_restart"    );
     option_names_list.push_back("num_subintervals"    );
     option_names_list.push_back("use_divfree"         );
-    option_names_list.push_back("ic_quad_order"       );
-    //option_names_list.push_back("nout_per_plot"       ); //default: empty string
-    //option_names_list.push_back("which_compnt_divfree"); //default: empty string
+    option_names_list.push_back("global_alpha"   );
 
     // get defaults from e.g. $FINESS/config/dogParams_defaults.ini
     get_defaults      (ini_sec, section_label, option_names_list);
@@ -120,7 +118,7 @@ void DogParams::init()
     const char* s_num_subintervals     = ini_sec["num_subintervals"    ].c_str();
     const char* s_use_divfree          = ini_sec["use_divfree"         ].c_str();
     const char* s_which_compnt_divfree = ini_sec["which_compnt_divfree"].c_str();
-    const char* s_ic_quad_order        = ini_sec["ic_quad_order"       ].c_str();
+    const char* s_global_alpha         = ini_sec["global_alpha"        ].c_str();
 
     int& space_order = method[1];
     int& time_order  = method[2];
@@ -164,7 +162,8 @@ void DogParams::init()
     sscanf(s_num_subintervals,"%d", &num_subintervals)
         || invalid_value("num_subintervals" , s_num_subintervals);
     sscanf(s_use_divfree,"%d", &use_divfree)|| invalid_value("use_divfree", s_use_divfree);
-    sscanf(s_ic_quad_order,"%d", &ic_quad_order)|| invalid_value("ic_quad_order", s_ic_quad_order);
+
+    sscanf(s_global_alpha, "%d", &global_alpha) || invalid_value("global_alpha", s_global_alpha);
 
     datafmt   = (DataFmt)datafmt_in;
     mesh_type = strdup(s_mesh_type);
@@ -481,10 +480,6 @@ void DogParams::checkParameters1()
             << "   3. relax " << endl;
     }
 
-
-    // this option is not currently implemented in 1D (TODO - JR)
-    ic_quad_order = get_space_order();
-
 }
 // -------------------------------------------------------------------------- //
 
@@ -562,22 +557,6 @@ void DogParams::checkParameters2()
             << "   3. positive " << endl;
     }
 
-    // Quadrature order for initial data projection
-    if ( ic_quad_order == -100)
-    {
-        ic_quad_order = get_space_order();
-    }
-    else if ( ic_quad_order < 1 || ic_quad_order > 20 )
-    {
-        derr << " ic_quad_order must be an integer from 1 to 20,  ic_quad_order = " << ic_quad_order << endl;
-    }
-
-    if (ic_quad_order < get_space_order())
-    {
-        derr << " ic_quad_order must be >= space_order, ic_quad_order = " << ic_quad_order << ", space_order = " 
-            << get_space_order() << endl;
-    }
-
 }
 // -------------------------------------------------------------------------- //
 
@@ -618,22 +597,6 @@ void DogParams::checkParameters3()
             derr << "Runge-Kutta must have time_order = 1, 2, 3, or 4 " << endl;
         }
     }
-    /*
-       else if (str_eq(time_stepping_method, "SDC"))
-       {
-       if (get_time_order()<0 || get_time_order()>5)
-       {
-       derr << "SDC must have time_order = 1, 2, 3, 4, or 5 " << endl;
-       }
-       }
-       else if (str_eq(time_stepping_method, "Lax-Wendroff"))
-       {
-       if (get_time_order()<0 || (get_time_order()>3 ) )
-       {
-       derr << "Lax-Wendroff must have time_order = 1, 2, or 3 " << endl;
-       }
-       }
-     */
 
     // check limiter method
     if (!str_eq(limiter_method, "moment"))// &&
@@ -647,22 +610,6 @@ void DogParams::checkParameters3()
         //            << "   1. moment " << endl
         //            << "   2. viscosity " << endl
         //            << "   3. positive " << endl;
-    }
-
-    // Quadrature order for initial data projection
-    if ( ic_quad_order == -100)
-    {
-        ic_quad_order = get_space_order();
-    }
-    else if ( ic_quad_order < 1 || ic_quad_order > 20 )
-    {
-        derr << " ic_quad_order must be an integer from 1 to 20,  ic_quad_order = " << ic_quad_order << endl;
-    }
-
-    if (ic_quad_order < get_space_order())
-    {
-        derr << " ic_quad_order must be >= space_order, ic_quad_order = " << ic_quad_order << ", space_order = " 
-            << get_space_order() << endl;
     }
 
 }
