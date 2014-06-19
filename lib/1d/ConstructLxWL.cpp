@@ -31,6 +31,9 @@ void ConstructLxWL(
             double& s1,double& s2);
     void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
 
+    // Global wave speed
+    void GlobalWaveSpd( const dTensorBC2& q, const dTensorBC2& aux, double& alpha1 );
+
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
     void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
@@ -58,6 +61,13 @@ void ConstructLxWL(
     // Grid spacing
     const double   xlow = dogParamsCart1.get_xlow();
     const double     dx = dogParamsCart1.get_dx();
+
+    double alpha1 = 0.;
+    if( dogParams.get_global_alpha() )
+    {
+        // Global wave speed
+        GlobalWaveSpd( q, aux, alpha1 );
+    }
 
     // ---------------------------------------------------------
     // Compute fhat_{i-1/2}
@@ -140,9 +150,10 @@ void ConstructLxWL(
 
         double s1,s2;
         SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
-        const double alpha = Max( abs(s1), abs(s2) );
+        const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, alpha  );
         const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+
 
         // -- Flux splitting -- //
 
