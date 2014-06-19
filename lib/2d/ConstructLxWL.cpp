@@ -4,6 +4,7 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "DogParamsCart2.h"
+#include "WenoParams.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -78,6 +79,10 @@ void ConstructLxWL(
     if( dogParams.get_global_alpha() )
     {
         // Global wave speed
+        void GlobalWaveSpd(
+            const dTensorBC3& q, 
+            const dTensorBC3& aux, 
+            double& alpha1, double& alpha2);
         GlobalWaveSpd( q, aux, alpha1, alpha2);
     }
 
