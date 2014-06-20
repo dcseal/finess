@@ -10,34 +10,37 @@ APP_NAME  = euler
 APP_LIB   = $(FINESS)/apps/2d/$(APP_NAME)/lib
 
 # Flux function, and its derivatives
-FluxFunc    = $(APP_LIB)/FluxFunc
+FluxFunc            = $(APP_LIB)/FluxFunc
 
 # These time derivatives are required for the Lax-Wendroff (and
 # two-derivative) code:
-DFluxFunc   = $(APP_LIB)/DFluxFunc
-D2FluxFunc  = $(APP_LIB)/D2FluxFunc
+DFluxFunc           = $(APP_LIB)/DFluxFunc
+D2FluxFunc          = $(APP_LIB)/D2FluxFunc
 
 # Eigen decomposition of the Flux function
-ProjectLeftEig   = $(APP_LIB)/ProjectLeftEig
-ProjectRightEig  = $(APP_LIB)/ProjectRightEig
+ProjectLeftEig      = $(APP_LIB)/ProjectLeftEig
+ProjectRightEig     = $(APP_LIB)/ProjectRightEig
 
 # Wave speed functions
-SetWaveSpd  = $(APP_LIB)/SetWaveSpd
+SetWaveSpd          = $(APP_LIB)/SetWaveSpd
+
 
 # Auxilary function
-AuxFunc     = $(APP_LIB)/AuxFunc
+AuxFunc             = $(APP_LIB)/AuxFunc
 
 # Extra stuff!
 #EulerParams = $(APP_LIB)/EulerParams
-AfterQinit = $(APP_LIB)/AfterQinit
+AfterQinit          = $(APP_LIB)/AfterQinit
+ConstructLF         = $(APP_LIB)/ConstructLF
 
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
-#$(EulerParams).o \
+$(ConstructLF).o \
+EulerParams.o \
 
 #
 APP_LIB_SOURCES = \
-#$(EulerParams).cpp \
+EulerParams.cpp \
 
 #

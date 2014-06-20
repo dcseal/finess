@@ -10,11 +10,13 @@ include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 #
 InitApp      = InitApp
 
-ALL_OBJECTS = $(COMMON_OBJECTS) \
-EulerParams.o \
+# place to add object modules
+#
+ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS) \
+#EulerParams.o \
 
-ALL_SOURCES = $(COMMON_SOURCES) \
-EulerParams.cpp \
+ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES) \
+#EulerParams.cpp \
 
 TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/2d/euler/lib/ $(LIB_SYS_INCLUDE)
 

@@ -238,3 +238,12 @@ void TopFunc(const dTensor2& xpts,
         qvals.set(i,5, energy );      
     }
 }
+
+// Wrappers for main Euler library
+void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q)
+{ SetBndValues( aux, q ); }
+
+void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q)
+{ SetBndValues( aux, q ); }
+
+
