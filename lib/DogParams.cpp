@@ -566,18 +566,16 @@ void DogParams::checkParameters2()
 //
 void DogParams::checkParameters3()
 {
+
     // check space_order
-    if (get_space_order()<1 || get_space_order()>4 )
+    if( get_space_order() < 5 || get_space_order() > 11 || get_space_order()%2 == 0)
     {
         derr << "invalid spatial accuracy,"
-            << " must have space_order = 1, 2, 3, or 4 " << endl;
+            << " must have space_order = 5, 7, 9 or 11 " << endl;
     }  
 
     // check time_stepping_method
     if (!str_eq(time_stepping_method, "Runge-Kutta"))// &&
-        //      !str_eq(time_stepping_method, "SDC") &&
-        //      !str_eq(time_stepping_method, "Lax-Wendroff") && 
-        //      !str_eq(time_stepping_method, "User-Defined") )
     {
         derr << "the time-stepping method " << time_stepping_method 
             << " has not been implemented. " << endl << endl
@@ -592,16 +590,14 @@ void DogParams::checkParameters3()
     // check time_order per time_stepping_method
     if (str_eq(time_stepping_method, "Runge-Kutta") )
     {
-        if (get_time_order()<0 || get_time_order()>4)
+        if (get_time_order()<0 || get_time_order()>5)
         {
-            derr << "Runge-Kutta must have time_order = 1, 2, 3, or 4 " << endl;
+            derr << "Runge-Kutta must have time_order = 1, 2, 3, 4, or 5 " << endl;
         }
     }
 
     // check limiter method
     if (!str_eq(limiter_method, "moment"))// &&
-        //      !str_eq(limiter_method, "viscosity") &&
-        //  !str_eq(limiter_method, "positive"))
     {
         derr << "the limiter method " << limiter_method
             << " has not been implemented. " << endl << endl

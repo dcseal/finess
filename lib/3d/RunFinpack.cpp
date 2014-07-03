@@ -55,7 +55,7 @@ int RunFinpack(string outputdir)
     const int      nv       = dogParams.get_nv();
     const int&     meqn     = dogParams.get_meqn();
     const int&     maux     = dogParams.get_maux();
-    const int&     mdim     = dogParams.get_ndims();     assert_eq( mdim, 2 );
+    const int&     mdim     = dogParams.get_ndims();     assert_eq( mdim, 3 );
     const int&     mx       = dogParamsCart3.get_mx();
     const int&     my       = dogParamsCart3.get_my();
     const int&     mz       = dogParamsCart3.get_mz();
