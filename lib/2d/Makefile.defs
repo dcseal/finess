@@ -111,7 +111,6 @@ D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
 
 LIB2D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
-  $(LIB2D)/main_global.o \
   $(RunFinpack).o \
   $(InitApp).o \
   $(LIB2D)/DogParamsCart2.o \
@@ -137,18 +136,10 @@ LIB2D_OBJECTS = \
   $(LIB2D)/UpdateSoln.o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
-# $(AfterUpdateSoln).o \
-# $(ApplyLimiter).o \
-# $(ApplyPosLimiter).o \
-# $(LIB2D)/ConvertQtoW.o \
-# $(LIB2D)/ConvertWtoQ.o \
-# $(LIB2D)/ResInt.o \
-# $(RiemannSolve).o \
 
 LIB2D_SOURCES = \
   $(LIB2D)/*.h \
   $(TOPLIB_SOURCES) \
-  $(LIB2D)/main_global.cpp \
   $(RunFinpack).cpp \
   $(InitApp).cpp \
   $(LIB2D)/DogParamsCart2.cpp \

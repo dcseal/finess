@@ -114,7 +114,6 @@ FinSolveMD            = $(LIB1D)/FinSolveMD
 
 LIB1D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
-  $(LIB1D)/main_global.o \
   $(RunFinpack).o \
   $(LIB1D)/DogParamsCart1.o \
   $(SampleFunction).o \
@@ -154,7 +153,6 @@ LIB1D_OBJECTS = \
 LIB1D_SOURCES = \
   $(LIB1D)/*.h \
   $(TOPLIB_SOURCES) \
-  $(LIB1D)/main_global.cpp \
   $(RunFinpack).cpp \
   $(LIB1D)/DogParamsCart1.cpp \
   $(SampleFunction).cpp \

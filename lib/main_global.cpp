@@ -4,12 +4,13 @@
 #include "dogdefs.h"
 #include "IniDocument.h"
 #include "OutputDir.h"
+#include "dimdefs.h"
 
 /*
- * Common main function that's called by every (1D) application.
+ * Common main function that's called by every (3D) application.
  *
  * Each application has its own main file, and Makefile that builds that local
- * main.  When the code is built in any application directory, every (1D) 
+ * main.  When the code is built in any application directory, every (3D) 
  * application links to this common main function, that executes the code.
  *
  * The purpose of placing this extra layer between appname/main.cpp and
@@ -36,7 +37,7 @@ int main_global(int argc, char* argv[])
     // Call startscript (Default: scripts/startscript, otherwise it checks for
     // a local file called 'startscript' from the application's directory)
     void RunStartScript(int ndims);
-    RunStartScript(1);
+    RunStartScript(NDIMS);
 
     // Call the ``RunFinpack'' routine, which executes the code
     int RunFinpack( string outputdir );
