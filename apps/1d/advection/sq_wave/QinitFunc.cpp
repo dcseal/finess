@@ -31,5 +31,5 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
         { qvals.set(i, 1,  1.0 ); }
 
     }
-  
+
 }

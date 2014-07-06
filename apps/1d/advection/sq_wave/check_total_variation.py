@@ -27,6 +27,9 @@ def main( ):
 
     tvd_vec = np.zeros( (i,1) )
     print("found %i folders" % len(tvd_vec) )
+    print("--------------------------------------------------------------")
+    print("CFL Number; largest change in TV; Minimum value; Maximum value")
+    print("--------------------------------------------------------------")
     for i in range( len(tvd_vec) ):
 
         directory_num = my_dictionary['dir_num'] = i
@@ -39,9 +42,11 @@ def main( ):
         data = np.loadtxt( folder + '/total-variation.dat' )
         t    = data[:,0]
         tv   = data[:,1]
+        minq = min( data[:,2] )
+        maxq = max( data[:,3] )
         dtv  = max( tv[1:] - tv[0:len(tv)-1] )
         #print("cfl, tvd-change = %2.3f, %2.5e" % ( cfl_now, dtv ) )
-        print("%2.3f %2.5e" % ( cfl_now, dtv ) )
+        print("%2.3f %2.5e %2.5e %2.5e" % ( cfl_now, dtv, -minq, maxq-1.0 ) )
 
 if __name__ == '__main__':
     import optparse
