@@ -97,6 +97,7 @@ FinSolveMD           = $(LIB2D)/FinSolveMD
 DogSolveUser         = $(LIB2D)/DogSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
+GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
@@ -110,7 +111,6 @@ D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
 
 LIB2D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
-  $(LIB2D)/main_global.o \
   $(RunFinpack).o \
   $(InitApp).o \
   $(LIB2D)/DogParamsCart2.o \
@@ -123,6 +123,7 @@ LIB2D_OBJECTS = \
   $(FinSolveMD).o \
   $(LIB2D)/SetRKinfo.o \
   $(LIB2D)/GetCFL.o \
+  $(GlobalWaveSpd).o \
   $(AfterQinit).o \
   $(DogSolveUser).o \
   $(BeforeFullTimeStep).o \
@@ -135,18 +136,10 @@ LIB2D_OBJECTS = \
   $(LIB2D)/UpdateSoln.o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
-# $(AfterUpdateSoln).o \
-# $(ApplyLimiter).o \
-# $(ApplyPosLimiter).o \
-# $(LIB2D)/ConvertQtoW.o \
-# $(LIB2D)/ConvertWtoQ.o \
-# $(LIB2D)/ResInt.o \
-# $(RiemannSolve).o \
 
 LIB2D_SOURCES = \
   $(LIB2D)/*.h \
   $(TOPLIB_SOURCES) \
-  $(LIB2D)/main_global.cpp \
   $(RunFinpack).cpp \
   $(InitApp).cpp \
   $(LIB2D)/DogParamsCart2.cpp \
@@ -159,6 +152,7 @@ LIB2D_SOURCES = \
   $(FinSolveMD).cpp \
   $(LIB2D)/SetRKinfo.cpp \
   $(LIB2D)/GetCFL.cpp \
+  $(GlobalWaveSpd).cpp \
   $(AfterQinit).cpp \
   $(DogSolveUser).cpp \
   $(BeforeFullTimeStep).cpp \

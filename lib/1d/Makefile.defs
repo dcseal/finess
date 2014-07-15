@@ -91,6 +91,7 @@ BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
 DogSolveUser         = $(LIB1D)/DogSolveUser
 SampleFunction       = $(LIB1D)/SampleFunction
+GlobalWaveSpd        = $(LIB1D)/GlobalWaveSpd
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB1D)/LaxWendroff/DFluxFunc
@@ -113,7 +114,6 @@ FinSolveMD            = $(LIB1D)/FinSolveMD
 
 LIB1D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
-  $(LIB1D)/main_global.o \
   $(RunFinpack).o \
   $(LIB1D)/DogParamsCart1.o \
   $(SampleFunction).o \
@@ -129,6 +129,7 @@ LIB1D_OBJECTS = \
   $(D2FluxFunc).o \
   $(ConstructIntegratedF).o \
   $(LIB1D)/CopyQ.o \
+  $(GlobalWaveSpd).o \
   $(AfterQinit).o \
   $(BeforeStep).o \
   $(AfterStep).o \
@@ -152,7 +153,6 @@ LIB1D_OBJECTS = \
 LIB1D_SOURCES = \
   $(LIB1D)/*.h \
   $(TOPLIB_SOURCES) \
-  $(LIB1D)/main_global.cpp \
   $(RunFinpack).cpp \
   $(LIB1D)/DogParamsCart1.cpp \
   $(SampleFunction).cpp \
@@ -168,6 +168,7 @@ LIB1D_SOURCES = \
   $(D2FluxFunc).cpp \
   $(ConstructIntegratedF).cpp \
   $(LIB1D)/CopyQ.cpp \
+  $(GlobalWaveSpd).cpp \
   $(AfterQinit).cpp \
   $(BeforeStep).cpp \
   $(AfterStep).cpp \

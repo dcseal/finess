@@ -174,10 +174,6 @@ void SetBndValuesX( dTensorBC3& aux, dTensorBC3& q )
     }
     const int istep = (mx / 5);
     const int jstep = (my / 5)+1;
-//assert_lt( (istep-0.5)*dx, 0.6 );
-//assert_gt( (jstep-0.5)*dy, 0.2 );
-//  printf("istep*dx = %f; istep = %d; ", istep*dx, istep  );
-//  printf("jstep*dy = %f; jstep = %d\n", jstep*dy, jstep );
 
 
     // ----------------------- //
@@ -218,10 +214,94 @@ void SetBndValuesX( dTensorBC3& aux, dTensorBC3& q )
     //
     // ********************************************************************* //
 
+    // Deal with the corner
+    const double gamma = eulerParams.gamma;
+    const double   gm1 = gamma-1.0;
+
+    const int jstepm1 = jstep-1;
+
+    // density, u1, u2 and pressure (these get overwritten later)
+    double den  = q.get(istep,jstepm1,1);
+    double vex  = q.get(istep,jstepm1,2)/den;
+    double vey  = q.get(istep,jstepm1,3)/den;
+    double q2   = vex*vex+vey*vey;
+    double pre  = gm1*( q.get(istep,jstepm1, 5) - 0.5*den*q2);
+
+    // These two quantities are used for the entropy "fix"
+    const double enth = ( q.get(istep,jstepm1,5) + pre  )/den;
+    const double ent  = pre/pow( fabs(den), gamma ); 
+
+    for (int j = 0; j <= 1; j++ )
+    for (int i = istep+1; i <= istep + 4 - 2*j; i++)
+    {
+
+        // From Shu's code (check the exact index here ... )
+        int jj = j + jstepm1 + 1;
+
+        den  = q.get(i,jj,1);                       // density
+        vex  = q.get(i,jj,2)/den;                   // u1
+        vey  = q.get(i,jj,3)/den;                   // u2
+        q2   = vex*vex+vey*vey;         
+        pre  = gm1*( q.get(i,jj, 5) - 0.5*den*q2);  // pressure
+
+        den  = pow( fabs(pre/ent), (1./gamma) );
+        double qq2 = fabs(2.*(enth-gamma*pre/den/gm1));
+
+        // Rescale velocities according to t0
+        double t0 = sqrt(qq2/q2);
+        vex       = vex*t0;
+        vey       = vey*t0;
+
+        q.set(i,jj,1, den     );
+        q.set(i,jj,2, den*vex );
+        q.set(i,jj,3, den*vey );
+        q.set(i,jj,4, 0.      );
+        q.set(i,jj,5, pre/gm1 + 0.5*den*qq2 );
+
+    }
+
+
+/*
+ * This section is directly from Shu's code.  It is set only during the call to SetBCX.
+ *
+ *
+
+c treat the singularity at the corner
+
+      den  = u(nxmid,nymid,1)
+      vex  = u(nxmid,nymid,2)/den
+      vey  = u(nxmid,nymid,3)/den
+      q2   = vex*vex+vey*vey
+      pre  = gm1*(u(nxmid,nymid,4)-0.5*den*q2)
+      enth = (u(nxmid,nymid,4)+pre)/den
+      ent  = pre/abs(den)**gamma
+
+      do 10 j=0,1
+      do 10 i=nxmid+1,nxmid+4-2*j
+        jj  = j+nymid+1
+        den = u(i,jj,1)
+        vex = u(i,jj,2)/den
+        vey = u(i,jj,3)/den
+        q2  = vex*vex+vey*vey
+        pre = gm1*(u(i,jj,4)-0.5*den*q2)
+
+        den=(abs(pre/ent))**(1./gamma)
+        qq2=abs(2.*(enth-gamma*pre/den/gm1))
+        t0=sqrt(qq2/q2) 
+        vex=vex*t0
+        vey=vey*t0
+
+        u(i,jj,1)=den
+        u(i,jj,2)=den*vex
+        u(i,jj,3)=den*vey
+        u(i,jj,4)=pre/gm1+0.5*den*qq2
+
+10    continue
+*/
+
+
     // Segment 2
     for (int i = istep+1; i <= istep+mbc; i++)
-{
-//printf("Setting i = %d from %d\n", i, 2*istep+1-i);
     for (int j = 1; j <= jstep; j++ )
     {
         for (int m=1; m<=meqn; m++)
@@ -234,7 +314,6 @@ void SetBndValuesX( dTensorBC3& aux, dTensorBC3& q )
         // Flip the momemtum u1:
         q.set(i,j,2, -q.get(i,j,2) );
     }
-}
 
 }
 

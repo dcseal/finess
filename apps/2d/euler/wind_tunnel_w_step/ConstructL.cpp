@@ -6,6 +6,8 @@
 #include "DogParamsCart2.h"
 #include "WenoParams.h"
 
+#include "EulerParams.h"
+
 // Right-hand side for hyperbolic PDE in divergence form
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
@@ -95,11 +97,67 @@ void ConstructL(
         //         TODO - the User may want to replace this ...
         // --------------------------------------------------------------------
         dTensor1 Qavg(meqn);
-        for( int m=1; m <= meqn; m++ )
-        {
-            double tmp = 0.5*( q.get(i,j,m) + q.get(i-1,j,m) );
-            Qavg.set(m, tmp );
-        }
+//      for( int m=1; m <= meqn; m++ )
+//      {
+//          double tmp = 0.5*( q.get(i,j,m) + q.get(i-1,j,m) );
+//          Qavg.set(m, tmp );
+//      }
+
+        // Densities
+        double rhol     = fabs( q.get(i-1,j,1) );
+        double sq_rhol  = sqrt( rhol );
+
+        double rhor     = fabs( q.get(i  ,j,1) );
+        double sq_rhor  = sqrt( rhor );
+
+        double rho_tmp  = sq_rhor + sq_rhol + 1e-13;
+
+
+        // Velocities
+        double u1l = q.get(i-1,j,2)/rhol;
+        double u1r = q.get(i  ,j,2)/rhor;
+
+        double u2l = q.get(i-1,j,3)/rhol;
+        double u2r = q.get(i  ,j,3)/rhor;
+
+        double u1m = ( u1l*sq_rhol + u1r*sq_rhor ) / rho_tmp;
+        double u2m = ( u2l*sq_rhol + u2r*sq_rhor ) / rho_tmp;
+
+        // Energy and Pressure
+        double energyl = q.get(i-1,j,5);
+        double energyr = q.get(i,j,5);
+
+        const double gamma = eulerParams.gamma;
+        const double gm1   = gamma-1.0;
+
+        double pressl  = gm1*(energyl-0.5e0*rhol*(u1l*u1l+u2l*u2l));
+        double pressr  = gm1*(energyr-0.5e0*rhor*(u1r*u1r+u2r*u2r));
+
+        // Enthalpy
+        double Hl = (energyl + pressl)/rhol;
+        double Hr = (energyr + pressr)/rhor;
+        double Hm = ( sq_rhol*Hl + sq_rhor*Hr ) / rho_tmp;
+        
+        // sound speed
+        double cl = sqrt( gamma*pressl / rhol );
+        double cr = sqrt( gamma*pressr / rhor );
+        double cm = ( gm1*(Hm - 0.5*( u1m*u1m + u2m*u2m ) ) );
+
+        // Now, convert back to "conserved" variable
+        double rhom     = sq_rhol*sq_rhor;
+        double pressm   = rhom*cm*cm/gamma;
+        double Em       = rhom*Hm - pressm;
+
+        Qavg.set( 1, rhom       );
+        Qavg.set( 2, rhom * u1m );
+        Qavg.set( 3, rhom * u2m );
+        Qavg.set( 4, 0.0        );
+        Qavg.set( 5, Em         );
+
+        // --------------------------------------------------------------------
+        // End of computing Roe averages
+        // --------------------------------------------------------------------
+
         dTensor1 Auxavg(iMax(maux, 1 ) );
         for( int ma=1; ma <= maux; ma++ )
         {
@@ -244,11 +302,66 @@ void ConstructL(
         //         TODO - the User may want to replace this ...
         // --------------------------------------------------------------------
         dTensor1 Qavg(meqn);
-        for( int m=1; m <= meqn; m++ )
-        {
-            double tmp = 0.5*( q.get(i,j,m) + q.get(i,j-1,m) );
-            Qavg.set(m, tmp );
-        }
+//      for( int m=1; m <= meqn; m++ )
+//      {
+//          double tmp = 0.5*( q.get(i,j,m) + q.get(i,j-1,m) );
+//          Qavg.set(m, tmp );
+//      }
+
+        // Densities
+        double rhol     = fabs( q.get(i-1,j,1) );
+        double sq_rhol  = sqrt( rhol );
+
+        double rhor     = fabs( q.get(i  ,j,1) );
+        double sq_rhor  = sqrt( rhor );
+
+        double rho_tmp  = sq_rhor + sq_rhol + 1e-13;
+
+        // Velocities
+        double u1l = q.get(i-1,j,2)/rhol;
+        double u1r = q.get(i  ,j,2)/rhor;
+
+        double u2l = q.get(i-1,j,3)/rhol;
+        double u2r = q.get(i  ,j,3)/rhor;
+
+        double u1m = ( u1l*sq_rhol + u1r*sq_rhor ) / rho_tmp;
+        double u2m = ( u2l*sq_rhol + u2r*sq_rhor ) / rho_tmp;
+
+        // Energy and Pressure
+        double energyl = q.get(i-1,j,5);
+        double energyr = q.get(i,j,5);
+
+        const double gamma = eulerParams.gamma;
+        const double gm1   = gamma-1.0;
+
+        double pressl  = gm1*(energyl-0.5e0*rhol*(u1l*u1l+u2l*u2l));
+        double pressr  = gm1*(energyr-0.5e0*rhor*(u1r*u1r+u2r*u2r));
+
+        // Enthalpy
+        double Hl = (energyl + pressl)/rhol;
+        double Hr = (energyr + pressr)/rhor;
+        double Hm = ( sq_rhol*Hl + sq_rhor*Hr ) / rho_tmp;
+        
+        // sound speed
+        double cl = sqrt( gamma*pressl / rhol );
+        double cr = sqrt( gamma*pressr / rhor );
+        double cm = ( gm1*(Hm - 0.5*( u1m*u1m + u2m*u2m ) ) );
+
+        // Now, convert back to "conserved" variable
+        double rhom     = sq_rhol*sq_rhor;
+        double pressm   = rhom*cm*cm/gamma;
+        double Em       = rhom*Hm - pressm;
+
+        Qavg.set( 1, rhom       );
+        Qavg.set( 2, rhom * u1m );
+        Qavg.set( 3, rhom * u2m );
+        Qavg.set( 4, 0.0        );
+        Qavg.set( 5, Em         );
+
+        // --------------------------------------------------------------------
+        // End of computing Roe averages
+        // --------------------------------------------------------------------
+
         dTensor1 Auxavg(iMax(maux, 1 ) );
         for( int ma=1; ma <= maux; ma++ )
         {

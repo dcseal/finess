@@ -192,3 +192,10 @@ void SetBndValues(dTensorBC3& aux, dTensorBC3& q)
     // ***********************************************
 
 }
+
+// Wrappers for main Euler library
+void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q)
+{ SetBndValues( aux, q ); }
+
+void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q)
+{ SetBndValues( aux, q ); }

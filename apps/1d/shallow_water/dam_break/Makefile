@@ -4,11 +4,11 @@
 # default/library definitions
 include $(FINESS)/lib/1d/Makefile.defs
 
+# Default (application level) definintions
+include $(FINESS)/apps/1d/shallow_water/lib/Makefile.defs
+
 # overridden library objects
 #
-DFluxFunc             = DFluxFunc
-D2FluxFunc            = D2FluxFunc
-
 #DogSolveUser           = $(FINESS)/lib/1d/DogSolveTDRK
 
 # Experimental new method that uses WENO *differentiation* on the interior of

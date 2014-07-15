@@ -4,6 +4,7 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "DogParamsCart2.h"
+#include "WenoParams.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -71,6 +72,20 @@ void ConstructLxWL(
     const double     dy = dogParamsCart2.get_dy();
     const double   xlow = dogParamsCart2.get_xlow();
     const double   ylow = dogParamsCart2.get_ylow();
+
+    // Terms used in the case of using a global alpha
+    double alpha1 = 0.;
+    double alpha2 = 0.;
+    if( dogParams.get_global_alpha() )
+    {
+        // Global wave speed
+        void GlobalWaveSpd(
+            const dTensorBC3& q, 
+            const dTensorBC3& aux, 
+            double& alpha1, double& alpha2);
+        GlobalWaveSpd( q, aux, alpha1, alpha2);
+    }
+
 
     // Normal vector.  This is a carry-over from the DG code.
     dTensor1 nvec(2);
@@ -164,12 +179,15 @@ void ConstructLxWL(
         }
 
         // Compute an approximate "fastest" wave speed.
+        // TODO - this is redundant in the case of a global value of alpha ...
+        // (-DS 6/19/2014)
         double s1,s2;
         SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
 
-        const double alpha = Max( abs(s1), abs(s2) );
+        const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
-        const double l_alpha = 1.1*alpha;  // extra safety factor added here
+        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+
 
         // -- Flux splitting -- //
 
@@ -293,12 +311,14 @@ void ConstructLxWL(
         }
 
         // Compute an approximate "fastest" wave speed.
+        // TODO - this is redundant in the case of a global value of alpha ...
+        // (-DS 6/19/2014)
         double s1,s2;
         SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
 
-        const double alpha = Max( abs(s1), abs(s2) );
-        smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
-        const double l_alpha = 1.1*alpha;  // extra safety factor added here
+        const double alpha = Max( alpha2, Max( abs(s1), abs(s2) ) );
+        smax.set( i, j, 2, Max( smax.get(i,j,1), alpha )  );
+        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 

@@ -1,0 +1,153 @@
+# included from application Makefiles;
+
+# default definitions which application Makefiles can override
+
+NDIMS=3
+include $(FINESS)/lib/Makefile.defs
+
+# library this file is in
+LIB3D = $(FINESS)/lib/3d
+LIB3D_INCLUDE = -I$(LIB3D) $(TOPLIB_INCLUDE)
+
+# inheriting libraries are expected to override this
+INCLUDE_LIBS = $(LIB3D_INCLUDE)
+
+# added to by applications
+#
+# (recall that make expands variables names when used, not when defined,
+# so it is okay that these are defined later.)
+#
+# applications are expected to override the definitions of ALL_*
+# in order to add additional files to the COMMON_* files.
+ALL_OBJECTS = $(COMMON_OBJECTS) # applications are expected to override this
+ALL_SOURCES = $(COMMON_SOURCES) # applications are expected to override this
+#
+# all applications must link to the following objects
+# (or an equivalent)
+COMMON_OBJECTS = $(OBJECTS_EXPECTED) $(LIB3D_OBJECTS)
+COMMON_SOURCES = $(SOURCES_EXPECTED) $(LIB3D_SOURCES)
+
+# default locations for expected application files
+#
+#
+# (If you want to be able to vary a particular name,
+# please do so by making definitions such as the following
+# and then overriding it in the application Makefile)
+AuxFunc         = AuxFunc
+QinitFunc       = QinitFunc
+FluxFunc        = FluxFunc
+SourceTermFunc  = SourceTermFunc
+SetWaveSpd      = SetWaveSpd
+SetBndValues    = SetBndValues
+ProjectLeftEig  = ProjectLeftEig
+ProjectRightEig = ProjectRightEig
+
+OBJECTS_EXPECTED = \
+  main.o \
+  $(AuxFunc).o \
+  $(QinitFunc).o \
+  $(FluxFunc).o \
+  $(SourceTermFunc).o \
+  $(SetWaveSpd).o \
+  $(SetBndValues).o \
+  $(ProjectLeftEig).o \
+  $(ProjectRightEig).o \
+
+SOURCES_EXPECTED = \
+  main.cpp \
+  $(AuxFunc).cpp \
+  $(QinitFunc).cpp \
+  $(FluxFunc).cpp \
+  $(SourceTermFunc).cpp \
+  $(SetWaveSpd).cpp \
+  $(SetBndValues).cpp \
+  $(ProjectLeftEig).cpp \
+  $(ProjectRightEig).cpp \
+
+# default library files that applications are likely to override
+#
+# (either with local or alternative library object modules)
+#
+# (Please expand this list as needed rather than overriding
+# LIB3D_OBJECTS in application Makefiles so that we can add
+# new object modules to the library without breaking existing
+# application Makefiles. Of course we could just define variables
+# for all the object modules in the library, but by doing it this
+# way we keep track of which object modules are currently being
+# overridden by some application)
+#
+RunFinpack           = $(LIB3D)/RunFinpack
+InitApp              = $(LIB3D)/InitApp
+Output               = $(LIB3D)/Output
+ConSoln              = $(LIB3D)/ConSoln
+AfterQinit           = $(LIB3D)/AfterQinit
+AfterStep            = $(LIB3D)/AfterStep
+BeforeStep           = $(LIB3D)/BeforeStep
+ConstructL           = $(LIB3D)/ConstructL
+BeforeFullTimeStep   = $(LIB3D)/BeforeFullTimeStep
+AfterFullTimeStep    = $(LIB3D)/AfterFullTimeStep
+FinSolveRK           = $(LIB3D)/FinSolveRK
+FinSolveLxW          = $(LIB3D)/FinSolveLxW
+FinSolveUser         = $(LIB3D)/FinSolveUser
+SampleFunction       = $(LIB3D)/SampleFunction
+GlobalWaveSpd        = $(LIB3D)/GlobalWaveSpd
+
+# Routines needed for Lax-Wendroff (and multiderivative) time stepping:
+DFluxFunc            = $(LIB3D)/LaxWendroff/DFluxFunc
+D2FluxFunc           = $(LIB3D)/LaxWendroff/D2FluxFunc
+
+# TODO - these should be added in at a later time (-DS)
+#DogSolveLxW          = $(LIB3D)/DogSolveLxW
+#LaxWendroff          = $(LIB3D)/LaxWendroff/LaxWendroff
+#LaxWendroffTD        = $(LIB3D)/LaxWendroff/LaxWendroffTD
+#RiemannSolveLxW      = $(LIB3D)/LaxWendroff/RiemannSolveLxW_LLF
+
+LIB3D_OBJECTS = \
+  $(TOPLIB_OBJECTS) \
+  $(RunFinpack).o \
+  $(InitApp).o \
+  $(LIB3D)/DogParamsCart3.o \
+  $(SampleFunction).o \
+  $(Output).o \
+  $(ConSoln).o \
+  $(FinSolveRK).o \
+  $(FinSolveLxW).o \
+  $(LIB3D)/SetRKinfo.o \
+  $(LIB3D)/GetCFL.o \
+  $(GlobalWaveSpd).o \
+  $(AfterQinit).o \
+  $(FinSolveUser).o \
+  $(BeforeFullTimeStep).o \
+  $(BeforeStep).o \
+  $(AfterStep).o \
+  $(ConstructL).o \
+  $(AfterFullTimeStep).o \
+  $(LIB3D)/UpdateSoln.o \
+  $(DFluxFunc).o \
+  $(D2FluxFunc).o \
+
+LIB3D_SOURCES = \
+  $(LIB3D)/*.h \
+  $(TOPLIB_SOURCES) \
+  $(RunFinpack).cpp \
+  $(InitApp).cpp \
+  $(LIB3D)/DogParamsCart3.cpp \
+  $(SampleFunction).cpp \
+  $(Output).cpp \
+  $(ConSoln).cpp \
+  $(FinSolveRK).cpp \
+  $(FinSolveLxW).cpp \
+  $(LIB3D)/SetRKinfo.cpp \
+  $(LIB3D)/GetCFL.cpp \
+  $(GlobalWaveSpd).cpp \
+  $(AfterQinit).cpp \
+  $(FinSolveUser).cpp \
+  $(BeforeFullTimeStep).cpp \
+  $(BeforeStep).cpp \
+  $(AfterStep).cpp \
+  $(ConstructL).cpp \
+  $(AfterFullTimeStep).cpp \
+  $(LIB3D)/UpdateSoln.cpp \
+  $(DFluxFunc).cpp \
+  $(D2FluxFunc).cpp \
+

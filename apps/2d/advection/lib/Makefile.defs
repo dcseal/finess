@@ -1,0 +1,40 @@
+# The purpose of this library is to consolidate common functions used in each
+# "application".  For example, the flux function for each "advection"
+# application remains the same, the usual thing one wishes to modify are the
+# initial conditions.
+#
+# LIBRARY for 2D ADVECTION
+#
+
+APP_NAME  = advection
+APP_LIB   = $(FINESS)/apps/2d/$(APP_NAME)/lib
+
+# Flux function, and its derivatives
+FluxFunc    = $(APP_LIB)/FluxFunc
+
+# These time derivatives are required for the Lax-Wendroff (and
+# two-derivative) code:
+DFluxFunc   = $(APP_LIB)/DFluxFunc
+D2FluxFunc  = $(APP_LIB)/D2FluxFunc
+
+# Eigen decomposition of the Flux function
+ProjectLeftEig   = $(APP_LIB)/ProjectLeftEig
+ProjectRightEig  = $(APP_LIB)/ProjectRightEig
+
+# Wave speed functions
+SetWaveSpd       = $(APP_LIB)/SetWaveSpd
+
+# Auxilary function 
+# (not included here, because this defines the advection speeds for each
+# individual application)
+#
+# AuxFunc     = $(APP_LIB)/AuxFunc
+
+# place to add objects and sources
+#
+APP_LIB_OBJECTS = \
+
+#
+APP_LIB_SOURCES = \
+
+#

@@ -5,6 +5,7 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "WenoParams.h"
+#include "ConstructL.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -19,34 +20,14 @@ void ConstructL(
         dTensorBC1& smax)
 {
 
-    // User supplied functions:
-    void FluxFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-    void ProjectLeftEig( const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-        const dTensor2& Qvals, dTensor2& Wvals);
-    void ProjectRightEig(const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-                         const dTensor2& Wvals, dTensor2& Qvals);
-    void SetWaveSpd(const dTensor1& xedge, const dTensor1& Ql,
-            const dTensor1& Qr, const dTensor1& Auxl, const dTensor1& Auxr,
-            double& s1,double& s2);
-    void SourceTermFunc(const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-    void SampleFunction( int istart, int iend,
-        const dTensorBC2& qin, 
-        const dTensorBC2& auxin,  dTensorBC2& Fout,
-        void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
-
-    // Routine for WENO reconstrution
-    void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
-    void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
-
-    // Routine to deal with the silly mess where the Fluxes and the
-    // Projections are all defined separately.
-    void ConvertTranspose( const dTensor2& qin, dTensor2& qout );
-
-    // Parameters for the current grid
+    // Parameters for the current grid (could also use dogParams here)
     const int     mx = q.getsize(1);
     const int   meqn = q.getsize(2);
     const int   maux = aux.getsize(2);
     const int    mbc = q.getmbc();
+
+    // WENO reconstrution routine
+    void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
 
     // Size of the WENO stencil
     const int ws = dogParams.get_space_order();
@@ -54,13 +35,20 @@ void ConstructL(
     assert_ge( mbc, r );
 
     // The flux, f_{i-1/2}.  Recall that the
-    // flux lives at the nodal locations, i-1/2, so there is one more term in
-    // that vector than on the original grid.
+    // flux lives at the nodal locations, x_{i-1/2}, so there is one more term in
+    // this vector than in q or L.
     dTensorBC2  fhat(mx+1, meqn, mbc );
 
     // Grid spacing
     const double   xlow = dogParamsCart1.get_xlow();
     const double     dx = dogParamsCart1.get_dx();
+
+    double alpha1 = 0.;
+    if( dogParams.get_global_alpha() )
+    {
+        // Global wave speed
+        GlobalWaveSpd( q, aux, alpha1 );
+    }
 
     // ---------------------------------------------------------
     // Compute fhat_{i-1/2}
@@ -71,7 +59,9 @@ void ConstructL(
 
         // --------------------------------------------------------------------
         // Part I: Compute Roe Averages
-        //         TODO - the User may want to replace this ...
+        //         TODO - the User may want to replace this ... we should
+        //         insert a callback that would permit this to happen.  For
+        //         now, we are using simple arithmetic averages.
         // --------------------------------------------------------------------
         dTensor1 Qavg(meqn);
         for( int m=1; m <= meqn; m++ )
@@ -79,7 +69,7 @@ void ConstructL(
             double tmp = 0.5*( q.get(i,m) + q.get(i-1,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg(maux);
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,ma) + aux.get(i-1,ma) );
@@ -91,8 +81,8 @@ void ConstructL(
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1 );
+        dTensor2 qvals_t( ws+1, meqn ), auxvals_t( ws+1, maux );
         dTensor1 xvals( ws+1 );
         for( int s=1; s <= ws+1; s++ )
         {
@@ -140,7 +130,7 @@ void ConstructL(
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(1), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl(maux), Auxr(maux);
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         for( int m=1; m<= meqn; m++)
         {
@@ -156,7 +146,7 @@ void ConstructL(
 
         double s1,s2;
         SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
-        const double alpha = Max( abs(s1), abs(s2) );
+        const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, alpha  );
         const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
 
@@ -168,7 +158,6 @@ void ConstructL(
             gp.set( m, s, 0.5*(gvals.get(m,s)      + l_alpha*wvals.get(m,s) )      );
             gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - l_alpha*wvals.get(m,ws-s+2) ) );
         }
-
 
         // --------------------------------------------------------------------
         // Part IV: Perform a WENO reconstruction on the characteristic vars.
@@ -227,6 +216,7 @@ void ConstructL(
             }
         }
     }
+
     // ---------------------------------------------------------
     // Add extra contributions to Lstar
     // ---------------------------------------------------------

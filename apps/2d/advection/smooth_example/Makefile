@@ -3,15 +3,15 @@
 # default/library definitions
 include $(FINESS)/lib/2d/Makefile.defs
 
+# Default (application level) definintions
+include $(FINESS)/apps/2d/advection/lib/Makefile.defs
+
 # compiler options -- see file $(FINESS)/config/Makefile.config
 
 ## ------------------------------------------------------------------------- ##
 # overridden library objects
 #
-
-# These time derivatives are required for the Lax-Wendroff code:
-DFluxFunc              = DFluxFunc
-D2FluxFunc             = D2FluxFunc
+AuxFunc         = AuxFunc
 ## ------------------------------------------------------------------------- ##
 
 ALL_OBJECTS = \

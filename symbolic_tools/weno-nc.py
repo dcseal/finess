@@ -53,9 +53,9 @@ u2 = [ui,   uip1, uip2]
 u  = [u0, u1, u2]
 
 # Three Lagrange polynomials and their derivatives:
-p0 = compute_derivs( u0, 2, dx )
-p1 = compute_derivs( u1, 1, dx )
-p2 = compute_derivs( u2, 0, dx )
+p0 = compute_derivs( u[0], 2, dx )
+p1 = compute_derivs( u[1], 1, dx )
+p2 = compute_derivs( u[2], 0, dx )
 p  = [p0, p1, p2]
 
 interps = [0,0,0]

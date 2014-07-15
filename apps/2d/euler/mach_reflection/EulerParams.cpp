@@ -8,6 +8,7 @@
 
 void EulerParams::init(IniDocument& ini_doc)
 {
+
   string section_label = "eulerParams";
   IniDocument::Section& ini_sec = ini_doc[section_label];
 

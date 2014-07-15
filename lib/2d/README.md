@@ -21,7 +21,7 @@ Required functions and templates
 
 See 
 
-    $FINESS/lib/1d/blanks
+    $FINESS/lib/2d/blanks
 
 for required functions that need to be implemented by the user in order to run
 the code.  These include the following routines:
@@ -41,4 +41,4 @@ it in order to implement a new solver.
 WENO reconstruction options
 ===========================
 
-TODO - currently no WENO reconstruction options are implemented.
+See top-level README for WENO reconstruction options.

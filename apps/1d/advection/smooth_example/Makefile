@@ -3,18 +3,16 @@
 # default/library definitions
 include $(FINESS)/lib/1d/Makefile.defs
 
+# Default (application level) definintions
+include $(FINESS)/apps/1d/advection/lib/Makefile.defs
+
 # compiler options
 #
 # overridden library objects
 #
 # DogSolveUser           = DogSolveUser
-
-## ------------------------------------------------------------------------- ##
-# These time derivatives are required for the Lax-Wendroff (and
-# two-derivative) code:
-DFluxFunc              = DFluxFunc
-D2FluxFunc             = D2FluxFunc
-## ------------------------------------------------------------------------- ##
+ConstructIntegratedF    = ConstructIntegratedF
+ConSoln                 = ConSoln
 
 # place to add object modules
 #
