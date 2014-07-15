@@ -92,6 +92,7 @@ AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
 DogSolveUser         = $(LIB1D)/DogSolveUser
 SampleFunction       = $(LIB1D)/SampleFunction
 GlobalWaveSpd        = $(LIB1D)/GlobalWaveSpd
+#FinSolveRK_PIF       = $(LIB1D)/FinSolveRK_PIF
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB1D)/LaxWendroff/DFluxFunc

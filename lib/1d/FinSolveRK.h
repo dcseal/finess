@@ -17,6 +17,8 @@ void ConSoln(
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
 void ConstructL( const dTensorBC2& aux, const dTensorBC2& q,
         dTensorBC2& Lstar, dTensorBC1& smax);
+void ConstructL_NOC( const dTensorBC2& aux, const dTensorBC2& q,
+        dTensorBC2& Lstar, dTensorBC1& smax);
 
 // orders 1-4 time stepping:
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
