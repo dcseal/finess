@@ -256,7 +256,7 @@ void FinSolveMD(
             if( dogParams.get_verbosity() )
             {
                 cout << setprecision(3);
-                cout << "FinSolveLxW2D ... Step" << setw(5) << n_step;
+                cout << "FinSolveMD2D ... Step" << setw(5) << n_step;
                 cout << "   CFL =" << setw(6) << fixed << cfl;
                 cout << "   dt =" << setw(11) << scientific << dt;
                 cout << "   t =" << setw(11) << scientific << t <<endl;
@@ -282,7 +282,7 @@ void FinSolveMD(
                 t = told;
                 if( dogParams.get_verbosity() )
                 {
-                    cout<<"FinSolveLxW2D rejecting step...";
+                    cout<<"FinSolveMD2D rejecting step...";
                     cout<<"CFL number too large";
                     cout<<endl;
                 }
