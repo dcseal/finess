@@ -3,10 +3,9 @@
 # application remains the same, the usual thing one wishes to modify are the
 # initial conditions.
 #
-# LIBRARY for 1D EULER
+# LIBRARY for 1D Euler Equations
 #
 
-#SL_LIB   = $(SL_TOPLIB) -I$(DOGPACK)/apps/semi_lagrangian/lib/1d/
 APP_NAME  = euler
 APP_LIB   = $(FINESS)/apps/1d/$(APP_NAME)/lib
 
@@ -35,13 +34,9 @@ EulerParams = $(APP_LIB)/EulerParams
 #
 APP_LIB_OBJECTS = \
 EulerParams.o \
-#  $(SL_TOPLIB_OBJECTS) \
-#  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.o \
 
 #
 APP_LIB_SOURCES = \
 EulerParams.cpp \
-#  $(SL_TOPLIB_SOURCES) \
-#  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.cpp \
 
 #

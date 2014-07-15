@@ -47,7 +47,7 @@ def main( ):
         minq = min( data[:,2] )
         maxq = max( data[:,3] )
         dtv  = max( tv[1:] - tv[0:len(tv)-1] )
-        print("%2.3f %2.5e %2.5e %2.5e" % ( cfl_now, dtv, -minq, maxq-1.0 ) )
+        print("%2.3f %2.5e %+2.5e %+2.5e" % ( cfl_now, dtv, -1.0-minq, maxq-1.0 ) )
 
 if __name__ == '__main__':
     import optparse
