@@ -288,21 +288,21 @@ const int mbc_small      = 3;
 
     for (int i = 1; i <= mx+1; i++)
     for (int j = 1; j <= my;   j++)
-        for( int m=1; m <= meqn; m++ )
-        {
-            double hf =  0.5*(F.get(i-1,j,m)+F.get(i,j,m)) 
-                        + 0.5*alpha_x*(q.get(i-1,j,m)-q.get(i,j,m));
-            Fhat.set(i,j,m, hf );
-        }
+    for( int m=1; m <= meqn; m++ )
+    {
+        double hf =  0.5*(F.get(i-1,j,m)+F.get(i,j,m)) 
+                    + 0.5*alpha_x*(q.get(i-1,j,m)-q.get(i,j,m));
+        Fhat.set(i,j,m, hf );
+    }
 
     for (int i = 1; i<= mx;   i++)
     for (int j = 1; j<= my+1; j++)
-        for( int m=1; m <= meqn; m++ )
-        {
-            double hf =  0.5*(G.get(i,j-1,m)+G.get(i,j,m)) 
-                        + 0.5*alpha_y*(q.get(i,j-1,m)-q.get(i,j,m));
-            Ghat.set(i,j,m, hf );
-        }
+    for( int m=1; m <= meqn; m++ )
+    {
+        double hf =  0.5*(G.get(i,j-1,m)+G.get(i,j,m)) 
+                    + 0.5*alpha_y*(q.get(i,j-1,m)-q.get(i,j,m));
+        Ghat.set(i,j,m, hf );
+    }
 
 
     // --------------------------------------------------------------------- //
