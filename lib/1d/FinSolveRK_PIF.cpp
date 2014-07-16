@@ -55,6 +55,8 @@ void DogSolveUser( dTensorBC2& aux, dTensorBC2& qold,
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
 // WENO reconstruction without projection onto characteristic variables
 //
 // Consider stage values, defined by
@@ -75,6 +77,8 @@ void DogSolveUser( dTensorBC2& aux, dTensorBC2& qold,
 //
 // where f is the exact flux function, and this derivative is computed using
 // WENO, together with the projection onto characteristic variables.
+//
+///////////////////////////////////////////////////////////////////////////////
 void FinSolveRK_PIF(
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
     dTensorBC1& smax,
@@ -321,6 +325,12 @@ double EulerStep( double t, double dt,
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// A ConstructL routine designed intentionally wihtout performing
+// characteristic decomposition onto the primitive variables.
+//
+///////////////////////////////////////////////////////////////////////////////
 void ConstructL_NOC(
         const dTensorBC2& aux,
         const dTensorBC2& q,
@@ -466,6 +476,13 @@ void ConstructL_NOC(
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// A routine that performs flux-splitting together with a "time-averaged" flux
+// that has already been computed.  That is, fstar is expected to be a
+// high-order, in time, approximation to the flux function.
+//
+///////////////////////////////////////////////////////////////////////////////
 void ConstructL( 
     const dTensorBC2& aux, 
     const dTensorBC2& q, 
@@ -504,19 +521,19 @@ void ConstructL(
         GlobalWaveSpd( q, aux, alpha1 );
     }
 
-    // ---------------------------------------------------------
+    // ---------------------------------------------------------------------- //
     // Compute fhat_{i-1/2}
-    // ---------------------------------------------------------
+    // ---------------------------------------------------------------------- //
 #pragma omp parallel for
     for (int i= 1; i<= mx+1; i++)
     {
 
-        // --------------------------------------------------------------------
+        // ------------------------------------------------------------------ //
         // Part I: Compute Roe Averages
         //         TODO - the User may want to replace this ... we should
         //         insert a callback that would permit this to happen.  For
         //         now, we are using simple arithmetic averages.
-        // --------------------------------------------------------------------
+        // ------------------------------------------------------------------ //
         dTensor1 Qavg(meqn);
         for( int m=1; m <= meqn; m++ )
         {
@@ -530,9 +547,9 @@ void ConstructL(
             Auxavg.set(ma, tmp );
         }
 
-        // --------------------------------------------------------------------
+        // ------------------------------------------------------------------ //
         // Part II: Compute w_{i+r} = R^{-1} q  and g_{i+r} = R^{-1} f
-        // --------------------------------------------------------------------
+        // ------------------------------------------------------------------ //
 
         // Sample q (and f) over the stencil:
         dTensor1 xvals( ws+1 );
@@ -559,12 +576,14 @@ void ConstructL(
             }
         }
 
+        // ------------------------------------------------------------------ //
         // The format of Flux and ProjectLeftEig/ProjectRightEig do not
         // contain the same order.  That is, Flux assumes q(1:npts, 1:meqn),
         // whereas the other functions assume q(1:meqn, 1:npts).  For
         // consistency, I will copy back to the latter, because the WENO
         // reconstruction *should* be faster if the list of points is second.
         // (-DS)
+        // ------------------------------------------------------------------ //
         ConvertTranspose( qvals,   qvals_t   );
         ConvertTranspose( auxvals, auxvals_t );
         ConvertTranspose( fvals, fvals_t     );
@@ -574,9 +593,9 @@ void ConstructL(
         ProjectLeftEig( Auxavg, Qavg, qvals, wvals );
         ProjectLeftEig( Auxavg, Qavg, fvals, gvals );
 
-        // --------------------------------------------------------------------
+        // ------------------------------------------------------------------ //
         // Part III: Apply Lax-Friedrich's flux splitting to g
-        // --------------------------------------------------------------------
+        // ------------------------------------------------------------------ //
 
         // -- Compute a local wave speed -- //
         dTensor1 xedge(1), Ql(meqn), Qr(meqn);
@@ -609,9 +628,9 @@ void ConstructL(
             gm.set( m, s, 0.5*(gvals.get(m,ws-s+2) - l_alpha*wvals.get(m,ws-s+2) ) );
         }
 
-        // --------------------------------------------------------------------
+        // ------------------------------------------------------------------ //
         // Part IV: Perform a WENO reconstruction on the characteristic vars.
-        // --------------------------------------------------------------------
+        // ------------------------------------------------------------------ //
         dTensor2 dGp( meqn, 1 ), dGm( meqn, 1 );
         WenoReconstruct( gp, dGp );
         WenoReconstruct( gm, dGm );
@@ -631,9 +650,8 @@ void ConstructL(
         }
 
     }
-    // --------------------------------------------------------------------- //
 
-    // --------------------------------------------------------------------- //
+    // ---------------------------------------------------------------------- //
     // Construct Lstar, defined by:
     //
     //    d/dt q_i = Lstar = -1/dx( fh_{i+1/2} - fh_{i-1/2} )
@@ -641,7 +659,7 @@ void ConstructL(
     // TODO - We should be able to avoid this for loop if we save Lstar in the
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
-    // --------------------------------------------------------------------- //
+    // ---------------------------------------------------------------------- //
     if( dogParams.get_source_term() )
     {
         // Compute the source term.
@@ -667,9 +685,9 @@ void ConstructL(
         }
     }
 
-    // ---------------------------------------------------------
+    // ---------------------------------------------------------------------- //
     // Add extra contributions to Lstar
-    // ---------------------------------------------------------
+    // ---------------------------------------------------------------------- //
     // LstarExtra(aux,q,Lstar);
 
 }
