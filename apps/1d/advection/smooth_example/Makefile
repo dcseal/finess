@@ -12,7 +12,6 @@ include $(FINESS)/apps/1d/advection/lib/Makefile.defs
 #
 DogSolveUser           = $(FINESS)/lib/1d/FinSolveRK_PIF
 ConstructIntegratedF   = ConstructIntegratedF
-ConSoln                = ConSoln
 
 # place to add object modules
 #

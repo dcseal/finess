@@ -10,6 +10,10 @@
 APP_NAME  = advection
 APP_LIB   = $(FINESS)/apps/1d/$(APP_NAME)/lib
 
+# For these problems, we'll use a common ConSoln function.  
+# This tests for mass, L1-norm, L2-norm and Linf-norm.
+ConSoln     = $(APP_LIB)/ConSoln
+
 # Flux function, and its derivatives
 FluxFunc    = $(APP_LIB)/FluxFunc
 
@@ -27,6 +31,7 @@ SetWaveSpd       = $(APP_LIB)/SetWaveSpd
 
 # Auxilary function
 AuxFunc     = $(APP_LIB)/AuxFunc
+
 
 # place to add objects and sources
 #

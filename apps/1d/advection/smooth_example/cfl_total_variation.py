@@ -5,8 +5,10 @@ from subprocess import call, Popen, PIPE
 import numpy as np
 
 def main( ):
-    '''Open folders output00[nums] and extract the total variation from these
-    files.
+    '''Open folders output00[nums] and extract the total variation and conserved
+    quatities from these files.
+
+    See also: ConSoln.cpp.
 '''
 
     # parser for the parameters.ini files (needed to read in the cfl number)
@@ -28,9 +30,9 @@ def main( ):
     tvd_vec = np.zeros( (i,1) )
     print("found %i folders" % len(tvd_vec) )
 
-    print("--------------------------------------------------------------")
-    print("CFL Number; largest change in TV; Minimum value; Maximum value")
-    print("--------------------------------------------------------------")
+    print("-----------------------------------------------------------------------")
+    print("CFL; Deviation in TV; Largest undershoot; Largest overshoot")
+    print("-----------------------------------------------------------------------")
 
     for i in range( len(tvd_vec) ):
 
@@ -47,15 +49,9 @@ def main( ):
         minq = min( data[:,2] )
         maxq = max( data[:,3] )
         dtv  = max( tv[1:] - tv[0:len(tv)-1] )
-        print("%2.3f %2.5e %+2.5e %+2.5e" % ( cfl_now, dtv, -1.0-minq, maxq-1.0 ) )
+        print("%2.3f;    %2.5e;    %2.5e;    %2.5e" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) )
 
 if __name__ == '__main__':
-    import optparse
-    parser = optparse.OptionParser(
-        usage='''%%prog (-h |
-    
-%s''' % main.__doc__)
-
-    opts, args = parser.parse_args()
+    main.__doc__
 
     main( )

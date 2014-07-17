@@ -10,7 +10,6 @@ include $(FINESS)/apps/1d/advection/lib/Makefile.defs
 #
 # overridden library objects
 #
-ConSoln                 = ConSoln
 
 # place to add object modules
 #

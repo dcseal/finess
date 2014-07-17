@@ -62,6 +62,7 @@ void ConSoln(
                 qsum.set(m, 4, Max( abs_q, qsum.get(m,4) )     );  // L-inf norm
 
             }
+            qsum.set( 3, sqrt( qsum.get(3) ) );
         }
     }
     else // with capacity function
@@ -80,6 +81,7 @@ void ConSoln(
                 qsum.set(m, 3, qsum.get(m,3) + atmp*sqdx*qtmp*qtmp );  // L2-norm
                 qsum.set(m, 4, Max( abs_q, qsum.get(m,4) )         );  // L-inf norm
             }
+            qsum.set( 3, sqrt( qsum.get(3) ) );
         }
     }
 
