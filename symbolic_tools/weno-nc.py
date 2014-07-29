@@ -90,6 +90,8 @@ linear_val   = sum( (dx**2)*u*g for (u,g) in zip( u_stencil, gamma[2,:] ) )
 error = sympy.simplify( sympy.expand( sub_sten_val - linear_val ) )
 print( error )
 
+# Now, work out 2nd-derivative using larger stencil
+
 # Smoothness indicators
 #   eps  = sympy.symbols("epsilon")
 #   beta = [None]*3

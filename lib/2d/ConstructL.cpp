@@ -309,6 +309,7 @@ void ConstructL(
         dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
+
         for( int m=1; m<= meqn; m++)
         {
             Ql.set(m, q.get(i, j-1, m) );

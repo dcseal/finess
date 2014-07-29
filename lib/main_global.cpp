@@ -7,10 +7,10 @@
 #include "dimdefs.h"
 
 /*
- * Common main function that's called by every (3D) application.
+ * Common main function that's called by every application.
  *
  * Each application has its own main file, and Makefile that builds that local
- * main.  When the code is built in any application directory, every (3D) 
+ * main.  When the code is built in any application directory, every
  * application links to this common main function, that executes the code.
  *
  * The purpose of placing this extra layer between appname/main.cpp and
@@ -40,6 +40,7 @@ int main_global(int argc, char* argv[])
     RunStartScript(NDIMS);
 
     // Call the ``RunFinpack'' routine, which executes the code
+    // Each dimension has its own version of this routine.
     int RunFinpack( string outputdir );
     int m = RunFinpack( get_outputdir() );
 
@@ -52,4 +53,5 @@ int main_global(int argc, char* argv[])
         << scientific << time2-time1 << endl << endl;
 
     return m;
+
 }
