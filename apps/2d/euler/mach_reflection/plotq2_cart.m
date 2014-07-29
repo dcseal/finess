@@ -83,8 +83,8 @@ caxis([1,25]);
 figure(1)
 
 % n1 = frame number
-fname = strcat( strcat( 'density', num2str(n1, '%02d' ) ), '.jpg' );
-print(1, '-djpeg', fname );
-fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
-print(3, '-deps', fname  );
+%fname = strcat( strcat( 'density', num2str(n1, '%02d' ) ), '.jpg' );
+%print(1, '-djpeg', fname );
+%fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
+%print(3, '-deps', fname  );
 
