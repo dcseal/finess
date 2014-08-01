@@ -18,11 +18,12 @@ pi  = sympy.pi   # mathematical pi
 
 def central_diff1( u, dx ):
     """Compute first-deriative using a five-point centered stencil."""
-    u_x  = ( -u[4] - 8*(u[3]-u[1]) + u[0] )/(12*dx)
+    u_x  = (  u[0] - 8*(u[1]-u[3]) - u[4] )/(12*dx)
     return u_x
 
 def central_diff2( u, dx ):
     """Compute second-deriative using a five-point centered stencil."""
+#   u_xx = ( -u[4] + 16*( u[3] + u[1] ) - 30*u[2] - u[0] )/( 12*(dx**2) )
     u_xx = ( -u[4] + 16*( u[3] + u[1] ) - 30*u[2] - u[0] )/( 12*(dx**2) )
     return u_xx
 
@@ -44,7 +45,7 @@ def ConstructIntegratedF( q_stencil, u, dx, dt ):
     q_x  = sympy.simplify( central_diff1( q_stencil, dx ) )
     q_xx = sympy.simplify( central_diff2( q_stencil, dx ) )
 
-    F = u*( q_stencil[2] - (u*dt)/2 * q_x + (u*dt)**3 / 6 * q_xx )
+    F = u*( q_stencil[2] - (u*dt)*(q_x/2) + (u*dt)**2*(q_xx/6) )
 
     return sympy.simplify( F )
 
@@ -60,16 +61,16 @@ def LinearReconstruct( u_stencil ):
 
     return uim2/30 - (13*uim1)/60 + 47*(ui/60) + 9*(uip1/20) - uip2/20
 
-dx = sympy.symbols("dx")
-dt = sympy.symbols("dt")
-nu = sympy.symbols("nu")   # CFL number
-u  = sympy.symbols("u" )   # advection speed
+dx = sympy.Symbol("dx", real=True )    # spatial resolution
+dt = sympy.Symbol("dt", real=True )    # time step
+nu = sympy.Symbol("nu", real=True )    # CFL number
+u  = sympy.Symbol("u" , real=True )    # advection speed
 
 dt = nu*dx/u
 
 # Ansatz: u_i = exp( I * k * x ).  Note that x = j*dx for some index i.
 # WLOG, we'll assume that the stencil is centered at i=0.
-k  = sympy.symbols("k")  # Fourier number
+k  = sympy.symbols("k", real=True )  # Fourier number
 
 qim5 = exp( I * k * (-5) * dx )
 qim4 = exp( I * k * (-4) * dx )
@@ -98,9 +99,11 @@ Fiph = sympy.simplify( LinearReconstruct( [Fim2, Fim1, Fi, Fip1, Fip2] ) )
 
 # Update is q_i^{n+1} = q_i^n - dt ( Fiph - Fim2 ) / dx
 stability_polynomial = sympy.collect( sympy.expand(1 - dt*(Fiph - Fimh)/dx), nu )
-print( stability_polynomial )
+print('Stability polynomial for Taylor PIF-WENO is ')
+sympy.pretty_print( stability_polynomial )
 
 # Try this with a simpler scheme that has a known solution:
-# forward_euler = sympy.collect( 1 - (u*dt)*( qi - qim1 ) / dx, exp(-I*k*dx) )
-
+forward_euler = sympy.collect( 1 - (u*dt)*( qi - qim1 ) / dx, exp(-I*k*dx) )
+print('Stability polynomial for Forward Euler is ')
+sympy.pretty_print( forward_euler )
 
