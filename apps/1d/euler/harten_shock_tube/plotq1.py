@@ -1,7 +1,7 @@
 from __future__ import print_function  # used for printing to file
 
 #-----------------------------------------------------------------------------#
-def plotq1(m,meth1,meqn,mx,time,xc,qsoln):
+def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     
     import matplotlib.pyplot as plt
     import numpy as np

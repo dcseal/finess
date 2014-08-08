@@ -19,12 +19,9 @@ the PDE:
 Required functions and templates
 --------------------------------
 
-See 
-
-    $FINESS/lib/2d/blanks
-
-for required functions that need to be implemented by the user in order to run
-the code.  These include the following routines:
+See [$FINESS/lib/2d/blanks](blanks/README.md) for required functions that need
+to be implemented by the user in order to run the code.  These include the
+following routines:
 
 * FluxFunc          - flux function for the PDE.
 * QinitFunc         - initial conditions for the PDE.
@@ -37,8 +34,3 @@ the code.  These include the following routines:
 
 It is recommended that a user copies an existing application and then modifies
 it in order to implement a new solver.
-
-WENO reconstruction options
-===========================
-
-See top-level README for WENO reconstruction options.

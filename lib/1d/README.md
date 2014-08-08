@@ -2,7 +2,7 @@ FINESS - the FINite difference ESSentially non-oscillatory software package.
 ============================================================================
 
 This folder contains all of the main library routines required for running
-[FINESS](../..//README.md).
+[1D applications](./README.md) of [FINESS](../..//README.md).
 
 Basic structure
 ---------------
@@ -19,12 +19,9 @@ the PDE:
 Required functions and templates
 --------------------------------
 
-See 
-
-    $FINESS/lib/1d/blanks
-
-for required functions that need to be implemented by the user in order to run
-the code.  These include the following routines:
+See [$FINESS/lib/1d/blanks](blanks/README.md) for required functions that need
+to be implemented by the user in order to run the code.  These include the
+following routines:
 
 * FluxFunc          - flux function for the PDE.
 * QinitFunc         - initial conditions for the PDE.

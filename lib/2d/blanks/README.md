@@ -1,11 +1,22 @@
-# Default (blank) templates
+# Default (blank) templates for 2D FINESS
 
-This is a collection of potential templates that can be used for each
-application.  It is advisable that the user copies an existing application in
-place of copying or modifying these.
+This is a collection of potential templates in the [2d](../README.md) branch
+of [FINESS](../../../README.md) that can be used for each application.  It is
+advisable that the user copies an existing application in place of copying or
+modifying these.
 
 The code assumes that each of these function have been defined in order to
 compile.  For example, please visit the application directory.
 
-TODO - some documentation needs to be written here, as well as in each REQUIRED
-TEMPLATE.  See lib/1d/blanks for what's in there.
+A typical application is required to define the following
+
+* AuxFunc.cpp
+* FluxFunc.cpp
+* ProjectLeftEig.cpp
+* ProjectRightEig.cpp
+* QinitFunc.cpp
+* SetBndValues.cpp
+* SetWaveSpd.cpp
+* SourceTermFunc.cpp
+
+Please visit the source code for a description of these functions.

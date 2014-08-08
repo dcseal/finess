@@ -171,7 +171,7 @@ to see a list of options.
 
 
             # USER SUPPLIED FUNCTION (or default function )
-            plotq1(m-1, meth1, meqn, mx, time, xc, qsoln)
+            plotq1(m-1, meth1, meqn, mx, time, xc, qsoln, auxsoln)
 
     plt.ioff()
     print ""

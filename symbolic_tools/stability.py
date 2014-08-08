@@ -101,6 +101,8 @@ Fiph = sympy.simplify( LinearReconstruct( [Fim2, Fim1, Fi, Fip1, Fip2] ) )
 stability_polynomial = sympy.collect( sympy.expand(1 - dt*(Fiph - Fimh)/dx), nu )
 print('Stability polynomial for Taylor PIF-WENO is ')
 sympy.pretty_print( stability_polynomial )
+print('Stability polynomial for Taylor PIF-WENO is ')
+print( stability_polynomial )
 
 # Try this with a simpler scheme that has a known solution:
 forward_euler = sympy.collect( 1 - (u*dt)*( qi - qim1 ) / dx, exp(-I*k*dx) )

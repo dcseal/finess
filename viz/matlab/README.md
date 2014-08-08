@@ -1,13 +1,18 @@
 DoGPack plotting routines based on the MATrix LABoratory (MATLAB)
 =================================================================
 
-This library contains plotting routines written in MATLAB.  Many of these work
+This library contains plotting routines for [FINESS](../../README.md) that
+are written in [MATLAB](http://www.mathworks.com/).  Many of these work
 may work out of the box with the open-source alternative to MATLAB called 
-Octave (http://www.gnu.org/software/octave/), but the developers do not keep
+[Octave](http://www.gnu.org/software/octave/), but the developers do not keep
 up to date with this option.
 
-See also: viz/python for a complete set of Python (http://www.python.org/)
-plotting routines based on matplotlib (http://matplotlib.org/).
+See also: ['$FINESS/viz/python'](../python/README.md) for a complete set of 
+[Python](http://www.python.org/)
+plotting routines based on [matplotlib](http://matplotlib.org/).
+
+NOTE: most of these routines are identical to those found in the
+[DoGPack](http://www.dogpack-code.org) software package.
 
 Basic overview
 --------------
