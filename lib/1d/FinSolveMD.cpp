@@ -162,7 +162,7 @@ void FinSolveMD(
                 case 4:
 
                 // -- Stage 1 -- //
-                ConstructIntegratedF( 0.5*dt, aux, qnew, smax, F);
+//              ConstructIntegratedF( 0.5*dt, aux, qnew, smax, F);
 
                 // That call is equivalent to the following call:
                 // Note that the dt has been rescaled in order to retain the
@@ -173,30 +173,36 @@ void FinSolveMD(
 //                  0.0, 0.0, auxstar, qstar,
 //                  smax, F);
 
-                // Update the solution:
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qnew.vget( k ) + 0.5*dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
-                }
+//              // Update the solution:
+//              ConstructLxWL( aux, qnew, F, Lstar, smax);
+//  #pragma omp parallel for
+//              for( int k=0; k < numel; k++ )
+//              {
+//                  double tmp = qnew.vget( k ) + 0.5*dt*Lstar.vget(k);
+//                  qstar.vset(k, tmp );
+//              }
 
-                // Perform any extra work required:
-                AfterStep(dt, auxstar, qstar );
+//              // Perform any extra work required:
+//              AfterStep(dt, auxstar, qstar );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+//              SetBndValues(aux,      qnew);
+//              SetBndValues(auxstar, qstar);
 
                 // -- Stage 2 -- //
+//              ConstructIntegratedF( dt, 
+//                  1.0, (1.0/6.0), aux, qnew, 
+//                  0.0, (1.0/3.0), auxstar, qstar,
+//                  smax, F);
                 ConstructIntegratedF( dt, 
-                    1.0, (1.0/6.0), aux, qnew, 
-                    0.0, (1.0/3.0), auxstar, qstar,
+                    1.0, 0.5, aux, qnew, 
+                    0.0, 0.0, auxstar, qstar,
                     smax, F);
-                ConstructLxWL( auxstar, qstar, F, Lstar, smax);
+
+                // ConstructLxWL( auxstar, qstar, F, Lstar, smax);
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
 
                 // Update the solution:
-#pragma omp parallel for
+  #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
                     double tmp = qold.vget( k ) + dt*Lstar.vget(k);
@@ -207,7 +213,7 @@ void FinSolveMD(
                 SetBndValues(auxstar, qstar);
 
                 // Perform any extra work required:
-                AfterStep(dt, auxstar, qstar );
+                AfterStep(dt, aux, qnew );
 
                 break;
 
@@ -299,7 +305,7 @@ void FinSolveMD(
 
             // see whether to accept or reject this step
             if (cfl<=CFL_max)
-                // accept
+            // accept
             { m_accept = 1; }
             else 
                 //reject

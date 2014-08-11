@@ -17,7 +17,7 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.clf()
     plt.gca().set_aspect('auto')
     plt.gca().set_xlim([xc[0],xc[mx-1]])
-    plt.gca().set_ylim([0.9,3.1])
+    plt.gca().set_ylim([0.39, 5.1])
     plt.plot(xc,qsoln[:,m],'bo')
     tmp1 = "".join(("Density at t = ",str(time)))
     title = "".join((tmp1,"     [DoGPack]"))
@@ -33,7 +33,7 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.clf()
     plt.gca().set_aspect('auto')
     plt.gca().set_xlim([xc[0],xc[mx-1]])
-    plt.gca().set_ylim([0.8, 3.2])
+    plt.gca().set_ylim([-0.01, 12.10])
     plt.plot(xc,press,'bo')
     tmp1 = "".join(("Pressure at t = ",str(time)))
     title = "".join((tmp1,"     [DoGPack]"))
@@ -49,18 +49,20 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.clf()
     plt.gca().set_aspect('auto')
     plt.gca().set_xlim([xc[0],xc[mx-1]])
-    plt.gca().set_ylim([-0.1,0.8])
+    plt.gca().set_ylim([-0.11,  3.10])
     plt.plot(xc,u,'bo')
     tmp1 = "".join(("Velocity at t = ",str(time)))
     title = "".join((tmp1,"     [DoGPack]"))
     plt.title(title)
     plt.draw()
 
-    data = np.array( [xc, qsoln[:,0], qsoln[:,1], qsoln[:,4] ] )
+
+    # Save data file in a different format, if so desired
+#   data = np.array( [xc, qsoln[:,0], qsoln[:,1], qsoln[:,4] ] )
 #   fmt = '%.15e'
 #   with open( 'dg_picture.dat', 'wb' ) as f:
 #     print( fmt % time, file=f )         # time instant on first row
-#     np.savetxt( 'dg_picture.dat', np.transpose( data ), fmt=fmt )
-    np.savetxt( 'dg_picture.dat', np.transpose( data ) )
+#     np.savetxt( 'weno_picture.dat', np.transpose( data ), fmt=fmt )
+#   np.savetxt( 'weno_picture.dat', np.transpose( data ) )
  
 #-----------------------------------------------------------------------------#

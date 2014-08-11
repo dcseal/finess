@@ -53,8 +53,7 @@ set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',-5:2.5:5);
 set(gca,'ytick',0:1:5);
 set(gca,'fontsize',16);
-%t1 = title(['Density at t = ',num2str(time),'     [DoGPack]']); 
-t1 = title(['Density']);
+t1 = title(['Density at t = ',num2str(time),'     [DoGPack]']); 
 set(t1,'fontsize',16);
 if(fids ~= -1)
     hold on;
@@ -77,8 +76,7 @@ set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',-5:2.5:5);
 set(gca,'ytick',0:2:12);
 set(gca,'fontsize',16);
-%t1 = title(['Pressure at t = ',num2str(time),'     [DoGPack]']); 
-t1 = title(['Pressure']);
+t1 = title(['Pressure at t = ',num2str(time),'     [DoGPack]']); 
 set(t1,'fontsize',16);
 if(fids ~= -1)
     hold on;
@@ -98,8 +96,8 @@ set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',-5:2.5:5);
 set(gca,'ytick',0:1:3);
 set(gca,'fontsize',16);
-%t1 = title(['u^1(x,t) at t = ',num2str(time),'     [DoGPack]']); 
-t1 = title(['Velocity']);
+t1 = title(['u^1(x,t) at t = ',num2str(time),'     [DoGPack]']); 
+%t1 = title(['Velocity']);
 set(t1,'fontsize',16);
 
 if(fids ~= -1)

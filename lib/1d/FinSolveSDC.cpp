@@ -156,11 +156,11 @@ void FinSolveSDC(
 
                     // --------------------------------------------------------
                     // Take 1st Euler time step
+                    SetBndValues(aux, qnew);
                     EulerStep(dtvec.get(1),smax,L0,aux,qnew,q1);
                     AfterStep(dtvec.get(1),aux,q1);
 
                     // Take 2nd Euler time step
-                    //dogState->set_dt(dtvec.get(2));
                     SetBndValues(aux, q1);
                     BeforeStep(dtvec.get(2),aux,q1);
                     ConstructL(aux,q1,L1,smax);
@@ -173,7 +173,8 @@ void FinSolveSDC(
                     ConstructL(aux,q2,L2,smax);
 
                     // Iterate to construct 
-                    for(int N=1; N<=(torder-1); N++)
+                    //for(int N=1; N <= (torder-1); N++)
+                    for(int N=1; N <= torder; N++)
                     {
                         // Integrate residual over time step
                         ResInt(dt,L0,L1,L2,L3,L4,L5,IL);
@@ -184,8 +185,7 @@ void FinSolveSDC(
                         for(int m=1; m<=meqn; m++)
                         {    
                             // Get error in first sub-interval
-                            double err1 = -(q1.get(i,m)-qnew.get(i,m)) 
-                                + IL.get(i,m,1);
+                            double err1 = -(q1.get(i,m)-qnew.get(i,m)) + IL.get(i,m,1);
 
                             // Correct solution
                             q1.set(i,m, q1.get(i,m) + err1 );
@@ -198,7 +198,6 @@ void FinSolveSDC(
                         ConstructL(aux,q1,L1new,smax);
 
                         // Second sub-interval            
-                        //dogState->set_dt(dtvec.get(2));
                         for(int i=(1-mbc); i<=(mx+mbc); i++)
                         for(int m=1; m<=meqn; m++)
                         {

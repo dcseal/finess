@@ -57,7 +57,10 @@ void DogSolveUser( dTensorBC2& aux, dTensorBC2& qold,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// WENO reconstruction without projection onto characteristic variables
+// WENO reconstruction without projection onto characteristic variables.  
+//
+// WARNING: This is an experiemental routine that has not been thoroughly 
+//          tested.
 //
 // Consider stage values, defined by
 //

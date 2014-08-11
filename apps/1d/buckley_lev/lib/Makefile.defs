@@ -6,7 +6,6 @@
 # LIBRARY for 1D Buckley-Leverett problem
 #
 
-#SL_LIB   = $(SL_TOPLIB) -I$(DOGPACK)/apps/semi_lagrangian/lib/1d/
 APP_NAME  = buckley_lev
 APP_LIB   = $(FINESS)/apps/1d/$(APP_NAME)/lib
 

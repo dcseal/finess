@@ -27,7 +27,8 @@ gamma = 5/3;
 
 figure(1);
 clf;
-pz=plot(xc,qsoln(:,m),'r-');
+%pz=plot(xc,qsoln(:,m),'r-');
+pz=plot(xc,qsoln(:,m),'bo');
 set(pz,'linewidth',2);
 set(pz,'markersize',8);
 hold off;
@@ -59,7 +60,8 @@ press = (gamma-1)*(qsoln(:,5)-0.5*(qsoln(:,2).^2+qsoln(:,3).^2+ ...
     
 figure(2)
 clf
-pz=plot(xc,press,'r-');
+%pz=plot(xc,press,'r-');
+pz=plot(xc,press,'bo');
 set(pz,'linewidth',2);
 set(pz,'markersize',8);
 hold off;
