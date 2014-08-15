@@ -112,23 +112,24 @@ void FinSolveRK_PIF(
     // Allocate storage for this solver
     dTensorBC3 qstar(mx, my, meqn, mbc);
 
-    // Flux function (from the PDE)
+    // Flux function (from the PDE).  These are used to construct a
+    // time-averaged flux function.  In the future, a minimal storage method
+    // would require performing an ``add-save'' operation on fstar and gstar
+    // in place of holding each of these in memory.
     dTensorBC4 R1(mx, my,  meqn, 2, mbc);
     dTensorBC4 R2(mx, my,  meqn, 2, mbc);
     dTensorBC4 R3(mx, my,  meqn, 2, mbc);
     dTensorBC4 R4(mx, my,  meqn, 2, mbc);
 
-dTensorBC3 k1(mx, my,  meqn, mbc);
-dTensorBC3 k2(mx, my,  meqn, mbc);
-dTensorBC3 k3(mx, my,  meqn, mbc);
-dTensorBC3 k4(mx, my,  meqn, mbc);
+    // Right hand side stage values.
+    dTensorBC3 k1(mx, my,  meqn, mbc);
+    dTensorBC3 k2(mx, my,  meqn, mbc);
+    dTensorBC3 k3(mx, my,  meqn, mbc);
+    dTensorBC3 k4(mx, my,  meqn, mbc);
 
-    // Time averaged flux function
+    // Time averaged flux function (derived from R1--R4)
     dTensorBC3 fstar(mx, my, meqn, mbc);
     dTensorBC3 gstar(mx, my, meqn, mbc);
-
-    // Time-averaged right hand side
-    dTensorBC3   Lstar(mx, my, meqn, mbc);
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -183,30 +184,24 @@ dTensorBC3 k4(mx, my,  meqn, mbc);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, R1, &FluxFunc );
 
                     // Stage 2:
-                    ConstructL_NOC(aux, qnew, Lstar, smax                    );
-                    k1.copyfrom( Lstar );
-                    t = EulerStep( tn, 0.5*dt, qold, Lstar, qstar            );
+                    ConstructL_NOC(aux, qnew, k1, smax                    );
+                    t = EulerStep( tn, 0.5*dt, qold, k1, qstar            );
                     SetBndValues(aux, qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R2, &FluxFunc );
 
 
                     // Stage 3:
-                    ConstructL_NOC( aux, qstar, Lstar, smax       );
-                    k2.copyfrom( Lstar );
-                    t = EulerStep( tn, 0.5*dt, qold, Lstar, qstar );
+                    ConstructL_NOC( aux, qstar, k2, smax       );
+                    t = EulerStep( tn, 0.5*dt, qold, k2, qstar );
                     SetBndValues(aux, qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R3, &FluxFunc );
 
 
                     // Stage 4:
-                    ConstructL_NOC( aux, qstar, Lstar, smax   );
-                    k3.copyfrom( Lstar );
-                    t = EulerStep( tn, dt, qold, Lstar, qstar );
+                    ConstructL_NOC( aux, qstar, k3, smax   );
+                    t = EulerStep( tn, dt, qold, k3, qstar );
                     SetBndValues(aux, qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R4, &FluxFunc );
-
-ConstructL_NOC( aux, qstar, Lstar, smax   );
-k4.copyfrom( Lstar );
 
                     // Define right hand side value of q, for final WENO
                     // reconstruction
@@ -232,8 +227,8 @@ k4.copyfrom( Lstar );
 
                     // WENO reconstruction, with projections (for final update)
                     SetBndValues(aux, qnew);
-                    ConstructL( aux, qnew, fstar, gstar, Lstar, smax );
-                    t = EulerStep( tn, dt, qold, Lstar, qnew );
+                    ConstructL( aux, qnew, fstar, gstar, k4, smax );
+                    t = EulerStep( tn, dt, qold, k4, qnew );
                     SetBndValues(aux, qnew);
 
                     // ------------------------------------------------------------- //

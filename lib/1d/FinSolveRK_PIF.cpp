@@ -218,13 +218,6 @@ k4.copyfrom( Lstar );
                         tmp += 2.0*f3.get(i,m);
                         tmp +=     f4.get(i,m);
                         fstar.set(i,m, tmp/6.0);
-
-//                      tmp  =     k1.get(i,m);
-//                      tmp += 2.0*k2.get(i,m);
-//                      tmp += 2.0*k3.get(i,m);
-//                      tmp +=     k4.get(i,m);
-
-//                      qnew.set(i,m, qold.get(i,m) + dt*tmp/6.0 );
                     }
 
                     // WENO reconstruction, with projections (for final update)

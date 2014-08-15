@@ -6,10 +6,13 @@ include $(FINESS)/lib/2d/Makefile.defs
 # Default (application level) definintions
 include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 
+## ------------------------------------------------------------------------- ##
 # overridden library objects
 #
 InitApp     = InitApp
 #EulerParams = EulerParams
+DogSolveUser            = $(FINESS)/lib/2d/FinSolveRK_PIF
+## ------------------------------------------------------------------------- ##
 
 # place to add object modules
 #

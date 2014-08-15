@@ -23,7 +23,6 @@ def central_diff1( u, dx ):
 
 def central_diff2( u, dx ):
     """Compute second-deriative using a five-point centered stencil."""
-#   u_xx = ( -u[4] + 16*( u[3] + u[1] ) - 30*u[2] - u[0] )/( 12*(dx**2) )
     u_xx = ( -u[4] + 16*( u[3] + u[1] ) - 30*u[2] - u[0] )/( 12*(dx**2) )
     return u_xx
 
