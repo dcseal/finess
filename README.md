@@ -126,7 +126,7 @@ back to the application directory.
 
 After you run an application, you will likely want to plot the results.
 [FINESS](README.md) supports both [MATLAB](viz/matlab/README.md) and
-[Python](viz/matlab/README.md) plotting routines.  All of these can be found in
+[Python](viz/python/README.md) plotting routines.  All of these can be found in
 the
 
     $FINESS/viz/
