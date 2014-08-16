@@ -1,7 +1,12 @@
 ## ------------------------------------------------------------------------- ##
-def plotdog1(points_per_dir_in="1",outputdir="output"):
-    """
-Generic code for plotting DoGPack output in matplotlib.
+def plotdog1(points_per_dir_in="1",
+             outputdir="output",
+             point_type=1,
+             qhelpname="qhelp.dat",
+             qname="q",
+             auxname="a",
+             plotq1name="plotq1"):
+    """Generic code for plotting DoGPack output in matplotlib.
 
 Execute via
 
@@ -62,13 +67,13 @@ to see a list of options.
     # TODO - this is hard-coded here
     meth1 = 1
 
-    print ""
-    print "        GridType = ",GridType
-    print "  points_per_dir = ",points_per_dir
-    print "      point_type = ",point_type
-    print "       outputdir = ",outputdir
-    print "       sorder    = ",meth1
-    print ""
+    print("")
+    print("        GridType = %s" % GridType        )
+    print("  points_per_dir = %i" % points_per_dir  )
+    print("      point_type = %i" % point_type      )
+    print("       outputdir = %s" % outputdir       )
+    print("       sorder    = %i" % meth1           )
+    print("")
 
     # Grid information
     mx_old = mx
@@ -103,12 +108,12 @@ to see a list of options.
     else:
         m = int(m)
 
-    if m<1:
+    if(m<1):
         print ""
         print "  Error, need m > 1,  m = ",m
         print ""
         exit(1)
-    elif m>meqn:
+    elif(m>meqn):
         print ""
         print "  Error, need m <=",meqn,",  m = ",m
         print ""
@@ -134,13 +139,13 @@ to see a list of options.
             nf = int(nf)
             n1 = nf
 
-        if n1>nplot:
+        if(n1>nplot):
             print ""
             print " End of plots "
             print ""
             n1 = nplot
 
-        if (nf!=-1):
+        if(nf!=-1):
 
 ## ------------------------------------------------------------------------- ##
 # Solution -- q
@@ -168,6 +173,36 @@ to see a list of options.
                         for k in range(0,meth1):
                             tmp = tmp + v1[k]*v2[k]
                         qsoln[(i-1)*points_per_dir+ii-1,me-1] = tmp
+
+            if(maux>0):
+                ## ------------------------------------------------------------------------- ##
+                # Aux arrays -- aux
+                # solution should be found in file
+                #     outputdir/aux[n1].dat
+                ## ------------------------------------------------------------------------- ##
+                afile_tmp_tmp = "".join((str(n1+10000),".dat"))
+                afile_tmp = auxname + afile_tmp_tmp[1:]
+                afile = "".join(("".join((outputdir,"/")),afile_tmp))
+
+                mtmp = mx_old*maux*meth1
+                atmp = np.zeros(mtmp,np.float64)   
+                time = read_qfile(mtmp,afile,atmp)
+                acoeffs = np.reshape(atmp,(meth1,maux,mx_old))
+
+                auxsoln = np.zeros((mx,maux),np.float64);
+                v1 = np.zeros(meth1,np.float64)
+                v2 = np.zeros(meth1,np.float64)
+                for i in range(1,mx_old+1):
+                    for me in range(1,maux+1):
+                        for ii in range(1,points_per_dir+1):
+                            v1[:] = phi[ii-1,:]
+                            v2[:] = acoeffs[:,me-1,i-1]
+                            tmp = 0.0
+                            for k in range(0,meth1):
+                                tmp = tmp + v1[k]*v2[k]
+                            auxsoln[(i-1)*points_per_dir+ii-1,me-1] = tmp
+            else:
+                auxsoln = 0.0;
 
 
             # USER SUPPLIED FUNCTION (or default function )
