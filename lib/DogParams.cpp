@@ -9,7 +9,9 @@
 #include "dog_str.h"
 #include "dog_io.h"
 // for derr; eliminate using eprintf
-#include "ErrorStream.h"
+//#include "ErrorStream.h"
+#include <iostream>
+std::ostream &derr = std::cerr;
 
 // -------------------------------------------------------------------------- //
 // Is it possible to move these static function declarations elsewhere? (-DS)
