@@ -183,6 +183,8 @@ void FinSolveRK_PIF(
                     SetBndValues(aux, qnew);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, R1, &FluxFunc );
 
+dogParams.set_time( told );
+
                     // Stage 2:
                     ConstructL_NOC(aux, qnew, k1, smax                    );
                     t = EulerStep( tn, 0.5*dt, qold, k1, qstar            );
@@ -190,6 +192,7 @@ void FinSolveRK_PIF(
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R2, &FluxFunc );
 
 
+dogParams.set_time( told+0.5*dt );
                     // Stage 3:
                     ConstructL_NOC( aux, qstar, k2, smax       );
                     t = EulerStep( tn, 0.5*dt, qold, k2, qstar );
@@ -197,6 +200,7 @@ void FinSolveRK_PIF(
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R3, &FluxFunc );
 
 
+dogParams.set_time( told+0.5*dt );
                     // Stage 4:
                     ConstructL_NOC( aux, qstar, k3, smax   );
                     t = EulerStep( tn, dt, qold, k3, qstar );
@@ -225,6 +229,7 @@ void FinSolveRK_PIF(
                         gstar.set(i,j,m, tmp/6.0);
                     }
 
+dogParams.set_time( told+1.0*dt );
                     // WENO reconstruction, with projections (for final update)
                     SetBndValues(aux, qnew);
                     ConstructL( aux, qnew, fstar, gstar, k4, smax );
