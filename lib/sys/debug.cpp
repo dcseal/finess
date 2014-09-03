@@ -226,10 +226,10 @@ void errmsg_printf_fileLine(const char *func, const char *file, int line_number,
   abort();
 }
 
-#include "VoidStream.h"
+//#include "VoidStream.h"
 // is this "instantiation" of this vacuous class necessary?
 // I imagine not, since all of its (nonexistent) data is static
-VoidStream voidStream;
+//VoidStream voidStream;
 
 #include <iostream>
 using namespace std;
