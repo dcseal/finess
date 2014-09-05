@@ -25,7 +25,7 @@ void MHDParams::init(IniDocument& ini_doc)
     //
     // Store information in global parameter values
     //
-    gamma = 1.6666666666666667;
+    //gamma = 1.6666666666666667;
 
     is_gamma >> gamma;  
 
