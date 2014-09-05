@@ -1,5 +1,7 @@
-def read_params():
-    qhelp_file = open('qhelp.dat', 'r')
+def read_params(output_dir = 'output'):
+    import os
+    qhelp_filename = os.path.join(output_dir, 'qhelp.dat')
+    qhelp_file = open(qhelp_filename, 'r')
     qhelp_lines = qhelp_file.readlines()
     qhelp_file.close()
 
@@ -56,6 +58,8 @@ def finess_2d_meshgrid(params):
 
 def read_qa(params, i_output, output_dir = 'output'):
     """Returns (t, q, aux) from (i_output)-th frame."""
+    from numpy import empty
+
     q_filename = output_dir + '/' + ('q%.4d.dat' % i_output)
     aux_filename = output_dir + '/' + ('a%.4d.dat' % i_output)
     
@@ -65,33 +69,41 @@ def read_qa(params, i_output, output_dir = 'output'):
 
     q = empty([mx, my, meqn])
     q_file = open(q_filename, 'r')
-    t_q = float(q_file.readline())
+    q_iter = iter(map(float, q_file))
+    q_file.close()
+    t_q = q_iter.next()
     for m in range(meqn):
         for j in range(my):
             for i in range(mx):
-                q[i, j, m] = float(q_file.readline())
-    q_file.close()
+                q[i, j, m] = q_iter.next()
     
+
+    maux = params['maux']
     aux = empty([mx, my, maux])
     aux_file = open(aux_filename, 'r')
-    t_aux = float(q_file.readline())
+    aux_iter = iter(map(float, aux_file))
+    aux_file.close()
+    t_aux = aux_iter.next()
     assert t_q == t_aux, 'Inconsistent times from %s and %s' % (q_file, aux_file)
-    for m in range(meqn):
+    for m in range(maux):
         for j in range(my):
             for i in range(mx):
-                aux[i, j, m] = float(q_file.readline())
-    aux_file.close()
+                aux[i, j, m] = aux_iter.next() 
     
     
     return t_q, q, aux
 
     
+params = read_params()
 
+X, Y = finess_2d_meshgrid(params)
 
-# from pylab import figure, show
-# from mpl_toolkits.mplot3d import axes3d, Axes3D            
-# fig = figure()
-# ax = fig.gca(projection='3d')
-# surf = ax.plot_surface(X, Y, q[:,:,0], rstride=2, cstride=2)
-# show()
+t, q, aux = read_qa(params, 10)
+
+from pylab import figure, show
+from mpl_toolkits.mplot3d import axes3d, Axes3D            
+fig = figure()
+ax = fig.gca(projection='3d')
+surf = ax.plot_surface(X, Y, q[:,:,0], rstride=2, cstride=2)
+show()
 
