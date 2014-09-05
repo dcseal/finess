@@ -55,8 +55,8 @@ void DogParams::init()
     // (options not listed here are empty strings by default)
     vector<string> option_names_list;
     option_names_list.push_back("ndims"               );
-    option_names_list.push_back("mesh_type"           );
-    option_names_list.push_back("nout"                );
+//    option_names_list.push_back("mesh_type"           );
+//    option_names_list.push_back("nout"                );
     option_names_list.push_back("tfinal"              );
     option_names_list.push_back("dtv(1)"              );
     option_names_list.push_back("dtv(2)"              );
@@ -72,18 +72,18 @@ void DogParams::init()
     option_names_list.push_back("mcapa"               );
     option_names_list.push_back("maux"                );
     option_names_list.push_back("source_term"         );
-    option_names_list.push_back("flux_term"           );
+//    option_names_list.push_back("flux_term"           );
     option_names_list.push_back("meqn"                );
-    option_names_list.push_back("mrestart"            ); // deprecated
+//    option_names_list.push_back("mrestart"            ); // deprecated
     option_names_list.push_back("nstart"              );
-    option_names_list.push_back("nrestart"            );
-    option_names_list.push_back("maintained_restart"  );
-    option_names_list.push_back("report_frame_idx"    );
+//    option_names_list.push_back("nrestart"            );
+//    option_names_list.push_back("maintained_restart"  );
+//    option_names_list.push_back("report_frame_idx"    );
     option_names_list.push_back("datafmt"             );
-    option_names_list.push_back("nout_per_restart"    );
-    option_names_list.push_back("num_subintervals"    );
-    option_names_list.push_back("use_divfree"         );
-    option_names_list.push_back("global_alpha"   );
+//    option_names_list.push_back("nout_per_restart"    );
+//    option_names_list.push_back("num_subintervals"    );
+//    option_names_list.push_back("use_divfree"         );
+//    option_names_list.push_back("global_alpha"   );
 
     // get defaults from e.g. $FINESS/config/dogParams_defaults.ini
     get_defaults      (ini_sec, section_label, option_names_list);
@@ -176,12 +176,12 @@ void DogParams::init()
     limiter_method = strdup(s_limiter_method);
 
     // flux_term
-    if(!strcmp(s_flux_term,"0"))
-        flux_term = false;
-    else if(!strcmp(s_flux_term,"1"))
-        flux_term = true;
-    else
-        invalid_value_error(s_flux_term);
+//    if(!strcmp(s_flux_term,"0"))
+//        flux_term = false;
+//    else if(!strcmp(s_flux_term,"1"))
+//        flux_term = true;
+//    else
+//        invalid_value_error(s_flux_term);
 
     // parse lists of numbers
     //
@@ -354,7 +354,7 @@ void DogParams::resetParameters()
 // -------------------------------------------------------------------------- //
 void DogParams::checkParameters()
 {
-    assert_divides(nout_per_restart,nout);
+//    assert_divides(nout_per_restart,nout);
 
     // check cflv
     if (cflv[2] >= cflv[1])
