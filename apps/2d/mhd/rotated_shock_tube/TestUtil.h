@@ -2,6 +2,9 @@
 #define _TESTUTIL_H_
 
 #include <cxxtest/TestSuite.h>
+
+#include <fstream>
+
 #include "util.h"
 
 class TestUtil: public CxxTest::TestSuite{
@@ -36,6 +39,35 @@ public:
 	TS_ASSERT_DELTA(stringToAny<double>("1e-8"), 1e-8, tolerance);
 	TS_ASSERT_DELTA(stringToAny<double>("-1.2e2"), -120, tolerance);
 
+    }
+
+
+    void testExistFile(){
+	using std::string;
+	using std::ofstream;
+	const string unlikely_filename = "3844someveryunlikelyfilename8922";
+    	class Setup{
+	    public:
+		const string filename;
+		Setup(const string& filename):
+		    filename(filename)
+	        {
+		    using std::ofstream;
+		    ofstream(this->filename.c_str());
+		}
+		~Setup(){
+		    using std::remove;
+		    remove(this->filename.c_str());
+		}
+	};
+	
+	string filename = unlikely_filename;
+
+	TS_ASSERT(!existFile(filename));
+	{Setup setup(filename);	    	    	
+	    TS_ASSERT(existFile(filename));
+	}
+	TS_ASSERT(!existFile(filename));
     }
 
 };
