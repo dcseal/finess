@@ -11,7 +11,7 @@ $(TOPDIR)/lib/sys/debug.o
 CLEAN_LIST+=$(LIBRARY_OBJECTS)
 
 TESTGEN=cxxtestgen
-TESTOPT=--error-printer
+TESTOPT=--error-printer --have-eh
 TESTS=TestUtil.h TestParams.h
 TEST_TARGET=tests
 TEST_RUNNER_CPPFILE=$(TEST_TARGET).cpp

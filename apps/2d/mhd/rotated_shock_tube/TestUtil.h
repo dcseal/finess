@@ -63,10 +63,19 @@ public:
 	
 	string filename = unlikely_filename;
 
-	TS_ASSERT(!existFile(filename));
+	CxxTest::setAbortTestOnFail(true);
+	TSM_ASSERT(filename 
+		   + " expected to be non-existent! "
+		     " Unable to continue tests. "
+		     " Possible solutions: remove the file, "
+		     "or change its name",
+		   !existFile(filename));
+	CxxTest::setAbortTestOnFail(CXXTEST_DEFAULT_ABORT);
+
 	{Setup setup(filename);	    	    	
 	    TS_ASSERT(existFile(filename));
 	}
+
 	TS_ASSERT(!existFile(filename));
     }
 
