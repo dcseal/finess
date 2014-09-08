@@ -64,7 +64,7 @@ void DogParams::init()
     option_names_list.push_back("cflv(2)"             );
     option_names_list.push_back("nv"                  );
     option_names_list.push_back("time_stepping_method");
-    option_names_list.push_back("limiter_method"      );
+//    option_names_list.push_back("limiter_method"      );
     option_names_list.push_back("space_order"         );
     option_names_list.push_back("time_order"          );
     option_names_list.push_back("use_limiter"         );
@@ -99,7 +99,7 @@ void DogParams::init()
     const char* s_cflv_2               = ini_sec["cflv(2)"             ].c_str();
     const char* s_nv                   = ini_sec["nv"                  ].c_str();
     const char* s_time_stepping_method = ini_sec["time_stepping_method"].c_str();
-    const char* s_limiter_method       = ini_sec["limiter_method"      ].c_str();
+//    const char* s_limiter_method       = ini_sec["limiter_method"      ].c_str();
     const char* s_space_order          = ini_sec["space_order"         ].c_str();
     const char* s_time_order           = ini_sec["time_order"          ].c_str();
     const char* s_use_limiter          = ini_sec["use_limiter"         ].c_str();
@@ -173,7 +173,7 @@ void DogParams::init()
 
     // initialize and save the necessary space for the limiter (this will be
     // freed later)
-    limiter_method = strdup(s_limiter_method);
+//    limiter_method = strdup(s_limiter_method);
 
     // flux_term
 //    if(!strcmp(s_flux_term,"0"))
@@ -248,9 +248,9 @@ void DogParams::init()
 // allocated.
 DogParams::~DogParams()
 {
-    free(mesh_type);
+//    free(mesh_type);
     free(time_stepping_method);
-    free(limiter_method);
+//    free(limiter_method);
     delete [] nout_per_plot;
     delete [] which_compnt_divfree;
     delete [] generic_components;
