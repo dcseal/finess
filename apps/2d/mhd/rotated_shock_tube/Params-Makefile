@@ -1,0 +1,36 @@
+CLEAN_LIST=
+TOPDIR=../../../..
+INCLUDE_FLAGS=-I. -I$(TOPDIR)/lib -I$(TOPDIR)/lib/sys
+LIBRARY_FLAGS=-L$(TOPDIR)/lib/sys
+
+CXXFLAGS=-std=c++98 -Wall $(INCLUDE_FLAGS)
+LINK=$(CXX)
+
+LIBRARY_OBJECTS=$(TOPDIR)/lib/sys/IniDocument.o \
+$(TOPDIR)/lib/sys/debug.o
+CLEAN_LIST+=$(LIBRARY_OBJECTS)
+
+TESTGEN=cxxtestgen
+TESTOPT=--error-printer
+TESTS=TestUtil.h TestParams.h
+TEST_TARGET=tests
+TEST_RUNNER_CPPFILE=$(TEST_TARGET).cpp
+CLEAN_LIST+=$(TEST_TARGET) $(TEST_RUNNER_CPPFILE)
+
+all: $(TEST_TARGET)
+
+
+$(TEST_RUNNER_CPPFILE): $(TESTS)
+	$(TESTGEN) -o $@ $(TESTOPT) $(TESTS)
+
+$(TEST_TARGET): $(TEST_RUNNER_CPPFILE)
+	$(LINK) $(CXXFLAGS) $(LIBRARY_FLAGS) -o $@ $^
+
+Params.o: Params.cpp Params.h
+
+$(TOPDIR)/lib/sys/IniDocument.o: $(TOPDIR)/lib/sys/IniDocument.h \
+$(TOPDIR)/lib/sys/IniDocument.cpp
+
+
+clean:
+	rm -f $(CLEAN_LIST)
