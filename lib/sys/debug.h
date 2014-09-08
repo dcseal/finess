@@ -84,8 +84,6 @@ inline bool debug_printFileLine(int dlevel, const char* func,
 }
 
 // version of dprintfn that returns true
-//#define dbprintfn(dlevel, str, args...) debugn(dlevel) && \
-//  printf(str, ## args), printf("\n"), true
 
 // compile out unused debug
 #ifndef DEBUG_ON

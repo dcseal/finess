@@ -83,8 +83,9 @@ class IniDocument
     public:
         bool is_initialized(){return is_initialized_;}
         IniDocument():
-            currentSection(0),
-            is_initialized_(false){}
+            is_initialized_(false),
+	    currentSection(0){
+            }
         ~IniDocument(){}
         void initFromFile(const std::string& iniFileName);
         Section & operator[](const std::string&);
