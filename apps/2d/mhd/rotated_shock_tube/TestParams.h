@@ -80,6 +80,34 @@ public:
 		    ini_doc["section2"]["nonexist"],
 		    "");
 	}
+
+	{
+	    string content;
+	    content += "[section1]\n";
+	    content += "a = b\n";
+	    content += "c = d\n";
+	    content += "[section2]\n";
+	    content += "e = f\n";
+	    content += "[section1]\n";
+	    content += "a = g\n";
+	    content += "h = i\n";
+
+	    Setup setup(filename, content);
+	    IniDocument& ini_doc = setup.ini_doc;
+
+	    TSM_ASSERT_EQUALS(content,
+		    ini_doc["section1"]["a"],
+		    "b");
+	    TSM_ASSERT_EQUALS(content,
+		    ini_doc["section1"]["c"],
+		    "d");
+	    TSM_ASSERT_EQUALS(content,
+		    ini_doc["section1"]["h"],
+		    "");
+	    TSM_ASSERT_EQUALS(content,
+		    ini_doc["section2"]["e"],
+		    "f");
+	}
 	
 	//Parsing error will abort the program.  Omit test.
     }
