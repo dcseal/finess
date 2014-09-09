@@ -6,6 +6,23 @@
 
 class TestParams: public CxxTest::TestSuite{
 public:
+    class Setup{
+	public:
+	    const string filename;
+	    IniDocument ini_doc;
+	    Setup(const string& filename, const string& content):
+		filename(filename)
+	    {
+		ofstream ofs(this->filename.c_str());
+		ofs << content;
+		ofs.close();
+		ini_doc.initFromFile(this->filename);
+	    }
+	    ~Setup(){
+		std::remove(this->filename.c_str());		    
+	    }
+    };
+	
     void testIniDocument(){
 	using std::string;
 	using std::ofstream;
@@ -23,23 +40,7 @@ public:
 		   !existFile(filename));
 	CxxTest::setAbortTestOnFail(CXXTEST_DEFAULT_ABORT);
 
-	class Setup{
-	    public:
-		const string filename;
-		IniDocument ini_doc;
-		Setup(const string& filename, const string& content):
-		    filename(filename)
-	        {
-		    ofstream ofs(this->filename.c_str());
-		    ofs << content;
-		    ofs.close();
-		    ini_doc.initFromFile(this->filename);
-	        }
-		~Setup(){
-		    std::remove(this->filename.c_str());		    
-		}
-	};
-	
+
 	{
 	    string content;
 	    content += "[section1]\n";
@@ -56,6 +57,7 @@ public:
 	    string content;
 	    content += "[section1]\n";
 	    content += "a(b)  = 1e08    ;some comments\n";
+	    content += "a(b)  = 1e09\n";
 	    content += "\n";
 	    content += ";entire line of comments\n";
 	    content += "[section2]\n";
@@ -67,6 +69,7 @@ public:
 	    TSM_ASSERT_EQUALS(content,
 		    ini_doc["section1"]["a(b)"],
 		    "1e08");
+	    //Note the repeated entry was ignored.
 	    TSM_ASSERT_EQUALS(content,
 	            ini_doc["section2"]["a(b)"],
 		    "12");
