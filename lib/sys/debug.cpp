@@ -160,7 +160,7 @@ static void escape_special_shell_characters(
   escaped_msg_ptr = escaped_msg;
 
   *escaped_msg_ptr++ = '"';
-  while(c=*message_ptr++)
+  while((c=*message_ptr++) != '\0')
   {
     switch(c)
     {
@@ -220,7 +220,7 @@ void errmsg_printf_fileLine(const char *func, const char *file, int line_number,
     sprintf(str_pos, "%s", escaped_msg);
     
     fprintf(stderr, "executing shell command: %s", shell_command);
-    int exit_status = system(shell_command);
+    system(shell_command);
   }
 
   abort();

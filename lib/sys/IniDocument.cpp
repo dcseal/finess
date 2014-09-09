@@ -3,7 +3,7 @@
 using namespace std;
 
 // declare global instance of ini_doc
-IniDocument ini_doc;
+//IniDocument ini_doc;
 
 // === code to parse lines ===
 
@@ -23,18 +23,6 @@ static bool is_paren_character(char c)
     case ']':
     case '{':
     case '}':
-      return true;
-  }
-  return false;
-}
-
-static bool is_separator_character(char c)
-{
-  switch(c)
-  {
-    case '/':
-    case '\\':
-    case '|':
       return true;
   }
   return false;
@@ -199,7 +187,7 @@ bool get_value_from_quoted_string(const char* ptr, string& value)
 {
   value = ptr;
   assert(*ptr=='"');
-  *ptr++;
+  ptr++;
   int i=0;
   int j=0;
   for(;ptr[i] && ptr[i] != '"';i++)
@@ -258,7 +246,6 @@ static bool get_value_from_unquoted_string(const char* ptr, string& value)
     Wprintf("option is missing value.\n");
     return false;
   }
-  const char* str=ptr;
   int i=0;
   for(;ptr[i] && is_valid_unquoted_character(ptr[i]);i++)
   {
@@ -353,13 +340,11 @@ bool IniDocument::parse_line( const char* line)
 
 void IniDocument::initFromFile(const std::string& ini_filename)
 {
-  size_t bytes_read;
+  ssize_t bytes_read;
   size_t nbytes = 100;
   char *line;
 
   FILE *fp;
-  long len;
-  char *buf;
   fp=fopen(ini_filename.c_str(),"rb");
   if(!fp){
     eprintf("Could not open file %s\n",ini_filename.c_str());
