@@ -23,5 +23,18 @@ inline bool existFile(const std::string& filename){
     }
 }
 
+#include <iostream>
+#include <cstdlib>
+#include <stdexcept>
+//#define TERMINATE_ABORT
+#undef TERMINATE_ABORT
+inline void terminate(const std::string& message){
+#ifdef TERMINATE_ABORT
+    std::cerr << message << std::endl;
+    std::terminate();
+#else
+    throw std::runtime_error(message);
+#endif
+}
 
 #endif

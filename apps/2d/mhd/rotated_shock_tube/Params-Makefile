@@ -2,6 +2,7 @@ CLEAN_LIST=$(OBJECTS)
 TOPDIR=../../../..
 INCLUDE_FLAGS=-I. -I$(TOPDIR)/lib -I$(TOPDIR)/lib/sys
 
+CXX=g++
 CXXFLAGS=-std=c++98 -Wall $(INCLUDE_FLAGS)
 LINK=$(CXX)
 
@@ -18,15 +19,16 @@ CLEAN_LIST+=$(TEST_TARGET) $(TEST_RUNNER_CPPFILE)
 
 all: $(TEST_TARGET)
 
+Params.o: Params.cpp Params.h
+OBJECTS+=Params.o
+
+
 
 $(TEST_RUNNER_CPPFILE): $(TESTS)
 	$(TESTGEN) -o $@ $(TESTOPT) $(TESTS)
 
 $(TEST_TARGET): $(TEST_RUNNER_CPPFILE) $(LIBRARY_OBJECTS) $(OBJECTS)
 	$(LINK) $(CXXFLAGS) -o $@ $^
-
-Params.o: Params.cpp Params.h
-OBJECTS+=Params.o
 
 $(TOPDIR)/lib/sys/IniDocument.o: $(TOPDIR)/lib/sys/IniDocument.h \
 $(TOPDIR)/lib/sys/IniDocument.cpp
