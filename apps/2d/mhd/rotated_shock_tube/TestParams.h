@@ -125,6 +125,7 @@ public:
 	    content += "method = B\n";
 	    content += "[dogParams]\n";
 	    content += "meqn = 2 \n";
+	    content += "one_of_1_3_5 = 1\n";
 
 	    Setup setup(filename, content);
 	    Params params;
@@ -144,6 +145,7 @@ public:
 	    content += "method = someinvalidvalue\n";
 	    content += "[dogParams]\n";
 	    content += "meqn = 2 \n";
+	    content += "one_of_1_3_5 = 1\n";
 
 	    Setup setup(filename, content);
 	    Params params;
@@ -157,7 +159,8 @@ public:
 	    content += "[reconstruction]\n";
 	    content += "method = A\n";
 	    content += "[dogParams]\n";
-	    content += "\n";
+	    content += "one_of_1_3_5 = 1\n";
+            content += "\n";
 
 	    Setup setup(filename, content);
 	    Params params;
@@ -171,13 +174,44 @@ public:
 	    content += "method = A\n";
 	    content += "[dogParams]\n";
 	    content += "meqn = -1\n";
-
+	    content += "one_of_1_3_5 = 1\n";
+		
 	    Setup setup(filename, content);
 	    Params params;
 	    TSM_ASSERT_THROWS(content,
 		    params.init(setup.filename),
 		    std::runtime_error);
     
+	}
+	{
+	    string content;
+	    content += "[reconstruction]\n";
+	    content += "method = B\n";
+	    content += "[dogParams]\n";
+	    content += "meqn = 2 \n";
+	    content += "one_of_1_3_5 = 1\n";
+	    
+	    Setup setup(filename, content);
+	    Params params;
+
+	    params.init(setup.filename);
+	    TSM_ASSERT_EQUALS(content, 
+		    params.get_one_of_1_3_5(),
+		    1);
+	}
+	{
+	    string content;
+	    content += "[reconstruction]\n";
+	    content += "method = B\n";
+	    content += "[dogParams]\n";
+	    content += "meqn = 2 \n";
+	    content += "one_of_1_3_5 = 2\n";
+	    
+	    Setup setup(filename, content);
+	    Params params;
+	    TSM_ASSERT_THROWS(content, 
+         	    params.init(setup.filename),
+		    std::runtime_error);
 	}
     }
 
