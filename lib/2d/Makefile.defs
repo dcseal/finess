@@ -10,7 +10,7 @@ LIB2D = $(FINESS)/lib/2d
 LIB2D_INCLUDE = -I$(LIB2D) $(TOPLIB_INCLUDE)
 
 # inheriting libraries are expected to override this
-INCLUDE_LIBS = $(LIB2D_INCLUDE)
+INCLUDE_LIBS = $(LOCAL_INCLUDE) $(LIB2D_INCLUDE)
 
 # added to by applications
 #
