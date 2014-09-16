@@ -176,6 +176,25 @@ public:
 	    TSM_ASSERT_EQUALS(content,
 		    params.get_default_1(),
 		    1);
+	    {
+		string generated_content = params.ini_doc_as_string();
+		Setup new_setup(filename + "somepostfix", generated_content);
+		Params new_params;
+		new_params.init(new_setup.filename);
+
+                TSM_ASSERT_EQUALS(content,
+            	    new_params.get_meqn(),
+            	    2);
+            
+                TSM_ASSERT_EQUALS(content, 
+            	    new_params.get_meqn_times_2(),
+            	    4);
+            
+                TSM_ASSERT_EQUALS(content,
+            	    new_params.get_default_1(),
+            	    1);
+	
+	    }
 	
 	}
 
@@ -204,6 +223,25 @@ public:
 	    TSM_ASSERT_EQUALS(content,
 		    params.get_default_1(),
 		    2);
+	    {
+		string generated_content = params.ini_doc_as_string();
+		Setup new_setup(filename + "somepostfix", generated_content);
+		Params new_params;
+		new_params.init(new_setup.filename);
+
+                TSM_ASSERT_EQUALS(content,
+            	    new_params.get_meqn(),
+            	    2);
+            
+                TSM_ASSERT_EQUALS(content, 
+            	    new_params.get_meqn_times_2(),
+            	    4);
+            
+                TSM_ASSERT_EQUALS(content,
+            	    new_params.get_default_1(),
+            	    2);
+	
+	    }
 	
 	}
     }

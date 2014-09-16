@@ -15,8 +15,10 @@ def terminate_on_missing(variable_name, section, name):
 def generate_default_on_missing(default_value):
     def default_on_missing(variable_name, section, name):
         return """
-    if(%(variable_name)s_str == "")
+    if(%(variable_name)s_str == ""){
         %(variable_name)s_str = "%(default_value)s";
+	this->ini_doc["%(section)s"]["%(name)s"] = "%(default_value)s";
+    }
         """ % \
         {"variable_name" : variable_name,
          "section": section, 
@@ -56,7 +58,7 @@ class ParameterType:
     def generate_parsing(self, variable_name, section, name, 
                          missing_handler = terminate_on_missing):
         parsing = """
-    string %(variable_name)s_str = ini_doc["%(section)s"]["%(name)s"];
+    string %(variable_name)s_str = this->ini_doc["%(section)s"]["%(name)s"];
     %(missing_handling)s
     %(stringTo_code)s
     """ % \
@@ -291,8 +293,8 @@ def generate_header_cpp(class_name, global_variable_name, parameters, accessors,
 %(header_comments_file)s
 
 #include <string>
-#include "dog_ini.h"
 #include "util.h"
+#include "IniParser.h"
 
 class %(class_name)s;
 extern %(class_name)s %(global_variable_name)s;
@@ -321,7 +323,12 @@ class Params{
 public:
     Params(){}
     void init(const std::string& inputFilename);
-
+private:
+    IniParser::ini_doc_type ini_doc;
+public:
+    std::string ini_doc_as_string(){
+        return IniParser::ini_doc_as_string(this->ini_doc);
+    }
 %(class_declaration_contents)s
 };
 """ % \
@@ -360,7 +367,7 @@ void Params::init(const std::string& inputFilename){
 	              anyToString(parse_return_value));
     }
 
-    IniParser::ini_doc_type ini_doc = parser.get_ini_doc();
+    this->ini_doc = parser.get_ini_doc();
 
 %(cpp_init_method_contents)s
 
