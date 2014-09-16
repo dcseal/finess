@@ -37,4 +37,19 @@ inline void terminate(const std::string& message){
 #endif
 }
 
+inline std::string& remove_trailing_spaces(std::string& s){
+    std::size_t found = s.find_last_not_of(" \t");
+    if(found != std::string::npos)
+        s.erase(found + 1);
+    else
+        s.clear();
+    return s;
+}
+
+inline std::string read_entire_stream(std::istream& is){
+    std::string str((std::istreambuf_iterator<char>(is)),
+               std::istreambuf_iterator<char>());
+    return str;
+}
+
 #endif
