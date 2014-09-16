@@ -10,8 +10,8 @@ class TestParams: public CxxTest::TestSuite{
 public:
     class Setup{
 	public:
-	    string filename;
-	    Setup(const string& filename, const string& content)
+	    std::string filename;
+	    Setup(const std::string& filename, const std::string& content)
 	    {	
 		this->filename = filename;
 	        while(existFile(this->filename)){
@@ -26,7 +26,7 @@ public:
 			   !existFile(filename));
 		CxxTest::setAbortTestOnFail(CXXTEST_DEFAULT_ABORT);
 		          
-		ofstream ofs(this->filename.c_str());
+		std::ofstream ofs(this->filename.c_str());
 		ofs << content;
 		ofs.close();
 	    }
