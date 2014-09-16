@@ -15,13 +15,13 @@ def terminate_on_missing(variable_name, section, name):
 def generate_default_on_missing(default_value):
     def default_on_missing(variable_name, section, name):
         return """
-        if(%(variable_name)s_str == "")
-            this->%(variable_name)s = "%(default_value)s";
+    if(%(variable_name)s_str == "")
+        %(variable_name)s_str = "%(default_value)s";
         """ % \
         {"variable_name" : variable_name,
          "section": section, 
          "name": name,
-         "default_value": default_value}
+         "default_value": str(default_value)}
     return default_on_missing
 
 
@@ -125,7 +125,8 @@ inline %(type_string)s stringToAny<%(type_string)s>(const std::string& s){
 
 
 class Parameter:
-    def __init__(self, variable_name, section, name, type_):
+    def __init__(self, variable_name, section, name, type_,
+                 default_value = None):
         assert type(variable_name) == str
         assert type(section) == str
         assert type(name) == str
@@ -139,12 +140,19 @@ class Parameter:
             self.type_ = type_
         else:
             raise ValueError("type_ should be a string, or a ParameterType object.")
+	
+	self.missing_handler = terminate_on_missing if default_value == None else \
+	                       generate_default_on_missing(default_value)
+
     
     def get_declaration_code(self):
         return self.type_.generate_declaration(self.variable_name)
     
     def get_defining_code(self):
-        return self.type_.generate_parsing(self.variable_name, self.section, self.name)
+        return self.type_.generate_parsing(self.variable_name, 
+	                                   self.section, self.name,
+	                                   missing_handler = \
+					       self.missing_handler)
 
 
 class DerivedParameter(Parameter):
@@ -387,7 +395,12 @@ if __name__ == "__main__":
                             type_ = "int"),
                   DerivedParameter(variable_name = "meqn_times_2",
                                    type_ = "int",
-                                   defining_expression_in_cpp = "this->meqn * 2")]
+                                   defining_expression_in_cpp = "this->meqn * 2"),
+		  Parameter(variable_name = "default_1",
+		            section = "dogParams",
+			    name = "default_1",
+			    type_ = "int",
+			    default_value = 1)]
     
     accessors = map(Accessor, parameters)
     
