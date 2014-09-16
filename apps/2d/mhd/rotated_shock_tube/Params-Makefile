@@ -12,7 +12,7 @@ CLEAN_LIST+=$(LIBRARY_OBJECTS)
 
 TESTGEN=cxxtestgen
 TESTOPT=--error-printer --have-eh
-TESTS=TestUtil.h TestParams.h
+TESTS=TestUtil.h TestParams.h TestIniParser.h
 TEST_TARGET=tests
 TEST_RUNNER_CPPFILE=$(TEST_TARGET).cpp
 CLEAN_LIST+=$(TEST_TARGET) $(TEST_RUNNER_CPPFILE)
@@ -34,5 +34,10 @@ $(TOPDIR)/lib/sys/IniDocument.o: $(TOPDIR)/lib/sys/IniDocument.h \
 $(TOPDIR)/lib/sys/IniDocument.cpp
 
 
+TestIniParser.h: IniParser.h
+
+IniParser.h: IniParser.rl
+	ragel $^ -o $@
+CLEAN_LIST+=IniParser.h
 clean:
 	rm -f $(CLEAN_LIST)
