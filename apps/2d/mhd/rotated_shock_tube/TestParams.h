@@ -213,6 +213,29 @@ public:
          	    params.init(setup.filename),
 		    std::runtime_error);
 	}
+
+	{
+	    string content;
+	    content += "[reconstruction]\n";
+	    content += "method = B\n";
+	    content += "[dogParams]\n";
+	    content += "meqn = 2 \n";
+	    content += "one_of_1_3_5 = 1\n";
+	    
+	    Setup setup(filename, content);
+	    Params params;
+
+	    params.init(setup.filename);
+
+	    TSM_ASSERT_EQUALS(content,
+		    params.get_meqn(),
+		    2);
+
+	    TSM_ASSERT_EQUALS(content, 
+		    params.get_meqn_times_2(),
+		    4);
+	
+	}
     }
 
 };
