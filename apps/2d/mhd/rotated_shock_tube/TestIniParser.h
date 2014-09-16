@@ -75,6 +75,28 @@ public:
             TSM_ASSERT(content, ini_doc["section_1"]["bcd"] == "efg");
             TSM_ASSERT(content, ini_doc["section_2"]["bb"] == "2.3e9");
 	}
+	{
+	    IniParser::ini_doc_type ini_doc_input;
+	    ini_doc_input["section_1"]["params1"] = "123";
+	    ini_doc_input["section_2"]["params2"] = "u-7";
+	    std::string content = IniParser::ini_doc_as_string(ini_doc_input);
+
+	    Setup setup("someveryunlikelyfilename11223344", content);
+            
+	    std::string filename = setup.filename;
+            std::string ini_file_content;
+	    {
+		std::ifstream ifs(filename.c_str());
+		ini_file_content = read_entire_stream(ifs);
+	    }
+	    IniParser parser;
+	    parser.parse(ini_file_content);
+            IniParser::ini_doc_type ini_doc = parser.get_ini_doc();
+
+	    TSM_ASSERT(content, ini_doc == ini_doc_input);
+
+
+	}
     }
 
 };

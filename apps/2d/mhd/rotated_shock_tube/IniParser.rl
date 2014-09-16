@@ -184,9 +184,8 @@ public:
         return ini_doc;
     }
 
-    ///@brief Returns a string-representation of the internal ini_doc
-    /// variable.
-    std::string ini_doc_as_string(){
+    ///@brief Returns a string-representation of an ini_doc variable. 
+    static std::string ini_doc_as_string(ini_doc_type& ini_doc){
         std::string ret;
         for(ini_doc_type::const_iterator it1 = ini_doc.begin();
             it1 != ini_doc.end();
