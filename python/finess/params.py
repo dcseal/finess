@@ -354,7 +354,10 @@ void Params::init(const std::string& inputFilename){
     {
         std::ifstream ifs(inputFilename.c_str());
 	std::string ini_file_content = read_entire_stream(ifs);
-	parser.parse(ini_file_content);
+	int parse_return_value = parser.parse(ini_file_content);
+	if(parse_return_value != 0)
+	    terminate("Error parsing " + inputFilename + ": line #" +
+	              anyToString(parse_return_value));
     }
 
     IniParser::ini_doc_type ini_doc = parser.get_ini_doc();

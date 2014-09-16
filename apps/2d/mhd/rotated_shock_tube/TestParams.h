@@ -60,6 +60,22 @@ public:
 		    params.get_meqn(),
 		    2);	    
 	}
+        
+	{
+	    string content;
+	    content += "[reconstruction]\n";
+	    content += " = \n";
+	    content += "[dogParams]\n";
+	    content += "meqn = 2 \n";
+	    content += "one_of_1_3_5 = 1\n";
+
+	    Setup setup(filename, content);
+	    Params params;
+	    TSM_ASSERT_THROWS(content,
+		    params.init(setup.filename),
+		    std::runtime_error);
+	    
+	}
 
 	{
 	    string content;
