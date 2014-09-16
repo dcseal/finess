@@ -10,6 +10,13 @@ T stringToAny(const std::string& s){
     return ret;
 }
 
+template<typename T>
+std::string anyToString(const T& a){
+    std::stringstream ss;
+    ss << a;
+    return ss.str();
+}
+
 #include <cstdio>
 inline bool existFile(const std::string& filename){
     using std::FILE;

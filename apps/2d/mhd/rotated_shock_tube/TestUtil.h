@@ -41,6 +41,12 @@ public:
 
     }
 
+    void testAnyToString(){
+	using std::string;
+
+	TS_ASSERT(anyToString(123) == "123");
+	TS_ASSERT(anyToString(-123) == "-123");
+    }
 
     void testExistFile(){
 	using std::string;
