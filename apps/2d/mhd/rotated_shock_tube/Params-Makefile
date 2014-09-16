@@ -6,8 +6,6 @@ CXX=g++
 CXXFLAGS=-std=c++98 -Wall $(INCLUDE_FLAGS)
 LINK=$(CXX)
 
-LIBRARY_OBJECTS=$(TOPDIR)/lib/sys/IniDocument.o \
-$(TOPDIR)/lib/sys/debug.o
 CLEAN_LIST+=$(LIBRARY_OBJECTS)
 
 TESTGEN=cxxtestgen
@@ -30,8 +28,6 @@ $(TEST_RUNNER_CPPFILE): $(TESTS)
 $(TEST_TARGET): $(TEST_RUNNER_CPPFILE) $(LIBRARY_OBJECTS) $(OBJECTS)
 	$(LINK) $(CXXFLAGS) -o $@ $^
 
-$(TOPDIR)/lib/sys/IniDocument.o: $(TOPDIR)/lib/sys/IniDocument.h \
-$(TOPDIR)/lib/sys/IniDocument.cpp
 
 
 TestIniParser.h: IniParser.h

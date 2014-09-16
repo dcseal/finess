@@ -1,7 +1,5 @@
 
-# coding: utf-8
 
-# In[1]:
 
 def terminate_on_missing(variable_name, section, name):
     return """
@@ -13,7 +11,6 @@ def terminate_on_missing(variable_name, section, name):
      "name": name}
 
 
-# In[ ]:
 
 def generate_default_on_missing(default_value):
     def default_on_missing(variable_name, section, name):
@@ -28,7 +25,6 @@ def generate_default_on_missing(default_value):
     return default_on_missing
 
 
-# In[2]:
 
 class ParameterType:
     def __init__(self, type_string):
@@ -73,7 +69,6 @@ class ParameterType:
     
 
 
-# In[3]:
 
 class EnumParameterType(ParameterType):
     def __init__(self, enum_scope_name, string_enumerator_dict):
@@ -127,10 +122,7 @@ inline %(type_string)s stringToAny<%(type_string)s>(const std::string& s){
                 "section": section,
                 "name": name,
                 "string_list": ", ".join(self.string_enumerator_dict.keys())}
-        
 
-
-# In[33]:
 
 class Parameter:
     def __init__(self, variable_name, section, name, type_):
@@ -147,18 +139,13 @@ class Parameter:
             self.type_ = type_
         else:
             raise ValueError("type_ should be a string, or a ParameterType object.")
-        
-        
     
     def get_declaration_code(self):
         return self.type_.generate_declaration(self.variable_name)
     
     def get_defining_code(self):
         return self.type_.generate_parsing(self.variable_name, self.section, self.name)
-        
 
-
-# In[72]:
 
 class DerivedParameter(Parameter):
     def __init__(self, variable_name, type_, defining_expression_in_cpp):
@@ -181,10 +168,6 @@ class DerivedParameter(Parameter):
                 "defining_expression": self.defining_expression_in_cpp}
 
         
-
-
-# In[73]:
-
 class Accessor:
     def __init__(self, parameter, access_by_name = None):
         assert isinstance(parameter, Parameter)
@@ -207,9 +190,6 @@ class Accessor:
         return accessor
         
 
-
-# In[74]:
-
 class Check:
     def __init__(self):
         pass
@@ -217,8 +197,6 @@ class Check:
     def get_cpp_code(self):
         return ""
 
-
-# In[75]:
 
 def generate_compare_predicate_Check(compare_op):
     assert compare_op in ["<", "<=", ">", ">=", "=="]
@@ -241,16 +219,11 @@ def generate_compare_predicate_Check(compare_op):
     return CompareCheck
         
 
-
-# In[76]:
-
 CheckGreaterThan = generate_compare_predicate_Check(">")
 CheckLessThan = generate_compare_predicate_Check("<")
 CheckGreaterEqual = generate_compare_predicate_Check(">=")
 CheckLessEqual = generate_compare_predicate_Check("<=")
 
-
-# In[77]:
 
 class CheckOneOf(Check):
     def __init__(self, parameter, list_):
@@ -270,8 +243,6 @@ class CheckOneOf(Check):
             terminate("%(variable_name)s is not one of %(list_string)s.");
 """ % {"variable_name": self.parameter.variable_name, "list_string": str(self.list_)}
 
-
-# In[96]:
 
 def generate_header_cpp(class_name, global_variable_name, parameters, accessors, checks):
     header_filename = class_name + ".h"
@@ -351,6 +322,12 @@ public:
     cpp_head = """%(cpp_comments_file)s
 #include "%(header_filename)s"
 
+#include "util.h"
+#include "IniParser.h"
+
+#include <fstream>
+#include <string>
+
 %(class_name)s %(global_variable_name)s;
 
 """ % \
@@ -364,8 +341,15 @@ public:
     cpp_init_method = """
 void Params::init(const std::string& inputFilename){
     using std::string;
-    IniDocument ini_doc;
-    ini_doc.initFromFile(inputFilename);
+    
+    IniParser parser;
+    {
+        std::ifstream ifs(inputFilename.c_str());
+	std::string ini_file_content = read_entire_stream(ifs);
+	parser.parse(ini_file_content);
+    }
+
+    IniParser::ini_doc_type ini_doc = parser.get_ini_doc();
 
 %(cpp_init_method_contents)s
 
