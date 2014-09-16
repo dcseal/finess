@@ -34,7 +34,7 @@ bash_file.write(boiler_plate)
 python_path = "${PYTHONPATH}"
 matlab_path = "${MATLABPATH}"
 
-finessP = "".join((finess_path,"/viz/python"))
+finessP = "".join((finess_path,"/python"))
 finessM = "".join((finess_path,"/viz/matlab"))
 
 python_path = ":".join((finessP,python_path))
@@ -51,7 +51,7 @@ write_environment_variable(csh_file,bash_file,"PYTHONPATH",python_path)
 print "  MATLABPATH = %s" % matlab_path
 write_environment_variable(csh_file,bash_file,"MATLABPATH",matlab_path)
 
-pdog1_command = "python $FINESS/viz/python/plotdog1.py"
+pdog1_command = "python $FINESS/python/finess/viz/plotdog1.py"
 print "  plotdog1 = %s" %pdog1_command
 write_shortcut_alias(csh_file,bash_file,"plotdog1",pdog1_command)
 
