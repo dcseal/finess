@@ -201,11 +201,11 @@ class Accessor:
         
 
 class Check:
-    def __init__(self):
-        pass
+    def __init__(self, cpp_code = ""):
+        self.cpp_code = cpp_code
     
     def get_cpp_code(self):
-        return ""
+        return self.cpp_code
 
 
 def generate_compare_predicate_Check(compare_op):
@@ -319,9 +319,8 @@ extern %(class_name)s %(global_variable_name)s;
     stringToAny_specializations_code =         "//stringToAny specializations\n" +         "\n".join([t.generate_stringToAny_specialization() for t in types_requiring_stringToAny_specialization])
     
     class_declaration = """
-class Params{
+class %(class_name)s{
 public:
-    Params(){}
     void init(const std::string& inputFilename);
 private:
     IniParser::ini_doc_type ini_doc;
@@ -332,7 +331,7 @@ public:
 %(class_declaration_contents)s
 };
 """ % \
-{"class_declaration_contents": class_declaration_contents}
+{"class_name": class_name, "class_declaration_contents": class_declaration_contents}
 
     cpp_head = """%(cpp_comments_file)s
 #include "%(header_filename)s"
@@ -354,7 +353,7 @@ public:
     cpp_init_method_contents = "// Defining code for member variables\n\n" +                                "\n".join([p.get_defining_code() for p in parameters]) +                                "\n// Checks\n\n" +                                "\n".join([c.get_cpp_code() for c in checks])
             
     cpp_init_method = """
-void Params::init(const std::string& inputFilename){
+void %(class_name)s::init(const std::string& inputFilename){
     using std::string;
     
     IniParser parser;
@@ -374,7 +373,7 @@ void Params::init(const std::string& inputFilename){
 }
 
 """ % \
-{"cpp_init_method_contents": cpp_init_method_contents}
+{"class_name":class_name, "cpp_init_method_contents": cpp_init_method_contents}
 
     header_code = header_head + class_declaration + stringToAny_specializations_code + header_tail
     cpp_code = cpp_head + cpp_init_method
@@ -385,8 +384,8 @@ void Params::init(const std::string& inputFilename){
     
 
 if __name__ == "__main__":
-    class_name = "Params"
-    global_variable_name = "params"
+    class_name = "IniParams"
+    global_variable_name = "global_ini_params"
     
     
     parameters = [Parameter(variable_name = "reconstruction_method",

@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 #include <cxxtest/TestSuite.h>
-#include "Params.h"
+#include "IniParams.h"
 
 class TestParams: public CxxTest::TestSuite{
 public:
@@ -50,12 +50,12 @@ public:
 	    content += "one_of_1_3_5 = 1\n";
 
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 	    params.init(setup.filename);
 	    
 	    TSM_ASSERT_EQUALS(content, 
 		    params.get_reconstruction_method(),
-		    Params::ReconstructionMethod::B);
+		    IniParams::ReconstructionMethod::B);
 	    TSM_ASSERT_EQUALS(content,
 		    params.get_meqn(),
 		    2);	    
@@ -70,7 +70,7 @@ public:
 	    content += "one_of_1_3_5 = 1\n";
 
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 	    TSM_ASSERT_THROWS(content,
 		    params.init(setup.filename),
 		    std::runtime_error);
@@ -86,7 +86,7 @@ public:
 	    content += "one_of_1_3_5 = 1\n";
 
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 	    TSM_ASSERT_THROWS(content,
 		    params.init(setup.filename),
 		    std::runtime_error);
@@ -101,7 +101,7 @@ public:
             content += "\n";
 
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 	    TSM_ASSERT_THROWS(content,
 		    params.init(setup.filename),
 		    std::runtime_error);
@@ -115,7 +115,7 @@ public:
 	    content += "one_of_1_3_5 = 1\n";
 		
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 	    TSM_ASSERT_THROWS(content,
 		    params.init(setup.filename),
 		    std::runtime_error);
@@ -130,7 +130,7 @@ public:
 	    content += "one_of_1_3_5 = 1\n";
 	    
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 
 	    params.init(setup.filename);
 	    TSM_ASSERT_EQUALS(content, 
@@ -146,7 +146,7 @@ public:
 	    content += "one_of_1_3_5 = 2\n";
 	    
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 	    TSM_ASSERT_THROWS(content, 
          	    params.init(setup.filename),
 		    std::runtime_error);
@@ -161,7 +161,7 @@ public:
 	    content += "one_of_1_3_5 = 1\n";
 	    
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 
 	    params.init(setup.filename);
 
@@ -179,7 +179,7 @@ public:
 	    {
 		string generated_content = params.ini_doc_as_string();
 		Setup new_setup(filename + "somepostfix", generated_content);
-		Params new_params;
+		IniParams new_params;
 		new_params.init(new_setup.filename);
 
                 TSM_ASSERT_EQUALS(content,
@@ -208,7 +208,7 @@ public:
 	    content += "default_1 = 2\n";
 	    
 	    Setup setup(filename, content);
-	    Params params;
+	    IniParams params;
 
 	    params.init(setup.filename);
 
@@ -226,7 +226,7 @@ public:
 	    {
 		string generated_content = params.ini_doc_as_string();
 		Setup new_setup(filename + "somepostfix", generated_content);
-		Params new_params;
+		IniParams new_params;
 		new_params.init(new_setup.filename);
 
                 TSM_ASSERT_EQUALS(content,
