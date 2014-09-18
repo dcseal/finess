@@ -1,3 +1,4 @@
+#error "Stop using OutputDir!"
 #ifndef _OUTPUT_DIR_H__ 
 #define _OUTPUT_DIR_H__ 
 
