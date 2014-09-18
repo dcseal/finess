@@ -19,13 +19,10 @@ WenoReconstruct = $(TOPLIB)/WenoReconstruct
 TOPLIB_OBJECTS = \
   $(LIB_SYS_OBJECTS) \
   $(MAIN_GLOBAL).o \
-  $(TOPLIB)/dog_ini.o \
-  $(TOPLIB)/DogParams.o \
   $(TOPLIB)/tensors.o \
   $(TOPLIB)/dog_math.o \
   $(TOPLIB)/dog_str.o \
   $(TOPLIB)/dog_io.o \
-  $(TOPLIB)/WenoParams.o \
   $(WenoReconstruct).o \
   $(RunStartScript).o \
 #
@@ -33,13 +30,10 @@ TOPLIB_SOURCES = \
   $(LIB_SYS_SOURCES) \
   $(TOPLIB)/*.h \
   $(MAIN_GLOBAL).cpp \
-  $(TOPLIB)/dog_ini.cpp \
-  $(TOPLIB)/DogParams.cpp \
   $(TOPLIB)/tensors.cpp \
   $(TOPLIB)/dog_math.cpp \
   $(TOPLIB)/dog_str.cpp \
   $(TOPLIB)/dog_io.cpp \
-  $(TOPLIB)/WenoParams.cpp \
   $(WenoReconstruct).cpp \
   $(RunStartScript).cpp \
 

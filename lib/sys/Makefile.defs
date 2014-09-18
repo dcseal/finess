@@ -15,7 +15,6 @@ LIB_SYS_OBJECTS = \
   $(LIB_SYS)/fcmp.o \
   $(LIB_SYS)/ext_time.o \
   $(LIB_SYS)/getdelim.o \
-  $(LIB_SYS)/IniDocument.o \
 #
 LIB_SYS_SOURCES = \
   $(LIB_SYS)/*.h \
