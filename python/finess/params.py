@@ -76,7 +76,7 @@ class ParameterType:
 
 class EnumParameterType(ParameterType):
     def __init__(self, enum_scope_name, string_enumerator_dict,
-                 class_name = None):
+                 class_name):
         if type(enum_scope_name) != str:
             raise ValueError("enum_scope_name should be a string.")
         if type(string_enumerator_dict) != dict:
@@ -89,14 +89,10 @@ class EnumParameterType(ParameterType):
 
     @property
     def full_enum_scope_name(self):
-        if self.class_name == None:
-	    raise RuntimeError("class_name is not set.")
         return self.class_name + "::" + self.enum_scope_name
     
     @property
     def type_string(self):
-        if self.class_name == None:
-	    raise RuntimeError("class_name is not set.")
         return """%(class_name)s::%(enum_scope_name)s::enum_type"""% \
                {"class_name": self.class_name,
 	        "enum_scope_name": self.enum_scope_name}
