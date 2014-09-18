@@ -75,18 +75,34 @@ class ParameterType:
 
 
 class EnumParameterType(ParameterType):
-    def __init__(self, enum_scope_name, string_enumerator_dict):
+    def __init__(self, enum_scope_name, string_enumerator_dict,
+                 class_name = None):
         if type(enum_scope_name) != str:
             raise ValueError("enum_scope_name should be a string.")
         if type(string_enumerator_dict) != dict:
             raise ValueError("string_enumerator_dict should be a dict.")
         
         self.enum_scope_name = enum_scope_name
-        self.full_enum_scope_name = class_name + "::" + enum_scope_name
+
         self.string_enumerator_dict = string_enumerator_dict
-        self.type_string = """%(class_name)s::%(enum_scope_name)s::enum_type""" %                            {"class_name": class_name,
-                            "enum_scope_name": enum_scope_name}
+        self.class_name = class_name
+
+    @property
+    def full_enum_scope_name(self):
+        if self.class_name == None:
+	    raise RuntimeError("class_name is not set.")
+        return self.class_name + "::" + self.enum_scope_name
+    
+    @property
+    def type_string(self):
+        if self.class_name == None:
+	    raise RuntimeError("class_name is not set.")
+        return """%(class_name)s::%(enum_scope_name)s::enum_type"""% \
+               {"class_name": self.class_name,
+	        "enum_scope_name": self.enum_scope_name}
+
         
+
     def generate_type_definition(self):
         return """public:
         struct %(enum_scope_name)s{
@@ -310,6 +326,10 @@ extern %(class_name)s %(global_variable_name)s;
     header_tail = """
 #endif
 """
+    for p in parameters:
+        if isinstance(p.type_, EnumParameterType):
+	    p.type_.class_name = class_name
+
     types_requiring_definitions =         [t for t in set([p.type_ for p in parameters])
              if getattr(t, "generate_type_definition", None) != None]
    
