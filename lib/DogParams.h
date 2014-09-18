@@ -1,3 +1,5 @@
+#error "Stop using DogParams!"
+
 #ifndef _DOGPARAMS_H_
 #define _DOGPARAMS_H_
 
