@@ -6,14 +6,14 @@ template<typename T>
 T stringToAny(const std::string& s){
     T ret;
     std::istringstream iss(s);
-    iss >> ret;
+    iss >> std::boolalpha >> ret;
     return ret;
 }
 
 template<typename T>
 std::string anyToString(const T& a){
     std::stringstream ss;
-    ss << a;
+    ss << std::boolalpha << a;
     return ss.str();
 }
 

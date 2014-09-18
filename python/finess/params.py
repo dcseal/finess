@@ -23,7 +23,9 @@ def generate_default_on_missing(default_value):
         {"variable_name" : variable_name,
          "section": section, 
          "name": name,
-         "default_value": str(default_value)}
+         "default_value": \
+	     str(default_value) if type(default_value) != bool \
+	         else str(default_value).lower()}
     return default_on_missing
 
 
@@ -33,7 +35,7 @@ class ParameterType:
         if type(type_string) != str:
             raise ValueError("type_string should be a string.")                    
                              
-        canonical_types = {"int", "double", "string"}
+        canonical_types = {"int", "double", "string", "bool"}
         if not type_string in canonical_types:
             raise ValueError("type_string should be one of " + str(canonical_types))
         self.type_string = type_string
@@ -409,7 +411,12 @@ if __name__ == "__main__":
 		            section = "dogParams",
 			    name = "default_1",
 			    type_ = "int",
-			    default_value = 1)]
+			    default_value = 1),
+	          Parameter(variable_name = "bool_something",
+		            section = "dogParams",
+			    name = "bool_something",
+			    type_ = "bool",
+			    default_value = True)]
     
     accessors = map(Accessor, parameters)
     

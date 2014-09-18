@@ -128,6 +128,7 @@ public:
 	    content += "[dogParams]\n";
 	    content += "meqn = 2 \n";
 	    content += "one_of_1_3_5 = 1\n";
+	    content += "bool_something = false\n";
 	    
 	    Setup setup(filename, content);
 	    IniParams params;
@@ -136,6 +137,10 @@ public:
 	    TSM_ASSERT_EQUALS(content, 
 		    params.get_one_of_1_3_5(),
 		    1);
+	    TSM_ASSERT_EQUALS(content,
+		    params.get_bool_something(),
+		    false);
+
 	}
 	{
 	    string content;
