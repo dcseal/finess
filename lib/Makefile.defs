@@ -21,7 +21,6 @@ TOPLIB_OBJECTS = \
   $(MAIN_GLOBAL).o \
   $(TOPLIB)/dog_ini.o \
   $(TOPLIB)/DogParams.o \
-  $(TOPLIB)/OutputDir.o \
   $(TOPLIB)/tensors.o \
   $(TOPLIB)/dog_math.o \
   $(TOPLIB)/dog_str.o \
@@ -36,7 +35,6 @@ TOPLIB_SOURCES = \
   $(MAIN_GLOBAL).cpp \
   $(TOPLIB)/dog_ini.cpp \
   $(TOPLIB)/DogParams.cpp \
-  $(TOPLIB)/OutputDir.cpp \
   $(TOPLIB)/tensors.cpp \
   $(TOPLIB)/dog_math.cpp \
   $(TOPLIB)/dog_str.cpp \
