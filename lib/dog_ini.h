@@ -1,3 +1,5 @@
+#error "Stop using dog_ini!"
+
 #ifndef DOG_INI_H
 #define DOG_INI_H
 #include <vector>
