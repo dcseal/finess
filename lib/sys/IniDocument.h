@@ -1,3 +1,4 @@
+#error "Stop using IniDocument!"
 #ifndef _IniDocument_h_
 #define _IniDocument_h_
 
