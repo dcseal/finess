@@ -17,8 +17,8 @@ CLEAN_LIST+=$(TEST_TARGET) $(TEST_RUNNER_CPPFILE)
 
 all: $(TEST_TARGET)
 
-Params.o: Params.cpp Params.h
-OBJECTS+=Params.o
+IniParams.o: IniParams.cpp IniParams.h
+OBJECTS+=IniParams.o
 
 
 
