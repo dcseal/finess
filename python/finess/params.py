@@ -35,7 +35,7 @@ class ParameterType:
         if type(type_string) != str:
             raise ValueError("type_string should be a string.")                    
                              
-        canonical_types = {"int", "double", "string", "bool"}
+        canonical_types = {"int", "double", "std::string", "bool"}
         if not type_string in canonical_types:
             raise ValueError("type_string should be one of " + str(canonical_types))
         self.type_string = type_string

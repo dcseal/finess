@@ -305,6 +305,7 @@ epsilon = Parameter(variable_name = "epsilon",
 parameters.append(epsilon)
 checks.append(CheckGreaterThan(epsilon, 0.0))
 
+#Something from section [finess]
 global_alpha = Parameter(variable_name = "global_alpha",
                          section = "finess",
                          name = "global_alpha",
@@ -312,6 +313,12 @@ global_alpha = Parameter(variable_name = "global_alpha",
                          default_value = False)
 parameters.append(global_alpha)
 
+output_dir = Parameter(variable_name = "output_dir",
+                       section = "finess",
+		       name = "output_dir",
+		       type_ = "std::string",
+		       default_value = "output")
+parameters.append(output_dir)		       
 
 accessors = map(Accessor, parameters)
 
