@@ -1,3 +1,4 @@
+#error "Stop using WenoParams!"
 #ifndef _WENOPARAMS_H_
 #define _WENOPARAMS_H_
 
