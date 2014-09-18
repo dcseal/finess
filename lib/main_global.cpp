@@ -2,10 +2,10 @@
 #include <iomanip>
 #include <stdlib.h>
 #include "dogdefs.h"
-#include "IniDocument.h"
-#include "OutputDir.h"
 #include "dimdefs.h"
 
+
+#include "IniParams.h"
 /*
  * Common main function that's called by every application.
  *
@@ -20,19 +20,19 @@
  */
 int main_global(int argc, char* argv[])
 {
-    // Open parameters.ini file, (and read [dogParams]? -DS)
-    ini_doc.initFromFile("parameters.ini");
-    IniDocument::Section& ini_sec = ini_doc["dogParams"];
+    using std::string;
+    using std::cout;
+    using std::setprecision;
+    using std::setw;
+    using std::scientific;
+    using std::endl;
+
+    global_ini_params.init("parameters.ini");
+
 
     // Get current time
     double time1 = time(NULL);
 
-    // Parse the command line arguments.  (e.g. -o sets a different output
-    // directory, and -d sets a different debug level).
-    //
-    // TODO - there is no need for this to be a class.  A single global
-    // variable containing the output directory would suffice. (-DS)
-    OutputDir::parse_arguments(argc, argv);
 
     // Call startscript (Default: scripts/startscript, otherwise it checks for
     // a local file called 'startscript' from the application's directory)
@@ -42,7 +42,7 @@ int main_global(int argc, char* argv[])
     // Call the ``RunFinpack'' routine, which executes the code
     // Each dimension has its own version of this routine.
     int RunFinpack( string outputdir );
-    int m = RunFinpack( get_outputdir() );
+    int m = RunFinpack( global_ini_params.get_output_dir() );
 
     // Get current time
     double time2 = time(NULL);
