@@ -2,8 +2,8 @@
 #include "dogdefs.h"
 #include "dog_math.h"
 #include "stdlib.h"
-#include "DogParams.h"       // the usual parameters
-#include "DogParamsCart2.h"  // 2D geometry
+#include "IniParams.h"       // the usual parameters
+#include "IniParams.h"  // 2D geometry
 #include "EulerParams.h"     // Gamma gas constant (used for computing wave speeds)
 
 // User supplied functions defining the Flux function, Jacobian, and
@@ -35,16 +35,16 @@ void ConstructLF2( const double dt,
     void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q); // Only set conditions along y-direction
 
     // Grid and problem information
-    const int mx     = dogParamsCart2.get_mx();
-    const int my     = dogParamsCart2.get_my();
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
-    const int mbc    = dogParamsCart2.get_mbc();
+    const int mx     = global_ini_params.get_mx();
+    const int my     = global_ini_params.get_my();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
+    const int mbc    = global_ini_params.get_mbc();
 
-    const double     dx = dogParamsCart2.get_dx();
-    const double     dy = dogParamsCart2.get_dy();
-    const double   xlow = dogParamsCart2.get_xlow();
-    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dx = global_ini_params.get_dx();
+    const double     dy = global_ini_params.get_dy();
+    const double   xlow = global_ini_params.get_xlow();
+    const double   ylow = global_ini_params.get_ylow();
 
     dTensorBC3  Fhat(mx+1, my,   meqn, mbc );
     dTensorBC3  Ghat(mx,   my+1, meqn, mbc );
@@ -177,7 +177,7 @@ const int mbc_small      = 3;
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         printf("Error: source-term not implemented for Lax-Wendroff method\n");
         exit(1);
@@ -213,16 +213,16 @@ void ConstructLF( const double dt,
     void SetBndValues(dTensorBC3& aux, dTensorBC3& q); 
 
     // Grid and problem information
-    const int mx     = dogParamsCart2.get_mx();
-    const int my     = dogParamsCart2.get_my();
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
-    const int mbc    = dogParamsCart2.get_mbc();
+    const int mx     = global_ini_params.get_mx();
+    const int my     = global_ini_params.get_my();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
+    const int mbc    = global_ini_params.get_mbc();
 
-    const double     dx = dogParamsCart2.get_dx();
-    const double     dy = dogParamsCart2.get_dy();
-    const double   xlow = dogParamsCart2.get_xlow();
-    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dx = global_ini_params.get_dx();
+    const double     dy = global_ini_params.get_dy();
+    const double   xlow = global_ini_params.get_xlow();
+    const double   ylow = global_ini_params.get_ylow();
 
     dTensorBC3  Fhat(mx+1, my,   meqn, mbc );
     dTensorBC3  Ghat(mx,   my+1, meqn, mbc );
@@ -315,7 +315,7 @@ const int mbc_small      = 3;
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         printf("Error: source-term not implemented for Lax-Wendroff method\n");
         exit(1);

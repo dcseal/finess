@@ -5,8 +5,8 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart3.h"
+#include "IniParams.h"
+#include "IniParams.h"
 
 using namespace std;
 
@@ -15,19 +15,19 @@ void ConSoln( const dTensorBC4& aux, const dTensorBC4& q,
 {
 
     // Size of the solution
-    const int     mx = dogParamsCart3.get_mx();
-    const int     my = dogParamsCart3.get_my();
-    const int     mz = dogParamsCart3.get_mz();
-    const int   meqn = dogParams.get_meqn();
-    const int   maux = dogParams.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int     my = global_ini_params.get_my();
+    const int     mz = global_ini_params.get_mz();
+    const int   meqn = global_ini_params.get_meqn();
+    const int   maux = global_ini_params.get_maux();
 
     // Grid information:
-    const double dx   = dogParamsCart3.get_dx();
-    const double dy   = dogParamsCart3.get_dy();
-    const double dz   = dogParamsCart3.get_dz();
-    const double xlow = dogParamsCart3.get_xlow();
-    const double ylow = dogParamsCart3.get_ylow();
-    const double zlow = dogParamsCart3.get_zlow();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
+    const double dz   = global_ini_params.get_dz();
+    const double xlow = global_ini_params.get_xlow();
+    const double ylow = global_ini_params.get_ylow();
+    const double zlow = global_ini_params.get_zlow();
 
     string fname1 = outputdir+"/conservation.dat";
     ofstream write_file1,write_file2;
@@ -46,7 +46,7 @@ void ConSoln( const dTensorBC4& aux, const dTensorBC4& q,
     // -----------------
     // CONSERVATION
     // -----------------
-    if( dogParams.get_mcapa() < 1 ) // without capacity function
+    if( global_ini_params.get_mcapa() < 1 ) // without capacity function
     {
         for (int m=1; m<=meqn; m++)
         {
@@ -81,7 +81,7 @@ void ConSoln( const dTensorBC4& aux, const dTensorBC4& q,
                 const double z  = zlow + (double(k)-0.5)*dz;
 
                 double qtmp = q.get(i,j,k,m);
-                double atmp = aux.get(i,j,k, dogParams.get_mcapa() );
+                double atmp = aux.get(i,j,k, global_ini_params.get_mcapa() );
                 qsum.set(m, (qsum.get(m) + atmp*dx*dy*dz*qtmp) );
             }
         }

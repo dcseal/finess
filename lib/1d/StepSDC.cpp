@@ -3,7 +3,7 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
 #include "RKinfo.h"
 using namespace std;
 
@@ -64,9 +64,9 @@ void StepSDCRK2(const double& dt, const int method[], const dTensor2& node,
     BeforeStep(dt, node, aux, qin);
     ConstructL(method,node,aux,qin,Lrhs,smax);
     // EulerStepSDC(dt,aux,qin,Lrhs,qstar);  @TODO
-    if (dogParams.using_moment_limiter())
+    if (global_ini_params.using_moment_limiter())
     { ApplyLimiter(node,aux,qstar,&ProjectRightEig,&ProjectLeftEig); }
-    else if (dogParams.using_relax_limiter())
+    else if (global_ini_params.using_relax_limiter())
     {  RelaxLimiter(node,aux,qstar);  }
     AfterStep(dt,node,aux,qstar);
 
@@ -82,9 +82,9 @@ void StepSDCRK2(const double& dt, const int method[], const dTensor2& node,
                 double tmp = qin.get(i,m,k) + 0.5*dt*( Lrhs.get(i,m,k) + Lstar.get(i,m,k) );
                 qnew.set(i,m,k,tmp);
             }
-    if (dogParams.using_moment_limiter())
+    if (global_ini_params.using_moment_limiter())
     { ApplyLimiter(node,aux,qnew,&ProjectRightEig,&ProjectLeftEig); }
-    else if (dogParams.using_relax_limiter())
+    else if (global_ini_params.using_relax_limiter())
     {  RelaxLimiter(node,aux,qnew);  }
     AfterStep(dt,node,aux,qnew);
 
@@ -149,9 +149,9 @@ void StepSDCdeltaRK2(const double& dt, const int method[], const dTensor2& node,
                 double tmp = q1.get(i,m,k) + IL.get(i,m,k,num) + dt*( L1new.get(i,m,k) - L1.get(i,m,k) );
                 qstar.set(i,m,k,tmp);
             }
-    if (dogParams.using_moment_limiter())
+    if (global_ini_params.using_moment_limiter())
     { ApplyLimiter(node,aux,qstar,&ProjectRightEig,&ProjectLeftEig); }
-    else if (dogParams.using_relax_limiter())
+    else if (global_ini_params.using_relax_limiter())
     {  RelaxLimiter(node,aux,qstar);  }
     AfterStep(dt,node,aux,qstar);
 
@@ -168,9 +168,9 @@ void StepSDCdeltaRK2(const double& dt, const int method[], const dTensor2& node,
                         + ( L1new.get(i,m,k) - L1.get(i,m,k) ) );
                 q2.set(i,m,k,tmp);
             }
-    if (dogParams.using_moment_limiter())
+    if (global_ini_params.using_moment_limiter())
     { ApplyLimiter(node,aux,q2,&ProjectRightEig,&ProjectLeftEig); }
-    else if (dogParams.using_relax_limiter())
+    else if (global_ini_params.using_relax_limiter())
     {  RelaxLimiter(node,aux,q2);  }
     AfterStep(dt,node,aux,q2);
 

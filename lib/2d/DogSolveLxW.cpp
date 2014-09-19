@@ -3,7 +3,7 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
 #include "RKinfo.h"
 
 using namespace std;
@@ -115,7 +115,7 @@ void DogSolveLxW(const dTensor2& node, const dTensor1& prim_vol, dTensorBC3& aux
 
             // qnew = qold + dt*Lstar
             UpdateSoln(1.0e0,0.0e0,1.0e0,dt,node,aux,qnew,Lstar,qnew);
-            if (dogParams.using_moment_limiter())
+            if (global_ini_params.using_moment_limiter())
             {  ApplyLimiter( node,aux,qnew,&ProjectRightEig,&ProjectLeftEig);  }
 
             AfterStep(dt,node,aux,qnew);

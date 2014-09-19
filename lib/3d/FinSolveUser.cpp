@@ -3,7 +3,7 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
 #include "RKinfo.h"
 
 using namespace std;

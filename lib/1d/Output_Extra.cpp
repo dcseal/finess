@@ -5,8 +5,8 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
+#include "IniParams.h"
 using namespace std;
 
 // Template used for outputting extra information.

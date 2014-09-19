@@ -3,7 +3,7 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
 #include "RKinfo.h"
 #include "FinSolveRK.h"
 
@@ -17,7 +17,7 @@ void FinSolveRK(
 {
 
     // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    const int time_order = global_ini_params.get_time_order();
     RKinfo rk;
     SetRKinfo(time_order, rk);
 
@@ -266,7 +266,7 @@ void FinSolveRK(
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolve1D ... Step" << setw(5) << n_step;
@@ -293,7 +293,7 @@ void FinSolveRK(
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";

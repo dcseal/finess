@@ -3,7 +3,7 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
 #include "RKinfo.h"
 #include "FinSolveRK.h"
 
@@ -58,7 +58,7 @@ void FinSolveSDC(
     const int maux  = aux.getsize(2);
     const int mbc   = qnew.getmbc();
 
-    const int torder = dogParams.get_time_order();
+    const int torder = global_ini_params.get_time_order();
 
     // --------------------------------------------------------------
     // Create helper arrays
@@ -93,7 +93,7 @@ void FinSolveSDC(
     if( torder > 2 )
     { 
         // create current time step vector
-        TimeStepSDC(dogParams.get_time_order(), tstart, dt, dtvec, tvec);
+        TimeStepSDC(global_ini_params.get_time_order(), tstart, dt, dtvec, tvec);
 
         // Construct initial right-hand side for SDC
         SetBndValues(aux, qnew);
@@ -287,9 +287,9 @@ void FinSolveSDC(
                     // Correct solution
                     q1.set(i,m,k, q1.get(i,m,k) + err1 );
                     }
-                    if (dogParams.using_moment_limiter())
+                    if (global_ini_params.using_moment_limiter())
                     { ApplyLimiter(node,aux,q1,&ProjectRightEig,&ProjectLeftEig); }
-                    else if (dogParams.using_relax_limiter())
+                    else if (global_ini_params.using_relax_limiter())
                     {  RelaxLimiter(node,aux,q1);  }
                     AfterStep(dtvec.get(1),node,aux,q1);
 
@@ -313,9 +313,9 @@ void FinSolveSDC(
                     q2.set(i,m,k, q2.get(i,m,k) + err2 );
                     L1.set(i,m,k, L1new.get(i,m,k) );
                     }        
-                    if (dogParams.using_moment_limiter())
+                    if (global_ini_params.using_moment_limiter())
                     { ApplyLimiter(node,aux,q2,&ProjectRightEig,&ProjectLeftEig); }
-                    else if (dogParams.using_relax_limiter())
+                    else if (global_ini_params.using_relax_limiter())
                     {  RelaxLimiter(node,aux,q2);  }
                     AfterStep(dtvec.get(2),node,aux,q2);
 
@@ -340,9 +340,9 @@ void FinSolveSDC(
                     q3.set(i,m,k, q3.get(i,m,k) + err3 );
                     L2.set(i,m,k, L2new.get(i,m,k) );
                     }    
-                    if (dogParams.using_moment_limiter())
+                    if (global_ini_params.using_moment_limiter())
                     { ApplyLimiter(node,aux,q3,&ProjectRightEig,&ProjectLeftEig); }
-                    else if (dogParams.using_relax_limiter())
+                    else if (global_ini_params.using_relax_limiter())
                     {  RelaxLimiter(node,aux,q3);  }
                     AfterStep(dtvec.get(3),node,aux,q3);
 
@@ -366,9 +366,9 @@ void FinSolveSDC(
                                 q4.set(i,m,k, q4.get(i,m,k) + err4 );
                                 L3.set(i,m,k, L3new.get(i,m,k) );
                             }        
-                    if (dogParams.using_moment_limiter())
+                    if (global_ini_params.using_moment_limiter())
                     { ApplyLimiter(node,aux,q4,&ProjectRightEig,&ProjectLeftEig); }
-                    else if (dogParams.using_relax_limiter())
+                    else if (global_ini_params.using_relax_limiter())
                     {  RelaxLimiter(node,aux,q4);  }
                     AfterStep(dtvec.get(4),node,aux,q4);
 
@@ -393,9 +393,9 @@ void FinSolveSDC(
                                 q5.set(i,m,k, q5.get(i,m,k) + err5 );
                                 L4.set(i,m,k, L4new.get(i,m,k) );
                             }        
-                    if (dogParams.using_moment_limiter())
+                    if (global_ini_params.using_moment_limiter())
                     { ApplyLimiter(node,aux,q5,&ProjectRightEig,&ProjectLeftEig); }
-                    else if (dogParams.using_relax_limiter())
+                    else if (global_ini_params.using_relax_limiter())
                     {  RelaxLimiter(node,aux,q5);  }
                     AfterStep(dtvec.get(5),node,aux,q5);
 
@@ -408,9 +408,9 @@ void FinSolveSDC(
                     // Take 1st Euler time step            
                     //dogState->set_dt(dtvec.get(1));
                     EulerStepSDC(dtvec.get(1),aux,qnew,L0,q1);
-                    if (dogParams.using_moment_limiter())
+                    if (global_ini_params.using_moment_limiter())
                     { ApplyLimiter(node,aux,q1,&ProjectRightEig,&ProjectLeftEig); }
-                    else if (dogParams.using_relax_limiter())
+                    else if (global_ini_params.using_relax_limiter())
                     {  RelaxLimiter(node,aux,q1);  }
                     AfterStep(dtvec.get(1),node,aux,q1);
 
@@ -420,9 +420,9 @@ void FinSolveSDC(
                     BeforeStep(dtvec.get(2),node,aux,q1);
                     ConstructL(method,node,aux,q1,L1,smax);
                     EulerStepSDC(dtvec.get(2),aux,q1,L1,q2);
-                    if (dogParams.using_moment_limiter())
+                    if (global_ini_params.using_moment_limiter())
                     { ApplyLimiter(node,aux,q2,&ProjectRightEig,&ProjectLeftEig); }
-                    else if (dogParams.using_relax_limiter())
+                    else if (global_ini_params.using_relax_limiter())
                     {  RelaxLimiter(node,aux,q2);  }
                     AfterStep(dtvec.get(2),node,aux,q2);
 
@@ -432,9 +432,9 @@ void FinSolveSDC(
                     BeforeStep(dtvec.get(3),node,aux,q2);
                     ConstructL(method,node,aux,q2,L2,smax);
                     EulerStepSDC(dtvec.get(3),aux,q2,L2,q3);
-                    if (dogParams.using_moment_limiter())
+                    if (global_ini_params.using_moment_limiter())
                     { ApplyLimiter(node,aux,q3,&ProjectRightEig,&ProjectLeftEig); }
-                    else if (dogParams.using_relax_limiter())
+                    else if (global_ini_params.using_relax_limiter())
                     {  RelaxLimiter(node,aux,q3);  }
                     AfterStep(dtvec.get(3),node,aux,q3);
 
@@ -462,9 +462,9 @@ void FinSolveSDC(
                                     // Correct solution
                                     q1.set(i,m,k, q1.get(i,m,k) + err1 );
                                 }
-                        if (dogParams.using_moment_limiter())
+                        if (global_ini_params.using_moment_limiter())
                         { ApplyLimiter(node,aux,q1,&ProjectRightEig,&ProjectLeftEig); }
-                        else if (dogParams.using_relax_limiter())
+                        else if (global_ini_params.using_relax_limiter())
                         {  RelaxLimiter(node,aux,q1);  }
                         AfterStep(dtvec.get(1),node,aux,q1);
 
@@ -488,9 +488,9 @@ void FinSolveSDC(
                                     q2.set(i,m,k, q2.get(i,m,k) + err2 );
                                     L1.set(i,m,k, L1new.get(i,m,k) );
                                 }        
-                        if (dogParams.using_moment_limiter())
+                        if (global_ini_params.using_moment_limiter())
                         { ApplyLimiter(node,aux,q2,&ProjectRightEig,&ProjectLeftEig); }
-                        else if (dogParams.using_relax_limiter())
+                        else if (global_ini_params.using_relax_limiter())
                         {  RelaxLimiter(node,aux,q2);  }
                         AfterStep(dtvec.get(2),node,aux,q2);
 
@@ -514,9 +514,9 @@ void FinSolveSDC(
                                     q3.set(i,m,k, q3.get(i,m,k) + err3 );
                                     L2.set(i,m,k, L2new.get(i,m,k) );
                                 }        
-                        if (dogParams.using_moment_limiter())
+                        if (global_ini_params.using_moment_limiter())
                         { ApplyLimiter(node,aux,q3,&ProjectRightEig,&ProjectLeftEig); }
-                        else if (dogParams.using_relax_limiter())
+                        else if (global_ini_params.using_relax_limiter())
                         {  RelaxLimiter(node,aux,q3);  }
                         AfterStep(dtvec.get(3),node,aux,q3);
 
@@ -541,9 +541,9 @@ void FinSolveSDC(
                         // Take 1st Euler time step
                         //dogState->set_dt(dtvec.get(1));
                         EulerStepSDC(dtvec.get(1),aux,qnew,L0,q1);
-                        if (dogParams.using_moment_limiter())
+                        if (global_ini_params.using_moment_limiter())
                         { ApplyLimiter(node,aux,q1,&ProjectRightEig,&ProjectLeftEig); }
-                        else if (dogParams.using_relax_limiter())
+                        else if (global_ini_params.using_relax_limiter())
                         {  RelaxLimiter(node,aux,q1);  }
                         AfterStep(dtvec.get(1),node,aux,q1);
 
@@ -579,9 +579,9 @@ void FinSolveSDC(
                                         // Correct solution
                                         q1.set(i,m,k, q1.get(i,m,k) + err1 );
                                     }
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q1,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q1);  }
                             AfterStep(dtvec.get(1),node,aux,q1);
 
@@ -605,9 +605,9 @@ void FinSolveSDC(
                                         q2.set(i,m,k, q2.get(i,m,k) + err2 );
                                         L1.set(i,m,k, L1new.get(i,m,k) );
                                     }        
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q2,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q2);  }
                             AfterStep(dtvec.get(2),node,aux,q2);
 
@@ -631,9 +631,9 @@ void FinSolveSDC(
                                         q3.set(i,m,k, q3.get(i,m,k) + err3 );
                                         L2.set(i,m,k, L2new.get(i,m,k) );
                                     }    
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q3,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q3);  }
                             AfterStep(dtvec.get(3),node,aux,q3);
 
@@ -657,9 +657,9 @@ void FinSolveSDC(
                                         q4.set(i,m,k, q4.get(i,m,k) + err4 );
                                         L3.set(i,m,k, L3new.get(i,m,k) );
                                     }        
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q4,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q4);  }
                             AfterStep(dtvec.get(4),node,aux,q4);
 
@@ -763,9 +763,9 @@ void FinSolveSDC(
                             // Correct solution
                             q1.set(i,m,k, q1.get(i,m,k) + err1 );
                             }
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q1,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q1);  }
                             AfterStep(dtvec.get(1),node,aux,q1);
 
@@ -788,9 +788,9 @@ void FinSolveSDC(
                             q2.set(i,m,k, q2.get(i,m,k) + err2 );
                             L1.set(i,m,k, L1new.get(i,m,k) );
                             }        
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q2,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q2);  }
                             AfterStep(dtvec.get(2),node,aux,q2);
 
@@ -814,9 +814,9 @@ void FinSolveSDC(
                             q3.set(i,m,k, q3.get(i,m,k) + err3 );
                             L2.set(i,m,k, L2new.get(i,m,k) );
                             }    
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q3,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q3);  }
                             AfterStep(dtvec.get(3),node,aux,q3);
 
@@ -839,9 +839,9 @@ void FinSolveSDC(
                                         q4.set(i,m,k, q4.get(i,m,k) + err4 );
                                         L3.set(i,m,k, L3new.get(i,m,k) );
                                     }        
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q4,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q4);  }
                             AfterStep(dtvec.get(4),node,aux,q4);
 
@@ -865,9 +865,9 @@ void FinSolveSDC(
                                         q5.set(i,m,k, q5.get(i,m,k) + err5 );
                                         L4.set(i,m,k, L4new.get(i,m,k) );
                                     }        
-                            if (dogParams.using_moment_limiter())
+                            if (global_ini_params.using_moment_limiter())
                             { ApplyLimiter(node,aux,q5,&ProjectRightEig,&ProjectLeftEig); }
-                            else if (dogParams.using_relax_limiter())
+                            else if (global_ini_params.using_relax_limiter())
                             {  RelaxLimiter(node,aux,q5);  }
                             AfterStep(dtvec.get(5),node,aux,q5);
 
@@ -892,7 +892,7 @@ void FinSolveSDC(
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolveSDC1D ... Step" << setw(5) << n_step;
@@ -933,7 +933,7 @@ void FinSolveSDC(
             else //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";

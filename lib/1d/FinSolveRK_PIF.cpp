@@ -3,12 +3,12 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
 #include "RKinfo.h"
 #include "FinSolveRK.h"
 #include "ConstructL.h"
 #include "WenoParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
 
 // Used for construcing the flux function
 void SampleFunction( 
@@ -90,7 +90,7 @@ void FinSolveRK_PIF(
 {
 
     // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    const int time_order = global_ini_params.get_time_order();
     RKinfo rk;
     SetRKinfo(time_order, rk);
 
@@ -246,7 +246,7 @@ k4.copyfrom( Lstar );
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolve1D ... Step" << setw(5) << n_step;
@@ -273,7 +273,7 @@ k4.copyfrom( Lstar );
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";
@@ -344,7 +344,7 @@ void ConstructL_NOC(
     void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -354,11 +354,11 @@ void ConstructL_NOC(
     dTensorBC2  fhat(mx+1, meqn, mbc );
 
     // Grid spacing
-    const double   xlow = dogParamsCart1.get_xlow();
-    const double     dx = dogParamsCart1.get_dx();
+    const double   xlow = global_ini_params.get_xlow();
+    const double     dx = global_ini_params.get_dx();
 
     double alpha1 = 0.;
-    if( dogParams.get_global_alpha() )
+    if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
         GlobalWaveSpd( q, aux, alpha1 );
@@ -440,7 +440,7 @@ void ConstructL_NOC(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         // Compute the source term.
         SampleFunction( 1-mbc, mx+mbc, q, aux, Lstar, &SourceTermFunc);
@@ -497,7 +497,7 @@ void ConstructL(
     void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -507,11 +507,11 @@ void ConstructL(
     dTensorBC2  fhat(mx+1, meqn, mbc );
 
     // Grid spacing
-    const double   xlow = dogParamsCart1.get_xlow();
-    const double     dx = dogParamsCart1.get_dx();
+    const double   xlow = global_ini_params.get_xlow();
+    const double     dx = global_ini_params.get_dx();
 
     double alpha1 = 0.;
-    if( dogParams.get_global_alpha() )
+    if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
         GlobalWaveSpd( q, aux, alpha1 );
@@ -613,7 +613,7 @@ void ConstructL(
         SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
         const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, alpha  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
         dTensor2 gp( meqn, ws ), gm( meqn, ws );
@@ -656,7 +656,7 @@ void ConstructL(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // ---------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         // Compute the source term.
         SampleFunction( 1-mbc, mx+mbc, q, aux, Lstar, &SourceTermFunc);

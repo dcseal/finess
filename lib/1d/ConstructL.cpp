@@ -1,7 +1,7 @@
 #include <cmath>
 #include "assert.h"            // for assert_eq.  Can be removed in future
-#include "DogParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
+#include "IniParams.h"
 #include "tensors.h"
 #include "dog_math.h"
 #include "WenoParams.h"
@@ -30,7 +30,7 @@ void ConstructL(
     void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -40,11 +40,11 @@ void ConstructL(
     dTensorBC2  fhat(mx+1, meqn, mbc );
 
     // Grid spacing
-    const double   xlow = dogParamsCart1.get_xlow();
-    const double     dx = dogParamsCart1.get_dx();
+    const double   xlow = global_ini_params.get_xlow();
+    const double     dx = global_ini_params.get_dx();
 
     double alpha1 = 0.;
-    if( dogParams.get_global_alpha() )
+    if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
         GlobalWaveSpd( q, aux, alpha1 );
@@ -148,7 +148,7 @@ void ConstructL(
         SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
         const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, alpha  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
         dTensor2 gp( meqn, ws ), gm( meqn, ws );
@@ -192,7 +192,7 @@ void ConstructL(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         // Compute the source term.
         SampleFunction( 1-mbc, mx+mbc, q, aux, Lstar, &SourceTermFunc);

@@ -1,7 +1,7 @@
 #include <cmath>
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
+#include "IniParams.h"
 #include "EulerParams.h"  
 
 // This is a user-supplied routine that sets the the boundary conditions
@@ -17,15 +17,15 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
               dTensorBC3& Fout,
         void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
 
-    const int space_order = dogParams.get_space_order();
+    const int space_order = global_ini_params.get_space_order();
     const int mx   = q.getsize(1);
     const int my   = q.getsize(2);
     const int meqn = q.getsize(3);
     const int mbc  = q.getmbc();
     const int maux = aux.getsize(3);  
 
-    const double dx   = dogParamsCart2.get_dx();
-    const double dy   = dogParamsCart2.get_dy();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
 
     if( mx%5 != 0 || my%5 != 0 )
     {
@@ -155,15 +155,15 @@ void SetBndValuesX( dTensorBC3& aux, dTensorBC3& q )
               dTensorBC3& Fout,
         void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
 
-    const int space_order = dogParams.get_space_order();
+    const int space_order = global_ini_params.get_space_order();
     const int mx   = q.getsize(1);
     const int my   = q.getsize(2);
     const int meqn = q.getsize(3);
     const int mbc  = q.getmbc();
     const int maux = aux.getsize(3);  
 
-    const double dx   = dogParamsCart2.get_dx();
-    const double dy   = dogParamsCart2.get_dy();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
 
     // Compute index where the step is located:
     if( mx%5 != 0 || my%5 != 0 )
@@ -328,15 +328,15 @@ void SetBndValuesY( dTensorBC3& aux, dTensorBC3& q )
               dTensorBC3& Fout,
         void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
 
-    const int space_order = dogParams.get_space_order();
+    const int space_order = global_ini_params.get_space_order();
     const int mx   = q.getsize(1);
     const int my   = q.getsize(2);
     const int meqn = q.getsize(3);
     const int mbc  = q.getmbc();
     const int maux = aux.getsize(3);  
 
-    const double dx   = dogParamsCart2.get_dx();
-    const double dy   = dogParamsCart2.get_dy();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
 
     // Compute index where the step is located:
     if( mx%5 != 0 || my%5 != 0 )

@@ -2,8 +2,8 @@
 #include <cmath>
 #include "dogdefs.h"
 #include "stdlib.h"
-#include "DogParams.h"
-#include "DogParamsCart3.h"
+#include "IniParams.h"
+#include "IniParams.h"
 using namespace std;
 
 // All-purpose routine for sampling a function, and saving its data into a
@@ -32,8 +32,8 @@ void SampleFunction(
     void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&))
 {    
 
-    const int meqn    = dogParams.get_meqn();
-    const int maux    = dogParams.get_maux();
+    const int meqn    = global_ini_params.get_meqn();
+    const int maux    = global_ini_params.get_maux();
     const int mlength = Fout.getsize(4);
 
     // -----------------
@@ -56,12 +56,12 @@ void SampleFunction(
     }
 
     // Grid information
-    const double dx   = dogParamsCart3.get_dx();
-    const double dy   = dogParamsCart3.get_dy();
-    const double dz   = dogParamsCart3.get_dz();
-    const double xlow = dogParamsCart3.get_xlow();
-    const double ylow = dogParamsCart3.get_ylow();
-    const double zlow = dogParamsCart3.get_zlow();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
+    const double dz   = global_ini_params.get_dz();
+    const double xlow = global_ini_params.get_xlow();
+    const double ylow = global_ini_params.get_ylow();
+    const double zlow = global_ini_params.get_zlow();
 
     // ----------------------------------
     // Loop over all elements of interest

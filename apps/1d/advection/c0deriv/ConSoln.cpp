@@ -5,8 +5,8 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
+#include "IniParams.h"
 #include "dog_math.h"
 
 using namespace std;
@@ -17,13 +17,13 @@ void ConSoln(
     double t, string outputdir)
 {
 
-    const int     mx = dogParamsCart1.get_mx();
-    const int   meqn = dogParams.get_meqn();
-    const int   maux = dogParams.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int   meqn = global_ini_params.get_meqn();
+    const int   maux = global_ini_params.get_maux();
 
     // Grid information:
-    const double dx   = dogParamsCart1.get_dx();
-    const double xlow = dogParamsCart1.get_xlow();
+    const double dx   = global_ini_params.get_dx();
+    const double xlow = global_ini_params.get_xlow();
     const double sqdx = sqrt(dx);
 
     string fname1 = outputdir+"/conservation.dat";
@@ -45,7 +45,7 @@ void ConSoln(
     // CONSERVATION
     // -----------------
     dTensor2 qsum(meqn, 4); qsum.setall(0.);
-    if( dogParams.get_mcapa() < 1 ) // without capacity function
+    if( global_ini_params.get_mcapa() < 1 ) // without capacity function
     {
         for (int m=1; m<=meqn; m++)
         {
@@ -72,7 +72,7 @@ void ConSoln(
             {
                 const double x    = xlow + (double(i)-0.5)*dx;
                 const double qtmp = q.get(i,m);
-                const double atmp = aux.get(i, dogParams.get_mcapa() );
+                const double atmp = aux.get(i, global_ini_params.get_mcapa() );
                 const double abs_q = fabs( atmp*q.get(i, m) );
 
                 qsum.set(m, 1, qsum.get(m,1) + atmp*dx*qtmp        );  // total mass

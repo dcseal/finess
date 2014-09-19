@@ -1,7 +1,7 @@
 /*
 #include <iostream>
 #include <iomanip>
-#include "DogParams.h"
+#include "IniParams.h"
 */
 
 //#include "DogSolverCart2.h"
@@ -24,7 +24,7 @@ void AfterQinit(dTensorBC3& aux, dTensorBC3& q)
 //  const int kmax  = q.getsize(4);
 //  const int mbc   = q.getmbc();
 //  const int maux  = aux.getsize(3);  
-//  const int space_order = dogParams.get_space_order();
+//  const int space_order = global_ini_params.get_space_order();
 
     // Output parameters to file in outputdir
     char eulerhelp[200];

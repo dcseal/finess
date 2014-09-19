@@ -1,6 +1,6 @@
 #include "dogdefs.h"
 #include "tensors.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
 
 // Function that is called after a full time step (i.e., after all stages are complete)
 //

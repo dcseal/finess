@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include "dogdefs.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
 #include "DogSolverCart2.h"
 class DogSolverCart2;
 void AfterQinit(DogSolverCart2& solver)
@@ -32,7 +32,7 @@ void AfterQinit(DogSolverCart2& solver)
     }
 
 //  void ApplyPosLimiter(const dTensorBC4& aux, dTensorBC4& q);
-//  if( dogParams.using_moment_limiter() )
+//  if( global_ini_params.using_moment_limiter() )
 //  { 
 //      ApplyPosLimiter(aux, qnew); 
 //  }

@@ -1,6 +1,6 @@
 #include<cmath>
 #include "dogdefs.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
 #include "DogSolverCart2.h"
 
 // Smooth initial conditions 
@@ -17,8 +17,8 @@ void AfterQinit(DogSolverCart2& solver)
     const int method1 = int((sqrt(1+8*kmax)-1)/2);  
     double minmod(double,double,double);
 
-    const double dx = dogParamsCart2.get_dx();
-    const double dy = dogParamsCart2.get_dy();
+    const double dx = global_ini_params.get_dx();
+    const double dy = global_ini_params.get_dy();
 
     const double M=10.0;
     const double Mdx2=M*dx*dx;

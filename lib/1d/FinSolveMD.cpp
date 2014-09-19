@@ -3,7 +3,7 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
 
 using namespace std;
 
@@ -155,7 +155,7 @@ void FinSolveMD(
             SetBndValues(aux,      qnew);
             SetBndValues(auxstar, qstar);
 
-            switch( dogParams.get_time_order() )
+            switch( global_ini_params.get_time_order() )
             {
 
 
@@ -270,7 +270,7 @@ void FinSolveMD(
                 break;
 
                 default:
-                printf("Error.  Time order %d not implemented for multiderivative\n", dogParams.get_time_order() );
+                printf("Error.  Time order %d not implemented for multiderivative\n", global_ini_params.get_time_order() );
                 exit(1);
 
             }
@@ -282,7 +282,7 @@ void FinSolveMD(
             cfl = GetCFL(dt,dtv[2],aux,smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "DogSolve1D ... Step" << setw(5) << n_step;
@@ -311,7 +311,7 @@ void FinSolveMD(
                 //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";

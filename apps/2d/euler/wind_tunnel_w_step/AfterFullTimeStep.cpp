@@ -1,6 +1,6 @@
 #include "dogdefs.h"
 #include "tensors.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
 
 // Function that is called after a full time step (i.e., after all stages are complete)
 //
@@ -17,8 +17,8 @@ void AfterFullTimeStep(double dt,
     const int mbc    = q.getmbc();
     const int maux   = aux.getsize(3);
 
-    const double dx   = dogParamsCart2.get_dx();
-    const double dy   = dogParamsCart2.get_dy();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
 
     if( mx%5 != 0 || my%5 != 0 )
     {

@@ -2,7 +2,7 @@
 #include <cmath>
 #include "dogdefs.h"
 #include "stdlib.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
 using namespace std;
 
 // All-purpose routine for sampling a function, and saving its data into a
@@ -49,8 +49,8 @@ void SampleFunction(
     }
 
     // Grid information
-    const double dx   = dogParamsCart1.get_dx();
-    const double xlow = dogParamsCart1.get_xlow();
+    const double dx   = global_ini_params.get_dx();
+    const double xlow = global_ini_params.get_xlow();
 
     // ----------------------------------
     // Loop over all elements of interest

@@ -1,9 +1,9 @@
 #include <cmath>
 #include "assert.h"            // for assert_eq.  Can be removed in future
-#include "DogParams.h"
+#include "IniParams.h"
 #include "tensors.h"
 #include "dog_math.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
 #include "WenoParams.h"
 
 #include "EulerParams.h"
@@ -54,14 +54,14 @@ void ConstructL(
     void ConvertTranspose( const dTensor2& qin, dTensor2& qout );
 
     // Parameters for the current grid
-    const int   meqn = dogParams.get_meqn();
-    const int   maux = dogParams.get_maux();
-    const int     mx = dogParamsCart2.get_mx();
-    const int     my = dogParamsCart2.get_my();
-    const int    mbc = dogParamsCart2.get_mbc();
+    const int   meqn = global_ini_params.get_meqn();
+    const int   maux = global_ini_params.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int     my = global_ini_params.get_my();
+    const int    mbc = global_ini_params.get_mbc();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -73,10 +73,10 @@ void ConstructL(
     dTensorBC3  Ghat(mx,   my+1, meqn, mbc );
 
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
-    const double     dx = dogParamsCart2.get_dx();
-    const double     dy = dogParamsCart2.get_dy();
-    const double   xlow = dogParamsCart2.get_xlow();
-    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dx = global_ini_params.get_dx();
+    const double     dy = global_ini_params.get_dy();
+    const double   xlow = global_ini_params.get_xlow();
+    const double   ylow = global_ini_params.get_ylow();
 
 
     // --------------------------------------------------------------------- //
@@ -251,7 +251,7 @@ void ConstructL(
 
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -453,7 +453,7 @@ void ConstructL(
 
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -499,7 +499,7 @@ void ConstructL(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
 
         // Compute the source term.

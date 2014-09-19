@@ -7,8 +7,8 @@
  * 2.) Call InitApp.  (additional application specific parameters)
  *
  * 3.) Write qhelp.dat to the output directory.  This is a total of two
- * functions calls: one on dogParams.write_qhelp and one on
- * dogParamsCart1.write_qhelp.
+ * functions calls: one on global_ini_params.write_qhelp and one on
+ * global_ini_params.write_qhelp.
  *
  * 4.) Call L2Project.  This Projects initial conditions onto basis functions.
  *
@@ -36,8 +36,8 @@
 #include <iomanip>
 #include "dog_math.h"
 #include "dogdefs.h"
-#include "DogParams.h"            // accessors for the parameters.ini file
-#include "DogParamsCart1.h"       // accessors for the parameters.ini file
+#include "IniParams.h"            // accessors for the parameters.ini file
+#include "IniParams.h"       // accessors for the parameters.ini file
 #include "WenoParams.h"
 #include "IniDocument.h"
 #include "RunFinpack.h"           // Function declarations
@@ -58,8 +58,8 @@ int RunFinpack(string outputdir)
     cout << endl;
 
     // Get parameters
-    dogParams.init();
-    dogParamsCart1.init(ini_doc);
+    global_ini_params.init();
+    global_ini_params.init(ini_doc);
     wenoParams.init(ini_doc);
     cout << endl;
 
@@ -70,30 +70,30 @@ int RunFinpack(string outputdir)
     // If we want to use the top-level solver, this routine needs to be written:
     //fetch_dogState().init();
 
-    const string time_stepping_method = dogParams.get_time_stepping_method();
-    const int&     nout     = dogParams.get_nout();
-    const double&  tfinal   = dogParams.get_tfinal();
+    const string time_stepping_method = global_ini_params.get_time_stepping_method();
+    const int&     nout     = global_ini_params.get_nout();
+    const double&  tfinal   = global_ini_params.get_tfinal();
     double dtv[2+1];
-    dtv[1] = dogParams.get_initial_dt();
-    dtv[2] = dogParams.get_max_dt();
-    const double*  cflv     = dogParams.get_cflv();
-    const int      nv       = dogParams.get_nv();
-    const int*     method   = dogParams.get_method();
-    const int&     meqn     = dogParams.get_meqn();
-    const int&     maux     = dogParams.get_maux();
-    const int&     mdim     = dogParams.get_ndims();     assert_eq( mdim, 1 );
-    const int&     mx       = dogParamsCart1.get_mx();
-    const int&     mbc      = dogParamsCart1.get_mbc();
-    const double&  xlow     = dogParamsCart1.get_xlow();
-    const double&  xhigh    = dogParamsCart1.get_xhigh();
-    const double&  dx       = dogParamsCart1.get_dx();
-    const int&     mrestart = dogParams.get_mrestart();
+    dtv[1] = global_ini_params.get_initial_dt();
+    dtv[2] = global_ini_params.get_max_dt();
+    const double*  cflv     = global_ini_params.get_cflv();
+    const int      nv       = global_ini_params.get_nv();
+    const int*     method   = global_ini_params.get_method();
+    const int&     meqn     = global_ini_params.get_meqn();
+    const int&     maux     = global_ini_params.get_maux();
+    const int&     mdim     = global_ini_params.get_ndims();     assert_eq( mdim, 1 );
+    const int&     mx       = global_ini_params.get_mx();
+    const int&     mbc      = global_ini_params.get_mbc();
+    const double&  xlow     = global_ini_params.get_xlow();
+    const double&  xhigh    = global_ini_params.get_xhigh();
+    const double&  dx       = global_ini_params.get_dx();
+    const int&     mrestart = global_ini_params.get_mrestart();
 
     // Output helpful stuff to qhelp.dat for plotting purposes
     string qhelp;
     qhelp=outputdir+"/qhelp.dat";
-    dogParams.write_qhelp(qhelp.c_str());
-    dogParamsCart1.append_qhelp(qhelp.c_str());
+    global_ini_params.write_qhelp(qhelp.c_str());
+    global_ini_params.append_qhelp(qhelp.c_str());
 
     // Dimension arrays
     dTensorBC2    qnew(mx, meqn, mbc);

@@ -2,7 +2,7 @@
 #include "dog_math.h"
 #include "tensors.h"
 #include "stdlib.h"
-#include "DogParamsCart3.h"
+#include "IniParams.h"
 
 using namespace std;
 
@@ -36,13 +36,13 @@ double GetCFL(double dt, double dtmax,
         const dTensorBC4& smax)
 {
 
-    const int mx    = dogParamsCart3.get_mx();
-    const int my    = dogParamsCart3.get_my();
-    const int mz    = dogParamsCart3.get_mz();
+    const int mx    = global_ini_params.get_mx();
+    const int my    = global_ini_params.get_my();
+    const int mz    = global_ini_params.get_mz();
 
-    const double dx = dogParamsCart3.get_dx();
-    const double dy = dogParamsCart3.get_dy();
-    const double dz = dogParamsCart3.get_dz();
+    const double dx = global_ini_params.get_dx();
+    const double dy = global_ini_params.get_dy();
+    const double dz = global_ini_params.get_dz();
 
     double cfl   = -100.0;
 
@@ -94,9 +94,9 @@ double GetCFL(double dt, double dtmax,
     }
 
     double cfl = -100.0;
-    cfl = Max( dt*alpha1 / dogParamsCart3.get_dx(),  cfl );
-    cfl = Max( dt*alpha2 / dogParamsCart3.get_dy(),  cfl );
-    cfl = Max( dt*alpha3 / dogParamsCart3.get_dz(),  cfl );
+    cfl = Max( dt*alpha1 / global_ini_params.get_dx(),  cfl );
+    cfl = Max( dt*alpha2 / global_ini_params.get_dy(),  cfl );
+    cfl = Max( dt*alpha3 / global_ini_params.get_dz(),  cfl );
 
     if( cfl > 1.0e8 )
     {

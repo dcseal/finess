@@ -3,8 +3,8 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
+#include "IniParams.h"
 #include "FinSolveLxW.h"   // functions directly called from this routine
 
 using namespace std;
@@ -17,7 +17,7 @@ void FinSolveLxW(
 {
 
     // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    const int time_order = global_ini_params.get_time_order();
 
     double t            = tstart;
     double dt           = dtv[1];   // Start with time step from last frame
@@ -111,7 +111,7 @@ void FinSolveLxW(
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolve1D ... Step" << setw(5) << n_step;
@@ -138,7 +138,7 @@ void FinSolveLxW(
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";
