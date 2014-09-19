@@ -4,9 +4,9 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "DogParamsCart2.h"
-#include "WenoParams.h"
 #include "ConstructL.h"
 
+#include "IniParams.h"
 // Right-hand side for hyperbolic PDE in divergence form
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
@@ -179,7 +179,7 @@ void ConstructL(
 
         const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
 
         // -- Flux splitting -- //
@@ -330,7 +330,7 @@ void ConstructL(
 
         const double alpha = Max( alpha2, Max( abs(s1), abs(s2) ) );
         smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 

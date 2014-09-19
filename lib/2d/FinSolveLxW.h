@@ -6,7 +6,7 @@
 void ConSoln( 
     const dTensorBC3& aux,
     const dTensorBC3& q, 
-    double t, string outputdir);
+    double t, std::string outputdir);
 
 double GetCFL(double dt, double dtmax,
         const dTensorBC3& aux,

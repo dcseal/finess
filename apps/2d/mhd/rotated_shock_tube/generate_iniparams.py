@@ -288,6 +288,29 @@ angle = Parameter(variable_name = "angle",
 parameters.append(angle)
 
 #section [weno]
+
+weno_version = Parameter(variable_name = "weno_version",
+                   section = "weno",
+		   name = "weno_version",
+		   type_ = EnumParameterType( \
+		             enum_scope_name = "WenoVersion",
+			     string_enumerator_dict = \
+			         {"FD": "FD",
+				  "JS": "JS",
+				  "Z": "Z"},
+		             class_name = class_name),
+	           default_value = "JS")
+parameters.append(weno_version)
+
+power_param = Parameter(variable_name = "power_param",
+                       section = "weno",
+		       name = "power_param",
+		       type_ = "double",
+		       default_value = 2.0)
+parameters.append(power_param)
+
+
+
 alpha_scaling = Parameter(variable_name = "alpha_scaling",
                           section = "weno",
                           name = "alpha_scaling",
@@ -304,6 +327,8 @@ epsilon = Parameter(variable_name = "epsilon",
                     default_value = 1e-12)
 parameters.append(epsilon)
 checks.append(CheckGreaterThan(epsilon, 0.0))
+
+
 
 #Something from section [finess]
 global_alpha = Parameter(variable_name = "global_alpha",

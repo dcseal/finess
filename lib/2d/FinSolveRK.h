@@ -1,12 +1,14 @@
 #ifndef _FINSOLVE_RK_
 #define _FINSOLVE_RK_
 
+#include <string>
+
 // ------------------------------------------------------------
 // Function definitions
 void ConSoln( 
     const dTensorBC3& aux,
     const dTensorBC3& q, 
-    double t, string outputdir);
+    double t, std::string outputdir);
 
 double GetCFL(double dt, double dtmax,
         const dTensorBC3& aux,
