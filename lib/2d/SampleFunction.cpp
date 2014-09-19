@@ -2,8 +2,9 @@
 #include <cmath>
 #include "dogdefs.h"
 #include "stdlib.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
+
+
+#include "IniParams.h"
 using namespace std;
 
 // All-purpose routine for sampling a function, and saving its data into a
@@ -28,8 +29,8 @@ void SampleFunction(
     void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&))
 {    
 
-    const int meqn    = dogParams.get_meqn();
-    const int maux    = dogParams.get_maux();
+    const int meqn    = global_ini_params.get_meqn();
+    const int maux    = global_ini_params.get_maux();
     const int mlength = Fout.getsize(3);
 
     // -----------------
@@ -48,10 +49,10 @@ void SampleFunction(
     }
 
     // Grid information
-    const double dx   = dogParamsCart2.get_dx();
-    const double dy   = dogParamsCart2.get_dy();
-    const double xlow = dogParamsCart2.get_xlow();
-    const double ylow = dogParamsCart2.get_ylow();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
+    const double xlow = global_ini_params.get_xlow();
+    const double ylow = global_ini_params.get_ylow();
 
     // ----------------------------------
     // Loop over all elements of interest
@@ -140,8 +141,8 @@ void SampleFunction(
     void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&))
 {    
 
-    const int meqn    = dogParams.get_meqn();
-    const int maux    = dogParams.get_maux();
+    const int meqn    = global_ini_params.get_meqn();
+    const int maux    = global_ini_params.get_maux();
     const int mlength = Fout.getsize(3);
 
     // -----------------
@@ -160,10 +161,10 @@ void SampleFunction(
     }
 
     // Grid information
-    const double dx   = dogParamsCart2.get_dx();
-    const double dy   = dogParamsCart2.get_dy();
-    const double xlow = dogParamsCart2.get_xlow();
-    const double ylow = dogParamsCart2.get_ylow();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
+    const double xlow = global_ini_params.get_xlow();
+    const double ylow = global_ini_params.get_ylow();
 
     // ----------------------------------
     // Loop over all elements of interest

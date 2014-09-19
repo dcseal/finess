@@ -1,9 +1,8 @@
 #include "dogdefs.h"
 #include "dog_math.h"
 #include "stdlib.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
 #include "assert.h"
+#include "IniParams.h"
 
 // Central difference formulae
 // see $FINESS/lib/WenoReconstruct.cpp
@@ -63,17 +62,17 @@ void ConstructIntegratedR( double dt,
 {
 
     // Grid and problem information
-    const int mx     = dogParamsCart2.get_mx();
-    const int my     = dogParamsCart2.get_my();
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
-    const int mbc    = dogParamsCart2.get_mbc();
+    const int mx     = global_ini_params.get_mx();
+    const int my     = global_ini_params.get_my();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
+    const int mbc    = global_ini_params.get_mbc();
 
     // Needed to define derivatives
-    const double dx    = dogParamsCart2.get_dx();
-    const double dy    = dogParamsCart2.get_dy();
-    const double xlow  = dogParamsCart2.get_xlow();
-    const double ylow  = dogParamsCart2.get_ylow();
+    const double dx    = global_ini_params.get_dx();
+    const double dy    = global_ini_params.get_dy();
+    const double xlow  = global_ini_params.get_xlow();
+    const double ylow  = global_ini_params.get_ylow();
 
     // Sample the flux function on the entire domain:
     //
@@ -166,7 +165,7 @@ const int ndim = 2;
         // ---  Third-order terms --- //
         dTensor1 f_tt( meqn );   f_tt.setall(0.);
         dTensor1 g_tt( meqn );   g_tt.setall(0.);
-        if( dogParams.get_time_order() > 2 )
+        if( global_ini_params.get_time_order() > 2 )
         {
 
             // Hessian
@@ -529,17 +528,17 @@ void ConstructIntegratedR( double dt,
 {
 
     // Grid and problem information
-    const int mx     = dogParamsCart2.get_mx();
-    const int my     = dogParamsCart2.get_my();
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
-    const int mbc    = dogParamsCart2.get_mbc();
+    const int mx     = global_ini_params.get_mx();
+    const int my     = global_ini_params.get_my();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
+    const int mbc    = global_ini_params.get_mbc();
 
     // Needed to define derivatives
-    const double dx    = dogParamsCart2.get_dx();
-    const double dy    = dogParamsCart2.get_dy();
-    const double xlow  = dogParamsCart2.get_xlow();
-    const double ylow  = dogParamsCart2.get_ylow();
+    const double dx    = global_ini_params.get_dx();
+    const double dy    = global_ini_params.get_dy();
+    const double xlow  = global_ini_params.get_xlow();
+    const double ylow  = global_ini_params.get_ylow();
 
     // Sample the flux function on the entire domain:
     //
@@ -605,17 +604,17 @@ void ConstructIntegratedR( double dt,
 {
 
     // Grid and problem information
-    const int mx     = dogParamsCart2.get_mx();
-    const int my     = dogParamsCart2.get_my();
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
-    const int mbc    = dogParamsCart2.get_mbc();
+    const int mx     = global_ini_params.get_mx();
+    const int my     = global_ini_params.get_my();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
+    const int mbc    = global_ini_params.get_mbc();
 
     // Needed to define derivatives
-    const double dx    = dogParamsCart2.get_dx();
-    const double dy    = dogParamsCart2.get_dy();
-    const double xlow  = dogParamsCart2.get_xlow();
-    const double ylow  = dogParamsCart2.get_ylow();
+    const double dx    = global_ini_params.get_dx();
+    const double dy    = global_ini_params.get_dy();
+    const double xlow  = global_ini_params.get_xlow();
+    const double ylow  = global_ini_params.get_ylow();
 
     // Sample the flux function on the entire domain:
     //

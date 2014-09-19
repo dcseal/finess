@@ -41,7 +41,6 @@ void DogSolveUser(
         double tstart, double tend,int nv, 
         double dtv[], const double cflv[],std::string outputdir);
 
-void InitApp(IniDocument& ini_doc);
 
 void SampleFunction( 
     int istart, int iend,

@@ -1,14 +1,14 @@
-#include "DogParamsCart2.h"
 #include "tensors.h"
+#include "IniParams.h"
 
 void GridSetup( dTensor3& node, dTensor2& prim_vol)
 {
 
-    const double xlow = dogParamsCart2.get_xlow();
-    const double dx   = dogParamsCart2.get_dx();
+    const double xlow = global_ini_params.get_xlow();
+    const double dx   = global_ini_params.get_dx();
 
-    const double ylow = dogParamsCart2.get_ylow();
-    const double dy   = dogParamsCart2.get_dy();
+    const double ylow = global_ini_params.get_ylow();
+    const double dy   = global_ini_params.get_dy();
 
 // TODO - ??? - mnodes = mx*my, or mnodes = (mx,my) ???
 //  const int        = node.getsize(1);

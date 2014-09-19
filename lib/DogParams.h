@@ -104,10 +104,6 @@ struct DogParams
 
         int get_global_alpha() const{ return global_alpha; }
 
-        // TODO remove these depracated calls, and make sure the rest of the
-        // code still functions:
-        // deprecated; this is in the DogState class.
-        void set_time(double in) { time = in; }
 
         // deprecated; this is in the DogSolver class.
         void   set_dt(double in) { dt = in; }

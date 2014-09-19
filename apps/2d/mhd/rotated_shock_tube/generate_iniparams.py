@@ -1,5 +1,5 @@
 
-from finess.params import Parameter, Accessor, Check, \
+from finess.params import Parameter, DerivedParameter, Accessor, Check, \
                           CheckGreaterEqual, CheckGreaterThan, \
 			  CheckOneOf, EnumParameterType, generate_header_cpp
 
@@ -171,6 +171,46 @@ parameters.append(mbc)
 checks.append(CheckGreaterEqual(mbc, 0))
 #May need some additional checks for the coherence of e.g. space order, with mbc
 
+xlow = Parameter(variable_name = "xlow",
+                 section = "grid",
+		 name = "xlow",
+		 type_ = "double")
+parameters.append(xlow)
+
+xhigh = Parameter(variable_name = "xhigh",
+                  section = "grid",
+		  name = "xhigh",
+		  type_ = "double")
+parameters.append(xhigh)
+checks.append(Check(cpp_code = """if(!(xhigh > xlow))
+    terminate("grid.xhigh should > grid.xlow.");"""))
+
+
+ylow = Parameter(variable_name = "ylow",
+                 section = "grid",
+		 name = "ylow",
+		 type_ = "double")
+parameters.append(ylow)
+
+yhigh = Parameter(variable_name = "yhigh",
+                  section = "grid",
+		  name = "yhigh",
+		  type_ = "double")
+parameters.append(yhigh)
+checks.append(Check(cpp_code = """if(!(yhigh > ylow))
+    terminate("grid.yhigh should > grid.ylow.");"""))
+
+dx = DerivedParameter(variable_name = "dx",
+                      type_ = "double",
+		      defining_expression_in_cpp = """(this->xhigh - this->xlow) / this->mx""")
+parameters.append(dx)
+
+dy = DerivedParameter(variable_name = "dy",
+                      type_ = "double",
+		      defining_expression_in_cpp = """(this->yhigh - this->ylow) / this->my""")
+parameters.append(dy)
+
+
 
 #section [mhd]
 gamma = Parameter(variable_name = "gamma",
@@ -324,7 +364,7 @@ epsilon = Parameter(variable_name = "epsilon",
                     section = "weno",
                     name = "epsilon",
                     type_ = "double",
-                    default_value = 1e-12)
+                    default_value = 1e-6)
 parameters.append(epsilon)
 checks.append(CheckGreaterThan(epsilon, 0.0))
 

@@ -11,13 +11,9 @@ include $(FINESS)/apps/2d/mhd/lib/Makefile.defs
 #InitApp      = InitApp
 
 ALL_OBJECTS = $(COMMON_OBJECTS) \
-MHDParams.o \
-InitialParams.o \
 IniParams.o
 
 ALL_SOURCES = $(COMMON_SOURCES) \
-MHDParams.cpp \
-InitialParams.cpp \
 IniParams.cpp
 
 

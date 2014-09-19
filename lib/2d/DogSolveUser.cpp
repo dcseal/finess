@@ -3,7 +3,6 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
 #include "RKinfo.h"
 
 // If we want to use DogSolver from the top-level library, this needs to be

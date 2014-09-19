@@ -77,7 +77,6 @@ SOURCES_EXPECTED = \
 # overridden by some application)
 #
 RunFinpack           = $(LIB2D)/RunFinpack
-InitApp              = $(LIB2D)/InitApp
 Output               = $(LIB2D)/Output
 ConSoln              = $(LIB2D)/ConSoln
 AfterQinit           = $(LIB2D)/AfterQinit
@@ -112,8 +111,6 @@ D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
 LIB2D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
   $(RunFinpack).o \
-  $(InitApp).o \
-  $(LIB2D)/DogParamsCart2.o \
   $(GridSetup).o \
   $(SampleFunction).o \
   $(Output).o \
@@ -141,8 +138,6 @@ LIB2D_SOURCES = \
   $(LIB2D)/*.h \
   $(TOPLIB_SOURCES) \
   $(RunFinpack).cpp \
-  $(InitApp).cpp \
-  $(LIB2D)/DogParamsCart2.cpp \
   $(GridSetup).cpp \
   $(SampleFunction).cpp \
   $(Output).cpp \

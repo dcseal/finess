@@ -1,8 +1,8 @@
 #include <cmath>
 #include "dog_math.h"
 #include "tensors.h"
-#include "MHDParams.h"
 
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // HLLE wave speeds for use in "RiemannSolve"
@@ -17,7 +17,7 @@ void SetWaveSpd(const dTensor1& nvec,
 		double& s1,double& s2)
 {
   // Gas constant
-  const double gamma = mhdParams.gamma;
+  const double gamma = global_ini_params.get_gamma();
     
   // Left states
   const double rhol = Ql.get(1);

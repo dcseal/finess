@@ -2,8 +2,8 @@
 #include "dog_math.h"
 #include "tensors.h"
 #include "stdlib.h"
-#include "DogParamsCart2.h"
 
+#include "IniParams.h"
 using namespace std;
 
 // Compute the maximum CFL number.  This routine assumes that you have saved
@@ -33,10 +33,10 @@ double GetCFL(double dt, double dtmax,
         const dTensorBC3& smax)
 {
 
-    const int mx    = dogParamsCart2.get_mx();
-    const int my    = dogParamsCart2.get_my();
-    const double dx = dogParamsCart2.get_dx();
-    const double dy = dogParamsCart2.get_dy();
+    const int mx    = global_ini_params.get_mx();
+    const int my    = global_ini_params.get_my();
+    const double dx = global_ini_params.get_dx();
+    const double dy = global_ini_params.get_dy();
 
     double cfl   = -100.0;
 
@@ -86,8 +86,8 @@ double GetCFL(double dt, double dtmax, double alpha1, double alpha2 )
     }
 
     double cfl = -100.0;
-    cfl = Max( dt*alpha1 / dogParamsCart2.get_dx(),  cfl );
-    cfl = Max( dt*alpha2 / dogParamsCart2.get_dy(),  cfl );
+    cfl = Max( dt*alpha1 / global_ini_params.get_dx(),  cfl );
+    cfl = Max( dt*alpha2 / global_ini_params.get_dy(),  cfl );
 
     if( cfl > 1.0e8 )
     {

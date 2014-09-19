@@ -5,8 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
 using namespace std;
 
 void Output(
@@ -17,10 +16,10 @@ void Output(
         string outputdir)
 {
 
-    const int meqn    = dogParams.get_meqn();
-    const int maux    = dogParams.get_maux();
-    const int mx      = dogParamsCart2.get_mx();
-    const int my      = dogParamsCart2.get_my();
+    const int meqn    = global_ini_params.get_meqn();
+    const int maux    = global_ini_params.get_maux();
+    const int mx      = global_ini_params.get_mx();
+    const int my      = global_ini_params.get_my();
 
     // Open file -- q
     ostringstream fname1;

@@ -1,3 +1,4 @@
+#error "Stop using DogParamsCart2!"
 // Including this header file allows access to all the 1D paramters described in
 // the [grid] section of any 1D parameters.ini file.
 //

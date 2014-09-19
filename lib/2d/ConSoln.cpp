@@ -5,9 +5,8 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
 
+#include "IniParams.h"
 using namespace std;
 
 void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, 
@@ -15,16 +14,16 @@ void ConSoln( const dTensorBC3& aux, const dTensorBC3& q,
 {
 
     // Size of the solution
-    const int     mx = dogParamsCart2.get_mx();
-    const int     my = dogParamsCart2.get_my();
-    const int   meqn = dogParams.get_meqn();
-    const int   maux = dogParams.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int     my = global_ini_params.get_my();
+    const int   meqn = global_ini_params.get_meqn();
+    const int   maux = global_ini_params.get_maux();
 
     // Grid information:
-    const double dx   = dogParamsCart2.get_dx();
-    const double dy   = dogParamsCart2.get_dy();
-    const double xlow = dogParamsCart2.get_xlow();
-    const double ylow = dogParamsCart2.get_ylow();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
+    const double xlow = global_ini_params.get_xlow();
+    const double ylow = global_ini_params.get_ylow();
 
     string fname1 = outputdir+"/conservation.dat";
     ofstream write_file1,write_file2;
@@ -43,7 +42,7 @@ void ConSoln( const dTensorBC3& aux, const dTensorBC3& q,
     // -----------------
     // CONSERVATION
     // -----------------
-    if( dogParams.get_mcapa() < 1 ) // without capacity function
+    if( global_ini_params.get_mcapa() < 1 ) // without capacity function
     {
         for (int m=1; m<=meqn; m++)
         {
@@ -72,7 +71,7 @@ void ConSoln( const dTensorBC3& aux, const dTensorBC3& q,
                 const double y  = ylow + (double(j)-0.5)*dy;
 
                 double qtmp = q.get(i,j,m);
-                double atmp = aux.get(i,j, dogParams.get_mcapa() );
+                double atmp = aux.get(i,j, global_ini_params.get_mcapa() );
                 qsum.set(m, (qsum.get(m) + atmp*dx*dy*qtmp) );
             }
         }

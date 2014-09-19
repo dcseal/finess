@@ -5,9 +5,8 @@
 #include "dogdefs.h"
 #include "RKinfo.h"           // Coefficients for the RK method
 #include "FinSolveRK.h"       // Functions directly called from this function
-#include "DogParams.h"
-#include "DogParamsCart2.h"
 
+#include "IniParams.h"
 using namespace std;
 
 void FinSolveRK(
@@ -18,7 +17,7 @@ void FinSolveRK(
 {
 
     // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    const int time_order = global_ini_params.get_time_order();
     RKinfo rk;
     SetRKinfo(time_order, rk);
 
@@ -30,15 +29,15 @@ void FinSolveRK(
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
 
-    const double xlow = dogParamsCart2.get_xlow();
-    const double ylow = dogParamsCart2.get_ylow();
-    const int     mbc = dogParamsCart2.get_mbc();
+    const double xlow = global_ini_params.get_xlow();
+    const double ylow = global_ini_params.get_ylow();
+    const int     mbc = global_ini_params.get_mbc();
 
-    const int mx   = dogParamsCart2.get_mx();
-    const int my   = dogParamsCart2.get_my();
+    const int mx   = global_ini_params.get_mx();
+    const int my   = global_ini_params.get_my();
 
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
 
     // Allocate storage for this solver
     dTensorBC3   qstar(mx, my, meqn, mbc);
@@ -146,14 +145,12 @@ void FinSolveRK(
                     // ---------------------------------------------------------
                     // Stage #1
                     rk.mstage = 1;
-dogParams.set_time( told );
                     BeforeStep(dt,aux,qnew);    
                     ConstructL(aux,qnew,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
                             rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
                     AfterStep(dt,auxstar,qstar);
 
-dogParams.set_time( told + dt );
 // alpha1 = 0.75
 // alpha2 = 0.25
 // beta   = 0.25
@@ -166,7 +163,6 @@ dogParams.set_time( told + dt );
                             rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
                     AfterStep(dt,auxstar,qstar);
 
-dogParams.set_time( told + (2.0/3.0)*dt );
 // alpha1 = 2/3
 // alpha2 = 1/3
 // beta   = 2/3
@@ -277,7 +273,7 @@ dogParams.set_time( told + (2.0/3.0)*dt );
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolveRK2D ... Step" << setw(5) << n_step;
@@ -304,7 +300,7 @@ dogParams.set_time( told + (2.0/3.0)*dt );
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolveRK2D rejecting step...";
                     cout<<"CFL number too large";
