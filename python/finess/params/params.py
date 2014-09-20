@@ -1,3 +1,6 @@
+class_name = "IniParams"
+global_variable_name = "global_ini_params"
+
 
 
 
@@ -75,8 +78,7 @@ class ParameterType:
 
 
 class EnumParameterType(ParameterType):
-    def __init__(self, enum_scope_name, string_enumerator_dict,
-                 class_name):
+    def __init__(self, enum_scope_name, string_enumerator_dict):
         if type(enum_scope_name) != str:
             raise ValueError("enum_scope_name should be a string.")
         if type(string_enumerator_dict) != dict:
@@ -85,16 +87,15 @@ class EnumParameterType(ParameterType):
         self.enum_scope_name = enum_scope_name
 
         self.string_enumerator_dict = string_enumerator_dict
-        self.class_name = class_name
 
     @property
     def full_enum_scope_name(self):
-        return self.class_name + "::" + self.enum_scope_name
+        return class_name + "::" + self.enum_scope_name
     
     @property
     def type_string(self):
         return """%(class_name)s::%(enum_scope_name)s::enum_type"""% \
-               {"class_name": self.class_name,
+               {"class_name": class_name,
 	        "enum_scope_name": self.enum_scope_name}
 
         
@@ -268,7 +269,7 @@ class CheckOneOf(Check):
 """ % {"variable_name": self.parameter.variable_name, "list_string": str(self.list_)}
 
 
-def generate_header_cpp(class_name, global_variable_name, parameters, accessors, checks):
+def generate_header_cpp(parameters, accessors, checks):
     header_filename = class_name + ".h"
     cpp_filename = class_name + ".cpp"
 
