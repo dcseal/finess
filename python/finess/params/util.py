@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 def read_params(parameter_filename, parameters_list):
     from ConfigParser import ConfigParser
     from finess.params import DerivedParameter

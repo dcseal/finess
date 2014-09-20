@@ -49,5 +49,4 @@ def read_qa(params, i_output, output_dir = 'output'):
     assert t_q == t_aux, 'Inconsistent times from %s and %s' % (q_file, aux_file)
     
     return t_q, q, aux
-:wa
 
