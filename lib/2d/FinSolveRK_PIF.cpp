@@ -6,7 +6,7 @@
 #include "RKinfo.h"
 #include "FinSolveRK.h"
 #include "ConstructL.h"
-#include "WenoParams.h"
+
 #include "IniParams.h"
 #include "IniParams.h"
 
@@ -183,7 +183,6 @@ void FinSolveRK_PIF(
                     SetBndValues(aux, qnew);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, R1, &FluxFunc );
 
-global_ini_params.set_time( told );
 
                     // Stage 2:
                     ConstructL_NOC(aux, qnew, k1, smax                    );
@@ -192,7 +191,6 @@ global_ini_params.set_time( told );
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R2, &FluxFunc );
 
 
-global_ini_params.set_time( told+0.5*dt );
                     // Stage 3:
                     ConstructL_NOC( aux, qstar, k2, smax       );
                     t = EulerStep( tn, 0.5*dt, qold, k2, qstar );
@@ -200,7 +198,6 @@ global_ini_params.set_time( told+0.5*dt );
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R3, &FluxFunc );
 
 
-global_ini_params.set_time( told+0.5*dt );
                     // Stage 4:
                     ConstructL_NOC( aux, qstar, k3, smax   );
                     t = EulerStep( tn, dt, qold, k3, qstar );
@@ -229,7 +226,6 @@ global_ini_params.set_time( told+0.5*dt );
                         gstar.set(i,j,m, tmp/6.0);
                     }
 
-global_ini_params.set_time( told+1.0*dt );
                     // WENO reconstruction, with projections (for final update)
                     SetBndValues(aux, qnew);
                     ConstructL( aux, qnew, fstar, gstar, k4, smax );
