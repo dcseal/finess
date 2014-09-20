@@ -5,19 +5,27 @@ def read_params(parameter_filename, parameters_list):
     from finess.params import DerivedParameter
     config = ConfigParser()
     config.read(parameter_filename)
-    d = dict(sum([[((s, opt), config.get(s, opt)) for opt in config.options(s)] for s in config.sections()], []))
+    params = dict(sum([[((s, opt), config.get(s, opt)) for opt in config.options(s)] for s in config.sections()], []))
 
     for p in parameters_list:
-        if isinstance(p, DerivedParameter) or not (p.section, p.name) in d:
+        if isinstance(p, DerivedParameter) or not (p.section, p.name) in params:
             continue
         if p.type_.type_string == 'int':
-            d[p.section, p.name] = int(d[p.section, p.name])
+            params[p.section, p.name] = int(params[p.section, p.name])
         if p.type_.type_string == 'bool':
-            d[p.section, p.name] = d[p.section, p.name] == 'true'
+            params[p.section, p.name] = params[p.section, p.name] == 'true'
         if p.type_.type_string == 'double':
-            d[p.section, p.name] = float(d[p.section, p.name])
+            params[p.section, p.name] = float(params[p.section, p.name])
 
-    return d
+    if ("finess", "output_dir") in params and \
+        params["finess", "output_dir"] != "":
+        output_dir = params["finess", "output_dir"]
+    else:
+        output_dir = "output"
+    params["finess", "output_dir"] = output_dir
+
+   
+    return params
 
     
 
