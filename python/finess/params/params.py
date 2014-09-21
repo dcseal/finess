@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 class_name = "IniParams"
 global_variable_name = "global_ini_params"
 
@@ -400,12 +402,6 @@ void %(class_name)s::init(const std::string& inputFilename){
     return header_filename, header_code, cpp_filename, cpp_code
     
 
-    
-
-
-
-
-
 
 def append_pac_from_module(pac, module):
     parameters, accessors, checks = pac
@@ -414,4 +410,14 @@ def append_pac_from_module(pac, module):
     accessors += module.accessor_list
     checks += module.check_list
     
+
+def write_to_header_cpp(parameter_list, accessor_list, check_list):
+    from finess.params import generate_header_cpp
+    header_filename, header_code, cpp_filename, cpp_code = generate_header_cpp(parameter_list, accessor_list, check_list)
+    
+    with open(header_filename, 'w') as f:
+        f.write(header_code)
+    with open(cpp_filename, 'w') as f:
+        f.write(cpp_code)
+
 
