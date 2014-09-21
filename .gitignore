@@ -43,3 +43,7 @@ setenv.csh
 
 *.orig
 
+
+#Generated IniParams files
+IniParams.cpp
+IniParams.h
