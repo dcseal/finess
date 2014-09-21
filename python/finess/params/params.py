@@ -402,52 +402,16 @@ void %(class_name)s::init(const std::string& inputFilename){
 
     
 
-if __name__ == "__main__":
-    class_name = "IniParams"
-    global_variable_name = "global_ini_params"
+
+
+
+
+
+def append_pac_from_module(pac, module):
+    parameters, accessors, checks = pac
+
+    parameters += module.parameter_list
+    accessors += module.accessor_list
+    checks += module.check_list
     
-    
-    parameters = [Parameter(variable_name = "reconstruction_method",
-                            section = "reconstruction",
-                            name = "method",
-                            type_ = EnumParameterType(enum_scope_name = "ReconstructionMethod",
-                                                      string_enumerator_dict = \
-                                                          {"A": "A", "B":"B", "C":"C"})),
-                  Parameter(variable_name = "meqn",
-                            section = "dogParams",
-                            name = "meqn",
-                            type_ = "int"),
-                  Parameter(variable_name = "one_of_1_3_5", 
-                            section = "dogParams",
-                            name = "one_of_1_3_5", 
-                            type_ = "int"),
-                  DerivedParameter(variable_name = "meqn_times_2",
-                                   type_ = "int",
-                                   defining_expression_in_cpp = "this->meqn * 2"),
-		  Parameter(variable_name = "default_1",
-		            section = "dogParams",
-			    name = "default_1",
-			    type_ = "int",
-			    default_value = 1),
-	          Parameter(variable_name = "bool_something",
-		            section = "dogParams",
-			    name = "bool_something",
-			    type_ = "bool",
-			    default_value = True)]
-    
-    accessors = map(Accessor, parameters)
-    
-    checks = [CheckGreaterThan(parameters[1], 0),
-              CheckOneOf(parameters[2], [1, 3, 5])]
-    
-    header_filename, header_code, cpp_filename, cpp_code = \
-        generate_header_cpp(class_name, global_variable_name, parameters, accessors, checks)
-    
-    with open(header_filename, 'w') as f:
-        f.write(header_code)
-    with open(cpp_filename, 'w') as f:
-        f.write(cpp_code)
-    
-    print header_code
-    
-    print cpp_code
+

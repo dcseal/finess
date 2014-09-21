@@ -71,3 +71,15 @@ def _parameters_accessors_checks():
 parameter_list, accessor_list, check_list = \
     _parameters_accessors_checks()
 
+
+def starter_pac():
+    from finess.params import finess, weno, dim2, append_pac_from_module
+    
+    pac = ([], [], [])
+    
+    append_pac_from_module(pac, finess)
+    append_pac_from_module(pac, weno)   
+    append_pac_from_module(pac, dim2)
+       
+    return pac 
+
