@@ -17,6 +17,13 @@ LIB_SYS_SOURCES = \
   $(LIB_SYS)/*.h \
   $(LIB_SYS)/*.cpp \
 
+#IniParser.h
+INIPARSER_H = \
+  $(LIB_SYS)/IniParser.h \
+
+INIPARSER_RL = \
+  $(LIB_SYS)/IniParser.rl
+
 # inheriting libraries and applications are expected to override these
 #
 INCLUDE_LIBS= $(LIB_SYS_INCLUDE)

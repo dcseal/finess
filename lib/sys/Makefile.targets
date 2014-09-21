@@ -16,7 +16,14 @@
 .cpp.o: ; $(COMPILE) $*.cpp -o $*.o
 #
 .c.o: ; $(COMPILE) $*.c -o $*.o
-#
+
+# IniParser.h  Requires Ragel.  Re-make only necessary.
+# To re-make:
+#   make $FINESS/lib/sys/IniParser.h
+
+$(INIPARSER_H):  $(INIPARSER_RL)
+	ragel $^ -o $@
+
 # (these rules are equivalent to the previous ones)
 #
 #%.o : %.c
