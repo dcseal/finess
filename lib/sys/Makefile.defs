@@ -12,13 +12,9 @@ LIB_SYS_INCLUDE = -I$(LIB_SYS)
 LIB_SYS_OBJECTS = \
   $(LIB_SYS)/debug.o \
   $(LIB_SYS)/assert.o \
-  $(LIB_SYS)/fcmp.o \
-  $(LIB_SYS)/ext_time.o \
-  $(LIB_SYS)/getdelim.o \
 #
 LIB_SYS_SOURCES = \
   $(LIB_SYS)/*.h \
-  $(LIB_SYS)/*.c \
   $(LIB_SYS)/*.cpp \
 
 # inheriting libraries and applications are expected to override these
