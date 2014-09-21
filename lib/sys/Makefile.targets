@@ -32,7 +32,7 @@
 $(INIPARSER_H):  $(INIPARSER_RL)
 	@cd $(LIB_SYS) ;  \
 	sha1sum --quiet -c $(INIPARSER_RL).sha1sum ; \
-	if [ $? = 1 ] ; then \
+	if [ $? != 0 ] ; then \
 	  ragel $^ -o $@ ; \
 	  sha1sum $(INIPARSER_RL) > $(INIPARSER_RL).sha1sum ; \
 	fi ; \
