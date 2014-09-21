@@ -41,4 +41,27 @@ def interactive_plot(max_i, draw_ith_frame, new_window_for_each_frame = False):
                 i = get_next_i(i)
 
     pyplot.ioff()            
- 
+
+def ask_which_component(params):
+    def raise_error(component_str, meqn):
+        raise RuntimeError( \
+          "Invalid input: %(component_str)s is not one of %(valid_range)s"% \
+          {"component_str": component_str,
+           "valid_range": str(range(1, meqn + 1))})
+    meqn = params["finess", "meqn"]
+
+    print 'Plot which component of q  ( 1 - %(meqn)d ) ? ' \
+          % {"meqn": meqn},
+    component_str = raw_input()
+
+    try:
+        component = int(component_str)
+    except ValueError:
+        raise_error(component_str, meqn)
+
+    if component >= 1 and component <= meqn:
+        return component
+    else:
+        raise_error(component_str, meqn)
+        
+    

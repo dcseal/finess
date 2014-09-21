@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
-def draw_ith_frame_jth_component(params, fig, i, j, plot_on_Axes3D):
+def draw_ith_frame_jth_component(params, fig, i, j, 
+                                 plotting_method_on_Axes3D):
     from finess.dim2 import read_qa
     from finess.params.util import read_params
 
@@ -12,6 +13,7 @@ def draw_ith_frame_jth_component(params, fig, i, j, plot_on_Axes3D):
 
     import finess.dim2
     X, Y = finess.dim2.meshgrid(params)
-    plot_on_Axes3D(ax, X, Y, q[:, :, j - 1])
+    plotting_method_on_Axes3D(ax, X, Y, q[:, :, j - 1])
  
-    
+
+
