@@ -12,7 +12,7 @@ def meshgrid(params):
     dy = (yhigh-ylow) / float(my)
     
     from pylab import meshgrid, linspace
-    X, Y = meshgrid(linspace(xlow + 0.5*dx, xhigh - 0.5*dx, mx), linspace(ylow + 0.5*dy, yhigh - 0.5*dy, my))
+    X, Y = meshgrid(linspace(xlow + 0.5*dx, xhigh - 0.5*dx, mx), linspace(ylow + 0.5*dy, yhigh - 0.5*dy, my), indexing = "ij")
     return X, Y
 
 
