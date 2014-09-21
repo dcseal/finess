@@ -18,11 +18,6 @@ ALL_SOURCES = $(COMMON_SOURCES)
 TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/2d/mhd/lib/ $(LIB_SYS_INCLUDE)
 
 
-LOCAL_INCLUDE+=-I.
-
-
-
-
 ### targets ###
 
 include $(FINESS)/lib/2d/Makefile.targets
