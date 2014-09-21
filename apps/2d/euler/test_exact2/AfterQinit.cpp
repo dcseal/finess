@@ -1,6 +1,6 @@
 #include "dogdefs.h"
 #include <string.h>          // For strcpy and strcat (some compilers don't need this)
-#include "EulerParams.h"
+#include "IniParams.h"
 
 const char* get_outputdir();
 

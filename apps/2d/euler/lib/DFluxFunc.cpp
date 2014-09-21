@@ -1,6 +1,6 @@
 #include <cmath>
 #include "tensors.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // Jacobian of the Flux Function 
@@ -17,7 +17,7 @@ void DFluxFunc(const dTensor2& xpts,
     const int meqn   = Q.getsize(2);
 
     // Gas constant
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
 
     Dflux.setall(0.);
     for (int i=1; i<=numpts; i++)

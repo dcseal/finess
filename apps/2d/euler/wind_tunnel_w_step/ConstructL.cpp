@@ -4,9 +4,9 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "IniParams.h"
-#include "WenoParams.h"
 
-#include "EulerParams.h"
+
+#include "IniParams.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -127,7 +127,7 @@ void ConstructL(
         double energyl = q.get(i-1,j,5);
         double energyr = q.get(i,j,5);
 
-        const double gamma = eulerParams.gamma;
+        const double gamma = global_ini_params.get_gamma();
         const double gm1   = gamma-1.0;
 
         double pressl  = gm1*(energyl-0.5e0*rhol*(u1l*u1l+u2l*u2l));
@@ -331,7 +331,7 @@ void ConstructL(
         double energyl = q.get(i-1,j,5);
         double energyr = q.get(i,j,5);
 
-        const double gamma = eulerParams.gamma;
+        const double gamma = global_ini_params.get_gamma();
         const double gm1   = gamma-1.0;
 
         double pressl  = gm1*(energyl-0.5e0*rhol*(u1l*u1l+u2l*u2l));

@@ -2,7 +2,7 @@
 #include "dogdefs.h"
 #include "IniParams.h"
 #include "IniParams.h"
-#include "EulerParams.h"  
+#include "IniParams.h"  
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
@@ -26,7 +26,7 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
 
     const double dx   = global_ini_params.get_dx();
     const double xlow = global_ini_params.get_xlow();
-    const double x0   = eulerParams.x0;
+    const double x0   = global_ini_params.get_x0();
 
     // ----------------------- //
     // BOUNDARY CONDITION LOOP
@@ -131,7 +131,7 @@ void LeftFunc(const dTensor2& xpts,
         dTensor2& qvals)
 {
     const int numpts=xpts.getsize(1);
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
 
     for (int i=1; i<=numpts; i++)
     {
@@ -161,8 +161,8 @@ void BotFunc(const dTensor2& xpts,
         dTensor2& qvals)
 {
     const int numpts   = xpts.getsize(1);
-    const double gamma = eulerParams.gamma;
-    const double x0    = eulerParams.x0;
+    const double gamma = global_ini_params.get_gamma();
+    const double x0    = global_ini_params.get_x0();
 
     for (int i=1; i<=numpts; i++)
     {
@@ -203,9 +203,8 @@ void TopFunc(const dTensor2& xpts,
 {
 
     const int numpts=xpts.getsize(1);
-    const double gamma = eulerParams.gamma;
-    const double x0    = eulerParams.x0;
-    const double t     = global_ini_params.get_time();
+    const double gamma = global_ini_params.get_gamma();
+    const double x0    = global_ini_params.get_x0();
 
     for (int i=1; i<=numpts; i++)
     {

@@ -37,10 +37,8 @@ ConstructLF         = $(APP_LIB)/ConstructLF
 #
 APP_LIB_OBJECTS = \
 $(ConstructLF).o \
-EulerParams.o \
 
 #
 APP_LIB_SOURCES = \
-EulerParams.cpp \
 
 #

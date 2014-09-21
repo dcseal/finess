@@ -2,7 +2,7 @@
 #include "dogdefs.h"
 #include "IniParams.h"
 #include "IniParams.h"
-#include "EulerParams.h"  
+#include "IniParams.h"  
 
 // This is a user-supplied routine that sets the the boundary conditions
 //

@@ -2,10 +2,11 @@
 #include "dogdefs.h"
 #include "dog_math.h"
 #include "stdlib.h"
-#include "IniParams.h"       // the usual parameters
-#include "IniParams.h"  // 2D geometry
-#include "EulerParams.h"     // Gamma gas constant (used for computing wave speeds)
+#include "IniParams.h"       
 
+
+using std::cout;
+using std::endl;
 // User supplied functions defining the Flux function, Jacobian, and
 // Hessian of the flux function.
 void FluxFunc(const dTensor2&,const dTensor2&,const dTensor2&,dTensor3&);
@@ -73,7 +74,7 @@ const int mbc_small      = 3;
     }
 
     double alpha_x = 1.0e-15;
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
 
     for (int i = 1; i <= mx;  i++)
     for (int j = 1; j <= my;  j++)
@@ -252,7 +253,7 @@ const int mbc_small      = 3;
     }
 
     double alpha_x = 1.0e-15, alpha_y = 1.0e-15;
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
 
     for (int i = 1; i <= mx;  i++)
     for (int j = 1; j <= my;  j++)

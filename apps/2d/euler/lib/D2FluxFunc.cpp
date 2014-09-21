@@ -1,6 +1,6 @@
 #include <cmath>
 #include "tensors.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 
 
 // This is a user-supplied routine that sets the
@@ -22,7 +22,7 @@ void D2FluxFunc(const dTensor2& xpts,
     D2flux.setall(0.);
 
     // Gas constant
-    double const gamma = eulerParams.gamma;
+    double const gamma = global_ini_params.get_gamma();
     for (int i=1; i<=numpts; i++)
     {
 

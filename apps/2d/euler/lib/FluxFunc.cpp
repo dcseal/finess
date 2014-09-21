@@ -1,5 +1,5 @@
 #include "dogdefs.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // flux function for use in "RiemannSolve"
@@ -14,7 +14,7 @@ void FluxFunc(const dTensor2& xpts,
     const int numpts=xpts.getsize(1);
 
     // Gas constant
-    double const gamma = eulerParams.gamma;
+    double const gamma = global_ini_params.get_gamma();
 
     for (int i=1; i<=numpts; i++)
     {

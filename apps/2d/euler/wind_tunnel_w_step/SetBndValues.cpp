@@ -2,7 +2,7 @@
 #include "dogdefs.h"
 #include "IniParams.h"
 #include "IniParams.h"
-#include "EulerParams.h"  
+#include "IniParams.h"  
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
@@ -215,7 +215,7 @@ void SetBndValuesX( dTensorBC3& aux, dTensorBC3& q )
     // ********************************************************************* //
 
     // Deal with the corner
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
     const double   gm1 = gamma-1.0;
 
     const int jstepm1 = jstep-1;
