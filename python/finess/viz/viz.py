@@ -1,4 +1,15 @@
+"""Provides basic plotting framework.
+
+All names in this module can be imported via finess.viz.
+"""
+
 def interactive_plot(max_i, draw_ith_frame, new_window_for_each_frame = False):
+    """Run a loop asking for which frame to plot, and draw that frame
+    using draw_ith_frame.
+    draw_ith_frame must be callable in this form:
+    draw_ith_frame(fig, i)
+    where fig is an instance of matplotlib.figure.Figure.
+    """
     def get_next_i(current_i):
         """Returns -1 if want to quit."""
         print "Plot which frame ( 0 - %(max_i)d ) [type anything else to quit] ? " % {"max_i": max_i}, 
@@ -43,6 +54,8 @@ def interactive_plot(max_i, draw_ith_frame, new_window_for_each_frame = False):
     pyplot.ioff()            
 
 def ask_which_component(params):
+    """Ask for which component to plot.
+    params is what is returned from finess.params.util.read_params."""
     def raise_error(component_str, meqn):
         raise RuntimeError( \
           "Invalid input: %(component_str)s is not one of %(valid_range)s"% \

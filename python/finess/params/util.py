@@ -1,6 +1,18 @@
+"""Provides functions related to params module, but used only in
+plotting and not IniParams generation.
+"""
+
 from __future__ import absolute_import
 
 def read_params(parameter_filename, parameters_list):
+    """Read from parameter_filename.
+    Interpret the contents as a .ini file.
+    With the information from parameters_list, do type conversion if
+    rhs of an assignment line is int/bool/double.
+    Return a dict of type (str, str) --> int/bool/double/str. 
+    parameters_list is the list that is used to generate IniParams.
+    """
+
     from ConfigParser import ConfigParser
     from finess.params import DerivedParameter
     config = ConfigParser()

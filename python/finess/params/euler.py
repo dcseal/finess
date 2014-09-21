@@ -1,3 +1,9 @@
+"""Export parameter_list, accessor_list, check_list for Euler
+equations.
+
+Currently, only euler.gamma.
+"""
+
 from __future__ import absolute_import
 
 def _parameters_accessors_checks():

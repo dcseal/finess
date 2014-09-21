@@ -1,3 +1,9 @@
+"""Export parameter_list, accessor_list, check_list for WENO
+reconstructions.
+
+
+"""
+
 from __future__ import absolute_import
 
 def _parameters_accessors_checks():

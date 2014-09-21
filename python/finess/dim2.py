@@ -1,6 +1,9 @@
+"""Provides functions for dealing with output of 2D apps.
+"""
 
-def read_qa(params, i_output, output_dir = 'output'):
+def read_qa(params, i_output):
     """Returns (t, q, aux) from (i_output)-th frame."""
+    output_dir = params["finess", "output_dir"]
     q_filename = output_dir + '/' + ('q%.4d.dat' % i_output)
     aux_filename = output_dir + '/' + ('a%.4d.dat' % i_output)
     

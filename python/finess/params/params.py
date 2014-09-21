@@ -1,3 +1,70 @@
+"""Provides framework for generating IniParams, a C++ class for
+interpreting .ini config file, and global_ini_params, a C++ global
+variable of type IniParams.
+
+See files under _templates/ for sample usage of this framework.
+
+Example:
+If your app is 2D, and needs only those parameters common to all 2D
+apps, then you need only
+- copy _templates/dim2/simple/generate_iniparams.py to
+you app directory, and 
+- add #include "IniParams.h" to all the source files you want to use
+  the parameters.
+
+"""
+
+
+# TODO Fully document this module
+# For now, 
+#   ...
+#   [section]
+#   name = value
+#   ...
+#   is first read into C++ local variable variable_name_str,
+#      then type-converted via stringToAny<T> template function,
+#      and stored into global_ini_params.variable_name.
+#
+#   stringToAny uses stringstream, and must undergo a
+#   template-specialization in order to interpret non-primitive types.
+#
+#   Currently, the only non-primitive type is EnumParameterType's.
+#   In the argument to its constructor, string_to_enumerator_dict
+#   refers to the map from what you want to see in .ini, to what you
+#   want to see in C++ source, e.g. {"Runge-Kutta": "RK",
+#   "Lax-Wendroff": "LxW"}
+#
+#   A trick in C++ code is used here to isolate namespace of the
+#   enumerators (i.e. the namespace of RK, LxW in above example).
+#   This namespace is called enum_scope_name in the Python code.
+#   For example, if enum_scope_name is "TimeSteppingMethod", then full
+#   name of RK above is IniParams::TimeSteppingMethod::RK, which is of
+#   type IniParams::TimeSteppingMethod::enum_type.  This is to
+#   circumvent a limitation in C++98.  Otherwise a C++11 'scoped enum'
+#   could be used.
+#   
+#   Accessor was meant to provide methods of getting an attribute in a
+#   different manner from global_ini_params.get_xxx().  However, since
+#   all C++ code can be modified to use this standard get_xxx method,
+#   Accessor seems redundant now.
+#
+#   There are two places where a user needs to insert C++ code
+#   directly as the argument to a Python call:
+#
+#   - Defining expression of a DerivedParameter
+#   - Non-canonical Check.
+#
+#   Usually, a user only needs to know how to use the following:
+#   - Constructors of various Parameter classes
+#   - Check classes
+#   - append_pac_from_module
+#   - write_to_header_cpp
+#
+#   The usage of items in this list should be clear from the templates
+#   in _templates, and from the source code of finess.viz.dim2
+
+
+
 from __future__ import absolute_import
 
 class_name = "IniParams"
