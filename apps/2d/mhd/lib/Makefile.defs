@@ -37,10 +37,8 @@ AfterQinit          = $(APP_LIB)/AfterQinit
 #
 APP_LIB_OBJECTS = \
 $(ConstructLF).o \
-MHDParams.o \
 
 #
 APP_LIB_SOURCES = \
-MHDParams.cpp \
 
 #
