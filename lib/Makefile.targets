@@ -1,6 +1,6 @@
 
-dog.exe: $(ALL_OBJECTS) $(ALL_SOURCES)
-	$(LINK) $(ALL_OBJECTS) -o dog.exe
+finess.exe: $(ALL_OBJECTS) $(ALL_SOURCES)
+	$(LINK) $(ALL_OBJECTS) -o $(EXECUTABLE)
 
 # does anyone use this any more?
 # you can also do this using: make -s ls | xargs cat > dog2program.cpp
@@ -17,5 +17,15 @@ cleanall: cleanallo
 	rm -rf $(CLEANALL_DIRS)
 
 run:
-	time ./dog.exe -o $(output)
+	time ./$(EXECUTABLE) -o $(output)
+
+
+$(INIPARAMS_H): $(INIPARSER_H) 
+	python $(GENERATE_INIPARAMS_PY)
+
+$(INIPARAMS_CPP): $(INIPARSER_H) $(INIPARAMS_H)
+	@true
+
+generate_iniparams: $(GENERATE_INIPARAMS_PY)
+
 

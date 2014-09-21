@@ -2,6 +2,16 @@
 #
 include $(FINESS)/lib/sys/Makefile.defs
 
+EXECUTABLE = finess.exe
+
+
+INIPARAMS = IniParams
+INIPARAMS_H = $(INIPARAMS).h
+INIPARAMS_CPP = $(INIPARAMS).cpp
+
+GENERATE_INIPARAMS_PY = generate_iniparams.py
+
+
 # where this library lives
 TOPLIB = $(FINESS)/lib
 
@@ -18,6 +28,7 @@ WenoReconstruct = $(TOPLIB)/WenoReconstruct
 
 TOPLIB_OBJECTS = \
   $(LIB_SYS_OBJECTS) \
+  $(INIPARAMS).o \
   $(MAIN_GLOBAL).o \
   $(TOPLIB)/tensors.o \
   $(TOPLIB)/dog_math.o \
@@ -29,6 +40,8 @@ TOPLIB_OBJECTS = \
 TOPLIB_SOURCES = \
   $(LIB_SYS_SOURCES) \
   $(TOPLIB)/*.h \
+  $(INIPARAMS_H) \
+  $(INIPARAMS_CPP) \
   $(MAIN_GLOBAL).cpp \
   $(TOPLIB)/tensors.cpp \
   $(TOPLIB)/dog_math.cpp \
@@ -43,13 +56,15 @@ ALL_SOURCES = $(TOPLIB_SOURCES)
 ALL_OBJECTS = $(TOPLIB_OBJECTS)
 
 # Compiled files (these will be deleted locally)
-CLEAN_FILES = *.o *.pyc
+CLEAN_FILES = *.o *.pyc 
+
 
 CLEANALL_FILES = \
 	*.log *.aux *.dvi *.pdf \
-	*.o \
-	dog.exe \
+	$(CLEAN_FILES) \
+	$(EXECUTABLE) \
     tags \
+    $(INIPARAMS_H) $(INIPARAMS_CPP)
 
 CLEANALL_DIRS = output*
 

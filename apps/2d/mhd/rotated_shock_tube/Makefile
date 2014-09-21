@@ -10,11 +10,9 @@ include $(FINESS)/apps/2d/mhd/lib/Makefile.defs
 #
 #InitApp      = InitApp
 
-ALL_OBJECTS = $(COMMON_OBJECTS) \
-IniParams.o
+ALL_OBJECTS = $(COMMON_OBJECTS)
 
-ALL_SOURCES = $(COMMON_SOURCES) \
-IniParams.cpp
+ALL_SOURCES = $(COMMON_SOURCES)
 
 
 TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/2d/mhd/lib/ $(LIB_SYS_INCLUDE)
@@ -29,8 +27,6 @@ LOCAL_INCLUDE+=-I.
 
 include $(FINESS)/lib/2d/Makefile.targets
 
-IniParams.cpp: generate_iniparams.py
-	python $^
 
 
 ### DO NOT remove this line - make depends on it ###

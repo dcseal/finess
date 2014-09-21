@@ -14,8 +14,10 @@ LIB_SYS_OBJECTS = \
   $(LIB_SYS)/assert.o \
 #
 LIB_SYS_SOURCES = \
-  $(LIB_SYS)/*.h \
-  $(LIB_SYS)/*.cpp \
+  $(LIB_SYS)/debug.h \
+  $(LIB_SYS)/assert.h \
+  $(LIB_SYS)/debug.cpp \
+  $(LIB_SYS)/assert.cpp
 
 #IniParser.h
 INIPARSER_H = \
