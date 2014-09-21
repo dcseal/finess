@@ -1,5 +1,24 @@
 from __future__ import absolute_import
 
+def meshgrid(params):
+    """Returns meshgrid (a pair (X, Y)) that can be used for plotting."""
+    assert params['finess', 'ndims'] == 2
+    mx = params['grid', 'mx']
+    my = params['grid', 'my']
+    xlow = params['grid', 'xlow']
+    xhigh = params['grid', 'xhigh']
+    ylow = params['grid', 'ylow']
+    yhigh = params['grid', 'yhigh']
+    
+    dx = (xhigh-xlow) / float(mx)
+    dy = (yhigh-ylow) / float(my)
+    
+    from pylab import meshgrid, linspace
+    X, Y = meshgrid(linspace(xlow + 0.5*dx, xhigh - 0.5*dx, mx), linspace(ylow + 0.5*dy, yhigh - 0.5*dy, my), indexing = "ij")
+    return X, Y
+
+
+
 def draw_ith_frame_jth_component(params, fig, i, j, 
                                  plotting_method_on_Axes3D):
     from finess.dim2 import read_qa
@@ -12,8 +31,8 @@ def draw_ith_frame_jth_component(params, fig, i, j,
     ax = fig.add_subplot(111, projection='3d')
     ax.set_title("$t = %(t)f$" % {"t": t})
 
-    import finess.dim2
-    X, Y = finess.dim2.meshgrid(params)
+    import finess.viz.dim2
+    X, Y = finess.viz.dim2.meshgrid(params)
     plotting_method_on_Axes3D(ax, X, Y, q[:, :, j - 1])
  
 def ask_which_component_and_which_frame_and_plot_wireframe():
