@@ -32,7 +32,5 @@ include $(FINESS)/lib/2d/Makefile.targets
 IniParams.cpp: generate_iniparams.py
 	python $^
 
-IniParser.h: IniParser.rl
-	ragel $^ -o $@
- 
+
 ### DO NOT remove this line - make depends on it ###
