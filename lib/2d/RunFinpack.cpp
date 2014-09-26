@@ -73,7 +73,7 @@ int RunFinpack(string outputdir)
     dTensorBC3    qnew(mx, my, meqn, mbc);
     dTensorBC3    qold(mx, my, meqn, mbc);
     dTensorBC3    smax(mx, my, mdim, mbc);
-    dTensorBC3    aux (mx, my, iMax(maux, 1), mbc);
+    dTensorBC3    aux (mx, my, maux, mbc);
 
     // Set any auxiliary variables on computational grid
     // Set values and apply L2-projection

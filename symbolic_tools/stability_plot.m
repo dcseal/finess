@@ -1,5 +1,6 @@
 % plotting parameters
-nu0 = linspace(-0.01, 1.5);
+%nu0 = linspace( 0.60, 1.4, 1000 );
+nu0 = linspace( 1.06072, 1.06068, 1000 );
 k0  = linspace( -800, 800, 1000 );
 
 [nu,k] = meshgrid( nu0, k0 );
@@ -17,12 +18,13 @@ clf;
 
 [C,h] = contour( nu, k, abs( s ), [1,1] );
 
-xlabel( 'CFL number', 'FontSize', 16 );
-ylabel( 'Wave number', 'FontSize', 16 );
+xlabel( 'CFL number', 'FontSize', 24 );
+ylabel( 'Wave number', 'FontSize', 24 );
 
-set(gca,'xtick', -2:0.05:2);
-%set(gca,'ytick',-2:0.25:2);
+%set(gca,'xtick', -2:0.05:2);
+%set(gca, 'FontSize', 16 );
 
 t1 = title('Von Neumann stability analysis' );
-set(t1, 'fontsize', 16 );
+set(t1, 'fontsize', 24 );
 
+%print(1, '-depsc', 'VonNeumann.eps' );
