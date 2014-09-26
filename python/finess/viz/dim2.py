@@ -9,22 +9,26 @@ from __future__ import absolute_import
 def meshgrid(params):
     """Returns meshgrid (a pair (X, Y)) that can be used for 2D plotting.
     params is what is returned by finess.params.util.read_params."""
-    assert params['finess', 'ndims'] == 2
-    mx = params['grid', 'mx']
-    my = params['grid', 'my']
-    xlow = params['grid', 'xlow']
+    assert(params['finess', 'ndims'] == 2)
+    mx    = params['grid', 'mx']
+    my    = params['grid', 'my']
+    xlow  = params['grid', 'xlow']
     xhigh = params['grid', 'xhigh']
-    ylow = params['grid', 'ylow']
+    ylow  = params['grid', 'ylow']
     yhigh = params['grid', 'yhigh']
     
     dx = (xhigh-xlow) / float(mx)
     dy = (yhigh-ylow) / float(my)
     
     from pylab import meshgrid, linspace
-    X, Y = meshgrid(linspace(xlow + 0.5*dx, xhigh - 0.5*dx, mx), linspace(ylow + 0.5*dy, yhigh - 0.5*dy, my), indexing = "ij")
-    return X, Y
-
-
+    try:
+        X, Y = meshgrid(linspace(xlow + 0.5*dx, xhigh - 0.5*dx, mx), linspace(ylow + 0.5*dy, yhigh - 0.5*dy, my), indexing='ij' )
+    except(TypeError):
+        from pylab import transpose
+        X, Y = meshgrid(linspace(xlow + 0.5*dx, xhigh - 0.5*dx, mx), linspace(ylow + 0.5*dy, yhigh - 0.5*dy, my) )
+        X = transpose(X)
+        Y = transpose(Y)
+    return X,Y
 
 def draw_ith_frame_jth_component(params, fig, i, j, 
                                  plotting_method_on_Axes3DSubplot):
