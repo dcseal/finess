@@ -7,7 +7,6 @@
 #include "RKinfo.h"
 #include "FinSolveRK.h"
 #include "ConstructL.h"
-#include "WenoParams.h"
 #include "IniParams.h"
 
 // Used for construcing the flux function

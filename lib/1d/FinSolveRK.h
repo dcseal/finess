@@ -10,7 +10,7 @@ void CopyQ(const dTensorBC2&, dTensorBC2&);
 void ConSoln( 
     const dTensorBC2& aux,
     const dTensorBC2& q, 
-    double t, string outputdir);
+    double t, std::string outputdir);
 
 // These four functions get called in the following order for each stage in
 // the Runge-Kutta method:

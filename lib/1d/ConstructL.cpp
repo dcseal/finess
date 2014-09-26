@@ -4,7 +4,6 @@
 #include "IniParams.h"
 #include "tensors.h"
 #include "dog_math.h"
-#include "WenoParams.h"
 #include "ConstructL.h"
 
 // Right-hand side for hyperbolic PDE in divergence form

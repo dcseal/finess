@@ -4,7 +4,6 @@
 #include "IniParams.h"
 #include "tensors.h"
 #include "dog_math.h"
-#include "WenoParams.h"        // for flux-splitting parameter
 
 // Time-integrated right-hand side for hyperbolic PDE in divergence form
 //

@@ -10,7 +10,7 @@ void CopyQ(const dTensorBC2&, dTensorBC2&);
 void ConSoln( 
     const dTensorBC2& aux,
     const dTensorBC2& q, 
-    double t, string outputdir);
+    double t, std::string outputdir);
 
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
 void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
