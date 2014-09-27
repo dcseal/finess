@@ -18,7 +18,6 @@ void ConSoln( const dTensorBC2& aux, const dTensorBC2& q, double t )
     const int   meqn = global_ini_params.get_meqn();
     const int   maux = global_ini_params.get_maux();
 
-
     // Grid information:
     const double dx   = global_ini_params.get_dx();
     const double xlow = global_ini_params.get_xlow();
