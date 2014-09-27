@@ -14,7 +14,7 @@ using namespace std;
 void ConSoln( 
     const dTensorBC2& aux,
     const dTensorBC2& q, 
-    double t, string outputdir)
+    double t )
 {
 
     const int     mx = global_ini_params.get_mx();
@@ -26,6 +26,7 @@ void ConSoln(
     const double xlow = global_ini_params.get_xlow();
     const double sqdx = sqrt(dx);
 
+    string outputdir = global_ini_params.get_output_dir();
     string fname1 = outputdir+"/conservation.dat";
     string fname2 = outputdir+"/total-variation.dat";
 

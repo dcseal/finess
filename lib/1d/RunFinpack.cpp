@@ -39,7 +39,7 @@
 #include "IniParams.h"            // accessors for the parameters.ini file
 #include "RunFinpack.h"           // Function declarations
 
-int RunFinpack(std::string outputdir)
+int RunFinpack( )
 {
 
     using std::cout;
@@ -111,10 +111,10 @@ int RunFinpack(std::string outputdir)
 
     // Output initial data to file
     // For each element, we output ``method[1]'' number of values
-    Output( aux, qnew, 0.0, 0, outputdir);
+    Output( aux, qnew, 0.0, 0 );
 
     // Compute conservation and print to file
-    ConSoln( aux, qnew, 0.0, outputdir);
+    ConSoln( aux, qnew, 0.0 );
 
     // Main loop for time stepping
     double tstart = 0.0;
@@ -130,31 +130,31 @@ int RunFinpack(std::string outputdir)
         {  
             // Runge-Kutta time-stepping scheme
             FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+                    nv, dtv, cflv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
             FinSolveLxW( 
                 aux, qold, qnew, smax, tstart, tend, 
-                nv, dtv, cflv, outputdir);
+                nv, dtv, cflv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
         {
             FinSolveMD( 
                 aux, qold, qnew, smax, tstart, tend, 
-                nv, dtv, cflv, outputdir);
+                nv, dtv, cflv );
         }
 //      else if( time_stepping_method == "SDC")
 //      {
 //          FinSolveSDC( 
 //              aux, qold, qnew, smax, tstart, tend, 
-//              nv, dtv, cflv, outputdir);
+//              nv, dtv, cflv );
 //      }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
             DogSolveUser( aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+                    nv, dtv, cflv );
         }
         else
         {
@@ -163,7 +163,7 @@ int RunFinpack(std::string outputdir)
         }
 
         // Output data to file
-        Output( aux, qnew, tend, n, outputdir);
+        Output( aux, qnew, tend, n );
 
         // Done with solution from tstart to tend
         cout << setprecision(5);

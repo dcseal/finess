@@ -3,7 +3,6 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "IniParams.h"
 #include "RKinfo.h"
 #include "FinSolveRK.h"
 #include "ConstructL.h"
@@ -41,16 +40,16 @@ using namespace std;
 void DogSolveUser( dTensorBC2& aux, dTensorBC2& qold,
         dTensorBC2& qnew, dTensorBC1& smax,
         double tstart, double tend,int nv, 
-        double dtv[], const double cflv[],string outputdir)
+        double dtv[], const double cflv[] )
 {
 
     void FinSolveRK_PIF(
         dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
         dTensorBC1& smax,
         double tstart, double tend, int nv,
-        double dtv[], const double cflv[], string outputdir);
+        double dtv[], const double cflv[] );
     FinSolveRK_PIF( aux, qold, qnew, smax, tstart, tend, nv,
-        dtv, cflv, outputdir);
+        dtv, cflv );
 
 }
 
@@ -85,7 +84,7 @@ void FinSolveRK_PIF(
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
     dTensorBC1& smax,
     double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+    double dtv[], const double cflv[] )
 {
 
     // Declare information about the Runge-Kutta method
@@ -287,7 +286,7 @@ k4.copyfrom( Lstar );
 
         // compute conservation and print to file
         SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t, outputdir);
+        ConSoln(aux, qnew, t );
 
     } // End of while loop
 

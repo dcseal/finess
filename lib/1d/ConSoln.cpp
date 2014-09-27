@@ -6,25 +6,25 @@
 #include <iomanip>
 #include "dogdefs.h"
 #include "IniParams.h"
-#include "IniParams.h"
 
 using namespace std;
 
-void ConSoln( 
-    const dTensorBC2& aux,
-    const dTensorBC2& q, 
-    double t, string outputdir)
+// This function is used to track scalar quantities of interest.  The default
+// behaviour is to track conservation of total mass.
+void ConSoln( const dTensorBC2& aux, const dTensorBC2& q, double t )
 {
 
     const int     mx = global_ini_params.get_mx();
     const int   meqn = global_ini_params.get_meqn();
     const int   maux = global_ini_params.get_maux();
 
+
     // Grid information:
     const double dx   = global_ini_params.get_dx();
     const double xlow = global_ini_params.get_xlow();
 
-    string fname1 = outputdir+"/conservation.dat";
+    string outputdir = global_ini_params.get_output_dir();
+    string fname1    = outputdir+"/conservation.dat";
     ofstream write_file1,write_file2;
     dTensor1 qsum(meqn);
     dTensor1 res_sum(meqn);
@@ -77,7 +77,6 @@ void ConSoln(
     write_file1 << setw(24) << scientific << t << " ";
     for (int m=1; m<=meqn; m++)
     {
-        if (abs(qsum.get(m)) < 1.0e-99) {qsum.set(m, 0.0);}
         write_file1 << setw(24) << scientific << qsum.get(m) << " ";
     }
     write_file1 << endl;

@@ -3,9 +3,8 @@
 #include <stdlib.h>
 #include "dogdefs.h"
 #include "dimdefs.h"
-
-
 #include "IniParams.h"
+
 /*
  * Common main function that's called by every application.
  *
@@ -29,10 +28,8 @@ int main_global(int argc, char* argv[])
 
     global_ini_params.init("parameters.ini");
 
-
     // Get current time
     double time1 = time(NULL);
-
 
     // Call startscript (Default: scripts/startscript, otherwise it checks for
     // a local file called 'startscript' from the application's directory)
@@ -41,8 +38,8 @@ int main_global(int argc, char* argv[])
 
     // Call the ``RunFinpack'' routine, which executes the code
     // Each dimension has its own version of this routine.
-    int RunFinpack( string outputdir );
-    int m = RunFinpack( global_ini_params.get_output_dir() );
+    int RunFinpack( );
+    int m = RunFinpack( );
 
     // Get current time
     double time2 = time(NULL);
