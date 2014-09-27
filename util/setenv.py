@@ -60,7 +60,7 @@ print "  plotdog2 = %s" %pdog2_command
 write_shortcut_alias(csh_file,bash_file,"plotdog2",pdog2_command)
 print ""
 
-plot2d_generic_command = "$FINESS/viz/plot2d_generic"
+plot2d_generic_command = "python $FINESS/viz/plot2d_generic.py"
 print "  plot2d_generic = %s" % plot2d_generic_command
 write_shortcut_alias(csh_file,bash_file,"plot2d_generic", plot2d_generic_command)
 print ""
