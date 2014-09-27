@@ -6,20 +6,22 @@
 #include <iomanip>
 #include "dogdefs.h"
 #include "IniParams.h"
-#include "IniParams.h"
+
 using namespace std;
 
 void Output(
         const dTensorBC2& aux,
         const dTensorBC2& q,
         double t,
-        int nframe,
-        string outputdir)
+        int nframe )
+
 {
 
     const int melems  = q.getsize(1);
     const int meqn    = q.getsize(2);
     const int maux    = aux.getsize(2);
+
+    string outputdir = global_ini_params.get_output_dir();
 
     // Open file -- q
     ostringstream fname1;
@@ -60,8 +62,7 @@ void Output(
             const dTensorBC2& aux,
             const dTensorBC2& q,
             double t,
-            int nframe,
-            string outputdir);
-    Output_Extra(aux,q,t,nframe,outputdir);
+            int nframe );
+    Output_Extra(aux, q, t, nframe);
 
 }

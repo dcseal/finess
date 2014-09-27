@@ -3,9 +3,9 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "IniParams.h"
 #include "RKinfo.h"
 #include "FinSolveRK.h"
+#include "IniParams.h"
 
 using namespace std;
 
@@ -13,7 +13,7 @@ void FinSolveRK(
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
     dTensorBC1& smax,
     double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+    double dtv[], const double cflv[] )
 {
 
     // Declare information about the Runge-Kutta method
@@ -308,7 +308,7 @@ void FinSolveRK(
 
         // compute conservation and print to file
         SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t, outputdir);
+        ConSoln(aux, qnew, t );
 
     } // End of while loop
 

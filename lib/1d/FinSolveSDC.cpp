@@ -13,7 +13,7 @@ void FinSolveSDC(
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
     dTensorBC1& smax,
     double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+    double dtv[], const double cflv[] )
 {
 
     // This is a bit cleaner than putting all the pre and post steps in here
@@ -948,7 +948,7 @@ void FinSolveSDC(
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln(aux, qnew, t, outputdir);
+        ConSoln(aux, qnew, t );
 
     } // End of while loop
 

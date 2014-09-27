@@ -37,13 +37,17 @@
 #include "dog_math.h"
 #include "dogdefs.h"
 #include "IniParams.h"            // accessors for the parameters.ini file
-#include "IniParams.h"       // accessors for the parameters.ini file
-#include "WenoParams.h"
-#include "IniDocument.h"
 #include "RunFinpack.h"           // Function declarations
 
-int RunFinpack(string outputdir)
+int RunFinpack( )
 {
+
+    using std::cout;
+    using std::endl;
+    using std::string;
+    using std::scientific;
+    using std::setw;
+    using std::setprecision;
 
     // Output title information
     cout << endl;
@@ -57,28 +61,19 @@ int RunFinpack(string outputdir)
     cout << "   ------------------------------------------------   " << endl;
     cout << endl;
 
-    // Get parameters
-    global_ini_params.init();
-    global_ini_params.init(ini_doc);
-    wenoParams.init(ini_doc);
-    cout << endl;
+    // Get parameters and print to screen
+    cout << global_ini_params.ini_doc_as_string() << endl;
+    const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
+	  global_ini_params.get_time_stepping_method();
 
-    // Get addtional parameters
-    InitApp(ini_doc);
-    cout << endl;
-
-    // If we want to use the top-level solver, this routine needs to be written:
-    //fetch_dogState().init();
-
-    const string time_stepping_method = global_ini_params.get_time_stepping_method();
     const int&     nout     = global_ini_params.get_nout();
     const double&  tfinal   = global_ini_params.get_tfinal();
     double dtv[2+1];
     dtv[1] = global_ini_params.get_initial_dt();
     dtv[2] = global_ini_params.get_max_dt();
-    const double*  cflv     = global_ini_params.get_cflv();
+    const double nonsense_double = 0;
+    const double   cflv[]   = {nonsense_double, global_ini_params.get_max_cfl(), global_ini_params.get_desired_cfl()};
     const int      nv       = global_ini_params.get_nv();
-    const int*     method   = global_ini_params.get_method();
     const int&     meqn     = global_ini_params.get_meqn();
     const int&     maux     = global_ini_params.get_maux();
     const int&     mdim     = global_ini_params.get_ndims();     assert_eq( mdim, 1 );
@@ -87,13 +82,14 @@ int RunFinpack(string outputdir)
     const double&  xlow     = global_ini_params.get_xlow();
     const double&  xhigh    = global_ini_params.get_xhigh();
     const double&  dx       = global_ini_params.get_dx();
-    const int&     mrestart = global_ini_params.get_mrestart();
+//  const int&     mrestart = global_ini_params.get_mrestart();
 
     // Output helpful stuff to qhelp.dat for plotting purposes
-    string qhelp;
-    qhelp=outputdir+"/qhelp.dat";
-    global_ini_params.write_qhelp(qhelp.c_str());
-    global_ini_params.append_qhelp(qhelp.c_str());
+    // This is deprecated (replaced with global IniParams)
+//  string qhelp;
+//  qhelp = outputdir+"/qhelp.dat";
+//  global_ini_params.write_qhelp(qhelp.c_str());
+//  global_ini_params.append_qhelp(qhelp.c_str());
 
     // Dimension arrays
     dTensorBC2    qnew(mx, meqn, mbc);
@@ -115,10 +111,10 @@ int RunFinpack(string outputdir)
 
     // Output initial data to file
     // For each element, we output ``method[1]'' number of values
-    Output( aux, qnew, 0.0, 0, outputdir);
+    Output( aux, qnew, 0.0, 0 );
 
     // Compute conservation and print to file
-    ConSoln( aux, qnew, 0.0, outputdir);
+    ConSoln( aux, qnew, 0.0 );
 
     // Main loop for time stepping
     double tstart = 0.0;
@@ -130,35 +126,35 @@ int RunFinpack(string outputdir)
         tend = tstart + dtout;
 
         // Solve hyperbolic system from tstart to tend
-        if (time_stepping_method == "Runge-Kutta")
+        if (time_stepping_method == IniParams::TimeSteppingMethod::RK)
         {  
             // Runge-Kutta time-stepping scheme
             FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+                    nv, dtv, cflv );
         }
-        else if( time_stepping_method == "Lax-Wendroff")
+        else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
             FinSolveLxW( 
                 aux, qold, qnew, smax, tstart, tend, 
-                nv, dtv, cflv, outputdir);
+                nv, dtv, cflv );
         }
-        else if( time_stepping_method == "Multiderivative")
+        else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
         {
             FinSolveMD( 
                 aux, qold, qnew, smax, tstart, tend, 
-                nv, dtv, cflv, outputdir);
+                nv, dtv, cflv );
         }
-        else if( time_stepping_method == "SDC")
-        {
-            FinSolveSDC( 
-                aux, qold, qnew, smax, tstart, tend, 
-                nv, dtv, cflv, outputdir);
-        }
-        else if (time_stepping_method == "User-Defined")
+//      else if( time_stepping_method == "SDC")
+//      {
+//          FinSolveSDC( 
+//              aux, qold, qnew, smax, tstart, tend, 
+//              nv, dtv, cflv );
+//      }
+        else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
             DogSolveUser( aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+                    nv, dtv, cflv );
         }
         else
         {
@@ -167,7 +163,7 @@ int RunFinpack(string outputdir)
         }
 
         // Output data to file
-        Output( aux, qnew, tend, n, outputdir);
+        Output( aux, qnew, tend, n );
 
         // Done with solution from tstart to tend
         cout << setprecision(5);

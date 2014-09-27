@@ -4,11 +4,13 @@
 
 NDIMS=1
 include $(FINESS)/lib/Makefile.defs
+
 # library this file is in
 LIB1D = $(FINESS)/lib/1d
 LIB1D_INCLUDE = -I$(LIB1D) $(TOPLIB_INCLUDE)
+
 # inheriting libraries are expected to override this
-INCLUDE_LIBS = $(LIB1D_INCLUDE)
+INCLUDE_LIBS = -I. $(LIB1D_INCLUDE)
 
 # added to by applications
 #
@@ -86,7 +88,6 @@ ApplyLimiter         = $(LIB1D)/ApplyLimiter
 ApplyPosLimiter      = $(LIB1D)/ApplyPosLimiter
 ConstructL           = $(LIB1D)/ConstructL
 ConstructLxWL        = $(LIB1D)/ConstructLxWL
-InitApp              = $(LIB1D)/InitApp
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
 DogSolveUser         = $(LIB1D)/DogSolveUser
@@ -116,7 +117,6 @@ FinSolveMD            = $(LIB1D)/FinSolveMD
 LIB1D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
   $(RunFinpack).o \
-  $(LIB1D)/DogParamsCart1.o \
   $(SampleFunction).o \
   $(Output).o \
   $(Output_Extra).o \
@@ -136,7 +136,6 @@ LIB1D_OBJECTS = \
   $(AfterStep).o \
   $(BeforeFullTimeStep).o \
   $(AfterFullTimeStep).o \
-  $(InitApp).o \
   $(AfterUpdateSoln).o \
   $(ApplyLimiter).o \
   $(ApplyPosLimiter).o \
@@ -155,7 +154,6 @@ LIB1D_SOURCES = \
   $(LIB1D)/*.h \
   $(TOPLIB_SOURCES) \
   $(RunFinpack).cpp \
-  $(LIB1D)/DogParamsCart1.cpp \
   $(SampleFunction).cpp \
   $(Output).cpp \
   $(Output_Extra).cpp \
@@ -175,7 +173,6 @@ LIB1D_SOURCES = \
   $(AfterStep).cpp \
   $(BeforeFullTimeStep).cpp \
   $(AfterFullTimeStep).cpp \
-  $(InitApp).cpp \
   $(AfterUpdateSoln).cpp \
   $(ApplyLimiter).cpp \
   $(ApplyPosLimiter).cpp \

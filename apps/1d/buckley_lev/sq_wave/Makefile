@@ -19,6 +19,6 @@ ConstructIntegratedF        = ConstructIntegratedF
 
 ### targets ###
 
-include $(DOGPACK)/lib/1d/Makefile.targets
+include $(FINESS)/lib/1d/Makefile.targets
 
 ### DO NOT remove this line - make depends on it ###

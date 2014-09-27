@@ -12,18 +12,22 @@
 #include <iomanip>
 #include "dog_math.h"
 #include "dogdefs.h"
+#include "IniParams.h"            // accessors for the parameters.ini file
 #include "RunFinpack.h"           // Function declarations
 
-#include "IniParams.h"
-
-int RunFinpack(std::string outputdir)
+int RunFinpack( )
 {
+
     using std::cout;
     using std::endl;
     using std::string;
     using std::scientific;
     using std::setw;
     using std::setprecision;
+
+// TODO - send this into later functions!
+string outputdir = global_ini_params.get_output_dir();
+
     // Output title information
     cout << endl;
     cout << "   ------------------------------------------------   " << endl;
@@ -37,18 +41,18 @@ int RunFinpack(std::string outputdir)
     cout << endl;
 
 
+    // Get parameters and print to screen
     cout << global_ini_params.ini_doc_as_string() << endl;
-
-
     const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
 	  global_ini_params.get_time_stepping_method();
+
     const int&     nout     = global_ini_params.get_nout();
     const double&  tfinal   = global_ini_params.get_tfinal();
     double dtv[2+1];
     dtv[1] = global_ini_params.get_initial_dt();
     dtv[2] = global_ini_params.get_max_dt();
     const double nonsense_double = 0;
-    const double   cflv[]     = {nonsense_double, global_ini_params.get_max_cfl(), global_ini_params.get_desired_cfl()};
+    const double   cflv[]   = {nonsense_double, global_ini_params.get_max_cfl(), global_ini_params.get_desired_cfl()};
     const int      nv       = global_ini_params.get_nv();
     const int&     meqn     = global_ini_params.get_meqn();
     const int&     maux     = global_ini_params.get_maux();
@@ -56,14 +60,6 @@ int RunFinpack(std::string outputdir)
     const int&     mx       = global_ini_params.get_mx();
     const int&     my       = global_ini_params.get_my();
     const int&     mbc      = global_ini_params.get_mbc();
-//    const int&     mrestart = global_ini_params.get_mrestart();
-
-    // Output helpful stuff to qhelp.dat for plotting purposes
-//    string qhelp;
-//    qhelp=outputdir+"/qhelp.dat";
-//    global_ini_params.write_qhelp(qhelp.c_str());
-//    global_ini_params.append_qhelp(qhelp.c_str());
-
 
     // Dimension arrays
     dTensor2      prim_vol(mx, my);

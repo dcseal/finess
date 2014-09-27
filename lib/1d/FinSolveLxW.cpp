@@ -4,7 +4,6 @@
 #include "stdlib.h"
 #include "dogdefs.h"
 #include "IniParams.h"
-#include "IniParams.h"
 #include "FinSolveLxW.h"   // functions directly called from this routine
 
 using namespace std;
@@ -13,7 +12,7 @@ void FinSolveLxW(
     dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
     dTensorBC1& smax,
     double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+    double dtv[], const double cflv[] )
 {
 
     // Declare information about the Runge-Kutta method
@@ -153,7 +152,7 @@ void FinSolveLxW(
 
         // compute conservation and print to file
         SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t, outputdir);
+        ConSoln(aux, qnew, t );
 
     } // End of while loop
 

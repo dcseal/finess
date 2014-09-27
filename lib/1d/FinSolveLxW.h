@@ -7,10 +7,7 @@ void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
 
 void CopyQ(const dTensorBC2&, dTensorBC2&);
 
-void ConSoln( 
-    const dTensorBC2& aux,
-    const dTensorBC2& q, 
-    double t, string outputdir);
+void ConSoln( const dTensorBC2& aux, const dTensorBC2& q, double t );
 
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
 void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);

@@ -12,7 +12,7 @@ using namespace std;
 void ConSoln( 
     const dTensorBC2& aux,
     const dTensorBC2& q, 
-    double t, string outputdir);
+    double t );
 
 // RK functions
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
@@ -78,7 +78,7 @@ void FinSolveMD(
         dTensorBC2& qnew,
         dTensorBC1& smax,
         double tstart, double tend,int nv, 
-        double dtv[], const double cflv[],string outputdir)
+        double dtv[], const double cflv[] )
 {
 
     double t            = tstart;
@@ -326,7 +326,7 @@ void FinSolveMD(
 
         // compute conservation and print to file
         SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t, outputdir);
+        ConSoln(aux, qnew, t );
 
     }
 

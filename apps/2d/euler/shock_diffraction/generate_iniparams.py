@@ -5,7 +5,7 @@ import this_app_params
 
 pac = finess.params.dim2.starter_pac()
 
-#section [mhd]
+#section [euler]
 append_pac_from_module(pac, finess.params.euler)
 
 #parameters specific to current app

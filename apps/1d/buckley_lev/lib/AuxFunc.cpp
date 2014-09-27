@@ -4,12 +4,12 @@
 // auxiliary arrays at all the points "xpts"
 //
 void AuxFunc(const dTensor1& xpts, 
-	     dTensor2& auxvals)
+        dTensor2& auxvals)
 {
-  const int numpts=xpts.getsize();
-  for (int i=1; i<=numpts; i++)
+    const int numpts=xpts.getsize();
+    for (int i=1; i<=numpts; i++)
     {
-      const double x = xpts.get(i);
-      auxvals.set(i,1, 0.0e0 );
+        const double x = xpts.get(i);
+        auxvals.set(i,1, 0.0e0 );
     }
 }

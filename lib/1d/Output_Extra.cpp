@@ -15,8 +15,7 @@ void Output_Extra(
             const dTensorBC2& aux,
             const dTensorBC2& q,
             double t,
-            int nframe,
-            string outputdir)
+            int nframe )
 {
 
     // See $(FINESS)/lib/1d/Output.cpp to see where this gets called.
