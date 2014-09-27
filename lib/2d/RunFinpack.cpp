@@ -15,7 +15,7 @@
 #include "IniParams.h"            // accessors for the parameters.ini file
 #include "RunFinpack.h"           // Function declarations
 
-int RunFinpack(std::string outputdir)
+int RunFinpack( )
 {
 
     using std::cout;
@@ -24,6 +24,9 @@ int RunFinpack(std::string outputdir)
     using std::scientific;
     using std::setw;
     using std::setprecision;
+
+// TODO - send this into later functions!
+string outputdir = global_ini_params.get_output_dir();
 
     // Output title information
     cout << endl;

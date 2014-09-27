@@ -1,7 +1,7 @@
 #include <cmath>
 #include "tensors.h"
-#include "EulerParams.h"
 #include "assert.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // Derivative of the Jacobian of the Flux Function.  
@@ -30,7 +30,7 @@ void D2FluxFunc(const dTensor1& xpts,
 {
 
     // Gas constant
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
     const double gm1   = gamma - 1.0;
 
 

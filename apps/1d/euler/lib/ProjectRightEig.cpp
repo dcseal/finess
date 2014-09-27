@@ -1,6 +1,6 @@
 #include <cmath>
 #include "tensors.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that projects
 // Wvals onto the right eigenvectors ofthe flux 
@@ -15,7 +15,7 @@ void ProjectRightEig(const dTensor1& Aux_ave,
   const int kmax = Qvals.getsize(2)+1;
   
   // Average states
-  const double gamma  = eulerParams.gamma;
+  const double gamma  = global_ini_params.get_gamma();
   const double rho    = Q_ave.get(1);
   const double u1     = Q_ave.get(2)/rho;
   const double u2     = Q_ave.get(3)/rho;

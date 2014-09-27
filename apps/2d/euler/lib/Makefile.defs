@@ -24,7 +24,6 @@ ProjectRightEig     = $(APP_LIB)/ProjectRightEig
 # Wave speed functions
 SetWaveSpd          = $(APP_LIB)/SetWaveSpd
 
-
 # Auxilary function
 AuxFunc             = $(APP_LIB)/AuxFunc
 
@@ -40,5 +39,6 @@ $(ConstructLF).o \
 
 #
 APP_LIB_SOURCES = \
+$(ConstructLF).cpp \
 
 #
