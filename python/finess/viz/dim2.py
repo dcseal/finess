@@ -1,10 +1,36 @@
-"""Provides functions for plotting result of 2D apps.
 """
+This module provides functions for plotting generic 2D applicatinos in
+FINESS.  This is the primary module that gets imported by plot2d_generic.py.
+The funciton ask_which_component_and_which_frame_and_plot_wireframe is the
+primary interface for executing the 2D python plotting interface for FINESS.
 
+See also: TODO.
+"""
 
 from __future__ import absolute_import
 
-
+def ask_which_component_and_which_frame_and_plot_wireframe():
+    """Call this and you get an interactive plot program as the
+    function name suggests."""
+    from finess.params.util import read_params
+    from generate_iniparams import parameter_list
+    from finess.viz import ask_which_component, interactive_plot
+    from mpl_toolkits.mplot3d import Axes3D
+    from finess.viz.dim2 import draw_ith_frame_jth_component
+    
+    params = read_params("parameters.ini", parameter_list)
+    
+    component = ask_which_component(params)
+    
+    draw_ith_frame = \
+        lambda fig, i: \
+           draw_ith_frame_jth_component( \
+             params = params, fig = fig, i = i, j = component,
+             plotting_method_on_Axes3DSubplot = Axes3D.plot_wireframe)
+    
+    interactive_plot(params["finess", "nout"], 
+                     draw_ith_frame = draw_ith_frame)
+    
 
 def meshgrid(params):
     """Returns meshgrid (a pair (X, Y)) that can be used for 2D plotting.
@@ -62,25 +88,4 @@ def draw_ith_frame_jth_component(params, fig, i, j,
     X, Y = finess.viz.dim2.meshgrid(params)
     plotting_method_on_Axes3DSubplot(ax, X, Y, q[:, :, j - 1])
  
-def ask_which_component_and_which_frame_and_plot_wireframe():
-    """Call this and you get an interactive plot program as the
-    function name suggests."""
-    from finess.params.util import read_params
-    from generate_iniparams import parameter_list
-    from finess.viz import ask_which_component, interactive_plot
-    from mpl_toolkits.mplot3d import Axes3D
-    from finess.viz.dim2 import draw_ith_frame_jth_component
-    
-    params = read_params("parameters.ini", parameter_list)
-    
-    component = ask_which_component(params)
-    
-    draw_ith_frame = \
-        lambda fig, i: \
-           draw_ith_frame_jth_component( \
-             params = params, fig = fig, i = i, j = component,
-             plotting_method_on_Axes3DSubplot = Axes3D.plot_wireframe)
-    
-    interactive_plot(params["finess", "nout"], 
-                     draw_ith_frame = draw_ith_frame)
-    
+
