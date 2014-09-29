@@ -62,7 +62,6 @@ string outputdir = global_ini_params.get_output_dir();
     const int&     mbc      = global_ini_params.get_mbc();
 
     // Dimension arrays
-    dTensor2      prim_vol(mx, my);
     dTensorBC3    qnew(mx, my, meqn, mbc);
     dTensorBC3    qold(mx, my, meqn, mbc);
     dTensorBC3    smax(mx, my, mdim, mbc);
