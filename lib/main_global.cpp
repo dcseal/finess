@@ -33,8 +33,8 @@ int main_global(int argc, char* argv[])
 
     // Call startscript (Default: scripts/startscript, otherwise it checks for
     // a local file called 'startscript' from the application's directory)
-    void RunStartScript(int ndims);
-    RunStartScript(NDIMS);
+    void RunStartScript();
+    RunStartScript();
 
     // Call the ``RunFinpack'' routine, which executes the code
     // Each dimension has its own version of this routine.

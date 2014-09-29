@@ -1,7 +1,6 @@
 #!/bin/sh
 
 outputdir="$1";
-dims="$2";
 
 # create output directory if it does not exist
 # TODO - this script isn't incredibly robust.  If two (or more) folders need to
