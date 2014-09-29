@@ -9,7 +9,7 @@
 //
 // That shell script creates the output directory and copies a few files in
 // the output folder
-void RunStartScript(int ndims )
+void RunStartScript(std::string parameters_ini_filename)
 {
     char command_str[1024];
 //    const char* get_outputdir();
@@ -20,27 +20,14 @@ void RunStartScript(int ndims )
     // and copy data files to output directory
     int numchars = snprintf(command_str,1024,
             "if test -f startscript && test -x startscript;\n"
-            "then ./startscript %s %d\n"
-            "else ${FINESS}/scripts/startscript %s %d\n"
-            "fi", output_dir.c_str(), ndims, output_dir.c_str(), ndims);
+            "then ./startscript %s %s\n"
+            "else ${FINESS}/scripts/startscript %s %s\n"
+            "fi", output_dir.c_str(),
+            parameters_ini_filename.c_str(),
+            output_dir.c_str(),
+            parameters_ini_filename.c_str());
     assert_lt(numchars,1023);
     assert_gt(numchars,0);
     int exit_status = system(command_str);
 }
 
-void RunStartScript(int ndims, const char* outputdir)
-{
-    char command_str[1024];
-
-    // run startscript
-    // to create output directory if it does not exist
-    // and copy data files to output directory
-    int numchars = snprintf(command_str,1024,
-            "if test -f startscript && test -x startscript;\n"
-            "then ./startscript %s %d\n"
-            "else ${FINESS}/scripts/startscript %s %d\n"
-            "fi", outputdir, ndims, outputdir, ndims);
-    assert_lt(numchars,1023);
-    assert_gt(numchars,0);
-    int exit_status = system(command_str);
-}

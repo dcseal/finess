@@ -1,3 +1,4 @@
+#include <string>
 #include <iostream>
 #include <iomanip>
 #include <stdlib.h>
@@ -26,15 +27,24 @@ int main_global(int argc, char* argv[])
     using std::scientific;
     using std::endl;
 
-    global_ini_params.init("parameters.ini");
+    string parameters_ini_filename;
+
+    parameters_ini_filename = 
+        argc == 1 ? "parameters.ini" : argv[1];
+       
+    cout << "Running with configuration file: "
+         << parameters_ini_filename
+         << endl;
+
+    global_ini_params.init(parameters_ini_filename);
 
     // Get current time
     double time1 = time(NULL);
 
     // Call startscript (Default: scripts/startscript, otherwise it checks for
     // a local file called 'startscript' from the application's directory)
-    void RunStartScript(int ndims);
-    RunStartScript(NDIMS);
+    void RunStartScript(string parameters_ini_filename);
+    RunStartScript(parameters_ini_filename);
 
     // Call the ``RunFinpack'' routine, which executes the code
     // Each dimension has its own version of this routine.

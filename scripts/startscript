@@ -1,7 +1,7 @@
 #!/bin/sh
 
 outputdir="$1";
-dims="$2";
+parameters_ini_filename="$2";
 
 # create output directory if it does not exist
 # TODO - this script isn't incredibly robust.  If two (or more) folders need to
@@ -27,8 +27,11 @@ fi
 if test -f mesh.dat; then
    morefiles="mesh.dat $morefiles";
 fi
-cp $morefiles parameters.ini $outputdir;
+cp $morefiles $parameters_ini_filename $outputdir;
+
+echo $parameters_ini_filename > $outputdir/parameters_ini_filename
 
 # copy information sufficient to reconstruct the
 # code used to generate the data
+git rev-parse HEAD > $outputdir/git_head
 make -s diff > $outputdir/git_diff

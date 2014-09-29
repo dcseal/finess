@@ -51,7 +51,7 @@ retags:
 tags: retags
 
 diff:
-	\git diff $(ALL_SOURCES)
+	\git diff HEAD -- $(ALL_SOURCES)
 
 ls:
 	ls $(ALL_SOURCES)
