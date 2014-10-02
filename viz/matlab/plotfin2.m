@@ -1,4 +1,4 @@
-function plotfin2(outputdir_in)
+function plotfin2(parameters_ini_filename_in)
 %PLOTFIN2     Generic 2D plotting routine for FINESS.
 %
 % PLOTFIN2(outputdir_in) is the main plotting
@@ -15,14 +15,25 @@ function plotfin2(outputdir_in)
 %
 % See also: plotfin1
 
+  
+
 
   % Parse the input parameters (set default values for points_per_dir,
   % point_type and output folder name:
-  global outputdir
   if(nargin<1)
-    outputdir = 'output';
+    parameters_ini_filename = 'parameters.ini';
   else
-    outputdir = outputdir_in;
+    parameters_ini_filename = parameters_ini_filename_in;
+  end
+ 
+  global INI;
+  INI = ini2struct(parameters_ini_filename);
+  
+  global outputdir;
+  if(isfield(INI.finess, 'output_dir'))
+    outputdir = INI.finess.output_dir;
+  else
+    outputdir = 'output';
   end
 
   % hard-coded values here.  TODO - these should be removed.
@@ -33,23 +44,14 @@ function plotfin2(outputdir_in)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  FIND OUT IF CARTESIAN OR UNSTRUCTURED GRID
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fids  = fopen([outputdir,'/qhelp.dat'],'r');
-if fids==-1
-  error(['File  ',outputdir,'/qhelp.dat  not found.']);
-end
-ndims = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+
+ndims = sscanf(INI.finess.ndims, '%d');
+
 if (ndims~=2)
     error(['Incorrect dimension, ndims must be 2. ndims = ',num2str(ndims)]);
 end
-GridType = fscanf(fids,'%s',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+GridType = 'Cartesian'
 GridTmp = GridType(1:9);
-if (GridTmp=='Cartesian')
-  GridType='Cartesian   ';
-elseif (GridTmp=='Unstructu')
-  GridType='Unstructured';
-else
-  error(['Incorrect GridType, must be Cartesian or Unstructured. GridType = ',GridType]);
-end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 disp(' ');
@@ -62,22 +64,22 @@ disp(' ');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CARTESIAN plotting routine
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if (GridType=='Cartesian   ')
-    
-  meqn    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  maux    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  nplot   = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  meth1   = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  datafmt = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  %
-  mx      = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  my      = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  xlow    = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  xhigh   = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  ylow    = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  yhigh   = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  fclose(fids);
-  
+if (GridType=='Cartesian')
+
+  meqn = sscanf(INI.finess.meqn, '%d');
+  maux = sscanf(INI.finess.maux, '%d');
+  nplot = sscanf(INI.finess.nout, '%d');
+%  meth1 = seems unused
+  datafmt = 1
+  mx = sscanf(INI.grid.mx, '%d');
+  my = sscanf(INI.grid.my, '%d');
+  xlow = sscanf(INI.grid.xlow, '%e');
+  xhigh = sscanf(INI.grid.xhigh, '%e');
+  ylow = sscanf(INI.grid.ylow, '%e');
+  yhigh = sscanf(INI.grid.yhigh, '%e');
+
+
+ 
   % (Uniform) Grid information
   dx = (xhigh-xlow)/mx;
   dy = (yhigh-ylow)/my;

@@ -25,13 +25,7 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  % gas constant
-  fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
-  if fids==-1
-    error(['File  ',outputdir,'/eulerhelp.dat  not found.']);
-  end
-  gamma_gas  = fscanf(fids,'%e',1);
-  fclose(fids);
+  gamma_gas = sscanf(INI.euler.gamma, '%e')
   
   % Exact solution:
   %    rho = 1 + 0.2*sin( pi*(x+y) - pi*(u+v)*time )
@@ -42,7 +36,7 @@
   
   figure(1);
   clf;
-  pcolor(xl,yl,qaug(:,:,m));
+  %pcolor(xl,yl,qaug(:,:,m));
   shading flat;
   yrbcolormap
   axis on; box on; grid off;
