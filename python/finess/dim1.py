@@ -1,4 +1,4 @@
-"""Provides functions for dealing with output of 2D apps.
+"""Provides functions for dealing with output of 1D apps.
 """
 
 def read_qa(params, i_output):
