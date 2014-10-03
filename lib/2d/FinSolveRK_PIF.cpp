@@ -41,17 +41,17 @@ void ConstructL(
 using namespace std;
 
 void DogSolveUser( 
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+    dTensorBC3& aux, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[] )
 {
     void FinSolveRK_PIF(
-        dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+        dTensorBC3& aux, dTensorBC3& qnew, 
         dTensorBC3& smax,
         double tstart, double tend, int nv,
         double dtv[], const double cflv[] );
-    FinSolveRK_PIF( aux, qold, qnew, smax, tstart, tend, nv,
+    FinSolveRK_PIF( aux, qnew, smax, tstart, tend, nv,
         dtv, cflv );
 }
 
@@ -83,7 +83,7 @@ void DogSolveUser(
 //
 ///////////////////////////////////////////////////////////////////////////////
 void FinSolveRK_PIF(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+    dTensorBC3& aux, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[] )
@@ -102,15 +102,16 @@ void FinSolveRK_PIF(
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
 
-    const int mx        = qold.getsize(1);
-    const int my        = qold.getsize(2);
-    const int meqn      = qold.getsize(3);
+    const int mx        = qnew.getsize(1);
+    const int my        = qnew.getsize(2);
+    const int meqn      = qnew.getsize(3);
     const int maux      = aux.getsize(2);
     const int mbc       = qnew.getmbc();
 
 
     // Allocate storage for this solver
-    dTensorBC3 qstar(mx, my, meqn, mbc);
+    dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps
+    dTensorBC3 qstar(mx, my, meqn, mbc);     // Intermediate stage value 
 
     // Flux function (from the PDE).  These are used to construct a
     // time-averaged flux function.  In the future, a minimal storage method

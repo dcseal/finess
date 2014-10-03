@@ -60,7 +60,6 @@ int RunFinpack( )
 
     // Dimension arrays
     dTensorBC3    qnew(mx, my, meqn, mbc);
-    dTensorBC3    qold(mx, my, meqn, mbc);
     dTensorBC3    smax(mx, my, mdim, mbc);
     dTensorBC3    aux (mx, my, iMax(maux, 1), mbc);
 
@@ -72,7 +71,6 @@ int RunFinpack( )
     // Set initial data on computational grid
     // Set values and apply L2-projection
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
-    qold.copyfrom(qnew);
 
     // Run AfterQinit to set any necessary variables
     AfterQinit( aux, qnew);
@@ -97,25 +95,25 @@ int RunFinpack( )
         if (time_stepping_method == IniParams::TimeSteppingMethod::RK)
         {  
             // Runge-Kutta time-stepping scheme
-            FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
+            FinSolveRK( aux, qnew, smax, tstart, tend, 
                     nv, dtv, cflv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
             // User-defined time-stepping scheme
-            FinSolveLxW(aux, qold, qnew, smax, tstart, tend, 
+            FinSolveLxW(aux, qnew, smax, tstart, tend, 
                     nv, dtv, cflv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
         {
             // User-defined time-stepping scheme
-            FinSolveMD(aux, qold, qnew, smax, tstart, tend, 
+            FinSolveMD(aux, qnew, smax, tstart, tend, 
                     nv, dtv, cflv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
-            DogSolveUser(  aux, qold, qnew, smax, tstart, tend, 
+            DogSolveUser(  aux, qnew, smax, tstart, tend, 
                     nv, dtv, cflv );
         }
         else

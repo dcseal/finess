@@ -31,7 +31,7 @@ void ConstructIntegratedR( double dt,
 using namespace std;
 
 void FinSolveMD(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+    dTensorBC3& aux, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[] )
@@ -59,10 +59,10 @@ void FinSolveMD(
     const int maux   = global_ini_params.get_maux();
 
     // Total number of entries in the vector:
-    const int numel = qold.numel();
+    const int numel = qnew.numel();
 
     // Allocate storage for this solver
-
+    dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps
     dTensorBC3 auxstar(mx, my, maux, mbc);   // right hand side (for Euler steps)
     dTensorBC3   qstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
     dTensorBC3   Lstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
@@ -98,7 +98,6 @@ void FinSolveMD(
         }        
 
         // copy qnew into qold
-        // CopyQ(qnew, qold);
         qold.copyfrom( qnew );
         qstar.copyfrom( qnew );
 
@@ -287,7 +286,6 @@ void FinSolveMD(
                 }
 
                 // copy qold into qnew
-                // CopyQ(qold, qnew);
                 qnew.copyfrom( qold  );
             }
 

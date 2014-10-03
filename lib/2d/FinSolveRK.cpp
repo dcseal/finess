@@ -10,7 +10,7 @@
 using namespace std;
 
 void FinSolveRK(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+    dTensorBC3& aux, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[] )
@@ -40,16 +40,17 @@ void FinSolveRK(
     const int maux   = global_ini_params.get_maux();
 
     // Allocate storage for this solver
-    dTensorBC3   qstar(mx, my, meqn, mbc);
+    dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps
+    dTensorBC3   qstar(mx, my, meqn, mbc);   // intermediate stage
     dTensorBC3 auxstar(mx, my, maux, mbc);
-    dTensorBC3   Lstar(mx, my, meqn, mbc);
+    dTensorBC3   Lstar(mx, my, meqn, mbc);   // Right hand side of ODE
     dTensorBC3    Lold(mx, my, meqn, mbc);
-    dTensorBC3      q1(mx, my, meqn, mbc);
-    dTensorBC3      q2(mx, my, meqn, mbc);
+    dTensorBC3      q1(mx, my, meqn, mbc);   // intermediate stages
+    dTensorBC3      q2(mx, my, meqn, mbc); 
 
     // Set initialize qstar and auxstar values
     // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    qstar.copyfrom( qold   );
+    qstar.copyfrom( qnew );
     if( maux > 0 )
     { auxstar.copyfrom( aux  ); }
 

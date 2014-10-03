@@ -13,7 +13,7 @@
 using namespace std;
 
 void FinSolveLxW(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+    dTensorBC3& aux, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[] )
@@ -41,10 +41,10 @@ void FinSolveLxW(
     const int maux   = global_ini_params.get_maux();
 
     // Total number of entries in the vector:
-    const int numel = qold.numel();
+    const int numel = qnew.numel();
 
     // Allocate storage for this solver
-
+    dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps
     dTensorBC3 auxstar(mx, my, maux, mbc);   // right hand side (for Euler steps)
     dTensorBC3   qstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
     dTensorBC3   Lstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
@@ -79,7 +79,6 @@ void FinSolveLxW(
         }        
 
         // copy qnew into qold
-        // CopyQ(qnew, qold);
         qold.copyfrom( qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition

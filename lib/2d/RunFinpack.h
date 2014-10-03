@@ -15,25 +15,25 @@ void AfterQinit(dTensorBC3& aux, dTensorBC3& q);
 void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, double t );
 
 void FinSolveRK(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+    dTensorBC3& aux, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[] );
 
 void FinSolveLxW(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+    dTensorBC3& aux, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[] );
 
 void FinSolveMD(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
+    dTensorBC3& aux, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
     double dtv[], const double cflv[] );
 
 void DogSolveUser(
-        dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew,
+        dTensorBC3& aux, dTensorBC3& qnew,
         dTensorBC3& smax,
         double tstart, double tend,int nv, 
         double dtv[], const double cflv[] );
