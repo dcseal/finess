@@ -13,23 +13,23 @@ void EulerStep(const double& dt,
         dTensorBC2& qnew)
 {
 
-    void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
-    void ConstructL( const dTensorBC2& aux, const dTensorBC2& q,
-            dTensorBC2& Lstar, dTensorBC1& smax);
-    void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+//  void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+//  void ConstructL( const dTensorBC2& aux, const dTensorBC2& q,
+//          dTensorBC2& Lstar, dTensorBC1& smax);
+//  void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
 
     // Do all the stuff necessary for taking an euler step,
     // then take an euler step of length dt
-    BeforeStep(dt, aux, qin);
-    ConstructL(aux, qin, Lrhs, smax);
-    const int numel = qnew.numel();
-#pragma omp parallel for
-    for( int k=0; k < numel; k++ )
-    {
-        double tmp = qin.vget(k) + dt*Lrhs.vget(k);
-        qnew.vset( k, tmp );
-    }
-    AfterStep(dt,aux,qnew);
+//  BeforeStep(dt, Qin);
+//  ConstructL(Qin, Lrhs, smax);
+//  const int numel = qnew.numel();
+//  #pragma omp parallel for
+//  for( int k=0; k < numel; k++ )
+//  {
+//      double tmp = qin.vget(k) + dt*Lrhs.vget(k);
+//      qnew.vset( k, tmp );
+//  }
+//  AfterStep(dt, Qout );
 
 }
 

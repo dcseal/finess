@@ -5,6 +5,7 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "ConstructL.h"
+#include "StateVars.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -12,12 +13,11 @@
 //
 // It is expected that the user sets the boundary conditions before calling this
 // routine.
-void ConstructL(
-        const dTensorBC2& aux,
-        const dTensorBC2& q,
-        dTensorBC2& Lstar,
-        dTensorBC1& smax)
+void ConstructL( const StateVars& Q, dTensorBC2& Lstar, dTensorBC1& smax)
 {
+
+    const dTensorBC2&    q = Q.const_ref_q  ();
+    const dTensorBC2&  aux = Q.const_ref_aux();
 
     // Parameters for the current grid (could also use dogParams here)
     const int     mx = q.getsize(1);

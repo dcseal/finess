@@ -15,6 +15,8 @@ void FinSolveLxW( StateVars& Qstate, double tend, double dtv[] )
     dTensorBC2& qnew = Qstate.ref_q  ();
     dTensorBC2&  aux = Qstate.ref_aux();
 
+/*
+
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
 
@@ -163,4 +165,5 @@ void FinSolveLxW( StateVars& Qstate, double tend, double dtv[] )
     // set initial time step for next call to DogSolve:
     dtv[1] = dt;
 
+*/
 }

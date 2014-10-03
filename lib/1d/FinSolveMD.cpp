@@ -76,6 +76,7 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
     dTensorBC2& qnew = Qstate.ref_q  ();
     dTensorBC2&  aux = Qstate.ref_aux();
 
+/*
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
 
@@ -333,4 +334,5 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
     // set initial time step for next call to DogSolve
     dtv[1] = dt;
 
+*/
 }

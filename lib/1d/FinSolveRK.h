@@ -5,7 +5,7 @@
 
 // ------------------------------------------------------------
 // Function definitions
-void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
+void SetBndValues( StateVars& Q );
 void CopyQ(const dTensorBC2&, dTensorBC2&);
 void ConSoln( const StateVars& Qstate );
 
@@ -15,11 +15,9 @@ void ConSoln( const StateVars& Qstate );
 
 // These four functions get called in the following order for each stage in
 // the Runge-Kutta method:
-void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
-void ConstructL( const dTensorBC2& aux, const dTensorBC2& q,
-        dTensorBC2& Lstar, dTensorBC1& smax);
-void ConstructL_NOC( const dTensorBC2& aux, const dTensorBC2& q,
-        dTensorBC2& Lstar, dTensorBC1& smax);
+void BeforeStep(double dt, StateVars& Q );
+void ConstructL( const StateVars& Q, dTensorBC2& Lstar, dTensorBC1& smax);
+void ConstructL_NOC( const StateVars& Q, dTensorBC2& Lstar, dTensorBC1& smax);
 
 // orders 1-4 time stepping:
 void UpdateSoln(double alpha1, double alpha2, double beta, double dt, 
@@ -32,19 +30,16 @@ void UpdateSoln(
     const dTensorBC2& aux,
     const dTensorBC2& qold, const dTensorBC2& Lstar,
     dTensorBC2& q1, dTensorBC2& q2);
-void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+void AfterStep(double dt, StateVars& Q );
 
 double GetCFL(double dt, double dtmax,
         const dTensorBC2& aux,
         const dTensorBC1& smax);
 
-// TODO - add these calls in later
 void BeforeFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
+    const StateVars& Qold, StateVars& Qnew );
 void AfterFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
+    const StateVars& Qold, StateVars& Qnew );
 
 // ------------------------------------------------------------
 // Runge-Kutta information

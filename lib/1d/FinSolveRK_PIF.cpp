@@ -77,6 +77,7 @@ void FinSolveRK_PIF( StateVars& Qstate, double tend, double dtv[] )
     dTensorBC2& qnew = Qstate.ref_q  ();
     dTensorBC2&  aux = Qstate.ref_aux();
 
+/*
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
     RKinfo rk;
@@ -289,6 +290,8 @@ k4.copyfrom( Lstar );
     dtv[1] = dt;
 
     DeleteRKInfo(rk);
+
+*/
 
 }
 
