@@ -3,23 +3,16 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "RKinfo.h"
-
-// If we want to use DogSolver from the top-level library, this needs to be
-// written:
-// #include "DogState1d.h"  
 
 using namespace std;
 
-void DogSolveUser(
-        dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew,
-        dTensorBC3& smax,
-        double tstart, double tend,int nv, 
-        double dtv[], const double cflv[],string outputdir)
+void FinSolveUser(
+        dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
+        double tend, double dtv[] )
 {
 
 
-/* TODO - write a template here.  (-DS)
+/* TODO - write a template here, and pull it from FinSolveRK.  (-DS)
     // ------------------------------------------------------------
     // Function definitions
     void CopyQ(const dTensorBC3&,dTensorBC3&);

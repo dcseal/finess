@@ -95,26 +95,22 @@ int RunFinpack( )
         if (time_stepping_method == IniParams::TimeSteppingMethod::RK)
         {  
             // Runge-Kutta time-stepping scheme
-            FinSolveRK( aux, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv );
+            FinSolveRK( aux, qnew, tstart, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
-            // User-defined time-stepping scheme
-            FinSolveLxW(aux, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv );
+            // Lax-Wendroff time stepping
+            FinSolveLxW(aux, qnew, tstart, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
         {
-            // User-defined time-stepping scheme
-            FinSolveMD(aux, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv );
+            // Multiderivative time stepping
+            FinSolveMD(aux, qnew, tstart, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
-            DogSolveUser(  aux, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv );
+            FinSolveUser(aux, qnew, tstart, tend, dtv );
         }
         else
         {

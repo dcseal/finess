@@ -2,7 +2,7 @@
 #define _RUN_FINESS_H_
 
 // ------------------------------------------------------------
-// Functions use in RunDogpack.cpp
+// Functions use in RunFinpack.cpp
 
 void Output( const dTensorBC3& aux, const dTensorBC3& q, double t, int nframe );
 
@@ -15,28 +15,20 @@ void AfterQinit(dTensorBC3& aux, dTensorBC3& q);
 void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, double t );
 
 void FinSolveRK(
-    dTensorBC3& aux, dTensorBC3& qnew, 
-    dTensorBC3& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[] );
+    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
+    double tend, double dtv[] );
 
 void FinSolveLxW(
-    dTensorBC3& aux, dTensorBC3& qnew, 
-    dTensorBC3& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[] );
+    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
+    double tend, double dtv[] );
 
 void FinSolveMD(
-    dTensorBC3& aux, dTensorBC3& qnew, 
-    dTensorBC3& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[] );
+    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
+    double tend, double dtv[] );
 
-void DogSolveUser(
-        dTensorBC3& aux, dTensorBC3& qnew,
-        dTensorBC3& smax,
-        double tstart, double tend,int nv, 
-        double dtv[], const double cflv[] );
+void FinSolveUser(
+        dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
+        double tend, double dtv[] );
 
 void SampleFunction( 
     int istart, int iend,
