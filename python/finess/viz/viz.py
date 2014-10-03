@@ -70,7 +70,8 @@ def ask_which_component(params):
     try:
         component = int(component_str)
     except ValueError:
-        raise_error(component_str, meqn)
+        print "Unable to interpret input as an integer, plotting Component 1 by default."
+        component = 1
 
     if component >= 1 and component <= meqn:
         return component
