@@ -8,14 +8,16 @@
 #include "IniParams.h"
 #include "IniParams.h"
 #include "dog_math.h"
+#include "StateVars.h"
 
 using namespace std;
 
-void ConSoln( 
-    const dTensorBC2& aux,
-    const dTensorBC2& q, 
-    double t, string outputdir)
+void ConSoln( const StateVars& Qstate )
 {
+
+    const dTensorBC2& q   = Qstate.const_ref_q  ();
+    const dTensorBC2& aux = Qstate.const_ref_aux();
+    const double        t = Qstate.get_t();
 
     const int     mx = global_ini_params.get_mx();
     const int   meqn = global_ini_params.get_meqn();
@@ -26,6 +28,7 @@ void ConSoln(
     const double xlow = global_ini_params.get_xlow();
     const double sqdx = sqrt(dx);
 
+    string outputdir = global_ini_params.get_output_dir();
     string fname1 = outputdir+"/conservation.dat";
     string fname2 = outputdir+"/total-variation.dat";
 

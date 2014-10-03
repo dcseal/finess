@@ -6,16 +6,17 @@
 #include <iomanip>
 #include "dogdefs.h"
 #include "IniParams.h"
+#include "StateVars.h"
 
 using namespace std;
 
-void Output(
-        const dTensorBC2& aux,
-        const dTensorBC2& q,
-        double t,
-        int nframe )
+void Output( const StateVars& Qstate, int nframe )
 
 {
+
+    const dTensorBC2& q   = Qstate.const_ref_q  ();
+    const dTensorBC2& aux = Qstate.const_ref_aux();
+    const double t        = Qstate.get_t();
 
     const int melems  = q.getsize(1);
     const int meqn    = q.getsize(2);
@@ -30,7 +31,7 @@ void Output(
     ofstream q_file(fname1.str().c_str(), ios::out );
 
     q_file << setprecision(16);
-    q_file << setw(24) << scientific << t << endl;
+    q_file << setw(24) << scientific << Qstate.get_t() << endl;
 
     // Output each coefficient
     for (int m=1; m<=meqn; m++)
@@ -57,12 +58,8 @@ void Output(
     }
     aux_file.close();
 
-    // Output additional information if needed - TODO reintroduce this call
-    void Output_Extra(
-            const dTensorBC2& aux,
-            const dTensorBC2& q,
-            double t,
-            int nframe );
-    Output_Extra(aux, q, t, nframe);
+    // Output additional information (if relinked)
+    void Output_Extra( const StateVars& Qstate, int nframe );
+    Output_Extra(Qstate, nframe );
 
 }

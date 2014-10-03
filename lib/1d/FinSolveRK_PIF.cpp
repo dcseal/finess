@@ -4,9 +4,9 @@
 #include "stdlib.h"
 #include "dogdefs.h"
 #include "RKinfo.h"
-#include "FinSolveRK.h"
 #include "ConstructL.h"
 #include "IniParams.h"
+#include "FinSolveRK.h"
 
 // Used for construcing the flux function
 void SampleFunction( 
@@ -38,15 +38,10 @@ void ConstructL(
 using namespace std;
 
 // Wrapper for RK-PIF solver
-void FinSolveUser( dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-    double tend, double dtv[] )
+void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
 {
-
-    void FinSolveRK_PIF(
-        dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-        double tend, double dtv[] );
-    FinSolveRK_PIF( aux, qnew, tstart, tend, dtv );
-
+    void FinSolveRK_PIF( StateVars& Qstate, double tend, double dtv[] );
+    FinSolveRK_PIF( Qstate, tend, dtv );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,10 +71,11 @@ void FinSolveUser( dTensorBC2& aux, dTensorBC2& qnew, double tstart,
 // WENO, together with the projection onto characteristic variables.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void FinSolveRK_PIF(
-    dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-    double tend, double dtv[] )
+void FinSolveRK_PIF( StateVars& Qstate, double tend, double dtv[] )
 {
+
+    dTensorBC2& qnew = Qstate.ref_q  ();
+    dTensorBC2&  aux = Qstate.ref_aux();
 
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
@@ -89,7 +85,7 @@ void FinSolveRK_PIF(
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
 
-    double t            = tstart;
+    double t            = Qstate.get_t();
     double dt           = dtv[1];   // Start with time step from last frame
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
@@ -285,7 +281,7 @@ k4.copyfrom( Lstar );
 
         // compute conservation and print to file
         SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t );
+        ConSoln( Qstate );
 
     } // End of while loop
 

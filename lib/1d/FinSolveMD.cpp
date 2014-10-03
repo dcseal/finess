@@ -4,15 +4,13 @@
 #include "stdlib.h"
 #include "dogdefs.h"
 #include "IniParams.h"
+#include "StateVars.h"
 
 using namespace std;
 
 // ------------------------------------------------------------
 // Function definitions
-void ConSoln( 
-    const dTensorBC2& aux,
-    const dTensorBC2& q, 
-    double t );
+void ConSoln( const StateVars& Qstate );
 
 // RK functions
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
@@ -72,15 +70,16 @@ void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
 // Two-stage multiderivative integration.  Currently, this routine supports
 // fourth and fifth-order integration.
 // ------------------------------------------------------------
-void FinSolveMD(
-        dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-        double tend, double dtv[] )
+void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
 {
+
+    dTensorBC2& qnew = Qstate.ref_q  ();
+    dTensorBC2&  aux = Qstate.ref_aux();
 
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
 
-    double t            = tstart;
+    double t            = Qstate.get_t();
     double dt           = dtv[1];   // Start with time step from last frame
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
@@ -327,7 +326,7 @@ void FinSolveMD(
 
         // compute conservation and print to file
         SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t );
+        ConSoln( Qstate );
 
     }
 

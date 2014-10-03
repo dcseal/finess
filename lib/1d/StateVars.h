@@ -2,9 +2,7 @@
 #define _STATEVARS_H_
 
 #include <algorithm>
-
 #include "tensors.h"
-
 
 class StateVars{
     private:
@@ -15,7 +13,7 @@ class StateVars{
         StateVars(double t, int mx, int meqn, int maux, int mbc ):            
             t(t),
             q(mx, meqn, mbc),
-            aux(mx, std::max(1, maux), mbc)
+            aux(mx, maux, mbc)
         { }
 
         double get_t() const{

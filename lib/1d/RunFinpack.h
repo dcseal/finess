@@ -1,41 +1,31 @@
 #ifndef _RUN_FINESS_H_
 #define _RUN_FINESS_H_
 
+#include "StateVars.h"
+
 // ------------------------------------------------------------
 // Functions use in RunDogpack.cpp
-void Output(const dTensorBC2& aux, const dTensorBC2& q,
-        double t, int nframe );
+void Output( const StateVars& Qstate, int nframe );
 
 void QinitFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals);
 void AuxFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& auxvals);
-void AfterQinit(dTensorBC2& aux, dTensorBC2& q);
+void AfterQinit( StateVars& Qstate );
 
-void ConSoln(
-    const dTensorBC2& aux,
-    const dTensorBC2& q, double t );
+void ConSoln( const StateVars& Qstate );
 
-void FinSolveRK(
-    dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-    double tend, double dtv[] );
+void FinSolveRK( StateVars& Qstate, double tend, double dtv[] );
 
-void FinSolveLxW(
-    dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-    double tend, double dtv[] );
+void FinSolveLxW( StateVars& Qstate, double tend, double dtv[] );
 
-void FinSolveMD(
-    dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-    double tend, double dtv[] );
+void FinSolveMD( StateVars& Qstate, double tend, double dtv[] );
 
-void FinSolveSDC(
-    dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-    double tend, double dtv[] );
+void FinSolveSDC( StateVars& Qstate, double tend, double dtv[] );
 
-void FinSolveUser(
-    dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-    double tend, double dtv[] );
+void FinSolveUser( StateVars& Qstate, double tend, double dtv[] );
 
+// TODO - replace qin, auxin with StateVars ...
 void SampleFunction( 
     int istart, int iend,
     const dTensorBC2& qin, 

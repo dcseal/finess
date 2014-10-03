@@ -37,6 +37,7 @@
 #include "dog_math.h"
 #include "dogdefs.h"
 #include "IniParams.h"            // accessors for the parameters.ini file
+#include "StateVars.h"
 #include "RunFinpack.h"           // Function declarations
 
 int RunFinpack( )
@@ -80,55 +81,55 @@ int RunFinpack( )
     const double&  dx       = global_ini_params.get_dx();
 
     // Dimension arrays
-    dTensorBC2    qnew(mx, meqn, mbc);
-    dTensorBC2    aux (mx, maux, mbc);
+    StateVars Qstate(0., mx, meqn, maux, mbc );
 
     // Set any auxiliary variables on computational grid
     // Set values and apply L2-projection
     if(maux >0)
-    {  SampleFunction(1-mbc, mx+mbc, qnew, aux, aux, &AuxFunc);  }
+    {  SampleFunction(1-mbc, mx+mbc, Qstate.ref_q(), Qstate.ref_aux(), Qstate.ref_aux(), &AuxFunc);  }
 
     // Set initial data on computational grid
     // Set values and apply L2-projection
-    SampleFunction( 1-mbc, mx+mbc, qnew, aux, qnew, &QinitFunc);
+    // SampleFunction( 1-mbc, mx+mbc, qnew, aux, qnew, &QinitFunc);
+    SampleFunction( 1-mbc, mx+mbc, Qstate.ref_q(), Qstate.ref_aux(), Qstate.ref_q(), &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
-    AfterQinit( aux, qnew);
+    AfterQinit( Qstate );
 
     // Output initial data to file
     // For each element, we output ``method[1]'' number of values
-    Output( aux, qnew, 0.0, 0 );
+    Output( Qstate, 0 );
 
     // Compute conservation and print to file
-    ConSoln( aux, qnew, 0.0 );
+    ConSoln( Qstate );
 
     // Main loop for time stepping
     double tstart = 0.0;
     double tend   = 0.0;
-    double dtout = tfinal/double(nout);    
+    double dtout  = tfinal/double(nout);    
     for (int n=1; n<=nout; n++)
     {        
-        tstart = tend;      
-        tend = tstart + dtout;
+        tstart = tend;      assert_lt( fabs(Qstate.get_t()-tend), 1e-13 );
+        tend   = tstart + dtout;
 
         // Solve hyperbolic system from tstart to tend
         if (time_stepping_method == IniParams::TimeSteppingMethod::RK)
         {  
             // Runge-Kutta time-stepping scheme
-            FinSolveRK( aux, qnew, tstart, tend, dtv );
+            FinSolveRK( Qstate, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
-            FinSolveLxW( aux, qnew, tstart, tend, dtv );
+            FinSolveLxW( Qstate, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
         {
-            FinSolveMD( aux, qnew, tstart, tend, dtv );
+            FinSolveMD( Qstate, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
-            FinSolveUser( aux, qnew, tstart, tend, dtv );
+            FinSolveUser( Qstate, tend, dtv );
         }
         else
         {
@@ -137,7 +138,7 @@ int RunFinpack( )
         }
 
         // Output data to file
-        Output( aux, qnew, tend, n );
+        Output( Qstate, n );
 
         // Done with solution from tstart to tend
         cout << setprecision(5);
@@ -156,12 +157,12 @@ void QinitFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals)
 {
     void QinitFunc(const dTensor1& xpts, dTensor2& qvals);
-    QinitFunc(xpts,qvals);
+    QinitFunc(xpts, qvals);
 }
 
 void AuxFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& auxvals)
 {
     void AuxFunc(const dTensor1& xpts, dTensor2& auxvals);
-    AuxFunc(xpts,auxvals);
+    AuxFunc(xpts, auxvals);
 }

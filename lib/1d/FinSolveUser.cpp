@@ -4,15 +4,13 @@
 #include "stdlib.h"
 #include "dogdefs.h"
 #include "IniParams.h"
+#include "StateVars.h"
 
 using namespace std;
 
 // ------------------------------------------------------------
 // Function definitions
-void ConSoln( 
-    const dTensorBC2& aux,
-    const dTensorBC2& q, 
-    double t );
+void ConSoln( const StateVars& Qstate );
 
 // RK functions
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
@@ -41,9 +39,7 @@ void AfterFullTimeStep(double dt,
 // 
 // This routine will terminate the code upon entrance.
 // ------------------------------------------------------------
-void FinSolveUser(
-        dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
-        double tend, double dtv[] )
+void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
 {
 
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
@@ -178,7 +174,7 @@ void FinSolveUser(
         }
 
         // compute conservation and print to file
-        ConSoln(aux, qnew, t );
+        ConSoln( Qstate );
 
     }
 

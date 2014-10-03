@@ -57,7 +57,7 @@ void FinSolveRK(
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;
     const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while( t<tend )
     {

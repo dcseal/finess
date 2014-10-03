@@ -1,13 +1,15 @@
 #ifndef _FINSOLVE_RK_
 #define _FINSOLVE_RK_
 
+#include "StateVars.h"
+
 // ------------------------------------------------------------
 // Function definitions
 void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
 
 void CopyQ(const dTensorBC2&, dTensorBC2&);
 
-void ConSoln( const dTensorBC2& aux, const dTensorBC2& q, double t );
+void ConSoln( const StateVars& Qstate );
 
 void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
 void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);

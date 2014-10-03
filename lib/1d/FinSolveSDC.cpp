@@ -6,34 +6,36 @@
 #include "IniParams.h"
 #include "RKinfo.h"
 #include "FinSolveRK.h"
+#include "StateVars.h"
+
+// This is a bit cleaner than putting all the pre and post steps in here
+void EulerStep(const double& dt, 
+        dTensorBC1& smax, dTensorBC2& Lrhs,
+        dTensorBC2& aux, dTensorBC2& qin, 
+        dTensorBC2& qnew);
+void TimeStepSDC(int method2, 
+        double t, 
+        double dt, 
+        dTensor1& dtvec, 
+        dTensor1& tvec);
+void ResInt(double dt, 
+        const dTensorBC2& L0, 
+        const dTensorBC2& L1, 
+        const dTensorBC2& L2, 
+        const dTensorBC2& L3, 
+        const dTensorBC2& L4, 
+        const dTensorBC2& L5,
+        dTensorBC3& ILout);
+
 
 using namespace std;
 
-void FinSolveSDC(
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-    dTensorBC1& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[] )
+void FinSolveSDC( StateVars& Qstate, double tend, double dtv[] )
 {
 
-    // This is a bit cleaner than putting all the pre and post steps in here
-    void EulerStep(const double& dt, 
-            dTensorBC1& smax, dTensorBC2& Lrhs,
-            dTensorBC2& aux, dTensorBC2& qin, 
-            dTensorBC2& qnew);
-    void TimeStepSDC(int method2, 
-            double t, 
-            double dt, 
-            dTensor1& dtvec, 
-            dTensor1& tvec);
-    void ResInt(double dt, 
-            const dTensorBC2& L0, 
-            const dTensorBC2& L1, 
-            const dTensorBC2& L2, 
-            const dTensorBC2& L3, 
-            const dTensorBC2& L4, 
-            const dTensorBC2& L5,
-            dTensorBC3& ILout);
+    dTensorBC2& qnew    = Qstate.ref_q  ();
+    dTensorBC2&  aux    = Qstate.ref_aux();
+    const double tstart = Qstate.get_t();
 
 //  void StepSDCRK2(const double& dt, const int method[], const dTensor2& node,
 //          dTensorBC1& smax, dTensorBC3& Lrhs, dTensorBC3& Lstar,
@@ -45,18 +47,23 @@ void FinSolveSDC(
 //          dTensorBC3& q2, int num, dTensorBC4& IL);
     // ------------------------------------------------------------
 
-    double t            = tstart;
+    const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+
+    double t            = Qstate.get_t();
     double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max   CFL number
-    double CFL_target   = cflv[2];  // target CFL number
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
 
-    const int mx    = qold.getsize(1);
-    const int meqn  = qold.getsize(2);
+    const int mx    = qnew.getsize(1);
+    const int meqn  = qnew.getsize(2);
     const int maux  = aux.getsize(2);
     const int mbc   = qnew.getmbc();
+
+    // Maximum wave speed
+    dTensorBC1    smax(mx, mbc);
+    dTensorBC2    qold(mx, meqn, mbc);      // needed for rejecting steps
 
     const int torder = global_ini_params.get_time_order();
 
@@ -104,7 +111,8 @@ void FinSolveSDC(
     // -----------------------
     // Main time-stepping loop
     // -----------------------
-    int n_step = 0;
+    int n_step   = 0;
+    const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while (t<tend)
     {
 
@@ -948,7 +956,7 @@ void FinSolveSDC(
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln(aux, qnew, t );
+        ConSoln( Qstate );
 
     } // End of while loop
 
