@@ -26,6 +26,7 @@ void UpdateSoln(double alpha1,double alpha2,double beta,double dt,
         const dTensorBC2& qstar, 
         const dTensorBC2& Lstar,
         dTensorBC2& qnew);
+
 // 5th-order time stepping (low-storage):
 void UpdateSoln(
     double g1,double g2, double g3, double delta, 

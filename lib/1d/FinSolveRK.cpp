@@ -10,10 +10,8 @@
 using namespace std;
 
 void FinSolveRK(
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-    dTensorBC1& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[] )
+    dTensorBC2& aux, dTensorBC2& qnew, double tstart, 
+    double tend, double dtv[] )
 {
 
     // Declare information about the Runge-Kutta method
@@ -21,20 +19,25 @@ void FinSolveRK(
     RKinfo rk;
     SetRKinfo(time_order, rk);
 
+    const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+
     double t            = tstart;
     double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max   CFL number
-    double CFL_target   = cflv[2];  // targe CFL number
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
 
-    const int mx = qold.getsize(1);
-    const int meqn   = qold.getsize(2);
+    const int mx     = qnew.getsize(1);
+    const int meqn   = qnew.getsize(2);
     const int maux   = aux.getsize(2);
-    const int mbc = qnew.getmbc();
+    const int mbc    = qnew.getmbc();
+
+    // Maximum wave speed
+    dTensorBC1    smax(mx, mbc);
 
     // Allocate storage for this solver
+    dTensorBC2    qold(mx, meqn, mbc);      // needed for rejecting steps
     dTensorBC2   qstar(mx, meqn, mbc);
     dTensorBC2 auxstar(mx, maux, mbc);
     dTensorBC2   Lstar(mx, meqn, mbc);
@@ -49,7 +52,8 @@ void FinSolveRK(
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;
+    const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while( t<tend )
     {
         // initialize time step

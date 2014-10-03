@@ -90,7 +90,7 @@ ConstructL           = $(LIB1D)/ConstructL
 ConstructLxWL        = $(LIB1D)/ConstructLxWL
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
-DogSolveUser         = $(LIB1D)/DogSolveUser
+FinSolveUser         = $(LIB1D)/FinSolveUser
 SampleFunction       = $(LIB1D)/SampleFunction
 GlobalWaveSpd        = $(LIB1D)/GlobalWaveSpd
 #FinSolveRK_PIF       = $(LIB1D)/FinSolveRK_PIF
@@ -125,7 +125,7 @@ LIB1D_OBJECTS = \
   $(FinSolveSDC).o \
   $(FinSolveLxW).o \
   $(FinSolveMD).o \
-  $(DogSolveUser).o \
+  $(FinSolveUser).o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
   $(ConstructIntegratedF).o \
@@ -162,7 +162,7 @@ LIB1D_SOURCES = \
   $(FinSolveSDC).cpp \
   $(FinSolveLxW).cpp \
   $(FinSolveMD).cpp \
-  $(DogSolveUser).cpp \
+  $(FinSolveUser).cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \
   $(ConstructIntegratedF).cpp \

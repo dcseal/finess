@@ -23,8 +23,8 @@
  * 8.) Run the main time stepping loop.  This consists of calling the
  * following two functions, once for each frame the user requested:
  *
- *     a.) Call DogSolve[TS-method], where TS-method is a valid time-stepping
- *     option.  (e.g. DogSolveRK, DogSolveSDC, DogSolveUser).
+ *     a.) Call FinSolve[TS-method], where TS-method is a valid time-stepping
+ *     option.  (e.g. FinSolveRK, FinSolveSDC, FinSolveUser).
  *
  *     b.) Call Output to print data to file
  *
@@ -71,31 +71,17 @@ int RunFinpack( )
     double dtv[2+1];
     dtv[1] = global_ini_params.get_initial_dt();
     dtv[2] = global_ini_params.get_max_dt();
-    const double nonsense_double = 0;
-    const double   cflv[]   = {nonsense_double, global_ini_params.get_max_cfl(), global_ini_params.get_desired_cfl()};
-    const int      nv       = global_ini_params.get_nv();
     const int&     meqn     = global_ini_params.get_meqn();
     const int&     maux     = global_ini_params.get_maux();
-    const int&     mdim     = global_ini_params.get_ndims();     assert_eq( mdim, 1 );
     const int&     mx       = global_ini_params.get_mx();
     const int&     mbc      = global_ini_params.get_mbc();
     const double&  xlow     = global_ini_params.get_xlow();
     const double&  xhigh    = global_ini_params.get_xhigh();
     const double&  dx       = global_ini_params.get_dx();
-//  const int&     mrestart = global_ini_params.get_mrestart();
-
-    // Output helpful stuff to qhelp.dat for plotting purposes
-    // This is deprecated (replaced with global IniParams)
-//  string qhelp;
-//  qhelp = outputdir+"/qhelp.dat";
-//  global_ini_params.write_qhelp(qhelp.c_str());
-//  global_ini_params.append_qhelp(qhelp.c_str());
 
     // Dimension arrays
     dTensorBC2    qnew(mx, meqn, mbc);
-    dTensorBC2    qold(mx, meqn, mbc);
-    dTensorBC1    smax(mx, mbc);
-    dTensorBC2    aux (mx, iMax(maux, 1), mbc);
+    dTensorBC2    aux (mx, maux, mbc);
 
     // Set any auxiliary variables on computational grid
     // Set values and apply L2-projection
@@ -129,32 +115,20 @@ int RunFinpack( )
         if (time_stepping_method == IniParams::TimeSteppingMethod::RK)
         {  
             // Runge-Kutta time-stepping scheme
-            FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv );
+            FinSolveRK( aux, qnew, tstart, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
-            FinSolveLxW( 
-                aux, qold, qnew, smax, tstart, tend, 
-                nv, dtv, cflv );
+            FinSolveLxW( aux, qnew, tstart, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
         {
-            FinSolveMD( 
-                aux, qold, qnew, smax, tstart, tend, 
-                nv, dtv, cflv );
+            FinSolveMD( aux, qnew, tstart, tend, dtv );
         }
-//      else if( time_stepping_method == "SDC")
-//      {
-//          FinSolveSDC( 
-//              aux, qold, qnew, smax, tstart, tend, 
-//              nv, dtv, cflv );
-//      }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
-            DogSolveUser( aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv );
+            FinSolveUser( aux, qnew, tstart, tend, dtv );
         }
         else
         {
