@@ -3,14 +3,9 @@
 
 // ------------------------------------------------------------
 // Function definitions
-void ConSoln( 
-    const dTensorBC3& aux,
-    const dTensorBC3& q, 
-    double t, std::string outputdir);
+void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, double t );
 
-double GetCFL(double dt, double dtmax,
-        const dTensorBC3& aux,
-        const dTensorBC3& smax);
+double GetCFL(double dt, double dtmax, const dTensorBC3& aux, const dTensorBC3& smax);
 
 // These four functions get called in the following order for each stage in
 // the Runge-Kutta method:

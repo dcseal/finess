@@ -12,9 +12,10 @@ void Output(
         const dTensorBC3& aux,
         const dTensorBC3& q,
         double t,
-        int nframe,
-        string outputdir)
+        int nframe )
 {
+
+    string outputdir = global_ini_params.get_output_dir();
 
     const int meqn    = global_ini_params.get_meqn();
     const int maux    = global_ini_params.get_maux();

@@ -9,9 +9,10 @@
 #include "IniParams.h"
 using namespace std;
 
-void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, 
-              double t, string outputdir)
+void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, double t )
 {
+
+    string outputdir = global_ini_params.get_output_dir();
 
     // Size of the solution
     const int     mx = global_ini_params.get_mx();

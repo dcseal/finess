@@ -44,15 +44,15 @@ void DogSolveUser(
     dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+    double dtv[], const double cflv[] )
 {
     void FinSolveRK_PIF(
         dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
         dTensorBC3& smax,
         double tstart, double tend, int nv,
-        double dtv[], const double cflv[], string outputdir);
+        double dtv[], const double cflv[] );
     FinSolveRK_PIF( aux, qold, qnew, smax, tstart, tend, nv,
-        dtv, cflv, outputdir);
+        dtv, cflv );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ void FinSolveRK_PIF(
     dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+    double dtv[], const double cflv[] )
 {
 
     // Declare information about the Runge-Kutta method
@@ -294,7 +294,7 @@ void FinSolveRK_PIF(
 
         // compute conservation and print to file
         SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t, outputdir);
+        ConSoln(aux, qnew, t );
 
     } // End of while loop
 

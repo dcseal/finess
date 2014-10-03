@@ -25,9 +25,6 @@ int RunFinpack( )
     using std::setw;
     using std::setprecision;
 
-// TODO - send this into later functions!
-string outputdir = global_ini_params.get_output_dir();
-
     // Output title information
     cout << endl;
     cout << "   ------------------------------------------------   " << endl;
@@ -82,10 +79,10 @@ string outputdir = global_ini_params.get_output_dir();
 
     // Output initial data to file
     // For each element, we output ``method[1]'' number of values
-    Output( aux, qnew, 0.0, 0, outputdir);
+    Output( aux, qnew, 0.0, 0 );
 
     // Compute conservation and print to file
-    ConSoln( aux, qnew, 0.0, outputdir);
+    ConSoln( aux, qnew, 0.0 );
 
     // Main loop for time stepping
     double tstart = 0.0;
@@ -101,25 +98,25 @@ string outputdir = global_ini_params.get_output_dir();
         {  
             // Runge-Kutta time-stepping scheme
             FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+                    nv, dtv, cflv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
             // User-defined time-stepping scheme
             FinSolveLxW(aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+                    nv, dtv, cflv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
         {
             // User-defined time-stepping scheme
             FinSolveMD(aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+                    nv, dtv, cflv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
             DogSolveUser(  aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+                    nv, dtv, cflv );
         }
         else
         {
@@ -128,7 +125,7 @@ string outputdir = global_ini_params.get_output_dir();
         }
 
         // Output data to file
-        Output( aux, qnew, tend, n, outputdir);
+        Output( aux, qnew, tend, n );
 
         // Done with solution from tstart to tend
         cout << setprecision(5);

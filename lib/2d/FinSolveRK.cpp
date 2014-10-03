@@ -13,7 +13,7 @@ void FinSolveRK(
     dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
     dTensorBC3& smax,
     double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+    double dtv[], const double cflv[] )
 {
 
     // Declare information about the Runge-Kutta method
@@ -314,7 +314,7 @@ void FinSolveRK(
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln( aux, qnew, t, outputdir);
+        ConSoln( aux, qnew, t );
 
     } // End of while loop
 
