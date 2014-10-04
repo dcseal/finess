@@ -9,10 +9,6 @@ void SetBndValues( StateVars& Q );
 void CopyQ(const dTensorBC2&, dTensorBC2&);
 void ConSoln( const StateVars& Qstate );
 
-// TODO - NEW FORMAT:
-//void SetBndValues( StateVars& Qstate );
-//void ConSoln( StateVars& Qstate );
-
 // These four functions get called in the following order for each stage in
 // the Runge-Kutta method:
 void BeforeStep(double dt, StateVars& Q );

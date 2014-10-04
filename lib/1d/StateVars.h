@@ -4,11 +4,9 @@
 #include <algorithm>
 #include "tensors.h"
 
+// This class holds the necessary information for defining all of the state
+// variables: ( t, q, aux ) for the 1D case.
 class StateVars{
-    private:
-        double t;
-        dTensorBC2 q;
-        dTensorBC2 aux;
     public:
         StateVars(double t, int mx, int meqn, int maux, int mbc ):            
             t(t),
@@ -39,6 +37,20 @@ class StateVars{
         dTensorBC2& ref_aux(){
             return this->aux;
         }
+
+        // Copy the contents from another state variable to this state
+        // variable
+        void copyfrom( const StateVars& Qin )
+        {
+            this->q.copyfrom( Qin.const_ref_q() );
+            this->aux.copyfrom( Qin.const_ref_aux() );
+            this->t = Qin.get_t();
+        }
+
+    private:
+        double t;
+        dTensorBC2 q;
+        dTensorBC2 aux;
 
 };
 

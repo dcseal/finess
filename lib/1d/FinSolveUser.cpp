@@ -49,10 +49,12 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
     double dtmin        = dt;               // Counters for max and min time step taken
     double dtmax        = dt;
 
+    // Grid information
     const int mx    = qnew.getsize(1);
     const int meqn  = qnew.getsize(2);
     const int maux  = aux.getsize(2);
     const int mbc   = qnew.getmbc();
+    const int numel  = qnew.numel();
 
     // Maximum wave speed
     dTensorBC1    smax(mx, mbc);
@@ -95,7 +97,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
         }        
 
         // copy qnew into qold in case of rejecting a time step
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while (m_accept==0)
