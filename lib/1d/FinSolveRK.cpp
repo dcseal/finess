@@ -21,12 +21,6 @@ using namespace std;
 //
 // The third-order method is the ubiquitous "TVD" method of Shu-Osher.
 //
-// The fourth-order method is pulled from
-//
-// "Highly Efficient Strong Stability Preserving Runge-Kutta Methods with
-// Low-Storage Implementations," David I. Ketcheson, SIAM Journal on Scientific 
-// Computing, 30(4):2113-2136 (2008)
-//
 // See also: FinSolveLxW, FinSolveMD, FinSolveSDC, and FinSolveUser other solvers.
 //           Time step information is saved in SetRKinfo.
 // -------------------------------------------------------------------------- //
@@ -74,12 +68,12 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2   Lstar(mx, meqn, mbc);
     dTensorBC2    Lold(mx, meqn, mbc);
 
-    // Local storage (for 4th-order time stepping)
-    StateVars    Q1( t, mx, meqn, maux, mbc ); Q1.set_t( Qnew.get_t() );
+    // Local storage (for 4th- and 5th-order time stepping)
+    StateVars    Q1( t, mx, meqn, maux, mbc );
     dTensorBC2&  q1   = Q1.ref_q();
     dTensorBC2&  aux1 = Q1.ref_aux();
 
-    StateVars    Q2( t, mx, meqn, maux, mbc ); Q2.set_t( Qnew.get_t() );
+    StateVars    Q2( t, mx, meqn, maux, mbc );
     dTensorBC2&  q2   = Q2.ref_q();
     dTensorBC2&  aux2 = Q2.ref_aux();
 
@@ -92,7 +86,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     {
         // initialize time step
         int m_accept = 0;      
-        n_step = n_step + 1;
+        n_step       = n_step + 1;
 
         // check if max number of time steps exceeded
         if( n_step>nv )
@@ -107,7 +101,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
         }        
 
         // copy qnew into qold
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
@@ -204,11 +198,16 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 
                     break;
 
-                case 4:  // Fourth order in time (10-stages)
+                case 4: // Fourth order in time (10-stages) See Pseudocode 3 in
+                        //
+                        // "Highly Efficient Strong Stability Preserving Runge-Kutta Methods with
+                        // Low-Storage Implementations," David I. Ketcheson, SIAM Journal on Scientific 
+                        // Computing, 30(4):2113-2136 (2008)
+                        //
 
                     // -----------------------------------------------
-                    q1.copyfrom( qnew );    Q1.set_t( Qnew.get_t() );
-                    q2.copyfrom( qnew );    Q2.set_t( Qnew.get_t() );
+                    Q1.copyfrom( Qnew );
+                    Q2.copyfrom( Qnew );
 
                     // Stage: 1,2,3,4, and 5
                     for (int s=1; s<=5; s++)
@@ -218,9 +217,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                         BeforeStep(dt, Q1);
                         ConstructL(Q1, Lstar, smax);
                         if (s==1)
-                        {  
-                            Lold.copyfrom( Lstar );
-                        }
+                        {  Lold.copyfrom( Lstar ); }
                         UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
                                 rk.beta->get(rk.mstage), dt, Q1, Lstar, Q1);
                         AfterStep(dt, Q1);
@@ -230,7 +227,6 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     for (int i=(1-mbc); i<=(mx+mbc); i++)
                     for (int m=1; m<=meqn; m++)
                     {
-                        // TODO - TIME NEEDS TO GET FIXED HERE TOO!
                         double tmp = (q2.get(i,m) + 9.0*q1.get(i,m))/25.0;
                         q2.set(i,m, tmp );
                         q1.set(i,m, 15.0*tmp - 5.0*q1.get(i,m) );
@@ -261,39 +257,37 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                             rk.beta->get(rk.mstage), dt, Q2, Lstar, Q1);
                     AfterStep(dt, Q1);
 
-                    qnew.copyfrom( q1 );
-                    Qnew.set_t( Q1.get_t() );
+                    Qnew.copyfrom( Q1 );
 
-                    // -----------------------------------------------          
                     break;
 
-                case 5:  // Fifth order in time (8-stages)
+                case 5: // Fifth order in time (8-stages)
+                        // TODO - what paper did these coefficients come from?
 
-                    // -----------------------------------------------
-                    // CopyQ(qnew,q1);
-                    q1.copyfrom( qnew );
-                    q2.setall(0.);
+//                  Q1.copyfrom( Qnew );   // we can remove two replacements
+                                           // here
+                    q2.setall(0.);      
+                    Q2.set_t( 0.);
 
                     for (int s=1; s<=8; s++)
                     {
                         rk.mstage = s;
-                        SetBndValues(Q1);
-                        BeforeStep(dt,Q1);
-                        ConstructL(Q1,Lstar,smax);
-                        if (s==1)
-                        {  CopyQ(Lstar,Lold);  }
+                        SetBndValues( Qnew );
+                        BeforeStep(dt, Qnew );
+                        ConstructL(Qnew, Lstar, smax);
+                        if( s==1 )
+                        {  Lold.copyfrom( Lstar ); }
 
-                        UpdateSoln(
-                                rk.gamma->get(1,s), 
-                                rk.gamma->get(2,s), 
-                                rk.gamma->get(3,s), 
-                                rk.delta->get(s), rk.beta->get(s),
-                                dt,  aux, qold, Lstar, q1, q2);
+                        UpdateSoln( rk.gamma->get(1,s), rk.gamma->get(2,s), rk.gamma->get(3,s), 
+                                rk.delta->get(s), rk.beta->get(s), dt,  Qold, Lstar, Qnew, Q2);
 
-                        AfterStep(dt, Q1);
+                        AfterStep(dt, Qnew);
                     }
-                    qnew.copyfrom( q1 );
-                    // -----------------------------------------------          
+
+// TODO - the time information for this isn't working correctly.
+//printf("Q, t1, t2 = %f, %f, %f \n", qnew.get(1,1), Qnew.get_t(), Q2.get_t() );
+//assert_lt( fabs( Qnew.get_t() - t ), 1e-8 );
+
                     break;
 
                 default:
@@ -302,6 +296,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     break;
 
             }  // End of switch statement over time-order
+
 
             // do any extra work
             AfterFullTimeStep(dt, Qold, Qnew );
@@ -346,7 +341,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                 }
 
                 // copy qold into qnew
-                qnew.copyfrom( qold );
+                Qnew.copyfrom( Qold );
             }
 
         } // End of m_accept loop
