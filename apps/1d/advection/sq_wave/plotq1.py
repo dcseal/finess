@@ -13,6 +13,8 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln):
         if( abs(x) < width ):
             qex[i] = 1.0
 
+    print(sum( qsoln[:,0] ) )
+
     plt.figure(1)
     plt.clf()
     plt.gca().set_aspect('auto')

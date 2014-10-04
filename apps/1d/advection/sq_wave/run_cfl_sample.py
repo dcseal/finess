@@ -39,11 +39,11 @@ xhigh =  1.0e0   ; right end point
 
 [weno]
 weno_version  = JS     ; type of WENO reconstruction (e.g. JS, FD, Z)
-epsilon       = 1e-29  ; regulization parameter  ( epsilon > 0.0        )
-alpha_scaling = 1.0    ; scaling parameter       ( alpha_scaling >= 1.0 )
+epsilon       = %(eps_s)e ; regulization parameter  ( epsilon > 0.0        )
+alpha_scaling = %(alp_s)f ; scaling parameter       ( alpha_scaling >= 1.0 )
 '''
     
-def main(cfl_vec, num_frames, ts_method, space_order, time_order, mx_start, n_start, t_final ):
+def main(cfl_vec, num_frames, ts_method, space_order, time_order, mx_start, n_start, t_final, eps ):
     '''Simple script for performing a CFL scan in order to compute total
     variation of the problem.
 '''
@@ -55,6 +55,8 @@ def main(cfl_vec, num_frames, ts_method, space_order, time_order, mx_start, n_st
     print(ts_method_str)
     print(cfl_vec)
     print(num_frames)
+
+    alp = 1.0
 
     dc = (cfl_vec[1] - cfl_vec[0])/(num_frames)
 
@@ -69,8 +71,7 @@ def main(cfl_vec, num_frames, ts_method, space_order, time_order, mx_start, n_st
                     'cfl' : cfl_vec[0] + i*dc,
                     'mx' : mx_start,
                     "i_now": (i+n_start),
-                    'ts_method_str' : ts_method_str,
-                    't_final' : t_final }
+                    'ts_method_str' : ts_method_str, 't_final' : t_final, 'eps_s' : eps, 'alp_s' : alp }
             print >> data, dogpack_data_template % my_dictionary
 
         # if you want to capture script output, do
@@ -146,6 +147,15 @@ def parse_input( help_message ):
 ''' Final time of the simulation.
 (default: 0.2 )''')
 
+    parser.add_argument('-e', '--epsilon',
+                        type = float,
+                        default = 1.0e-29,
+                        metavar = 'EPSILON',
+                        help =
+''' Value of epsilon that goes into the WENO reconstruction.
+(default: 1.0e-29. )''')
+
+
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -159,4 +169,4 @@ if __name__ == '__main__':
     print(args)
     print('')
 
-    main( args.CFL_RANGE, args.num_frames, args.t_stepper, args.order[0], args.order[1], args.mx, 0, args.t_final )
+    main( args.CFL_RANGE, args.num_frames, args.t_stepper, args.order[0], args.order[1], args.mx, 0, args.t_final, args.epsilon )
