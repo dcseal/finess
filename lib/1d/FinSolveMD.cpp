@@ -5,113 +5,59 @@
 #include "dogdefs.h"
 #include "IniParams.h"
 #include "StateVars.h"
+#include "FinSolveMD.h"
 
 using namespace std;
 
-// ------------------------------------------------------------
-// Function definitions
-void ConSoln( const StateVars& Qstate );
-
-// RK functions
-void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
-
-void ConstructLxWL(
-        const dTensorBC2& aux,
-        const dTensorBC2& q,
-        const dTensorBC2& F,  // <-- new term: integrated flux
-        dTensorBC2& Lstar,
-        dTensorBC1& smax);
-
-void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
-
-double GetCFL(double dt, double dtmax,
-        const dTensorBC2& aux,
-        const dTensorBC1& smax);
-
-void BeforeFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
-void AfterFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
-// ------------------------------------------------------------
-
-// ------------------------------------------------------------
-// Taylor series integration
-void ConstructIntegratedF( double dt, 
-    dTensorBC2& aux, dTensorBC2& q,
-    dTensorBC1& smax, dTensorBC2& F);
-// ------------------------------------------------------------
-
-// ------------------------------------------------------------
-// Multiderivative integration
+// -------------------------------------------------------------------------- //
+// Two-stage multiderivative time integration.  Currently, 
+// this routine supports a fourth and fifth-order method.
 //
-// These functions are for the two-stage methods.  One contains
-// two-derivatives, and the second contains three derivatives.
-void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1,
-    dTensorBC2& aux1, dTensorBC2& q1,
-    double alpha2, double beta2,
-    dTensorBC2& aux2, dTensorBC2& q2,
-    dTensorBC1& smax, dTensorBC2& F);
-
-void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1, double charlie1,
-    dTensorBC2& aux1, dTensorBC2& q1,
-    double alpha2, double beta2, double charlie2,
-    dTensorBC2& aux2, dTensorBC2& q2,
-    dTensorBC1& smax, dTensorBC2& F);
-// ------------------------------------------------------------
-
-
-void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
-
-// ------------------------------------------------------------
-// Two-stage multiderivative integration.  Currently, this routine supports
-// fourth and fifth-order integration.
-// ------------------------------------------------------------
-void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
+// One needs to have a Jacobian defined in DFlux in order to be able to use 
+// this routine.
+//
+// See also: FinSolveRK, FinSolveLxW, FinSolveSDC, and FinSolveUser other solvers.
+// -------------------------------------------------------------------------- //
+void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 {
 
-    dTensorBC2& qnew = Qstate.ref_q  ();
-    dTensorBC2&  aux = Qstate.ref_aux();
+    dTensorBC2& qnew = Qnew.ref_q  ();
+    dTensorBC2&  aux = Qnew.ref_aux();
 
-/*
-    const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
-    const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+    // Time stepping information
+    const double CFL_max        = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target     = global_ini_params.get_desired_cfl();  // target CFL number
+    double t                    = Qnew.get_t();
+    double dt                   = dtv[1];   // Start with time step from last frame
+    double cfl                  = 0.0;      // current CFL number
+    double dtmin                = dt;       // Counters for max and min time step taken
+    double dtmax                = dt;
 
-    double t            = Qstate.get_t();
-    double dt           = dtv[1];   // Start with time step from last frame
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
-    double dtmax        = dt;
+    // Grid information
+    const int mx     = qnew.getsize(1);
+    const int meqn   = qnew.getsize(2);
+    const int maux   = aux.getsize(2);
+    const int mbc    = qnew.getmbc();
+    const int numel  = qnew.numel();
 
-    const int mx    = qnew.getsize(1);
-    const int meqn  = qnew.getsize(2);
-    const int maux  = aux.getsize(2);
-    const int mbc   = qnew.getmbc();
-
+    // Maximum wave speed
     dTensorBC1    smax(mx, mbc);
 
-    // Total number of entries in the vector:
-    const int numel = qnew.numel();
+    // Needed for rejecting a time step
+    StateVars Qold( t, mx, meqn, maux, mbc );
+    dTensorBC2& qold   = Qold.ref_q();
+    dTensorBC2& auxold = Qold.ref_aux();
 
-    // Allocate storage for this solver
-    dTensorBC2   qold(mx, meqn, mbc);
-    dTensorBC2   qstar(mx, meqn, mbc);
+    // Intermediate storage
+    StateVars Qstar( t, mx, meqn, maux, mbc );
+    dTensorBC2& qstar   = Qstar.ref_q();
+    dTensorBC2& auxstar = Qstar.ref_aux();
 
-    // extra aux arrays
-    dTensorBC2  auxstar( mx, maux, mbc );
-
+    // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
 
     // Time-averaged flux function
     dTensorBC2   F(mx, meqn, mbc);
-
-    // Set initialize qstar and auxstar values
-    qstar.copyfrom( qnew );   
-    if( maux > 0 )
-    { auxstar.copyfrom( aux  ); }
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -136,12 +82,14 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
         }        
 
         // copy qnew into qold
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while (m_accept==0)
         {
+
             // set current time
+            Qnew.set_t( t );
             double told = t;
             if (told+dt > tend)
             { dt = tend - told; }
@@ -151,10 +99,10 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
             smax.setall(0.);
 
             // ----------------------------------------------------------------
-            BeforeFullTimeStep(dt, aux, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew );
 
-            SetBndValues(aux,      qnew);
-            SetBndValues(auxstar, qstar);
+            SetBndValues( Qnew  );
+            SetBndValues( Qstar );
 
             switch( global_ini_params.get_time_order() )
             {
@@ -186,8 +134,8 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
 //              // Perform any extra work required:
 //              AfterStep(dt, auxstar, qstar );
 
-//              SetBndValues(aux,      qnew);
-//              SetBndValues(auxstar, qstar);
+//              SetBndValues(Qnew);
+//              SetBndValues(Qstar);
 
                 // -- Stage 2 -- //
 //              ConstructIntegratedF( dt, 
@@ -209,12 +157,13 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
                     double tmp = qold.vget( k ) + dt*Lstar.vget(k);
                     qnew.vset(k, tmp );
                 }
+                Qnew.set_t( Qnew.get_t() + dt );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues( Qnew  );
+                SetBndValues( Qstar );
 
                 // Perform any extra work required:
-                AfterStep(dt, aux, qnew );
+                AfterStep(dt, Qnew );
 
                 break;
 
@@ -240,12 +189,13 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
                     double tmp = qnew.vget( k ) + (2.0/5.0*dt)*Lstar.vget(k);
                     qstar.vset(k, tmp );
                 }
+                Qstar.set_t( Qnew.get_t() + (2.0/5.0)*dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, auxstar, qstar );
+                AfterStep(dt, Qstar );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues( Qnew  );
+                SetBndValues( Qstar );
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
@@ -261,12 +211,13 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
                     double tmp = qold.vget( k ) + dt*Lstar.vget(k);
                     qnew.vset(k, tmp );
                 }
+                Qnew.set_t( Qold.get_t() + dt );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues( Qnew  );
+                SetBndValues( Qstar );
 
                 // Perform any extra work required:
-                AfterStep(dt, auxstar, qstar );
+                AfterStep(dt, Qstar );
 
                 break;
 
@@ -277,7 +228,7 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
             }
 
             // do any extra work      
-            AfterFullTimeStep(dt,aux,aux,qold,qnew);
+            AfterFullTimeStep(dt, Qold, Qnew );
 
             // compute cfl number
             cfl = GetCFL(dt,dtv[2],aux,smax);
@@ -320,19 +271,18 @@ void FinSolveMD( StateVars& Qstate, double tend, double dtv[] )
                 }
 
                 // copy qold into qnew
-                qnew.copyfrom( qold );
+                Qnew.copyfrom( Qold  );
             }
 
         }
 
         // compute conservation and print to file
-        SetBndValues(aux, qnew);
-        ConSoln( Qstate );
+        SetBndValues( Qnew );
+        ConSoln     ( Qnew );
 
     }
 
     // set initial time step for next call to DogSolve
     dtv[1] = dt;
 
-*/
 }

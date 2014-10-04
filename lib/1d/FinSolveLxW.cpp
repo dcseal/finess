@@ -9,6 +9,14 @@
 
 using namespace std;
 
+// -------------------------------------------------------------------------- //
+// Lax-Wendroff time integration.
+// this routine supports up to third-order in time.  
+//
+// One needs to define DFlux and D2FluxFunc in order to be able to use this routine.
+//
+// See also: FinSolveRK, FinSolveMD, FinSolveSDC, and FinSolveUser other solvers.
+// -------------------------------------------------------------------------- //
 void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 {
 
@@ -74,6 +82,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
         {
 
             // set current time
+            Qnew.set_t( t );
             double told = t;
             if (told+dt > tend)
             { dt = tend - told; }

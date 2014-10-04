@@ -94,6 +94,7 @@ def _parameters_accessors_checks():
                                                      {"Runge-Kutta": "RK",
                                                       "Lax-Wendroff": "LxW",
                                                       "Multiderivative": "MD",
+                                                      "SDC": "SDC",
                                                       "User-Defined": "USER_DEFINED"} ))
     parameters.append(time_stepping_method)
     

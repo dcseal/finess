@@ -3,8 +3,6 @@
 
 #include "StateVars.h"
 
-// ------------------------------------------------------------
-// Function definitions
 void SetBndValues( StateVars& Q );
 void ConSoln( const StateVars& Qstate );
 

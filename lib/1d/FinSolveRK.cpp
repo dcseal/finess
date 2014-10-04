@@ -10,6 +10,26 @@
 
 using namespace std;
 
+// -------------------------------------------------------------------------- //
+// Runge-Kutta time integration.
+//
+// This routine supports methods of orders 1--5.  Every order is a low-storage
+// method and methods of orders 1--4 are all SSP.
+//
+// First order method is forward Euler.  The second order method is Heun's
+// method.
+//
+// The third-order method is the ubiquitous "TVD" method of Shu-Osher.
+//
+// The fourth-order method is pulled from
+//
+// "Highly Efficient Strong Stability Preserving Runge-Kutta Methods with
+// Low-Storage Implementations," David I. Ketcheson, SIAM Journal on Scientific 
+// Computing, 30(4):2113-2136 (2008)
+//
+// See also: FinSolveLxW, FinSolveMD, FinSolveSDC, and FinSolveUser other solvers.
+//           Time step information is saved in SetRKinfo.
+// -------------------------------------------------------------------------- //
 void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 {
 
@@ -279,7 +299,6 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                 default:
 
                     printf("WARNING: torder = %d has not been implemented\n", time_order );
-
                     break;
 
             }  // End of switch statement over time-order

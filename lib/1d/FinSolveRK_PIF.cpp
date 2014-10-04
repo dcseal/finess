@@ -171,14 +171,14 @@ dTensorBC2 k4(mx, meqn, mbc);
                 case 4:
 
                     // Stage 1:
-                    SetBndValues(aux, qnew);
+                    SetBndValues(Qnew);
                     SampleFunction( 1-mbc, mx+mbc, qnew, aux, f1, &FluxFunc );
 
                     // Stage 2:
                     ConstructL_NOC(aux, qnew, Lstar, smax                    );
                     k1.copyfrom( Lstar );
                     t = EulerStep( tn, 0.5*dt, qold, Lstar, qstar            );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, qstar, aux, f2, &FluxFunc );
 
 
@@ -186,7 +186,7 @@ dTensorBC2 k4(mx, meqn, mbc);
                     ConstructL_NOC( aux, qstar, Lstar, smax       );
                     k2.copyfrom( Lstar );
                     t = EulerStep( tn, 0.5*dt, qold, Lstar, qstar );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, qstar, aux, f3, &FluxFunc );
 
 
@@ -194,7 +194,7 @@ dTensorBC2 k4(mx, meqn, mbc);
                     ConstructL_NOC( aux, qstar, Lstar, smax   );
                     k3.copyfrom( Lstar );
                     t = EulerStep( tn, dt, qold, Lstar, qstar );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, qstar, aux, f4, &FluxFunc );
 
 ConstructL_NOC( aux, qstar, Lstar, smax   );
@@ -215,10 +215,10 @@ k4.copyfrom( Lstar );
                     }
 
                     // WENO reconstruction, with projections (for final update)
-                    SetBndValues(aux, qnew);
+                    SetBndValues(Qnew);
                     ConstructL( aux, qnew, fstar, Lstar, smax );
                     t = EulerStep( tn, dt, qold, Lstar, qnew );
-                    SetBndValues(aux, qnew);
+                    SetBndValues(Qnew);
 
                     // ------------------------------------------------------------- //
                     // Finished taking a single RK4 time step
@@ -281,7 +281,7 @@ k4.copyfrom( Lstar );
         } // End of m_accept loop
 
         // compute conservation and print to file
-        SetBndValues(aux, qnew);
+        SetBndValues(Qnew);
         ConSoln( Qstate );
 
     } // End of while loop

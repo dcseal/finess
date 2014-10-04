@@ -120,11 +120,18 @@ int RunFinpack( )
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
+            // Lax-Wendroff time stepping
             FinSolveLxW( Qstate, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
-        {
-            FinSolveMD( Qstate, tend, dtv );
+        { 
+            // Multiderivative time-stepping
+            FinSolveMD( Qstate, tend, dtv ); 
+        }
+        else if (time_stepping_method == IniParams::TimeSteppingMethod::SDC)
+        { 
+            // Spectral deferred correction time-stepping
+            FinSolveSDC( Qstate, tend, dtv ); 
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {

@@ -1,12 +1,9 @@
 #include "constants.h"
 #include "tensors.h"
 
-void TimeStepSDC(int method2, 
-        double t, 
-        double dt, 
-        dTensor1& dtvec, 
-        dTensor1& tvec)
+void TimeStepSDC(int method2, double t, double dt, dTensor1& dtvec, dTensor1& tvec)
 {
+
     // --------------------------------------------------------------
     // Select Gauss-Lobatto points in time and
     // construct the initial right-hand side for SDC
@@ -68,5 +65,5 @@ void TimeStepSDC(int method2,
             break;
 
     }
-    // --------------------------------------------------------------
+
 }
