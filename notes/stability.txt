@@ -1,0 +1,4 @@
+Time-stepping method || Maximum stable CFL
+==================== || ==================
+
+* SSP-RK3            || 1.450
