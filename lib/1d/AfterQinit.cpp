@@ -3,13 +3,17 @@
 
 // *TEMPLATE*
 //
-// This function is called ONCE per simulation, after 
-// the initial conditions are set
-void AfterQinit( StateVars& Qstate )
+// This function is called ONCE per simulation, and immediately after 
+// the initial conditions are set.
+//
+// The default behaviour is to do nothing.
+void AfterQinit( StateVars& Qnew )
 {
 
-    dTensorBC2& q   = Qstate.ref_q();
-    dTensorBC2& aux = Qstate.ref_aux();
-    const double t        = Qstate.get_t();
+//  To access the state variables, uncomment the following:
+//
+//  dTensorBC2& q       = Qnew.ref_q();
+//  dTensorBC2& aux     = Qnew.ref_aux();
+//  const double t      = Qnew.get_t();
 
 }

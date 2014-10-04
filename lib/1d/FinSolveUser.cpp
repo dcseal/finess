@@ -10,27 +10,22 @@ using namespace std;
 
 // ------------------------------------------------------------
 // Function definitions
-void ConSoln( const StateVars& Qstate );
+void ConSoln( const StateVars& Q );
 
-// RK functions
-void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+// Stuff used for a single (Euler) step
+void SetBndValues( StateVars& Q );
+void BeforeStep(double dt, StateVars& Q );
 void ConstructL( 
         dTensorBC2& aux,
         dTensorBC2& q,      // setbndy conditions modifies q
         dTensorBC2& Lstar,
         dTensorBC1& smax);
-void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+void AfterStep(double dt, StateVars& Q );
 
-double GetCFL(double dt, double dtmax,
-        const dTensorBC2& aux,
-        const dTensorBC1& smax);
+double GetCFL(double dt, double dtmax, const dTensorBC2& aux, const dTensorBC1& smax);
 
-void BeforeFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
-void AfterFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
+void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew );
+void AfterFullTimeStep (double dt, const StateVars& Qold, StateVars& Qnew );
 // ------------------------------------------------------------
 
 
@@ -39,16 +34,19 @@ void AfterFullTimeStep(double dt,
 // 
 // This routine will terminate the code upon entrance.
 // ------------------------------------------------------------
-void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
+void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 {
 
+    dTensorBC2& qnew = Qnew.ref_q  ();
+    dTensorBC2&  aux = Qnew.ref_aux();
+
+    // Time stepping information
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
-
-    double t            = tstart;
-    double dt           = dtv[1];   // Start with time step from last frame
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
+    double t            = Qnew.get_t();     // Current time
+    double dt           = dtv[1];           // Start with time step from last frame
+    double cfl          = 0.0;              // current CFL number
+    double dtmin        = dt;               // Counters for max and min time step taken
     double dtmax        = dt;
 
     const int mx    = qnew.getsize(1);
@@ -59,18 +57,20 @@ void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
     // Maximum wave speed
     dTensorBC1    smax(mx, mbc);
 
-    // Allocate storage for this solver
-    dTensorBC2    qold(mx, meqn, mbc);      // needed for rejecting steps
-    dTensorBC2   qstar(mx, meqn, mbc);
-    dTensorBC2 auxstar(mx, maux, mbc);
-    dTensorBC2   Lstar(mx, meqn, mbc);
-    dTensorBC2    Lold(mx, meqn, mbc);
-    dTensorBC2      q1(mx, meqn, mbc);
-    dTensorBC2      q2(mx, meqn, mbc);
+    // Needed for rejecting a time step
+    StateVars Qold( t, mx, meqn, maux, mbc );
+    dTensorBC2& qold   = Qold.ref_q();
+    dTensorBC2& auxold = Qold.ref_aux();
 
-    // Set initialize qstar and auxstar values
-    qstar.copyfrom( qold );
-    auxstar.copyfrom( aux );
+    // Allocate storage for this solver
+
+    // Intermediate stages
+    StateVars Qstar( t, mx, meqn, maux, mbc );
+    dTensorBC2&   qstar = Qstar.ref_q();
+    dTensorBC2& auxstar = Qstar.ref_aux();
+
+    // Right side for a MOL formulation:
+    dTensorBC2   Lstar(mx, meqn, mbc);
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -94,13 +94,15 @@ void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
             exit(1);
         }        
 
-        // copy qnew into qold
+        // copy qnew into qold in case of rejecting a time step
         qold.copyfrom( qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while (m_accept==0)
         {
+
             // set current time
+            Qnew.set_t( t );
             double told = t;
             if (told+dt > tend)
             { dt = tend - told; }
@@ -109,7 +111,7 @@ void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
             // Set initial maximum wave speed to zero
             smax.setall(0.);
 
-//          BeforeFullTimeStep(dt, auxstar, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew);
             // ----------------------------------------------------------------
             //
             //    THIS IS WHERE THE USER-DEFINED TIME-STEPPING SCHEME
@@ -125,10 +127,10 @@ void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
             // ----------------------------------------------------------------
 
             // do any extra work      
-//          AfterFullTimeStep(dt,auxstar,aux,qold,qnew);
+            AfterFullTimeStep(dt, Qold, Qnew );
 
             // compute cfl number
-            cfl = GetCFL(dt,dtv[2],aux,smax);
+            cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
             if( global_ini_params.get_verbosity() )
@@ -153,11 +155,9 @@ void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
             }
 
             // see whether to accept or reject this step
-            if (cfl<=CFL_max)
-                // accept
+            if (cfl<=CFL_max) // accept
             { m_accept = 1; }
-            else 
-                //reject
+            else //reject
             {   
                 t = told;
                 if( global_ini_params.get_verbosity() )
@@ -168,13 +168,14 @@ void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
                 }
 
                 // copy qold into qnew
-                qold.copyfrom( qnew );
+                qnew.copyfrom( qold );
             }
 
         }
 
-        // compute conservation and print to file
-        ConSoln( Qstate );
+        // compute (scalar) conservation values and print to file
+        SetBndValues( Qnew );
+        ConSoln     ( Qnew );
 
     }
 

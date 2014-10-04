@@ -24,10 +24,11 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
 
-    double t            = Qnew.get_t();
-    double dt           = dtv[1];   // Start with time step from last frame
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
+
+    double t            = Qnew.get_t();     // Current time
+    double dt           = dtv[1];           // Start with time step from last frame
+    double cfl          = 0.0;              // current CFL number
+    double dtmin        = dt;               // Counters for max and min time step taken
     double dtmax        = dt;
     double tmp_t        = 0.;
 
@@ -39,7 +40,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     // Maximum wave speed
     dTensorBC1    smax(mx, mbc);
 
-    // In case we reject a time step
+    // Needed for rejecting a time step
     StateVars Qold( t, mx, meqn, maux, mbc );
     dTensorBC2& qold   = Qold.ref_q();
     dTensorBC2& auxold = Qold.ref_aux();
@@ -61,10 +62,6 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     StateVars    Q2( t, mx, meqn, maux, mbc ); Q2.set_t( Qnew.get_t() );
     dTensorBC2&  q2   = Q2.ref_q();
     dTensorBC2&  aux2 = Q2.ref_aux();
-
-    // Set initialize qstar and auxstar values
-    qstar.copyfrom( qold );
-    auxstar.copyfrom( aux );
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -287,7 +284,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 
             }  // End of switch statement over time-order
 
-            // do any extra work (TODO - add this in later)
+            // do any extra work
             AfterFullTimeStep(dt, Qold, Qnew );
 
             // compute cfl number
@@ -335,9 +332,9 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 
         } // End of m_accept loop
 
-        // compute conservation and print to file
+        // compute (scalar) conservation values and print to file
         SetBndValues( Qnew );
-        ConSoln( Qnew );
+        ConSoln     ( Qnew );
 
     } // End of while loop
 
