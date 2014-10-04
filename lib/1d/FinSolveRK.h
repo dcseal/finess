@@ -23,9 +23,9 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
 void UpdateSoln(
     double g1,double g2, double g3, double delta, 
     double beta,double dt,
-    const dTensorBC2& aux,
-    const dTensorBC2& qold, const dTensorBC2& Lstar,
-    dTensorBC2& q1, dTensorBC2& q2);
+    const StateVars& Qold,
+    const dTensorBC2& Lstar,
+    StateVars& Q1, StateVars& Q2);
 void AfterStep(double dt, StateVars& Q );
 
 double GetCFL(double dt, double dtmax,
