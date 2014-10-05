@@ -24,27 +24,19 @@ double EulerStep( double t, double dt,
     const dTensorBC3& qold, const dTensorBC3& Lstar,
     dTensorBC3& qnew );
 
-void ConstructL_NOC(
-        dTensorBC3& aux,
-        dTensorBC3& q,
-        dTensorBC3& Lstar,
-        dTensorBC3& smax);
+void ConstructL_NOC( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax);
 
-void ConstructL( 
-    dTensorBC3& aux, 
-    dTensorBC3& q, 
-    dTensorBC3& fstar, 
-    dTensorBC3& gstar, 
-    dTensorBC3& Lstar, 
-    dTensorBC3& smax );
-
-using namespace std;
+void ConstructL( StateVars& Q,
+    dTensorBC3& fstar, dTensorBC3& gstar, 
+    dTensorBC3& Lstar, dTensorBC3& smax );
 
 void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 {
     void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] );
     FinSolveRK_PIF( Qnew, tend, dtv );
 }
+
+using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -79,9 +71,6 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 /*
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
-    RKinfo rk;
-    SetRKinfo(time_order, rk);
-
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
 
@@ -172,28 +161,28 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
                 case 4:
 
                     // Stage 1:
-                    SetBndValues(aux, qnew);
+                    SetBndValues(Qnew);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, R1, &FluxFunc );
 
 
                     // Stage 2:
                     ConstructL_NOC(aux, qnew, k1, smax                    );
                     t = EulerStep( tn, 0.5*dt, qold, k1, qstar            );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R2, &FluxFunc );
 
 
                     // Stage 3:
                     ConstructL_NOC( aux, qstar, k2, smax       );
                     t = EulerStep( tn, 0.5*dt, qold, k2, qstar );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R3, &FluxFunc );
 
 
                     // Stage 4:
                     ConstructL_NOC( aux, qstar, k3, smax   );
                     t = EulerStep( tn, dt, qold, k3, qstar );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R4, &FluxFunc );
 
                     // Define right hand side value of q, for final WENO
@@ -219,10 +208,10 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
                     }
 
                     // WENO reconstruction, with projections (for final update)
-                    SetBndValues(aux, qnew);
-                    ConstructL( aux, qnew, fstar, gstar, k4, smax );
+                    SetBndValues(Qnew);
+                    ConstructL( Qnew, fstar, gstar, k4, smax );
                     t = EulerStep( tn, dt, qold, k4, qnew );
-                    SetBndValues(aux, qnew);
+                    SetBndValues(Qnew);
 
                     // ------------------------------------------------------------- //
                     // Finished taking a single RK4 time step
@@ -285,15 +274,13 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
         } // End of m_accept loop
 
         // compute conservation and print to file
-        SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t );
+        SetBndValues(Qnew);
+        ConSoln(Qnew, t );
 
     } // End of while loop
 
     // set initial time step for next call to FinSolve:
     dtv[1] = dt;
-
-    DeleteRKInfo(rk);
 
 */
 }
@@ -310,13 +297,15 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 //
 ///////////////////////////////////////////////////////////////////////////////
 void ConstructL(
-        dTensorBC3& aux,
-        dTensorBC3& q,          // SetBndValues modifies q and aux
+        StateVars& Q,
         dTensorBC3& fstar,      // Time-averaged flux
         dTensorBC3& gstar,      // Time-averaged flux
         dTensorBC3& Lstar,
         dTensorBC3& smax)
 {
+
+    dTensorBC3&    q = Q.ref_q  ();
+    dTensorBC3&  aux = Q.ref_aux();
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
@@ -723,17 +712,19 @@ void ConstructL(
 //
 ///////////////////////////////////////////////////////////////////////////////
 void ConstructL_NOC(
-        dTensorBC3& aux,
-        dTensorBC3& q,
+        StateVars& Q,
         dTensorBC3& Lstar,
         dTensorBC3& smax)
 { 
+
+    dTensorBC3&    q = Q.ref_q  ();
+    dTensorBC3&  aux = Q.ref_aux();
 
     // Boundary conditions
     //
     // @todo TODO - this should be moved before ConstructL is called, and q
     // and aux should be changed to const values (-DS)
-    SetBndValues( aux, q );
+    SetBndValues( Q );
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);

@@ -1,11 +1,16 @@
 #include "dogdefs.h"
+#include "StateVars.h"
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
 //      DOUBLE PERIODIC BOUNDARY CONDITIONS
 //
-void SetBndValues(dTensorBC3& aux, dTensorBC3& q)
+void SetBndValues( StateVars& Q )
 {
+
+    dTensorBC3&  q  = Q.ref_q  ();
+    dTensorBC3& aux = Q.ref_aux();
+    double t        = Q.get_t  ();
 
     const int mx   = q.getsize(1);
     const int my   = q.getsize(2);
