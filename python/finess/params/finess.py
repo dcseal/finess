@@ -84,8 +84,7 @@ def _parameters_accessors_checks():
     checks.append(CheckGreaterThan(nv, 0))
     
     
-    #TIGHTLY COUPLED with other C++ code
-    #Need to change the other C++ code (RunFinpack)
+    # Used in RunFinpack
     time_stepping_method = Parameter(variable_name = "time_stepping_method",
                                      section = "finess",
                                      name = "time_stepping_method",
