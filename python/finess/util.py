@@ -55,7 +55,7 @@ def check_all_apps_in_a_dir_compile(directory, show_error_message = True):
             else:
                 print "Build succeeded: " + app_dir
         except RuntimeError as e:
-            print e.value
+            print e.message
 
         print "=" * 40
 
