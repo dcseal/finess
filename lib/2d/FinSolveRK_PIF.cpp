@@ -20,9 +20,7 @@ void SampleFunction(
     void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&));
 void FluxFunc(const dTensor2& xpts, const dTensor2& Q,const dTensor2& Aux, dTensor3& flux);
 
-double EulerStep( double t, double dt, 
-    const dTensorBC3& qold, const dTensorBC3& Lstar,
-    dTensorBC3& qnew );
+void EulerStep( double dt, const StateVars& Qold, const dTensorBC3& Lstar, StateVars& Qnew );
 
 void ConstructL_NOC( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax);
 
@@ -68,29 +66,42 @@ using namespace std;
 void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 {
 
-/*
-    // Declare information about the Runge-Kutta method
-    const int time_order = global_ini_params.get_time_order();
+    dTensorBC3& qnew = Qnew.ref_q  ();
+    dTensorBC3&  aux = Qnew.ref_aux();
+
+    // Time stepping information
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+    double t                  = Qnew.get_t();
+    double dt                 = dtv[1];   // Start with time step from last frame
+    double cfl                = 0.0;      // current CFL number
+    double dtmin              = dt;       // Counters for max and min time step taken
+    double dtmax              = dt;
 
-    double t            = tstart;
-    double dt           = dtv[1];   // Start with time step from last frame
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
-    double dtmax        = dt;
-
+    // Grid information
     const int mx   = global_ini_params.get_mx();
     const int my   = global_ini_params.get_my();
     const int meqn = global_ini_params.get_meqn();
     const int maux = global_ini_params.get_maux();
     const int mbc  = global_ini_params.get_mbc();
+    const int numel = qnew.numel();
 
+    // Maximum wave speed at each flux interface value.  Note that the size of
+    // this tensor is one longer in each direction.
     dTensorBC3 smax( mx+1, my+1, 2, mbc );           
 
-    // Allocate storage for this solver
-    dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps
-    dTensorBC3 qstar(mx, my, meqn, mbc);     // Intermediate stage value 
+    // Needed for rejecting a time step
+    StateVars Qold( t, mx, my, meqn, maux, mbc );
+    dTensorBC3& qold   = Qold.ref_q();
+    dTensorBC3& auxold = Qold.ref_aux();
+    Qold.copyfrom( Qnew );
+
+    // Intermediate stages
+    StateVars Qstar( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&   qstar = Qstar.ref_q();
+    dTensorBC3& auxstar = Qstar.ref_aux();
+    Qstar.copyfrom( Qnew );
+
 
     // Flux function (from the PDE).  These are used to construct a
     // time-averaged flux function.  In the future, a minimal storage method
@@ -114,7 +125,7 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;                           // Number of time steps taken
     const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while( t<tend )
     {
@@ -125,23 +136,23 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
         // check if max number of time steps exceeded
         if( n_step > nv )
         {
-            cout << " Error in FinSolveRK.cpp: "<< 
-                " Exceeded allowed # of time steps " << endl;
-            cout << "    n_step = " << n_step << endl;
-            cout << "        nv = " << nv << endl;
-            cout << "Terminating program." << endl;
-            cout << endl;
+            printf(" Error in FinSolveRK.cpp: "         );
+            printf("Exceeded allowed # of time steps \n");
+            printf("    n_step = %d\n", n_step          );
+            printf("        nv = %d\n", nv              );
+            printf("Terminating program.\n"             );
             exit(1);
         }        
 
         // copy qnew into qold
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
         {
 
             // set current time
+            Qnew.set_t( t );
             double told = t;
             if (told+dt > tend)
             { dt = tend - told; }
@@ -152,10 +163,10 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
             smax.setall(0.);
 
             // do any extra work
-            BeforeFullTimeStep(dt, aux, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew);
 
             // Take a full time step of size dt
-            switch( time_order )
+            switch( global_ini_params.get_time_order() )
             {
 
                 case 4:
@@ -166,22 +177,22 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 
 
                     // Stage 2:
-                    ConstructL_NOC(Qnew, k1, smax                    );
-                    t = EulerStep( tn, 0.5*dt, qold, k1, qstar            );
+                    ConstructL_NOC(Qnew, k1, smax      );
+                    EulerStep( 0.5*dt, Qold, k1, Qstar );
                     SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R2, &FluxFunc );
 
 
                     // Stage 3:
-                    ConstructL_NOC( Qstar, k2, smax       );
-                    t = EulerStep( tn, 0.5*dt, qold, k2, qstar );
+                    ConstructL_NOC( Qstar, k2, smax    );
+                    EulerStep( 0.5*dt, Qold, k2, Qstar );
                     SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R3, &FluxFunc );
 
 
                     // Stage 4:
                     ConstructL_NOC( Qstar, k3, smax   );
-                    t = EulerStep( tn, dt, qold, k3, qstar );
+                    EulerStep( dt, Qold, k3, Qstar    );
                     SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R4, &FluxFunc );
 
@@ -208,9 +219,9 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
                     }
 
                     // WENO reconstruction, with projections (for final update)
-                    SetBndValues(Qnew);
+                    SetBndValues( Qnew  );  // TODO - what boundary values do we want to use here?
                     ConstructL( Qnew, fstar, gstar, k4, smax );
-                    t = EulerStep( tn, dt, qold, k4, qnew );
+                    EulerStep( dt, Qold, k4, Qnew );
                     SetBndValues(Qnew);
 
                     // ------------------------------------------------------------- //
@@ -221,7 +232,7 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 
                 default:
 
-                    printf("WARNING: torder = %d has not been implemented\n", time_order );
+                    printf("WARNING: torder = %d has not been implemented\n", global_ini_params.get_time_order() );
                     break;
 
             }  // End of switch statement over time-order
@@ -268,21 +279,19 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
                 }
 
                 // copy qold into qnew
-                qnew.copyfrom( qold );
+                Qnew.copyfrom( Qold );
             }
 
         } // End of m_accept loop
 
         // compute conservation and print to file
-        SetBndValues(Qnew);
-        ConSoln(Qnew, t );
+        ConSoln(Qnew);
 
     } // End of while loop
 
     // set initial time step for next call to FinSolve:
     dtv[1] = dt;
 
-*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -968,10 +977,14 @@ void ConstructL_NOC( StateVars& Q,
 }
 
 // Single Euler Step (on interior points only)
-double EulerStep( double t, double dt, 
-    const dTensorBC3& qold, const dTensorBC3& Lstar,
-    dTensorBC3& qnew )
+void EulerStep( double dt, const StateVars& Qold, const dTensorBC3& Lstar, StateVars& Qnew )
 {
+
+    const dTensorBC3& qold    = Qold.const_ref_q  ();
+    const dTensorBC3&  auxold = Qold.const_ref_aux();
+
+    dTensorBC3& qnew = Qnew.ref_q  ();
+    dTensorBC3&  aux = Qnew.ref_aux();
 
     const int mx      = qnew.getsize(1);     //number of elements in grid
     const int my      = qnew.getsize(2);     //number of elements in grid
@@ -986,8 +999,7 @@ double EulerStep( double t, double dt,
         double tmp = qold.get(i,j,m) + dt*Lstar.get(i,j,m);
         qnew.set(i,j,m, tmp);
     }
-
-    return t+dt;
+    Qnew.set_t( Qold.get_t() + dt );
 
 }
 
