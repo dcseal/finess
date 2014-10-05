@@ -166,21 +166,21 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 
 
                     // Stage 2:
-                    ConstructL_NOC(aux, qnew, k1, smax                    );
+                    ConstructL_NOC(Qnew, k1, smax                    );
                     t = EulerStep( tn, 0.5*dt, qold, k1, qstar            );
                     SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R2, &FluxFunc );
 
 
                     // Stage 3:
-                    ConstructL_NOC( aux, qstar, k2, smax       );
+                    ConstructL_NOC( Qstar, k2, smax       );
                     t = EulerStep( tn, 0.5*dt, qold, k2, qstar );
                     SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R3, &FluxFunc );
 
 
                     // Stage 4:
-                    ConstructL_NOC( aux, qstar, k3, smax   );
+                    ConstructL_NOC( Qstar, k3, smax   );
                     t = EulerStep( tn, dt, qold, k3, qstar );
                     SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R4, &FluxFunc );
@@ -707,24 +707,16 @@ void ConstructL(
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// A ConstructL routine designed intentionally wihtout performing
+// A ConstructL routine designed intentionally without performing
 // characteristic decomposition onto the primitive variables.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void ConstructL_NOC(
-        StateVars& Q,
-        dTensorBC3& Lstar,
-        dTensorBC3& smax)
+void ConstructL_NOC( StateVars& Q,
+        dTensorBC3& Lstar, dTensorBC3& smax)
 { 
 
     dTensorBC3&    q = Q.ref_q  ();
     dTensorBC3&  aux = Q.ref_aux();
-
-    // Boundary conditions
-    //
-    // @todo TODO - this should be moved before ConstructL is called, and q
-    // and aux should be changed to const values (-DS)
-    SetBndValues( Q );
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
