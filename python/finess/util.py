@@ -10,10 +10,12 @@ def run_command_in_dir(directory, command):
     import os, subprocess
     current_working_directory = os.getcwd()
     os.chdir(directory)
-    p = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-    stdin_output, stderr_output = p.communicate()
-    command_return_code = p.wait()
-    os.chdir(current_working_directory)
+    try:
+        p = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        stdin_output, stderr_output = p.communicate()
+        command_return_code = p.wait()
+    finally:
+        os.chdir(current_working_directory)
     return command_return_code, stdin_output, stderr_output
 
 def rebuild_app(app_dir, clean_command = 'make cleanall', build_command = 'make -j'):
