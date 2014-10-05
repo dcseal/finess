@@ -85,7 +85,8 @@ int RunFinpack( )
     double dtout  = tfinal/double(nout);    
     for (int n=1; n<=nout; n++)
     {        
-        tstart = tend;      
+
+        tstart = tend;      assert_lt( fabs(Qnew.get_t()-tend), 1e-13 );
         tend   = tstart + dtout;
 
         // Solve hyperbolic system from tstart to tend

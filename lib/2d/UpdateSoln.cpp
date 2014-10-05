@@ -23,6 +23,9 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
     dTensorBC3& auxnew  = Qnew.ref_aux();
     double tnew         = Qnew.get_t  ();
 
+    // Update time
+    Qnew.set_t( alpha1*tstar + alpha2*tnew + beta*dt );
+
     const int numel = qnew.numel();
 #pragma omp parallel for
     for( int k=0; k < numel; k++ )
@@ -30,6 +33,8 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
         double tmp = alpha1*qstar.vget(k)+alpha2*qnew.vget(k)+beta*dt*Lstar.vget(k);
         qnew.vset( k, tmp );
     }
+
+
 }
 
 // Update the solution using the constructed Lstar

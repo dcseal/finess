@@ -28,6 +28,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
+    double tmp_t        = 0.;       // used for fourth-order time stepping
 
     // Grid information
     const int mx   = global_ini_params.get_mx();
@@ -79,12 +80,11 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
         // check if max number of time steps exceeded
         if( n_step > nv )
         {
-            cout << " Error in FinSolveRK.cpp: "<< 
-                " Exceeded allowed # of time steps " << endl;
-            cout << "    n_step = " << n_step << endl;
-            cout << "        nv = " << nv << endl;
-            cout << "Terminating program." << endl;
-            cout << endl;
+            printf(" Error in FinSolveRK.cpp: "         );
+            printf("Exceeded allowed # of time steps \n");
+            printf("    n_step = %d\n", n_step          );
+            printf("        nv = %d\n", nv              );
+            printf("Terminating program.\n"             );
             exit(1);
         }        
 
@@ -220,6 +220,10 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                         q2.set(i,j,m, tmp );
                         q1.set(i,j,m, 15.0*tmp - 5.0*q1.get(i,j,m) );
                     }
+
+                    tmp_t = (Q2.get_t() + 9.0*Q1.get_t())/25.0;
+                    Q2.set_t( tmp_t );
+                    Q1.set_t( 15.0*tmp_t - 5.0*Q1.get_t() );
 
                     // Stage: 6,7,8, and 9
                     for (int s=6; s<=9; s++)
