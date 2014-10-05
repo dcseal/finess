@@ -2,9 +2,9 @@
 #include "assert.h"            // for assert_eq.  Can be removed in future
 #include "tensors.h"
 #include "dog_math.h"
-#include "ConstructL.h"
 #include "StateVars.h"
 #include "IniParams.h"
+#include "ConstructL.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -20,7 +20,7 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
     //
     // @todo TODO - this should be moved before ConstructL is called, and q
     // and aux should be changed to const values (-DS)
-    SetBndValues( aux, q );
+    SetBndValues( Q );
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);

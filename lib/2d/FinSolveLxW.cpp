@@ -1,12 +1,12 @@
 #include <iostream>
 #include <iomanip>
 #include "dog_math.h"
+#include "IniParams.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "hooks.h"
+#include "hooks.h"              // hooks (files that a user may wish to relink)
 #include "constructs.h"
-#include "IniParams.h"
-#include "app_defined.h"
+#include "app_defined.h"        // application (required) files
 #include "misc2d.h"
 #include "StateVars.h"
 
@@ -39,24 +39,27 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     // this tensor is one longer in each direction.
     dTensorBC3 smax( mx+1, my+1, 2, mbc );           
 
-/*
+    // Needed for rejecting a time step
+    StateVars Qold( t, mx, my, meqn, maux, mbc );
+    dTensorBC3& qold   = Qold.ref_q();
+    dTensorBC3& auxold = Qold.ref_aux();
+    Qold.copyfrom( Qnew );
+
+    // Intermediate stages
+    StateVars Qstar( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&   qstar = Qstar.ref_q();
+    dTensorBC3& auxstar = Qstar.ref_aux();
+    Qstar.copyfrom( Qnew );
+
     // Allocate storage for this solver
-    dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps
-    dTensorBC3 auxstar(mx, my, maux, mbc);   // right hand side (for Euler steps)
-    dTensorBC3   qstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
-    dTensorBC3   Lstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
     dTensorBC3       F(mx, my, meqn, mbc );  // time-integrated flux
     dTensorBC3       G(mx, my, meqn, mbc );  // time-integrated flux
-
-    // Set initialize qstar and auxstar values
-    // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    if( maux > 0 )
-    { auxstar.copyfrom( aux  ); }
+    dTensorBC3   Lstar(mx, my, meqn, mbc);   // Right hand side of ODE
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;                           // Number of time steps taken
     const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while( t<tend )
     {
@@ -67,25 +70,24 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
         // check if max number of time steps exceeded
         if( n_step > nv )
         {
-            cout << " Error in FinSolveLxW.cpp: "<< 
-                " Exceeded allowed # of time steps " << endl;
-            cout << "    n_step = " << n_step << endl;
-            cout << "        nv = " << nv << endl;
-            cout << "Terminating program." << endl;
-            cout << endl;
+            printf(" Error in FinSolveRK.cpp: "         );
+            printf("Exceeded allowed # of time steps \n");
+            printf("    n_step = %d\n", n_step          );
+            printf("        nv = %d\n", nv              );
+            printf("Terminating program.\n"             );
             exit(1);
         }        
 
         // copy qnew into qold
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
         {
 
             // set current time
+            Qnew.set_t( t );
             double told = t;
-
             if (told+dt > tend)
             { dt = tend - told; }
             t = told + dt;
@@ -111,6 +113,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
                 double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
                 qnew.vset(k, tmp );
             }
+            Qnew.set_t( Qnew.get_t() + dt );
 
             // Perform any extra work required:
             AfterStep(dt, Qnew);
@@ -158,8 +161,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
                 }
 
                 // copy qold into qnew
-                // CopyQ(qold, qnew);
-                qnew.copyfrom( qold  );
+                Qnew.copyfrom( Qold  );
             }
 
         } // End of m_accept loop
@@ -171,7 +173,5 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 
     // set initial time step for next call to DogSolve:
     dtv[1] = dt;
-
-*/
 
 }

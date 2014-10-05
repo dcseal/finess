@@ -11,7 +11,6 @@ void ConstructIntegratedR( double dt,
     dTensorBC3& smax, 
     dTensorBC3& F, dTensorBC3& G);
 
-
 void LocalIntegrate( 
     int nterms, double dx, double dy, double xc, double yc,
     int meqn, int maux, int mpts_sten, int half_mpts_sten,
@@ -28,13 +27,13 @@ void ConstructIntegratedR( double dt,
     const dTensorBC3& aux2, const dTensorBC3& q2,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
-
 void ConstructIntegratedR( double dt, 
     double alpha1, double beta1, double charlie1, 
     const dTensorBC3& aux1, const dTensorBC3& q1,
     double alpha2, double beta2, double charlie2,
     const dTensorBC3& aux2, const dTensorBC3& q2,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
+
 void ConstructLxWL(
         const dTensorBC3& aux,
         const dTensorBC3& q,
@@ -42,4 +41,5 @@ void ConstructLxWL(
         dTensorBC3& G,         // <--- new term: integrated flux, g
         dTensorBC3& Lstar,
         dTensorBC3& smax);
+
 #endif
