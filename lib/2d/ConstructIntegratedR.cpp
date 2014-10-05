@@ -3,6 +3,7 @@
 #include "stdlib.h"
 #include "assert.h"
 #include "IniParams.h"
+#include "StateVars.h"
 
 // Central difference formulae
 // see $FINESS/lib/WenoReconstruct.cpp
@@ -55,11 +56,12 @@ void SampleFunction(
 //     q^{n+1} = q^n - \dt ( F_x + G_y )
 //
 // See also: DFluxFunc and D2FluxFunc.
-void ConstructIntegratedR( double dt, 
-    const dTensorBC3& aux, const dTensorBC3& q,
-    dTensorBC3& smax, 
-    dTensorBC3& F, dTensorBC3& G)
+void ConstructIntegratedR( double dt, const StateVars& Q,
+    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
 {
+
+    const dTensorBC3& q   = Q.const_ref_q  ();
+    const dTensorBC3& aux = Q.const_ref_aux();
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();
@@ -521,11 +523,18 @@ void LocalIntegrate(
 
 void ConstructIntegratedR( double dt, 
     double alpha1, double beta1,
-    const dTensorBC3& aux1, const dTensorBC3& q1,
+    const StateVars& Q1,
     double alpha2, double beta2,
-    const dTensorBC3& aux2, const dTensorBC3& q2,
+    const StateVars& Q2,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
 {
+
+    const dTensorBC3& q1   = Q1.const_ref_q  ();
+    const dTensorBC3& aux1 = Q1.const_ref_aux();
+
+    const dTensorBC3& q2   = Q2.const_ref_q  ();
+    const dTensorBC3& aux2 = Q2.const_ref_aux();
+
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();
@@ -597,11 +606,18 @@ const int ndim = 2;
 
 void ConstructIntegratedR( double dt, 
     double alpha1, double beta1, double charlie1, 
-    const dTensorBC3& aux1, const dTensorBC3& q1,
+    const StateVars& Q1,
     double alpha2, double beta2, double charlie2,
-    const dTensorBC3& aux2, const dTensorBC3& q2,
+    const StateVars& Q2,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
 {
+
+    const dTensorBC3& q1   = Q1.const_ref_q  ();
+    const dTensorBC3& aux1 = Q1.const_ref_aux();
+
+    const dTensorBC3& q2   = Q2.const_ref_q  ();
+    const dTensorBC3& aux2 = Q2.const_ref_aux();
+
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();

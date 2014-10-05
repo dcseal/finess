@@ -2,8 +2,28 @@
 #include "assert.h"            // for assert_eq.  Can be removed in future
 #include "tensors.h"
 #include "dog_math.h"
-
 #include "IniParams.h"
+#include "StateVars.h"
+
+// --- User supplied functions --- //
+void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
+    const dTensor2& Qvals, dTensor2& Wvals);
+void ProjectRightEig(int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
+                     const dTensor2& Wvals, dTensor2& Qvals);
+void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge, 
+    const dTensor1& Ql,   const dTensor1& Qr, 
+    const dTensor1& Auxl, const dTensor1& Auxr,
+    double& s1,double& s2);
+void SourceTermFunc(const dTensor2& xpts, const dTensor2& qvals, 
+            const dTensor2& auxvals, dTensor2& source);
+
+void SampleFunction( 
+    int istart, int iend,
+    int jstart, int jend,
+    const dTensorBC3& qin, 
+    const dTensorBC3& auxin,  dTensorBC3& Fout,
+    void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
@@ -11,33 +31,16 @@
 //
 // EXPERIMENTAL CODE - This routine performs the Lax-Friedrich's flux
 // splitting on a modified flux function, F and G.
-void ConstructLxWL(
-        const dTensorBC3& aux,
-        const dTensorBC3& q,
+void ConstructLxWL( const StateVars& Q,
         dTensorBC3& F,         // <--- new term: integrated flux, f
         dTensorBC3& G,         // <--- new term: integrated flux, g
         dTensorBC3& Lstar,
         dTensorBC3& smax)
 {
 
-    // --- User supplied functions --- //
-    void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-        const dTensor2& Qvals, dTensor2& Wvals);
-    void ProjectRightEig(int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-                         const dTensor2& Wvals, dTensor2& Qvals);
-    void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge, 
-        const dTensor1& Ql,   const dTensor1& Qr, 
-        const dTensor1& Auxl, const dTensor1& Auxr,
-        double& s1,double& s2);
-    void SourceTermFunc(const dTensor2& xpts, const dTensor2& qvals, 
-                const dTensor2& auxvals, dTensor2& source);
-
-    void SampleFunction( 
-        int istart, int iend,
-        int jstart, int jend,
-        const dTensorBC3& qin, 
-        const dTensorBC3& auxin,  dTensorBC3& Fout,
-        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+    const dTensorBC3&    q = Q.const_ref_q  ();
+    const dTensorBC3&  aux = Q.const_ref_aux();
+    
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
