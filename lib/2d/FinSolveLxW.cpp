@@ -102,9 +102,9 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             // Take a full time step of size dt
             BeforeStep(dt, Qnew);
             SetBndValues(Qnew);
-            ConstructIntegratedR( dt, aux, qnew, smax, F, G);
+            ConstructIntegratedR( dt, Qnew, smax, F, G);
 
-            ConstructLxWL( aux, qnew, F, G, Lstar, smax);  // <-- "new" method
+            ConstructLxWL( Qnew, F, G, Lstar, smax);  // <-- "new" method
 
             // Update the solution:
 #pragma omp parallel for

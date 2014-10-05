@@ -6,10 +6,8 @@
 #include "stdlib.h"
 #include "assert.h"
 
-void ConstructIntegratedR( double dt, 
-    const dTensorBC3& aux, const dTensorBC3& q,
-    dTensorBC3& smax, 
-    dTensorBC3& F, dTensorBC3& G);
+void ConstructIntegratedR( double dt, const StateVars& Q,
+    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
 void LocalIntegrate( 
     int nterms, double dx, double dy, double xc, double yc,
@@ -22,21 +20,19 @@ void LocalIntegrate(
 
 void ConstructIntegratedR( double dt, 
     double alpha1, double beta1,
-    const dTensorBC3& aux1, const dTensorBC3& q1,
+    const StateVars& Q1,
     double alpha2, double beta2,
-    const dTensorBC3& aux2, const dTensorBC3& q2,
+    const StateVars& Q2,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
 void ConstructIntegratedR( double dt, 
     double alpha1, double beta1, double charlie1, 
-    const dTensorBC3& aux1, const dTensorBC3& q1,
+    const StateVars& Q1,
     double alpha2, double beta2, double charlie2,
-    const dTensorBC3& aux2, const dTensorBC3& q2,
+    const StateVars& Q2,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
-void ConstructLxWL(
-        const dTensorBC3& aux,
-        const dTensorBC3& q,
+void ConstructLxWL( const StateVars& Q,
         dTensorBC3& F,         // <--- new term: integrated flux, f
         dTensorBC3& G,         // <--- new term: integrated flux, g
         dTensorBC3& Lstar,
