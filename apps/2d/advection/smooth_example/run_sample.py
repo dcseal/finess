@@ -8,7 +8,7 @@ from params_template import finess_data_template
 def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start):
     '''Refinement study.
     
-    This function :uns time stepping method given by ts_method for 'iterations' number of
+    This function runs time stepping method given by ts_method for 'iterations' number of
     times.  The resolution gets increased by a factor of 'mx_ratio' for each
     iteration.  The starting resolution is given by 'mx_start'.   Output is
     written to folders 'output0000n' for n=0...iterations-1.

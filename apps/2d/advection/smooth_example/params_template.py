@@ -25,6 +25,7 @@ mcapa       = 0   ; =method(5)= mcapa (capacity function index in aux arrays)
 maux        = 2   ; =method(6)= maux (number of aux arrays, maux >= mcapa)
 source_term = false   ; =method(7)= source term (1-yes, 0-no)
 meqn        = 1   ; number of equations
+output_dir  = %(output)s ; location of the output directory
 
 ; -------------------------------------------------
 ;   Cartesian grid data (ignored if Unstructured)
