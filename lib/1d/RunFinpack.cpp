@@ -1,6 +1,18 @@
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+#include "dog_math.h"
+#include "dogdefs.h"
+#include "IniParams.h"            // accessors for the parameters.ini file
+#include "StateVars.h"
+#include "RunFinpack.h"           // Function declarations
+
 /*
  * Top level function to RunFinpack.  Briefly, this function calls the
  * following functions in the following order:
+ *
+ * TODO - this documentation is dated! -DS
  *
  * 1.)  Iniitalize global structs dogParams and dogParamsCart1
  *
@@ -29,17 +41,6 @@
  *     b.) Call Output to print data to file
  *
  */
-
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
-#include "dog_math.h"
-#include "dogdefs.h"
-#include "IniParams.h"            // accessors for the parameters.ini file
-#include "StateVars.h"
-#include "RunFinpack.h"           // Function declarations
-
 int RunFinpack( )
 {
 
@@ -76,9 +77,6 @@ int RunFinpack( )
     const int&     maux     = global_ini_params.get_maux();
     const int&     mx       = global_ini_params.get_mx();
     const int&     mbc      = global_ini_params.get_mbc();
-    const double&  xlow     = global_ini_params.get_xlow();
-    const double&  xhigh    = global_ini_params.get_xhigh();
-    const double&  dx       = global_ini_params.get_dx();
 
     // Dimension arrays
     StateVars Qstate(0., mx, meqn, maux, mbc );

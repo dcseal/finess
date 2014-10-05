@@ -81,6 +81,7 @@ void FinSolveRK_PIF(
     double tend, double dtv[] )
 {
 
+/*
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
     RKinfo rk;
@@ -299,6 +300,7 @@ void FinSolveRK_PIF(
 
     DeleteRKInfo(rk);
 
+*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -3,9 +3,11 @@
 
 #include <string>
 
+#include "StateVars.h"
+
 // ------------------------------------------------------------
 // Function definitions
-void ConSoln(const dTensorBC3& aux, const dTensorBC3& q, double t );
+void ConSoln( const StateVars& Q );
 
 double GetCFL(double dt, double dtmax,
         const dTensorBC3& aux,

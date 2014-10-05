@@ -4,7 +4,7 @@
 #include "stdlib.h"
 #include "dogdefs.h"
 #include "FinSolveLxW.h"     // functions directly called from this function
-
+#include "StateVars.h"
 #include "IniParams.h"
 
 // ------------------------------------------------------------
@@ -30,12 +30,10 @@ void ConstructIntegratedR( double dt,
 
 using namespace std;
 
-void FinSolveMD(
-    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-    double tend, double dtv[] )
+void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 {
 
-
+/*
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
 
@@ -302,4 +300,5 @@ void FinSolveMD(
     // set initial time step for next call to DogSolve:
     dtv[1] = dt;
 
+*/
 }

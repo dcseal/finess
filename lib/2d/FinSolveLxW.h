@@ -1,9 +1,11 @@
 #ifndef _FINSOLVE_RK_
 #define _FINSOLVE_RK_
 
+#include "StateVars.h"
+
 // ------------------------------------------------------------
 // Function definitions
-void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, double t );
+void ConSoln( const StateVars& Q, double t );
 
 double GetCFL(double dt, double dtmax, const dTensorBC3& aux, const dTensorBC3& smax);
 

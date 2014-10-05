@@ -3,16 +3,17 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "RKinfo.h"           // Coefficients for the RK method
-#include "FinSolveRK.h"       // Functions directly called from this function
-
+#include "RKinfo.h"             // Coefficients for the RK method
+#include "FinSolveRK.h"         // Functions directly called from this function
+#include "StateVars.h"          // Information for state variables
 #include "IniParams.h"
 using namespace std;
 
-void FinSolveRK(
-    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-    double tend, double dtv[] )
+void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 {
+
+    dTensorBC3& qnew = Qnew.ref_q  ();
+    dTensorBC3&  aux = Qnew.ref_aux();
 
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
@@ -22,7 +23,7 @@ void FinSolveRK(
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
 
-    double t            = tstart;
+    double t            = Qnew.get_t();
     double dt           = dtv[1];   // Start with time step from last frame
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
@@ -85,6 +86,7 @@ void FinSolveRK(
         {
 
             // set current time
+            Qnew.set_t( t );
             double told = t;
             if (told+dt > tend)
             { dt = tend - told; }
@@ -316,7 +318,7 @@ void FinSolveRK(
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln( aux, qnew, t );
+        ConSoln( Qnew );
 
     } // End of while loop
 

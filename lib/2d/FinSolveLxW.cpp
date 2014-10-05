@@ -5,17 +5,18 @@
 #include "dogdefs.h"
 #include "hooks.h"
 #include "constructs.h"
-
 #include "IniParams.h"
 #include "app_defined.h"
 #include "misc2d.h"
+#include "StateVars.h"
 
 using namespace std;
 
-void FinSolveLxW(
-    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-    double tend, double dtv[] )
+void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 {
+
+    dTensorBC3& qnew = Qnew.ref_q  ();
+    dTensorBC3&  aux = Qnew.ref_aux();
 
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
@@ -23,7 +24,7 @@ void FinSolveLxW(
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
 
-    double t            = tstart;
+    double t            = Qnew.get_t();
     double dt           = dtv[1];   // Start with time step from last frame
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
@@ -169,7 +170,7 @@ void FinSolveLxW(
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln(aux, qnew, t );
+        ConSoln(Qnew);
 
     } // End of while loop
 

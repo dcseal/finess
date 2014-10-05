@@ -1,11 +1,3 @@
-/*
- * Top level function to RunFinpack.  Briefly, this function calls the
- * following functions in the following order:
- *
- * TODO
- *
- */
-
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -14,7 +6,16 @@
 #include "dogdefs.h"
 #include "IniParams.h"            // accessors for the parameters.ini file
 #include "RunFinpack.h"           // Function declarations
+#include "StateVars.h"
 
+
+/*
+ * Top level function to RunFinpack.  Briefly, this function calls the
+ * following functions in the following order:
+ *
+ * TODO
+ *
+ */
 int RunFinpack( )
 {
 
@@ -48,20 +49,16 @@ int RunFinpack( )
     double dtv[2+1];
     dtv[1] = global_ini_params.get_initial_dt();
     dtv[2] = global_ini_params.get_max_dt();
-    const double nonsense_double = 0;
-    const double   cflv[]   = {nonsense_double, global_ini_params.get_max_cfl(), global_ini_params.get_desired_cfl()};
-    const int      nv       = global_ini_params.get_nv();
     const int&     meqn     = global_ini_params.get_meqn();
     const int&     maux     = global_ini_params.get_maux();
-    const int&     mdim     = global_ini_params.get_ndims();     assert_eq( mdim, 2 );
     const int&     mx       = global_ini_params.get_mx();
     const int&     my       = global_ini_params.get_my();
     const int&     mbc      = global_ini_params.get_mbc();
 
     // Dimension arrays
-    dTensorBC3    qnew(mx, my, meqn, mbc);
-    dTensorBC3    smax(mx, my, mdim, mbc);
-    dTensorBC3    aux (mx, my, iMax(maux, 1), mbc);
+    StateVars Qnew(0., mx, my, meqn, maux, mbc );
+    dTensorBC3& qnew = Qnew.ref_q();
+    dTensorBC3& aux  = Qnew.ref_aux();
 
     // Set any auxiliary variables on computational grid
     // Set values and apply L2-projection
@@ -73,14 +70,14 @@ int RunFinpack( )
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
-    AfterQinit( aux, qnew);
+    AfterQinit( Qnew );
 
     // Output initial data to file
     // For each element, we output ``method[1]'' number of values
-    Output( aux, qnew, 0.0, 0 );
+    Output( Qnew, 0 );
 
     // Compute conservation and print to file
-    ConSoln( aux, qnew, 0.0 );
+    ConSoln( Qnew );
 
     // Main loop for time stepping
     double tstart = 0.0;
@@ -95,22 +92,22 @@ int RunFinpack( )
         if (time_stepping_method == IniParams::TimeSteppingMethod::RK)
         {  
             // Runge-Kutta time-stepping scheme
-            FinSolveRK( aux, qnew, tstart, tend, dtv );
+            FinSolveRK( Qnew, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
         {
             // Lax-Wendroff time stepping
-            FinSolveLxW(aux, qnew, tstart, tend, dtv );
+            FinSolveLxW(Qnew, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::MD)
         {
             // Multiderivative time stepping
-            FinSolveMD(aux, qnew, tstart, tend, dtv );
+            FinSolveMD(Qnew, tend, dtv );
         }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
-            FinSolveUser(aux, qnew, tstart, tend, dtv );
+            FinSolveUser(Qnew, tend, dtv );
         }
         else
         {
@@ -119,7 +116,7 @@ int RunFinpack( )
         }
 
         // Output data to file
-        Output( aux, qnew, tend, n );
+        Output( Qnew, n );
 
         // Done with solution from tstart to tend
         cout << setprecision(5);

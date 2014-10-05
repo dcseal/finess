@@ -10,13 +10,13 @@
 
 using namespace std;
 
-void Output( const StateVars& Qstate, int nframe )
+void Output( const StateVars& Q, int nframe )
 
 {
 
-    const dTensorBC2& q   = Qstate.const_ref_q  ();
-    const dTensorBC2& aux = Qstate.const_ref_aux();
-    const double t        = Qstate.get_t();
+    const dTensorBC2& q   = Q.const_ref_q  ();
+    const dTensorBC2& aux = Q.const_ref_aux();
+    const double t        = Q.get_t();
 
     const int melems  = q.getsize(1);
     const int meqn    = q.getsize(2);

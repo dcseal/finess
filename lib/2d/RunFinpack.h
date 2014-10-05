@@ -1,34 +1,22 @@
 #ifndef _RUN_FINESS_H_
 #define _RUN_FINESS_H_
 
-// ------------------------------------------------------------
-// Functions use in RunFinpack.cpp
+#include "StateVars.h"
 
-void Output( const dTensorBC3& aux, const dTensorBC3& q, double t, int nframe );
-
+void Output( const StateVars& Qnew, int nframe );
 void QinitFunc(const dTensor2& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals);
 void AuxFunc(const dTensor2& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& auxvals);
-void AfterQinit(dTensorBC3& aux, dTensorBC3& q);
+void AfterQinit( StateVars& Qnew );
 
-void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, double t );
+void ConSoln( const StateVars& Q );
 
-void FinSolveRK(
-    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-    double tend, double dtv[] );
-
-void FinSolveLxW(
-    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-    double tend, double dtv[] );
-
-void FinSolveMD(
-    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-    double tend, double dtv[] );
-
-void FinSolveUser(
-        dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-        double tend, double dtv[] );
+// Time stepping methods:
+void FinSolveRK     ( StateVars& Qnew, double tend, double dtv[] );
+void FinSolveLxW    ( StateVars& Qnew, double tend, double dtv[] );
+void FinSolveMD     ( StateVars& Qnew, double tend, double dtv[] );
+void FinSolveUser   ( StateVars& Qnew, double tend, double dtv[] );
 
 void SampleFunction( 
     int istart, int iend,

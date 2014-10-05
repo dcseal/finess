@@ -3,12 +3,11 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
+#include "StateVars.h"
 
 using namespace std;
 
-void FinSolveUser(
-        dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-        double tend, double dtv[] )
+void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 {
 
 

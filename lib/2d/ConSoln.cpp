@@ -5,12 +5,17 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
+#include "StateVars.h"
 
 #include "IniParams.h"
 using namespace std;
 
-void ConSoln( const dTensorBC3& aux, const dTensorBC3& q, double t )
+void ConSoln( const StateVars& Q )
 {
+
+    const dTensorBC3&    q = Q.const_ref_q  ();
+    const dTensorBC3&  aux = Q.const_ref_aux();
+    const double         t = Q.get_t();
 
     string outputdir = global_ini_params.get_output_dir();
 
