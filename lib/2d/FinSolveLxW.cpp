@@ -18,34 +18,28 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC3& qnew = Qnew.ref_q  ();
     dTensorBC3&  aux = Qnew.ref_aux();
 
-/*
-    // Declare information about the Runge-Kutta method
-    const int time_order = global_ini_params.get_time_order();
-
+    // Time stepping information
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+    double t                  = Qnew.get_t();
+    double dt                 = dtv[1];   // Start with time step from last frame
+    double cfl                = 0.0;      // current CFL number
+    double dtmin              = dt;       // Counters for max and min time step taken
+    double dtmax              = dt;
 
-    double t            = Qnew.get_t();
-    double dt           = dtv[1];   // Start with time step from last frame
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
-    double dtmax        = dt;
-
-    const double xlow = global_ini_params.get_xlow();
-    const double ylow = global_ini_params.get_ylow();
-    const int     mbc = global_ini_params.get_mbc();
-
+    // Grid information
     const int mx   = global_ini_params.get_mx();
     const int my   = global_ini_params.get_my();
-
-    const int meqn   = global_ini_params.get_meqn();
-    const int maux   = global_ini_params.get_maux();
-
-    // Total number of entries in the vector:
+    const int meqn = global_ini_params.get_meqn();
+    const int maux = global_ini_params.get_maux();
+    const int mbc  = global_ini_params.get_mbc();
     const int numel = qnew.numel();
 
-    dTensorBC3 smax( mx, my, meqn, mbc );           
+    // Maximum wave speed at each flux interface value.  Note that the size of
+    // this tensor is one longer in each direction.
+    dTensorBC3 smax( mx+1, my+1, 2, mbc );           
 
+/*
     // Allocate storage for this solver
     dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps
     dTensorBC3 auxstar(mx, my, maux, mbc);   // right hand side (for Euler steps)

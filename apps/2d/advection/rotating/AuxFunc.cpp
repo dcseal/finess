@@ -1,12 +1,25 @@
 #include "dogdefs.h"
 
-// This is a user-supplied routine that sets the
-// auxiliary arrays at all the points "xpts"
+// This is a user-required routine that defines the auxilary arrays when the
+// parameter maux > 0.
 //
-void AuxFunc(const dTensor2& xpts, 
-	     dTensor2& auxvals)
+// Each application is REQUIRED to define one of these.
+//
+//      Simple Advection equation.
+//
+// Input:
+//
+//    xpts( 1:numpts, 1:2 )   - The x, and y-coordinates for a list of points
+//
+// Output:
+//
+//    auxvals( 1:numpts, 1:maux )  - The vector containg auxilary values.
+//
+// See also: QinitFunc.
+void AuxFunc(const dTensor2& xpts, dTensor2& auxvals)
 {
-    const int numpts=xpts.getsize(1);
+
+    const int numpts = xpts.getsize(1);
     for (int i=1; i<=numpts; i++)
     {
         const double x = xpts.get(i,1);

@@ -113,7 +113,8 @@ def CreateLatexTable( mx, data,
 
 
 def main( ):
-    '''Write some help documentation here
+    '''Convergence study.   This script computes the L2-error assuming that
+    the initial conditions saved in q0000.dat are the exact solution.
 '''
 
     print "# leading comments can be given a '#' character"

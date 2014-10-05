@@ -15,20 +15,20 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC3& qnew = Qnew.ref_q  ();
     dTensorBC3&  aux = Qnew.ref_aux();
 
+    // Time stepping information
+    const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+    double t                  = Qnew.get_t();
+    double dt                 = dtv[1];   // Start with time step from last frame
+    double cfl                = 0.0;      // current CFL number
+    double dtmin              = dt;       // Counters for max and min time step taken
+    double dtmax              = dt;
+
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
     RKinfo rk;
     SetRKinfo(time_order, rk);
-
-    // Time stepping information
-    const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
-    const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
-    double t            = Qnew.get_t();
-    double dt           = dtv[1];   // Start with time step from last frame
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
-    double dtmax        = dt;
-    double tmp_t        = 0.;       // used for fourth-order time stepping
+    double tmp_t = 0.;                    // used for fourth-order stepping
 
     // Grid information
     const int mx   = global_ini_params.get_mx();
@@ -37,8 +37,9 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     const int maux = global_ini_params.get_maux();
     const int mbc  = global_ini_params.get_mbc();
 
-    // Maximum wave speed  (TODO - should this be mx+1,my+1? -DS)
-    dTensorBC3 smax( mx, my, meqn, mbc );           
+    // Maximum wave speed at each flux interface value.  Note that the size of
+    // this tensor is one longer in each direction.
+    dTensorBC3 smax( mx+1, my+1, 2, mbc );           
 
     // Needed for rejecting a time step
     StateVars Qold( t, mx, my, meqn, maux, mbc );
