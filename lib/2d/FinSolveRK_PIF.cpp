@@ -8,7 +8,7 @@
 #include "ConstructL.h"
 #include "StateVars.h"
 #include "IniParams.h"
-
+#include "app_defined.h"
 
 // Used for construcing the flux function
 void SampleFunction( 
