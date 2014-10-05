@@ -1,10 +1,13 @@
 #include "tensors.h"
+#include "StateVars.h"
 
 // Zeroth order extrapolation
-void SetBndValues(
-        dTensorBC2& aux, 
-        dTensorBC2& q)
+void SetBndValues( StateVars& Q )
 {
+
+    dTensorBC2&  q  = Q.ref_q  ();
+    dTensorBC2& aux = Q.ref_aux();
+    double t        = Q.get_t  ();
 
     const int melems = q.getsize(1);
     const int meqn   = q.getsize(2);

@@ -58,11 +58,13 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     StateVars Qold( t, mx, meqn, maux, mbc );
     dTensorBC2& qold   = Qold.ref_q();
     dTensorBC2& auxold = Qold.ref_aux();
+    Qold.copyfrom( Qnew );
 
     // Intermediate stages
     StateVars Qstar( t, mx, meqn, maux, mbc );
     dTensorBC2&   qstar = Qstar.ref_q();
     dTensorBC2& auxstar = Qstar.ref_aux();
+    Qstar.copyfrom( Qnew );
 
     // Right hand side storage ( for q_t = L( q ) )
     dTensorBC2   Lstar(mx, meqn, mbc);
@@ -72,10 +74,12 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     StateVars    Q1( t, mx, meqn, maux, mbc );
     dTensorBC2&  q1   = Q1.ref_q();
     dTensorBC2&  aux1 = Q1.ref_aux();
+    Q1.copyfrom( Qnew );
 
     StateVars    Q2( t, mx, meqn, maux, mbc );
     dTensorBC2&  q2   = Q2.ref_q();
     dTensorBC2&  aux2 = Q2.ref_aux();
+    Q2.copyfrom( Qnew );
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
