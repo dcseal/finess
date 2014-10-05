@@ -38,13 +38,15 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
             my_dictionary = {'s_order' : space_order, 't_order' : time_order,
                     'cfl' : cfl,
                     'mx' : mx_now, 
-                    "i_now": (i+n_start), 'ts_method_str' : ts_method_str }
+                    "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
+            }
+            my_dictionary['output'] = 'output_%(i_now)03i' % my_dictionary
             print >> data, dogpack_data_template % my_dictionary
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
         # cmd = './dog.exe -o outputSL%(s_order)i_%(t_order)i_%(i_now)03i' % my_dictionary
-        cmd = './dog.exe -o output_%(i_now)03i' % my_dictionary
+        cmd = './finess.exe'
         print cmd
         call(cmd, shell=True)
         print ''' 

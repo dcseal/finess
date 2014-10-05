@@ -11,10 +11,6 @@ include $(FINESS)/apps/1d/euler/lib/Makefile.defs
 InitApp         =  InitApp
 DogSolveUser    =  $(FINESS)/lib/1d/FinSolveRK_PIF
 
-# uncomment these lines to use the HLL(E) Riemann solver
-#RiemannSolve     = $(LIB1D)/RiemannSolveHLL
-#RiemannSolveLxW  = $(LIB1D)/LaxWendroff/RiemannSolveLxW_HLL
-
 # place to add object modules
 #
 ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
