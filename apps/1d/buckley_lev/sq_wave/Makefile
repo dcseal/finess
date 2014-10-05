@@ -8,7 +8,6 @@ include $(FINESS)/apps/1d/buckley_lev/lib/Makefile.defs
 
 # overridden library objects
 #
-#DogSolveUser  = $(DOGPACK)/lib/1d/DogSolveRK4
 ConSoln                     = ConSoln
 ConstructIntegratedF        = ConstructIntegratedF
 

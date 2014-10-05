@@ -12,7 +12,7 @@ include $(FINESS)/apps/2d/advection/lib/Makefile.defs
 # overridden library objects
 #
 AuxFunc                 = AuxFunc
-DogSolveUser            = $(FINESS)/lib/2d/FinSolveRK_PIF
+FinSolveUser            = $(FINESS)/lib/2d/FinSolveRK_PIF
 ## ------------------------------------------------------------------------- ##
 
 ALL_OBJECTS = \

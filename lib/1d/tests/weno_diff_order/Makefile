@@ -7,7 +7,6 @@ include $(FINESS)/lib/1d/Makefile.defs
 #
 # overridden library objects
 #
-# DogSolveUser           = DogSolveUser
 Output                 = Output
 
 # place to add object modules
