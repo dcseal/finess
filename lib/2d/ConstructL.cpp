@@ -3,18 +3,18 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "ConstructL.h"
-
+#include "StateVars.h"
 #include "IniParams.h"
+
 // Right-hand side for hyperbolic PDE in divergence form
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
-void ConstructL(
-        dTensorBC3& aux,
-        dTensorBC3& q,      // SetBndValues modifies q and aux
-        dTensorBC3& Lstar,
-        dTensorBC3& smax)
+void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
 {
+
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     // Boundary conditions
     //

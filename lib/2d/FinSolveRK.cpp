@@ -6,7 +6,7 @@
 #include "RKinfo.h"             // Coefficients for the RK method
 #include "FinSolveRK.h"         // Functions directly called from this function
 #include "StateVars.h"          // Information for state variables
-#include "IniParams.h"
+#include "IniParams.h"          // Global parameters accessor
 using namespace std;
 
 void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
@@ -20,40 +20,50 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     RKinfo rk;
     SetRKinfo(time_order, rk);
 
+    // Time stepping information
     const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
     const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
-
     double t            = Qnew.get_t();
     double dt           = dtv[1];   // Start with time step from last frame
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
 
-    const double xlow = global_ini_params.get_xlow();
-    const double ylow = global_ini_params.get_ylow();
-
+    // Grid information
     const int mx   = global_ini_params.get_mx();
     const int my   = global_ini_params.get_my();
     const int meqn = global_ini_params.get_meqn();
     const int maux = global_ini_params.get_maux();
     const int mbc  = global_ini_params.get_mbc();
 
+    // Maximum wave speed  (TODO - should this be mx+1,my+1? -DS)
     dTensorBC3 smax( mx, my, meqn, mbc );           
 
-    // Allocate storage for this solver
-    dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps
-    dTensorBC3   qstar(mx, my, meqn, mbc);   // intermediate stage
-    dTensorBC3 auxstar(mx, my, maux, mbc);
+    // Needed for rejecting a time step
+    StateVars Qold( t, mx, my, meqn, maux, mbc );
+    dTensorBC3& qold   = Qold.ref_q();
+    dTensorBC3& auxold = Qold.ref_aux();
+    Qold.copyfrom( Qnew );
+
+    // Intermediate stages
+    StateVars Qstar( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&   qstar = Qstar.ref_q();
+    dTensorBC3& auxstar = Qstar.ref_aux();
+    Qstar.copyfrom( Qnew );
+
     dTensorBC3   Lstar(mx, my, meqn, mbc);   // Right hand side of ODE
     dTensorBC3    Lold(mx, my, meqn, mbc);
-    dTensorBC3      q1(mx, my, meqn, mbc);   // intermediate stages
-    dTensorBC3      q2(mx, my, meqn, mbc); 
 
-    // Set initialize qstar and auxstar values
-    // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    qstar.copyfrom( qnew );
-    if( maux > 0 )
-    { auxstar.copyfrom( aux  ); }
+    // Local storage (for 4th- and 5th-order time stepping)
+    StateVars    Q1( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&  q1   = Q1.ref_q();
+    dTensorBC3&  aux1 = Q1.ref_aux();
+    Q1.copyfrom( Qnew );
+
+    StateVars    Q2( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&  q2   = Q2.ref_q();
+    dTensorBC3&  aux2 = Q2.ref_aux();
+    Q2.copyfrom( Qnew );
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -64,7 +74,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     {
         // initialize time step
         int m_accept = 0;      
-        n_step = n_step + 1;
+        n_step       = n_step + 1;
 
         // check if max number of time steps exceeded
         if( n_step > nv )
@@ -79,7 +89,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
         }        
 
         // copy qnew into qold
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
@@ -96,7 +106,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
             smax.setall(0.);
 
             // do any extra work
-            BeforeFullTimeStep(dt, auxstar, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew);
 
             // Take a full time step of size dt
             switch( time_order )
@@ -106,11 +116,11 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     // --------------------------------------------------------
                     // Stage #1 (the only one in this case)
                     rk.mstage = 1;
-                    BeforeStep(dt,aux,qnew);
-                    ConstructL( aux, qnew, Lstar, smax);
+                    BeforeStep(dt, Qnew);
+                    ConstructL( Qnew, Lstar, smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qnew);
-                    AfterStep(dt,aux,qnew);
+                            rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qnew);
+                    AfterStep(dt, Qnew);
                     // --------------------------------------------------------
 
                     break;
@@ -120,20 +130,20 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     // ---------------------------------------------------------
                     // Stage #1
                     rk.mstage = 1;
-                    BeforeStep(dt,aux,qnew);
-                    ConstructL(aux,qnew,Lstar,smax);
+                    BeforeStep(dt, Qnew);
+                    ConstructL(Qnew, Lstar, smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);      
-                    AfterStep(dt,auxstar,qstar);
+                            rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qstar);      
+                    AfterStep(dt, Qstar);
 
                     // ---------------------------------------------------------
                     // Stage #2
                     rk.mstage = 2;
-                    BeforeStep(dt,auxstar,qstar);
-                    ConstructL(aux,qstar,Lstar,smax);
+                    BeforeStep(dt, Qstar);
+                    ConstructL(Qstar, Lstar, smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);
-                    AfterStep(dt,aux,qnew); 
+                            rk.beta->get(rk.mstage), dt, Qstar, Lstar, Qnew);
+                    AfterStep(dt, Qnew); 
                     // ---------------------------------------------------------
 
                     break;
@@ -149,11 +159,11 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     // ---------------------------------------------------------
                     // Stage #1
                     rk.mstage = 1;
-                    BeforeStep(dt,aux,qnew);    
-                    ConstructL(aux,qnew,Lstar,smax);
+                    BeforeStep(dt, Qnew);    
+                    ConstructL(Qnew, Lstar, smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
-                    AfterStep(dt,auxstar,qstar);
+                            rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qstar);
+                    AfterStep(dt, Qstar);
 
 // alpha1 = 0.75
 // alpha2 = 0.25
@@ -161,11 +171,11 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     // ---------------------------------------------------------
                     // Stage #2
                     rk.mstage = 2;
-                    BeforeStep(dt,auxstar,qstar);
-                    ConstructL(aux,qstar,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
-                    AfterStep(dt,auxstar,qstar);
+                    BeforeStep(dt, Qstar);
+                    ConstructL(Qstar, Lstar, smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qstar);
+                    AfterStep(dt, Qstar);
 
 // alpha1 = 2/3
 // alpha2 = 1/3
@@ -173,11 +183,11 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     // ---------------------------------------------------------
                     // Stage #3
                     rk.mstage = 3;
-                    BeforeStep(dt,auxstar,qstar);
-                    ConstructL(auxstar,qstar,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);   
-                    AfterStep(dt,aux,qnew);
+                    BeforeStep(dt, Qstar);
+                    ConstructL(Qstar, Lstar, smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Qstar, Lstar, Qnew);   
+                    AfterStep(dt, Qnew);
                     // ---------------------------------------------------------
 
                     break;
@@ -185,20 +195,20 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                 case 4:  // Fourth order in time (10-stages)
 
                     // -----------------------------------------------
-                    q1.copyfrom( qnew );
-                    q2.copyfrom(   q1 );
+                    Q1.copyfrom( Qnew );
+                    Q2.copyfrom(   Q1 );
 
                     // Stage: 1,2,3,4, and 5
                     for (int s=1; s<=5; s++)
                     {
                         rk.mstage = s;
-                        BeforeStep(dt,aux,q1);
-                        ConstructL(aux,q1,Lstar,smax);
+                        BeforeStep(dt, Q1);
+                        ConstructL(Q1, Lstar, smax);
                         if (s==1)
                         {  Lold.copyfrom( Lstar ); }
-                        UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                                rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
-                        AfterStep(dt,aux,q1);
+                        UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                                rk.beta->get(rk.mstage), dt, Q1, Lstar, Q1);
+                        AfterStep(dt, Q1);
                     }
 
                     // Temporary storage
@@ -215,52 +225,52 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     for (int s=6; s<=9; s++)
                     {
                         rk.mstage = s;
-                        BeforeStep(dt,aux,q1);
-                        ConstructL(aux,q1,Lstar,smax);
-                        UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                                rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
-                        AfterStep(dt,aux,q1);
+                        BeforeStep(dt, Q1);
+                        ConstructL(Q1, Lstar, smax);
+                        UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                                rk.beta->get(rk.mstage), dt, Q1, Lstar, Q1);
+                        AfterStep(dt, Q1);
                     }
 
                     // Stage: 10
                     rk.mstage = 10;
-                    BeforeStep(dt,aux,q1);
-                    ConstructL(aux,q1,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,q2,Lstar,q1);
-                    AfterStep(dt,aux,q1);
+                    BeforeStep(dt, Q1);
+                    ConstructL(Q1, Lstar, smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Q2, Lstar, Q1);
+                    AfterStep(dt, Q1);
 
-                    qnew.copyfrom( q1 );
+                    Qnew.copyfrom( Q1 );
                     // -----------------------------------------------          
                     break;
 
-                case 5:  // Fifth order in time (8-stages)
+//              case 5:  // Fifth order in time (8-stages)
 
-                    // -----------------------------------------------
-                    q1.copyfrom( qnew );
-                    q2.setall(0.);
+//                  // -----------------------------------------------
+//                  Q1.copyfrom( Qnew );
+//                  q2.setall(0.);
 
-                    for (int s=1; s<=8; s++)
-                    {
-                        rk.mstage = s;
-                        BeforeStep(dt,aux,q1);
-                        ConstructL(aux,q1,Lstar,smax);
-                        if (s==1)
-                        {  Lold.copyfrom(Lstar); }
+//                  for (int s=1; s<=8; s++)
+//                  {
+//                      rk.mstage = s;
+//                      BeforeStep(dt, Q1);
+//                      ConstructL(Q1, Lstar, smax);
+//                      if (s==1)
+//                      {  Lold.copyfrom(Lstar); }
 
-                        UpdateSoln(
-                                rk.gamma->get(1,s), 
-                                rk.gamma->get(2,s), 
-                                rk.gamma->get(3,s), 
-                                rk.delta->get(s), rk.beta->get(s),
-                                dt,  aux, qold, Lstar, q1, q2);
+//                      UpdateSoln(
+//                              rk.gamma->get(1,s), 
+//                              rk.gamma->get(2,s), 
+//                              rk.gamma->get(3,s), 
+//                              rk.delta->get(s), rk.beta->get(s),
+//                              dt, qold, Lstar, q1, q2);
 
-                        AfterStep(dt,aux,q1);
-                    }
+//                      AfterStep(dt, Q1);
+//                  }
 
-                    qnew.copyfrom( q1 );
-                    // -----------------------------------------------          
-                    break;
+//                  Qnew.copyfrom( Q1 );
+//                  // -----------------------------------------------          
+//                  break;
 
                 default:
 
@@ -271,7 +281,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
             }  // End of switch statement over time-order
 
             // Do any extra work
-            AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
+            AfterFullTimeStep(dt, Qold, Qnew);
 
             // compute cfl number
             cfl = GetCFL(dt, dtv[2], aux, smax);
@@ -312,7 +322,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                 }
 
                 // copy qold into qnew
-                qnew.copyfrom( qold );
+                Qnew.copyfrom( Qold );
             }
 
         } // End of m_accept loop

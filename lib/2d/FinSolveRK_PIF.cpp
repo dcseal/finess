@@ -6,9 +6,9 @@
 #include "RKinfo.h"
 #include "FinSolveRK.h"
 #include "ConstructL.h"
+#include "StateVars.h"
+#include "IniParams.h"
 
-#include "IniParams.h"
-#include "IniParams.h"
 
 // Used for construcing the flux function
 void SampleFunction( 
@@ -40,13 +40,10 @@ void ConstructL(
 
 using namespace std;
 
-void FinSolveUser( dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-    double tend, double dtv[] )
+void FinSolveUser( StateVars& Wnew, double tend, double dtv[] )
 {
-    void FinSolveRK_PIF(
-        dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-        double tend, double dtv[] );
-    FinSolveRK_PIF( aux, qnew, tstart, tend, dtv );
+    void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] );
+    FinSolveRK_PIF( Qnew, tend, dtv );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,9 +73,7 @@ void FinSolveUser( dTensorBC3& aux, dTensorBC3& qnew, double tstart,
 // WENO, together with the projection onto characteristic variables.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void FinSolveRK_PIF(
-    dTensorBC3& aux, dTensorBC3& qnew, double tstart, 
-    double tend, double dtv[] )
+void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 {
 
 /*

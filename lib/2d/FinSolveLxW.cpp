@@ -18,6 +18,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC3& qnew = Qnew.ref_q  ();
     dTensorBC3&  aux = Qnew.ref_aux();
 
+/*
     // Declare information about the Runge-Kutta method
     const int time_order = global_ini_params.get_time_order();
 
@@ -99,12 +100,12 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             smax.setall(0.);
 
             // do any extra work
-            BeforeFullTimeStep(dt, aux, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew);
 
             // ---------------------------------------------------------
             // Take a full time step of size dt
-            BeforeStep(dt, aux, qnew);
-            SetBndValues(aux, qnew);
+            BeforeStep(dt, Qnew);
+            SetBndValues(Qnew);
             ConstructIntegratedR( dt, aux, qnew, smax, F, G);
 
             ConstructLxWL( aux, qnew, F, G, Lstar, smax);  // <-- "new" method
@@ -118,11 +119,11 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             }
 
             // Perform any extra work required:
-            AfterStep(dt,aux,qnew);
+            AfterStep(dt, Qnew);
             // ---------------------------------------------------------
 
             // do any extra work
-            AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
+            AfterFullTimeStep(dt, Qold, Qnew);
 
             // compute cfl number
             cfl = GetCFL(dt, dtv[2], aux, smax);
@@ -176,5 +177,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 
     // set initial time step for next call to DogSolve:
     dtv[1] = dt;
+
+*/
 
 }

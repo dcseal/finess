@@ -11,56 +11,8 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 {
 
 
-/* TODO - write a template here, and pull it from FinSolveRK.  (-DS)
-    // ------------------------------------------------------------
-    // Function definitions
-    void CopyQ(const dTensorBC3&,dTensorBC3&);
-    void ConSoln(const int[],const dTensor2&,const dTensorBC3&,const dTensorBC3&,double,string);
-    void BeforeStep(double,const dTensor2&,dTensorBC3&,dTensorBC3&);
-    void AfterStep(double,const dTensor2&,dTensorBC3&,dTensorBC3&);
-    void ApplyLimiter(const dTensor2&,const dTensorBC3&,dTensorBC3&,
-            void (*ProjectRightEig)(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&),
-            void (*ProjectLeftEig)(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&));
-    void ViscousLimiter(const dTensor2& node, const dTensorBC3& aux, 
-            const dTensorBC3& qold, const dTensorBC3& q, dTensorBC3& Lstar,
-            void (*ProjectRightEig)(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&),
-            void (*ProjectLeftEig)(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&));
-    void ProjectRightEig(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&);
-    void ProjectLeftEig(const dTensor1&,const dTensor1&,const dTensor2&,dTensor2&);
-    void ConstructL(const int[],const dTensor2&,const dTensorBC3&,const dTensorBC3&,
-            dTensorBC3&,dTensorBC1&);
-    void UpdateSoln(double,double,double,double,const dTensor2&,const dTensorBC3&,
-            const dTensorBC3&, const dTensorBC3&,dTensorBC3&);
-    double GetCFL(double,double,const dTensor1&,const int[],const dTensorBC3&,const dTensorBC1&);
-    void SetBndValues(const dTensor2&,dTensorBC3&,dTensorBC3&);
-    void AfterFullTimeStep(double dt, const dTensor2& node, const dTensor1& prim_vol,
-            dTensorBC3& auxstar, dTensorBC3& aux, 
-            dTensorBC3& qold, dTensorBC3& q);
-    // ------------------------------------------------------------
-
-    // define local variables
-    int j,n_step,m_accept,mtmp;
-    double t,dt,CFL_max,CFL_target,dtmin,dtmax;
-    double told,cfl;
-    n_step = 0;
-    t = tstart;
-    dt = dtv[1];
-    CFL_max = cflv[1];
-    CFL_target = cflv[2];
-    cfl = 0.0;
-    dtmin = dt;
-    dtmax = dt;
-    int melems = qold.getsize(1);
-    int meqn   = qold.getsize(2);
-    int maux   = aux.getsize(2);
-    int mbc = qnew.getmbc();
-    dTensorBC3   qstar(melems,meqn,method[1],mbc);
-    dTensorBC3 auxstar(melems,maux,method[1],mbc);
-    dTensorBC3   Lstar(melems,meqn,method[1],mbc);    
-
-    // Set initialize qstar and auxstar values
-    CopyQ(qold,qstar);
-    CopyQ(aux,auxstar);
+/* TODO - write a template here, and pull it from FinSolveRK.  See the
+ * template already created in the 1D code.  (-DS)
 
     while (t<tend)
     {

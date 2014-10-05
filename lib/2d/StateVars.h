@@ -42,6 +42,14 @@ class StateVars{
             return this->aux;
         }
 
+        // Copy the contents from another state variable to this state
+        // variable
+        void copyfrom( const StateVars& Qin )
+        {
+            this->q.copyfrom( Qin.const_ref_q() );
+            this->aux.copyfrom( Qin.const_ref_aux() );
+            this->t = Qin.get_t();
+        }
 };
 
 #endif
