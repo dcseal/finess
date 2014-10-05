@@ -40,7 +40,7 @@ void ConstructL(
 
 using namespace std;
 
-void FinSolveUser( StateVars& Wnew, double tend, double dtv[] )
+void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 {
     void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] );
     FinSolveRK_PIF( Qnew, tend, dtv );
