@@ -9,7 +9,6 @@ include $(FINESS)/apps/1d/shallow_water/lib/Makefile.defs
 
 # overridden library objects
 #
-#DogSolveUser           = $(FINESS)/lib/1d/DogSolveTDRK
 
 # Experimental new method that uses WENO *differentiation* on the interior of
 # the time-integrated flux function.

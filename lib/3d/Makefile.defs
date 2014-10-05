@@ -97,7 +97,6 @@ DFluxFunc            = $(LIB3D)/LaxWendroff/DFluxFunc
 D2FluxFunc           = $(LIB3D)/LaxWendroff/D2FluxFunc
 
 # TODO - these should be added in at a later time (-DS)
-#DogSolveLxW          = $(LIB3D)/DogSolveLxW
 #LaxWendroff          = $(LIB3D)/LaxWendroff/LaxWendroff
 #LaxWendroffTD        = $(LIB3D)/LaxWendroff/LaxWendroffTD
 #RiemannSolveLxW      = $(LIB3D)/LaxWendroff/RiemannSolveLxW_LLF
