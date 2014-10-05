@@ -31,7 +31,7 @@ void Output( const StateVars& Q, int nframe )
     ofstream q_file(fname1.str().c_str(), ios::out );
 
     q_file << setprecision(16);
-    q_file << setw(24) << scientific << Qstate.get_t() << endl;
+    q_file << setw(24) << scientific << Q.get_t() << endl;
 
     // Output each coefficient
     for (int m=1; m<=meqn; m++)
@@ -59,7 +59,7 @@ void Output( const StateVars& Q, int nframe )
     aux_file.close();
 
     // Output additional information (if relinked)
-    void Output_Extra( const StateVars& Qstate, int nframe );
-    Output_Extra(Qstate, nframe );
+    void Output_Extra( const StateVars& Q, int nframe );
+    Output_Extra(Q, nframe );
 
 }

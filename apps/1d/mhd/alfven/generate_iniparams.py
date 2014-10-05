@@ -4,7 +4,7 @@ import finess.params.mhd
 
 pac = finess.params.dim1.starter_pac()
 
-#section [euler]
+#section [mhd]
 append_pac_from_module(pac, finess.params.mhd)
 
 parameter_list, accessor_list, check_list = pac

@@ -1,5 +1,5 @@
 #include "dogdefs.h"
-#include "MHDParams.h"
+#include "IniParams.h"
 #include <string>
 #include <iostream>
 #include <iomanip>

@@ -1,5 +1,5 @@
 #include "tensors.h"
-#include "MHDParams.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // flux function for use in "RiemannSolve"
@@ -18,7 +18,7 @@ void FluxFunc(const dTensor1& xpts,
       double x = xpts.get(i);
 
       // Gas constant
-      const double gamma = mhdParams.gamma;
+      const double gamma = global_ini_params.get_gamma();
 
       // Variables
       const double rho    = Q.get(i,1);

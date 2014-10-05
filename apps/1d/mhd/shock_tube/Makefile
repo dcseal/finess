@@ -10,13 +10,9 @@ InitApp     =  InitApp
 
 # place to add object modules
 #
-ALL_OBJECTS = $(COMMON_OBJECTS) \
-MHDParams.o \
-InitialParams.o \
+ALL_OBJECTS = $(COMMON_OBJECTS)
 
-ALL_SOURCES = $(COMMON_SOURCES) \
-MHDParams.cpp \
-InitialParams.cpp \
+ALL_SOURCES = $(COMMON_SOURCES) 
 
 ### targets ###
 

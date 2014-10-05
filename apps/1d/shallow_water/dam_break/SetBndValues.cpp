@@ -1,10 +1,13 @@
 #include "tensors.h"
+#include "StateVars.h"
 
 // Zeroth order extrapolation boundary conditions
-void SetBndValues(
-        dTensorBC2& aux, 
-        dTensorBC2& q)
+void SetBndValues(StateVars& Q)
 {
+    dTensorBC2&  q  = Q.ref_q  ();
+    dTensorBC2& aux = Q.ref_aux();
+    double t        = Q.get_t  ();
+
     int i,m;
     double tmp;
     int melems = q.getsize(1);

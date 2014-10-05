@@ -1,11 +1,13 @@
 #include "tensors.h"
+#include "StateVars.h"
 
-// Zeroth order extrapolation boundary conditions
-void SetBndValues(
-        //const dTensor2& node, 
-        dTensorBC2& aux, 
-        dTensorBC2& q)
+// Periodic boundary conditions
+void SetBndValues(StateVars& Q)
 {
+    dTensorBC2&  q  = Q.ref_q  ();
+    dTensorBC2& aux = Q.ref_aux();
+    double t        = Q.get_t  ();
+
 
     const int mx     = q.getsize(1);
     const int meqn   = q.getsize(2);
@@ -20,7 +22,7 @@ void SetBndValues(
         // q values
         for (int m=1; m<=meqn; m++)
         {
-            double tmp = q.get(1,m);
+            double tmp = q.get(mx + i,m);
 
             q.set(i,m, tmp );
         }
@@ -28,7 +30,7 @@ void SetBndValues(
         // aux values
         for (int m=1; m<=maux; m++)
         {
-            double tmp = aux.get(1,m);
+            double tmp = aux.get(mx + i,m);
 
             aux.set(i,m, tmp );
         }
@@ -44,7 +46,7 @@ void SetBndValues(
         // q values
         for (int m=1; m<=meqn; m++)
         {
-            double tmp = q.get(mx,m);
+            double tmp = q.get(i - mx,m);
 
             q.set(i,m, tmp );
         }
@@ -52,7 +54,7 @@ void SetBndValues(
         // aux values
         for (int m=1; m<=maux; m++)
         {
-            double tmp = aux.get(mx,m);
+            double tmp = aux.get(i - mx,m);
 
             aux.set(i,m, tmp );
         }
