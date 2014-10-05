@@ -106,12 +106,6 @@ def _parameters_accessors_checks():
                     type_ = "double")
     parameters.append(B3r)
     
-    angle = Parameter(variable_name = "angle",
-                      section = "initial",
-                      name = "angle",
-                      type_ = "double")
-    parameters.append(angle)
-
     return parameters, map(Accessor, parameters), checks
 
 parameter_list, accessor_list, check_list = \
