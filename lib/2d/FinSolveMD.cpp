@@ -119,8 +119,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
             // do any extra work
             BeforeFullTimeStep(dt, aux, aux, qold, qnew);
 
-            SetBndValues(aux,      qnew);
-            SetBndValues(auxstar, qstar);
+            SetBndValues(Qnew);
+            SetBndValues(Qstar);
 
             // ---------------------------------------------------------
             // Take a full time step of size dt
@@ -130,8 +130,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 case 4:
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues(Qnew);
+                SetBndValues(Qstar);
 
                 // -- Stage 1 -- //
                 ConstructIntegratedR( 0.5*dt, aux, qnew, smax, F, G);
@@ -157,8 +157,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // Perform any extra work required:
                 AfterStep(dt, auxstar, qstar );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues(Qnew);
+                SetBndValues(Qstar);
 
                 // -- Stage 2 -- //
                 ConstructIntegratedR( dt, 
@@ -175,8 +175,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                     qnew.vset(k, tmp );
                 }
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues(Qnew);
+                SetBndValues(Qstar);
 
                 // Perform any extra work required:
                 AfterStep(dt, auxstar, qstar );
@@ -191,8 +191,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // rho = 8.209945182837015e-02 chosen to maximize range of 
                 //                             absolute stability region
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues(Qnew);
+                SetBndValues(Qstar);
 
                 // -- Stage 1 -- //
                 ConstructIntegratedR( 2.0/5.0*dt, 
@@ -213,8 +213,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // Perform any extra work required:
                 AfterStep(dt, auxstar, qstar );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues(Qnew);
+                SetBndValues(Qstar);
 
                 // -- Stage 2 -- //
                 ConstructIntegratedR( dt, 
@@ -231,8 +231,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                     qnew.vset(k, tmp );
                 }
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues(Qnew);
+                SetBndValues(Qstar);
 
                 // Perform any extra work required:
                 AfterStep(dt, auxstar, qstar );

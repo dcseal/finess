@@ -10,17 +10,11 @@
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
-void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
+void ConstructL( const StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
 {
 
-    dTensorBC3&   q = Q.ref_q();
-    dTensorBC3& aux = Q.ref_aux();
-
-    // Boundary conditions
-    //
-    // @todo TODO - this should be moved before ConstructL is called, and q
-    // and aux should be changed to const values (-DS)
-    SetBndValues( Q );
+    const dTensorBC3&   q = Q.const_ref_q();
+    const dTensorBC3& aux = Q.const_ref_aux();
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
@@ -81,7 +75,7 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
             double tmp = 0.5*( q.get(i,j,m) + q.get(i-1,j,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg(maux);
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i-1,j,ma) );
@@ -93,8 +87,8 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1         );
+        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, maux );
 
         dTensor2 xvals( ws+1, 2 );
         for( int s=1; s <= ws+1; s++ )
@@ -153,7 +147,7 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(2), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl(maux), Auxr(maux);
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
 
@@ -233,7 +227,7 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
             double tmp = 0.5*( q.get(i,j,m) + q.get(i,j-1,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg(maux);
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i,j-1,ma) );
@@ -245,8 +239,8 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1         );
+        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, maux );
         dTensor2 xvals( ws+1, 2 );
         for( int s=1; s <= ws+1; s++ )
         {
@@ -304,7 +298,7 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(2), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl(maux), Auxr(maux);
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
 

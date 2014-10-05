@@ -28,17 +28,13 @@ void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Qnew );
 //
 // ------------------------------------------------------------
 
-void ConstructLxWL(
-        const dTensorBC3& aux,
-        const dTensorBC3& q,
+void ConstructLxWL( const StateVars& Q,
         dTensorBC3& F,         // <--- new term: integrated flux, f
         dTensorBC3& G,         // <--- new term: integrated flux, g
         dTensorBC3& Lstar,
         dTensorBC3& smax);
 
-void ConstructIntegratedR( double dt, 
-    const dTensorBC3& aux, const dTensorBC3& q,
-    dTensorBC3& smax, 
-    dTensorBC3& F, dTensorBC3& G);
+void ConstructIntegratedR( double dt, const StateVars& Q, 
+    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
 #endif

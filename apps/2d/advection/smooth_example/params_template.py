@@ -20,10 +20,10 @@ nv          = 500000     ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, Lax-Wendroff, Multiderivative, User-Defined)
 space_order = %(s_order)i   ; order of accuracy in space
 time_order  = %(t_order)i   ; order of accuracy in time
-verbosity   = 1   ; =method(4)= verbosity of output
-mcapa       = 0   ; =method(5)= mcapa (capacity function index in aux arrays)
-maux        = 2   ; =method(6)= maux (number of aux arrays, maux >= mcapa)
-source_term = false   ; =method(7)= source term (1-yes, 0-no)
+verbosity   = 1   ; verbosity of output
+mcapa       = 0   ; mcapa (capacity function index in aux arrays)
+maux        = 2   ; maux (number of aux arrays, maux >= mcapa)
+source_term = false   ; source term (1-yes, 0-no)
 meqn        = 1   ; number of equations
 output_dir  = %(output)s ; location of the output directory
 
