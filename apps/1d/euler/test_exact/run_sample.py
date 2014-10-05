@@ -47,11 +47,11 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
         # cmd = './dog.exe -o outputSL%(s_order)i_%(t_order)i_%(i_now)03i' % my_dictionary
         cmd = './finess.exe'
-        print cmd
+        print(cmd)
         call(cmd, shell=True)
-        print ''' 
+        print(''' 
 //////////////////////// finished running output directory output%03i //////////
-''' % (i+n_start)
+''' % (i+n_start) )
 
 def parse_input( help_message ):
     """Parse the user supplied input."""

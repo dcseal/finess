@@ -4,38 +4,36 @@ from contextlib import closing
 from subprocess import call, Popen, PIPE
 
 dogpack_data_template = '''
-; Parameters common to dogpack applications
-[dogParams]
-defaults_file = "$FINESS/config/dogParams_defaults.ini"
-ndims       = 1             ; 1 or 2
-mesh_type   = Cartesian     ; (either Cartesian or Unstructured) 
-nout        = 1             ; number of output times to print results
-tfinal      = 1.0           ; final time
-dtv(1)      = 1.0           ; initial dt
-dtv(2)      = 1e10          ; max allowable dt 
-cflv(1)     = 1.5           ; max allowable Courant number
-cflv(2)     = %(cfl)f       ; desired Courant number
+; Parameters common to FINESS applications
+[finess]
+ndims       = 1          ; 1, 2, or 3
+nout        = 1          ; number of output times to print results
+tfinal      = 1.0        ; final time
+initial_dt  = 1.0        ; initial dt
+max_dt      = 1.0e10     ; max allowable dt 
+max_cfl     = 1.50       ; max allowable Courant number
+desired_cfl = %(cfl)f    ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
-limiter_method = moment ; (e.g., moment, viscosity)
-space_order = %(s_order)i   ; =method(1)= order of accuracy in space
-time_order  = %(t_order)i   ; =method(2)= order of accuracy in time
-use_limiter = 0   ; =method(3)= use limiter (1-yes, 0-no)
-verbosity   = 1   ; =method(4)= verbosity of output
-mcapa       = 0   ; =method(5)= mcapa (capacity function index in aux arrays)
-maux        = 1   ; =method(6)= maux (number of aux arrays, maux >= mcapa)
-source_term = 0   ; =method(7)= source term (1-yes, 0-no)
+space_order = %(s_order)i   ; order of accuracy in space 
+time_order  = %(t_order)i   ; order of accuracy in time
+verbosity   = 0   ; verbosity of output
+mcapa       = 0   ; mcapa (capacity function index in aux arrays)
+maux        = 1   ; maux (number of aux arrays, maux >= mcapa)
+source_term = false   ; source term (true or false)
 meqn        = 1   ; number of equations
-mrestart    = 0   ; restart from old data (1-yes, 0-no)
-nstart      = 0   ; if mrestart==1: from file q(nstart)_restart.dat
-datafmt     = 1   ; 1 for ascii, 5 for hdf5.
-withPyClawPlotting = 0; (1-yes, 0-no)
+output_dir  = %(output)s ; location of the output directory
 
 [grid]
-mx    =  %(mx)i  ; number of grid elements in x-direction
-mbc   =      5   ; number of ghost cells on each boundary
-xlow  =  0.0e0   ; left end point
-xhigh =  1.0e0   ; right end point
+mx    = %(mx)i  ; number of grid elements in x-direction
+mbc   = 3     ; number of ghost cells on each boundary
+xlow  = 0.0e0 ; left end point
+xhigh = 1.0e0 ; right end point
+
+[weno]
+weno_version  = JS     ; type of WENO reconstruction (e.g. JS, FD, Z)
+epsilon       = 1e-29  ; regulization parameter  ( epsilon > 0.0        )
+alpha_scaling = 1.0    ; scaling parameter       ( alpha_scaling >= 1.0 )
 '''
 
 def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start):
@@ -65,23 +63,23 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
 
             # print >> data, dogpack_data_template % locals() 
             ## if we had used same names for everything
-
-            my_dictionary = {'s_order' : space_order, 't_order' : time_order, 
+            my_dictionary = {'s_order' : space_order, 't_order' : time_order,
                     'cfl' : cfl,
-                    'mx' : mx_now,
-                    "i_now": (i+n_start),
-                    'ts_method_str' : ts_method_str }
+                    'mx' : mx_now, 
+                    "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
+            }
+            my_dictionary['output'] = 'output_%(i_now)04i' % my_dictionary
             print >> data, dogpack_data_template % my_dictionary
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
         #%cmd = './dog.exe -o outputSL%(s_order)i_%(t_order)i_%(i_now)03i' % my_dictionary
-        cmd = './dog.exe -o output00%(i_now)i' % my_dictionary
-        print cmd
+        cmd = './finess.exe'
+        print(cmd)
         call(cmd, shell=True)
-        print ''' 
+        print(''' 
 //////////////////////// finished running output directory output%03i //////////
-''' % (i+n_start)
+''' % (i+n_start) )
 
 def parse_input( help_message ):
   
