@@ -8,7 +8,6 @@ include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 
 # overridden library objects
 #
-InitApp      = InitApp
 
 # Used to replace values inside wedge with (constant) initial conditions
 AfterFullTimeStep   = AfterFullTimeStep

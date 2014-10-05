@@ -8,7 +8,6 @@ include $(FINESS)/apps/1d/euler/lib/Makefile.defs
 
 # overridden library objects
 #
-InitApp    =  InitApp
 
 # place to add object modules
 #

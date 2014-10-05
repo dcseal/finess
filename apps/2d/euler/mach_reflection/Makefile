@@ -8,7 +8,6 @@ include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 
 # overridden library objects
 #
-InitApp      = InitApp
 
 ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
 
