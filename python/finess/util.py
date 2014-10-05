@@ -33,10 +33,10 @@ def rebuild_app(app_dir, clean_command = 'make cleanall', build_command = 'make 
 
 
 def get_app_dirs_in_a_dir(directory):
-    "Returns a list of strings.  Criterion: contains both generate_iniparams.py and Makefile."
+    "Returns a list of strings.  Criterion: contains both main.cpp and Makefile."
     import os
     app_dirs = [dir_ for dir_, _, files in os.walk(directory) \
-                     if 'generate_iniparams.py' in files and \
+                     if 'main.cpp' in files and \
                         'Makefile' in files]
     return app_dirs
 
