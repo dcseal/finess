@@ -86,7 +86,7 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
     const int maux = global_ini_params.get_maux();
     const int mbc  = global_ini_params.get_mbc();
 
-    dTensorBC3 smax( mx, my, meqn, mbc );           
+    dTensorBC3 smax( mx+1, my+1, 2, mbc );           
 
     // Allocate storage for this solver
     dTensorBC3    qold(mx, my, meqn, mbc);   // Needed for rejecting steps

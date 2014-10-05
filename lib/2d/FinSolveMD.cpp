@@ -58,7 +58,7 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
     // Maximum wave speed at each flux interface value.  Note that the size of
     // this tensor is one longer in each direction.
-    dTensorBC3 smax( mx+1, my+1, meqn, mbc );
+    dTensorBC3 smax( mx+1, my+1, 2, mbc );
 
     // Needed for rejecting a time step
     StateVars Qold( t, mx, my, meqn, maux, mbc );
