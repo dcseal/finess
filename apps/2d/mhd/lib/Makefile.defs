@@ -10,7 +10,7 @@ APP_NAME  = mhd
 APP_LIB   = $(FINESS)/apps/2d/$(APP_NAME)/lib
 
 # Flux function, and its derivatives
-#FluxFunc            = $(APP_LIB)/FluxFunc
+FluxFunc            = $(APP_LIB)/FluxFunc
 
 # These time derivatives are required for the Lax-Wendroff (and
 # two-derivative) code:
