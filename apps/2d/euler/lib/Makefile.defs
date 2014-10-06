@@ -28,8 +28,7 @@ SetWaveSpd          = $(APP_LIB)/SetWaveSpd
 AuxFunc             = $(APP_LIB)/AuxFunc
 
 # Extra stuff!
-#EulerParams = $(APP_LIB)/EulerParams
-AfterQinit          = $(APP_LIB)/AfterQinit
+# Lax-Friedrichs solver
 ConstructLF         = $(APP_LIB)/ConstructLF
 
 # place to add objects and sources

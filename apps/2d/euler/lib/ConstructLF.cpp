@@ -3,10 +3,11 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "IniParams.h"       
-
+#include "StateVars.h"
 
 using std::cout;
 using std::endl;
+
 // User supplied functions defining the Flux function, Jacobian, and
 // Hessian of the flux function.
 void FluxFunc(const dTensor2&,const dTensor2&,const dTensor2&,dTensor3&);
@@ -20,20 +21,26 @@ void SampleFunction(
           dTensorBC4& Fout,
     void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&));
 
+void SetBndValues(StateVars& Q);  // Sets boundary conditions ONCE for a single call to ConstructL
+void SetBndValuesX(StateVars& Q); // Only set conditions along x-direction
+void SetBndValuesY(StateVars& Q); // Only set conditions along y-direction
+
+
 // First-order Lax-Friedrichs solver where the boundary conditions are applied
 // twice - once for constructing F, and second for constructing G.  This is used
 // for the problems that have "geometry".
 //
 // See also ConstructLF. (same file)
 void ConstructLF2( const double dt, 
-    dTensorBC3& aux, dTensorBC3& q,
+    StateVars& Q,
     dTensorBC3& F, dTensorBC3& G,
     dTensorBC3& Lstar,
     dTensorBC3& smax)
 
 {    
-    void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q); // Only set conditions along x-direction
-    void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q); // Only set conditions along y-direction
+
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();
@@ -60,7 +67,7 @@ const int mbc_small      = 3;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
-    SetBndValuesX(aux, q);
+    SetBndValuesX(Q);
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
@@ -114,7 +121,7 @@ const int mbc_small      = 3;
         }
 
 
-    SetBndValuesY(aux, q);
+    SetBndValuesY(Q);
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
@@ -206,12 +213,14 @@ const int mbc_small      = 3;
 //
 // See also ConstructLF2 (same file).
 void ConstructLF( const double dt, 
-    dTensorBC3& aux, dTensorBC3& q,
+    StateVars& Q,
     dTensorBC3& smax, 
     dTensorBC3& F, dTensorBC3& G,
     dTensorBC3& Lstar )
 {
-    void SetBndValues(dTensorBC3& aux, dTensorBC3& q); 
+
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();
@@ -238,7 +247,7 @@ const int mbc_small      = 3;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
-    SetBndValues(aux, q);
+    SetBndValues(Q);
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
