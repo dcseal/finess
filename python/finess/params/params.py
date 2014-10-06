@@ -376,6 +376,7 @@ def generate_header_cpp(parameters, accessors, checks):
 #define %(header_guard_macro_name)s
 %(header_comments_file)s
 
+#include <cmath>
 #include <string>
 #include "util.h"
 #include "IniParser.h"
