@@ -1,13 +1,16 @@
 #include "dogdefs.h"
 #include "IniParams.h"
-#include "IniParams.h"
+#include "StateVars.h"
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
 //      ZEROTH ORDER EXTRAPOLATION BOUNDARY CONDITIONS
 //
-void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValues( StateVars& Q )
 {
+
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     int i,j,m;
 

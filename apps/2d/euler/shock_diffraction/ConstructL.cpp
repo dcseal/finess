@@ -10,17 +10,13 @@
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
-void ConstructL(
-        dTensorBC3& aux,
-        dTensorBC3& q,      // SetBndValues modifies q and aux
-        dTensorBC3& Lstar,
-        dTensorBC3& smax)
+void ConstructL( const StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
 {
 
     // Boundary conditions
     //
-    void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q);  // Only set conditions along x-direction
-    void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q);  // Only set conditions along y-direction
+    void SetBndValuesX(StateVars& Q);  // Only set conditions along x-direction
+    void SetBndValuesY(StateVars& Q);  // Only set conditions along y-direction
 
     // --- User supplied functions --- //
     void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);

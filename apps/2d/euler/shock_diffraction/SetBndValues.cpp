@@ -1,13 +1,15 @@
 #include <cmath>
 #include "dogdefs.h"
 #include "IniParams.h"
-#include "IniParams.h"
-#include "IniParams.h"  
+#include "StateVars.h"  
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
-void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValues( StateVars& Q )
 {
+
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     void SampleFunction( 
         int istart, int iend,
@@ -138,8 +140,11 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
 
 }      
 
-void SetBndValuesX( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValuesX( StateVars& Q )
 {
+
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     void SampleFunction( 
         int istart, int iend,
@@ -223,8 +228,11 @@ void SetBndValuesX( dTensorBC3& aux, dTensorBC3& q )
 
 }
 
-void SetBndValuesY( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValuesY( StateVars& Q )
 {
+
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     void SampleFunction( 
         int istart, int iend,

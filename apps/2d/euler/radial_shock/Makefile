@@ -9,7 +9,6 @@ include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 ## ------------------------------------------------------------------------- ##
 # overridden library objects
 #
-#EulerParams = EulerParams
 FinSolveUser            = $(FINESS)/lib/2d/FinSolveRK_PIF
 ## ------------------------------------------------------------------------- ##
 
