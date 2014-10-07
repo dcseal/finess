@@ -7,7 +7,10 @@ include $(FINESS)/lib/2d/Makefile.defs
 include $(FINESS)/apps/2d/mhd/lib/Makefile.defs
 
 # overridden library objects
-#
+BeforeStep = BeforeStep
+ConstructL = ConstructL
+UpdateSoln = UpdateSoln
+AfterStep = AfterStep
 
 ALL_OBJECTS = $(COMMON_OBJECTS)
 

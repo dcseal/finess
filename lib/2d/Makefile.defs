@@ -98,6 +98,11 @@ GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
 GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
 
+# Although not as likely to be overridden as the above, UpdateSoln
+# does get overridden in order to implement Runge-Kutta Constrained
+# Transport MHD solver.
+UpdateSoln           = $(LIB2D)/UpdateSoln
+
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
 D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
@@ -124,7 +129,7 @@ LIB2D_OBJECTS = \
   $(ConstructLxWL).o \
   $(ConstructIntegratedR).o \
   $(AfterFullTimeStep).o \
-  $(LIB2D)/UpdateSoln.o \
+  $(UpdateSoln).o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
 

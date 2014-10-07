@@ -8,6 +8,6 @@
 * Add Constrained Transport
     * TODO Add initial condition for magnetic potential.
     * TODO Runge-Kutta
-        * TODO Plumb BeforeStep, ConstructL, UpdateSoln, AfterStep to use
+        * DONE Plumb BeforeStep, ConstructL, UpdateSoln, AfterStep to use
           app redefined version.
     * TODO Lax-Wendroff
