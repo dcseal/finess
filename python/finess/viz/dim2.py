@@ -9,7 +9,7 @@ See also: TODO.
 
 from __future__ import absolute_import
 
-def ask_which_component_and_which_frame_and_plot_wireframe():
+def ask_which_component_and_which_frame_and_plot_wireframe(parameters_ini_filename):
     """Call this and you get an interactive plot program as the
     function name suggests."""
     from finess.params.util import read_params
@@ -18,7 +18,7 @@ def ask_which_component_and_which_frame_and_plot_wireframe():
     from mpl_toolkits.mplot3d import Axes3D
     from finess.viz.dim2 import draw_ith_frame_jth_component
     
-    params = read_params("parameters.ini", parameter_list)
+    params = read_params(parameters_ini_filename, parameter_list)
     
     component = ask_which_component(params)
     

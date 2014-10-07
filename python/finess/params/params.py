@@ -242,8 +242,11 @@ class Parameter:
 
 
 class DerivedParameter(Parameter):
-    def __init__(self, variable_name, type_, defining_expression_in_cpp):
+    def __init__(self, variable_name, type_, defining_expression_in_cpp,
+                 dump_to_section = None, dump_to_name = None):
         assert type(variable_name) == str
+        assert dump_to_section == None and dump_to_name == None or \
+               type(dump_to_section) == str and type(dump_to_name) == str
                
         if type(type_) == str:
             self.type_= ParameterType(type_)
@@ -257,9 +260,23 @@ class DerivedParameter(Parameter):
         self.variable_name = variable_name
         self.defining_expression_in_cpp = defining_expression_in_cpp
         
+        self.dump_to_section = dump_to_section
+        self.dump_to_name = dump_to_name
+        self.section = self.dump_to_section
+        self.name = self.dump_to_name
+
     def get_defining_code(self):
-        return "    this->%(variable_name)s = %(defining_expression)s;"  %                {"variable_name": self.variable_name,
-                "defining_expression": self.defining_expression_in_cpp}
+        dump_code = "" if self.dump_to_section == None else \
+                    """    	this->ini_doc["%(section)s"]["%(name)s"] = anyToString(%(value)s)  + "    ; Derived Parameter"; """ % \
+                    {'section': self.dump_to_section,                
+                     'name': self.dump_to_name,
+                     'value': self.defining_expression_in_cpp}
+
+        return """    this->%(variable_name)s = %(defining_expression)s;
+    %(dump_code)s"""  % \
+                {"variable_name": self.variable_name,
+                 "defining_expression": self.defining_expression_in_cpp,
+                 "dump_code": dump_code}  
 
         
 class Accessor:

@@ -48,8 +48,8 @@ int main_global(int argc, char* argv[])
 
     // Call the ``RunFinpack'' routine, which executes the code
     // Each dimension has its own version of this routine.
-    int RunFinpack( );
-    int m = RunFinpack( );
+    int RunFinpack(string parameters_ini_filename );
+    int m = RunFinpack(parameters_ini_filename);
 
     // Get current time
     double time2 = time(NULL);

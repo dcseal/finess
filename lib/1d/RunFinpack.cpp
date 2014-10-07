@@ -41,7 +41,7 @@
  *     b.) Call Output to print data to file
  *
  */
-int RunFinpack( )
+int RunFinpack(std::string parameters_ini_filename)
 {
 
     using std::cout;
@@ -63,8 +63,17 @@ int RunFinpack( )
     cout << "   ------------------------------------------------   " << endl;
     cout << endl;
 
-    // Get parameters and print to screen
+    // Get parameters and print to screen.
+    // Note: now default and derived values are also present
     cout << global_ini_params.ini_doc_as_string() << endl;
+    // Also dump that to the output directory
+    {
+        using std::ofstream;
+        ofstream ofs((global_ini_params.get_output_dir() + "/" + parameters_ini_filename + ".dump").c_str());
+        ofs << global_ini_params.ini_doc_as_string() << endl;
+        ofs.close();
+    }
+    
     const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
 	  global_ini_params.get_time_stepping_method();
 

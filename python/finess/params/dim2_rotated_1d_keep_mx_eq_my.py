@@ -54,29 +54,39 @@ def _parameters_accessors_checks():
 
    
     my = DerivedParameter(variable_name = "my",
-                          type_ = "double",
-		                  defining_expression_in_cpp = """this->mx""")
+                          type_ = "int",
+		                  defining_expression_in_cpp = """this->mx""",
+                          dump_to_section = 'grid',
+                          dump_to_name = 'my')
     parameters.append(my)
     checks.append(CheckGreaterThan(my, 0))
     
     xlow = DerivedParameter(variable_name = "xlow",
                             type_ = "double",
-                            defining_expression_in_cpp = "0.0")
+                            defining_expression_in_cpp = "0.0",
+                            dump_to_section = 'grid',
+                            dump_to_name = 'xlow')
     parameters.append(xlow)
 
     xhigh = DerivedParameter(variable_name = "xhigh",
                              type_ = "double",
-                             defining_expression_in_cpp = "1 / std::cos(this->angle)")
+                             defining_expression_in_cpp = "1 / std::cos(this->angle)",
+                             dump_to_section = 'grid',
+                             dump_to_name = 'xhigh')
     parameters.append(xhigh)
 
     ylow = DerivedParameter(variable_name = "ylow",
                             type_ = "double",
-                            defining_expression_in_cpp = "0.0")
+                            defining_expression_in_cpp = "0.0",
+                            dump_to_section = 'grid',
+                            dump_to_name = 'ylow')
     parameters.append(ylow)
 
     yhigh = DerivedParameter(variable_name = "yhigh",
                              type_ = "double",
-                             defining_expression_in_cpp = "1 / std::sin(this->angle)")
+                             defining_expression_in_cpp = "1 / std::sin(this->angle)",
+                             dump_to_section = 'grid',
+                             dump_to_name = 'yhigh')
     parameters.append(yhigh)
     
    
