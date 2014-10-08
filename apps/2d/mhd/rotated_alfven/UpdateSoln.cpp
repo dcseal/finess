@@ -1,7 +1,10 @@
 #include "tensors.h"
+#include "IniParams.h"
 #include "StateVars.h"
 
 #include "util.h"
+
+#include "ConstructHJ_L.h"
 
 // Update the solution using the constructed Lstar
 //
@@ -28,9 +31,25 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
     // Update time
     Qnew.set_t( alpha1*tstar + alpha2*tnew + beta*dt );
 
-    const int numel = qnew.numel();
+    const int   maux = global_ini_params.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int     my = global_ini_params.get_my();
+    const int    mbc = global_ini_params.get_mbc();
+
+    dTensorBC3 Lauxstar(mx, my, maux, mbc);
+    ConstructHJ_L(Qstar, Lauxstar);
+
+    const int numel_aux = auxnew.numel();
 #pragma omp parallel for
-    for( int k=0; k < numel; k++ )
+    for( int k=0; k < numel_aux; k++ )
+    {
+        double tmp = alpha1*auxstar.vget(k)+alpha2*auxnew.vget(k)+beta*dt*Lauxstar.vget(k);
+        auxnew.vset( k, tmp );
+    }
+
+    const int numel_q = qnew.numel();
+#pragma omp parallel for
+    for( int k=0; k < numel_q; k++ )
     {
         double tmp = alpha1*qstar.vget(k)+alpha2*qnew.vget(k)+beta*dt*Lstar.vget(k);
         qnew.vset( k, tmp );
@@ -67,6 +86,8 @@ void UpdateSoln(
     const int    mbc = q1.getmbc();
 
     const int numel = q1.numel();
+    
+    
 #pragma omp parallel for
     for( int k=0; k < numel; k++ )
     {

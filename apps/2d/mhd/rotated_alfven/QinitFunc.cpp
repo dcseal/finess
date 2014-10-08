@@ -44,8 +44,8 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
       qvals.set(i,3, rho*(-u1*sin(angle) + u2*cos(angle)) );  // 2-momentum
       qvals.set(i,4, rho*u3 );  // 3-momentum
       qvals.set(i,5, energy );  // energy
-      qvals.set(i,6,  B1*cos(angle) + B2*sin(angle) );      // B1
-      qvals.set(i,7, -B1*sin(angle) + B2*cos(angle) );      // B2
+      qvals.set(i,6,  B1*cos(angle) - B2*sin(angle) );      // B1
+      qvals.set(i,7,  B1*sin(angle) + B2*cos(angle) );      // B2
       qvals.set(i,8, B3 );      // B3      
     }
 }

@@ -7,14 +7,22 @@ include $(FINESS)/lib/2d/Makefile.defs
 include $(FINESS)/apps/2d/mhd/lib/Makefile.defs
 
 # overridden library objects
+AfterQinit = AfterQinit
 BeforeStep = BeforeStep
 ConstructL = ConstructL
 UpdateSoln = UpdateSoln
 AfterStep = AfterStep
 
-ALL_OBJECTS = $(COMMON_OBJECTS)
+# Hamilton-Jacobi rhs for magnetic potential
+ConstructHJ_L = ConstructHJ_L
 
-ALL_SOURCES = $(COMMON_SOURCES)
+ALL_OBJECTS = $(COMMON_OBJECTS) \
+$(ConstructHJ_L).o
+
+ALL_SOURCES = $(COMMON_SOURCES) \
+$(ConstructHJ_L).cpp \
+$(ConstructHJ_L).h
+
 
 
 TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/2d/mhd/lib/ $(LIB_SYS_INCLUDE)

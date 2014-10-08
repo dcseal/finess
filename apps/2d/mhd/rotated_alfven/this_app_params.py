@@ -6,12 +6,9 @@ def _parameters_accessors_checks():
      
     parameters = []
     checks = []
-
-    angle = Parameter(variable_name = "angle",
-                      section = "initial",
-                      name = "angle",
-                      type_ = "double")
-    parameters.append(angle)
+    
+    checks.append(Check(cpp_code = """if(this->maux != 1)
+        terminate("finess.maux should be 1 for 2D Constraint Transport.");"""))
 
     return parameters, map(Accessor, parameters), checks
 
