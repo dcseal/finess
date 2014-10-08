@@ -3,8 +3,8 @@
 
 #include "StateVars.h"
 
-// ------------------------------------------------------------
-// Functions use in RunDogpack.cpp
+void WriteQhelp( void );
+
 void Output( const StateVars& Qstate, int nframe );
 
 void QinitFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,

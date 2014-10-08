@@ -68,6 +68,11 @@ int RunFinpack( )
     const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
 	  global_ini_params.get_time_stepping_method();
 
+    // Print information about the parameters to file.  In order to use the
+    // MATLAB plotting routines, this call is necessary to pull information
+    // from the parameters.ini file.
+    WriteQhelp( );
+
     const int&     nout     = global_ini_params.get_nout();
     const double&  tfinal   = global_ini_params.get_tfinal();
     double dtv[2+1];
