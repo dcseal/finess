@@ -83,6 +83,9 @@ def draw_ith_frame_jth_component(params, fig, i, j,
     from mpl_toolkits.mplot3d import Axes3D
     ax = fig.add_subplot(111, projection='3d')
     ax.set_title("$t = %(t)f$" % {"t": t})
+    ax.set_xlabel("$x$")
+    ax.set_ylabel("$y$")
+    ax.set_zlabel("$z$")
 
     import finess.viz.dim2
     X, Y = finess.viz.dim2.meshgrid(params)
