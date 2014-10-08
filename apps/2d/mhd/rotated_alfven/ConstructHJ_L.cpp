@@ -55,8 +55,8 @@ void ConstructHJ_L(const StateVars& Q, dTensorBC3& Lauxstar)
 
     assert(mbc >= 2 + r);
 #pragma omp parallel for
-    for(int i = 1 - 2; i <= mx + 2; ++i){
-        for(int j = 1 - 2; j <= my + 2; ++j){
+    for(int i = 1; i <= mx; ++i){
+        for(int j = 1; j <= my; ++j){
             
             // A^{3}_{,x}^{-}
             double A3xm;
