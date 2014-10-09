@@ -25,9 +25,13 @@ global INI;
 INI = ini2struct(parameters_ini_filename);
 
 % pull the output directory.
-outputdir_long_str = INI.finess.output_dir;
-outputdir = outputdir_long_str( 1:(min(find(outputdir_long_str==';'))-1) );
-outputdir = outputdir( 1:(min(find(outputdir==' '))-1) );
+if( isfield( INI.finess, 'output_dir' ) )
+    outputdir_long_str = INI.finess.output_dir;
+    outputdir = outputdir_long_str( 1:(min(find(outputdir_long_str==';'))-1) );
+    outputdir = outputdir( 1:(min(find(outputdir==' '))-1) );
+else
+    outputdir = 'output';
+end
 
 % Pull more information from parameters file
 ndims = sscanf(INI.finess.ndims, '%d');

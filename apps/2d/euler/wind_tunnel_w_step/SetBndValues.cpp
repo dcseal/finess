@@ -1,21 +1,24 @@
 #include <cmath>
 #include "dogdefs.h"
 #include "IniParams.h"
-#include "IniParams.h"
-#include "IniParams.h"  
+#include "StateVars.h"
+
+void SampleFunction( 
+    int istart, int iend,
+    int jstart, int jend,
+    const dTensorBC3& qin, 
+    const dTensorBC3& auxin,  
+          dTensorBC3& Fout,
+    void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
-void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValues( StateVars& Q )
 {
 
-    void SampleFunction( 
-        int istart, int iend,
-        int jstart, int jend,
-        const dTensorBC3& qin, 
-        const dTensorBC3& auxin,  
-              dTensorBC3& Fout,
-        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     const int space_order = global_ini_params.get_space_order();
     const int mx   = q.getsize(1);
@@ -144,16 +147,11 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
 }      
 
 
-void SetBndValuesX( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValuesX( StateVars& Q )
 {
 
-    void SampleFunction( 
-        int istart, int iend,
-        int jstart, int jend,
-        const dTensorBC3& qin, 
-        const dTensorBC3& auxin,  
-              dTensorBC3& Fout,
-        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     const int space_order = global_ini_params.get_space_order();
     const int mx   = q.getsize(1);
@@ -317,16 +315,11 @@ c treat the singularity at the corner
 
 }
 
-void SetBndValuesY( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValuesY( StateVars& Q )
 {
 
-    void SampleFunction( 
-        int istart, int iend,
-        int jstart, int jend,
-        const dTensorBC3& qin, 
-        const dTensorBC3& auxin,  
-              dTensorBC3& Fout,
-        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     const int space_order = global_ini_params.get_space_order();
     const int mx   = q.getsize(1);

@@ -7,36 +7,19 @@
 %% [xlow,xhigh,ylow,yhigh]:  min/max values of grid
 %%                    meqn:  number of equations
 %%                    maux:  number of aux components
-%%                   meth1:  spatial order of accuracy
 %%
 %%   Grid information:
 %%       (xc,yc): grid points (cell centers), size = (mx,my)
-%%       (xl,yl): grid points (lower left cell corners), size = (mx+1,my+1)
 %%
 %%   Solution information:
 %%         qsoln:  solution sampled on mesh, size = (mx,my,meqn)
 %%           aux:  aux components sampled on mesh, size = (mx,my,maux)
-%%          qaug:  solution sampled on mesh, with zero padding to
-%%                 make it compatible with surf and pcolor matlab
-%%                 plotting tools, size = (mx+1,my+1,meqn)
-%%       aux_aug:  aux components sampled on mesh, with zero padding to
-%%                 make it compatible with surf and pcolor matlab
-%%                 plotting tools, size = (mx+1,my+1,maux)
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % gas constant
-if( exist( [outputdir,'/eulerhelp.dat'], 'file' ) )
-    fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
-    if(fids==-1)
-      error(['File  ',outputdir,'/eulerhelp.dat  not found.']);
-    end
-    gamma_gas  = fscanf(fids,'%e',1);
-    fclose(fids);
-else
-    gamma_gas = 1.4;
-    disp(['Setting gamma_gas = ', num2str( gamma_gas, '%f' ) ]);
-end
+global INI;
+gamma_gas = sscanf(INI.euler.gamma, '%e');
 
 rr = reshape(sqrt( xc.^2 + yc.^2 ),mx*my,1);
     
@@ -50,7 +33,7 @@ p_r   = (gamma_gas-1).*(E_r - 0.5.*rho_r.*(ux_r.^2 + uy_r.^2 + uz_r.^2));
 
 figure(1);
 clf;
-pcolor(xl,yl,qaug(:,:,m));
+pcolor(xc,yc,qsoln(:,:,m));
 shading flat;
 yrbcolormap
 axis on; box on; grid off;

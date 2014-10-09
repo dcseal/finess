@@ -7,38 +7,23 @@
 %% [xlow,xhigh,ylow,yhigh]:  min/max values of grid
 %%                    meqn:  number of equations
 %%                    maux:  number of aux components
-%%                   meth1:  spatial order of accuracy
 %%
 %%   Grid information:
 %%       (xc,yc): grid points (cell centers), size = (mx,my)
-%%       (xl,yl): grid points (lower left cell corners), size = (mx+1,my+1)
 %%
 %%   Solution information:
 %%         qsoln:  solution sampled on mesh, size = (mx,my,meqn)
 %%           aux:  aux components sampled on mesh, size = (mx,my,maux)
-%%          qaug:  solution sampled on mesh, with zero padding to
-%%                 make it compatible with surf and pcolor matlab
-%%                 plotting tools, size = (mx+1,my+1,meqn)
-%%       aux_aug:  aux components sampled on mesh, with zero padding to
-%%                 make it compatible with surf and pcolor matlab
-%%                 plotting tools, size = (mx+1,my+1,maux)
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % gas constant
-fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
-if fids==-1
-  disp(['File  ',outputdir,'/eulerhelp.dat  not found.']);
-  disp('Setting gamma = 1.4');
-  gamma_gas = 1.4;
-else
-  gamma_gas  = fscanf(fids,'%e',1);
-  fclose(fids);
-end
+global INI;
+gamma_gas = sscanf(INI.euler.gamma, '%e');
 
 figure(1);
 clf;
-pcolor(xl,yl,qaug(:,:,m));
+pcolor(xc,yc,qsoln(:,:,m));
 shading flat;
 yrbcolormap
 axis on; box on; grid off;
@@ -66,9 +51,9 @@ caxis([1,25]);
    %  
    figure(3);
    clf;
-   %contour(xl, yl, qaug(:,:,m), linspace(1.3965, 22.682,30), '-k' );
+   %contour(xc, yc, qsoln(:,:,m), linspace(1.3965, 22.682,30), '-k' );
    % Woodward and Collela's contour lines:
-   contour(xl, yl, qaug(:,:,m), linspace(1.728, 20.74,30), '-k' );
+   contour(xc, yc, qsoln(:,:,m), linspace(1.728, 20.74,30), '-k' );
    axis on; box on; grid off;
    axis('equal');
    axis([-0.05 3.25 -0.05 1.05]);
