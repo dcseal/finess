@@ -7,21 +7,13 @@
 %% [xlow,xhigh,ylow,yhigh]:  min/max values of grid
 %%                    meqn:  number of equations
 %%                    maux:  number of aux components
-%%                   meth1:  spatial order of accuracy
 %%
 %%   Grid information:
 %%       (xc,yc): grid points (cell centers), size = (mx,my)
-%%       (xl,yl): grid points (lower left cell corners), size = (mx+1,my+1)
 %%
 %%   Solution information:
 %%         qsoln:  solution sampled on mesh, size = (mx,my,meqn)
 %%           aux:  aux components sampled on mesh, size = (mx,my,maux)
-%%          qaug:  solution sampled on mesh, with zero padding to
-%%                 make it compatible with surf and pcolor matlab
-%%                 plotting tools, size = (mx+1,my+1,meqn)
-%%       aux_aug:  aux components sampled on mesh, with zero padding to
-%%                 make it compatible with surf and pcolor matlab
-%%                 plotting tools, size = (mx+1,my+1,maux)
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -31,9 +23,9 @@ OPT = 1;   % if OPT==1, shock aligned in x-direction
 figure(1);
 clf;
 if( m==1 )
-  pcolor(xl,yl,qaug(:,:,m)+aux_aug(:,:,1));
+  pcolor(xc,yc,qsoln(:,:,m)+aux(:,:,1));
 else
-  pcolor(xl,yl,qaug(:,:,m));
+  pcolor(xc,yc,qsoln(:,:,m));
 end
 
 shading flat;

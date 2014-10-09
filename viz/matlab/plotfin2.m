@@ -112,16 +112,29 @@ while(nf~=-1)
       q_data = fscanf(fids,'%e',[inf]);
       qsoln = reshape( q_data, mx, my, meqn );
       clear q_data;
+      fclose( fids );
 
-    %     if (maux>0)
-    %       %% Aux variables -- aux
-    %       [a_data,time] = read_state2_cart(datafmt, outputdir, n1, 'a', ...
-    %                                        mx, my, maux, kmax, 1:maux);
-    %       aux = reshape( a_data, mx, my, maux );
-    %       clear a_data;
-    %       aux_aug = zeros(mx+1,my+1,maux);
-    %       aux_aug(1:mx,1:my,1:maux) = aux;
-    %     end
+      if (maux>0)
+
+        %     outputdir/q[n1].dat
+        fname = [outputdir,'/',num2str(n1+10000),'.dat'];
+
+        % replace the 1000's digit by the letter a
+        fname(length(outputdir)+2) = 'a';
+
+        fids = fopen(fname,'r');
+        if( fids==-1 )
+            error(['File  ',fname,'  not found.']);
+        end
+
+        %% Aux variables -- aux
+        time     = fscanf(fids,'%e',1);
+        aux_data = fscanf(fids,'%e',[inf]);
+        aux      = reshape( aux_data, mx, my, maux );
+        clear aux_data;
+        fclose( fids );
+
+      end
       
       % USER SUPPLIED FUNCTION: Plotting function
       plotq2;

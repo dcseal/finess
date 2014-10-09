@@ -16,7 +16,7 @@ double GetCFL(double dt, double dtmax,
 // These four functions get called in the following order for each stage in
 // the Runge-Kutta method:
 void BeforeStep(double dt, StateVars& Q );
-void ConstructL( const StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax);
+void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax);
 
 // Used for orders 1--4:
 void UpdateSoln(double alpha1,double alpha2,double beta,double dt,

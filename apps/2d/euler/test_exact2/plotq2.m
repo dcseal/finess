@@ -29,7 +29,7 @@
   
   figure(1);
   clf;
-  pcolor(xc, yc, qaug(:, :, m));
+  pcolor(xc, yc, qsoln(:, :, m));
   shading flat;
   yrbcolormap
   axis on; box on; grid off;
