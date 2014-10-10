@@ -9,12 +9,40 @@
 
 
 
+inline double A3_original_to_periodic(int i, int j, double A3_original){
+    using std::sin;
+    using std::cos;
+
+    double xlow = global_ini_params.get_xlow();
+    double ylow = global_ini_params.get_ylow();
+    double dx = global_ini_params.get_dx();
+    double dy = global_ini_params.get_dy();
+    double angle = global_ini_params.get_angle();
+    double x, y;
+    ij_to_xy(xlow, ylow, dx, dy, i, j, x, y);
+
+    return A3_original - (-x * sin(angle) + y * cos(angle));
+}
+
+inline double A3_periodic_to_original(int i, int j, double A3_periodic){
+    using std::sin;
+    using std::cos;
+
+    double xlow = global_ini_params.get_xlow();
+    double ylow = global_ini_params.get_ylow();
+    double dx = global_ini_params.get_dx();
+    double dy = global_ini_params.get_dy();
+    double angle = global_ini_params.get_angle();
+    double x, y;
+    ij_to_xy(xlow, ylow, dx, dy, i, j, x, y);
+
+    return A3_periodic + (-x * sin(angle) + y * cos(angle));
+}
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
-// TODO - what type of boundary conditions are being applied here? -DS
+// Double periodic
 //
-// See also: ...
 void SetBndValues( StateVars& Q )
 {
     using std::cos;
@@ -54,16 +82,9 @@ void SetBndValues( StateVars& Q )
                 double tmp = q.get(mx + i,j,m);
                 q.set(i,j,m, tmp );
             }
-
-            double x, y;
-            ij_to_xy(xlow, ylow, dx, dy, i, j, x, y);
-            // aux values
-            for(int m=1; m<=maux; m++)
-            {
-//                double tmp = aux.get(mx + i,j,m);
-                double tmp = A3_exact(angle, t, x, y);
-                aux.set(i,j,m, tmp );
-            }
+            aux.set(i, j, 1,
+                    A3_periodic_to_original(i, j, 
+                        A3_original_to_periodic(mx + i, j, aux.get(mx + i, j, 1))));
         }
     }
     // ***********************************************
@@ -83,22 +104,10 @@ void SetBndValues( StateVars& Q )
                 double tmp = q.get(i - mx,j,m);
                 q.set(i,j,m, tmp );
             }
-
-            double x, y;
-            ij_to_xy(xlow, ylow, dx, dy, i, j, x, y);
-            // aux values
-            for(int m=1; m<=maux; m++)
-            {
-//                double tmp = aux.get(mx + i,j,m);
-                double tmp = A3_exact(angle, t, x, y);
-                aux.set(i,j,m, tmp );
-            }
-//            // aux values
-//            for(int m=1; m<=maux; m++)
-//            {
-//                double tmp = aux.get(i - mx,j,m);
-//                aux.set(i,j,m, tmp );
-//            }
+           
+            aux.set(i, j, 1,
+                    A3_periodic_to_original(i, j, 
+                        A3_original_to_periodic(i - mx, j, aux.get(i - mx, j, 1))));
         }
     }
     // ***********************************************
@@ -118,22 +127,9 @@ void SetBndValues( StateVars& Q )
                 double tmp = q.get(i,my + j,m);
                 q.set(i,j,m, tmp );
             }               
-
-            double x, y;
-            ij_to_xy(xlow, ylow, dx, dy, i, j, x, y);
-            // aux values
-            for(int m=1; m<=maux; m++)
-            {
-//                double tmp = aux.get(mx + i,j,m);
-                double tmp = A3_exact(angle, t, x, y);
-                aux.set(i,j,m, tmp );
-            }
-//            // aux values
-//            for(int m=1; m<=maux; m++)
-//            {
-//                double tmp = aux.get(i,my + j,m);
-//                aux.set(i,j,m, tmp );
-//            }
+            aux.set(i, j, 1,
+                    A3_periodic_to_original(i, j, 
+                        A3_original_to_periodic(i, my + j, aux.get(i, my + j, 1))));
         }
     }
     // ***********************************************
@@ -154,21 +150,9 @@ void SetBndValues( StateVars& Q )
                 q.set(i,j,m, tmp );
             }
 
-            double x, y;
-            ij_to_xy(xlow, ylow, dx, dy, i, j, x, y);
-            // aux values
-            for(int m=1; m<=maux; m++)
-            {
-//                double tmp = aux.get(mx + i,j,m);
-                double tmp = A3_exact(angle, t, x, y);
-                aux.set(i,j,m, tmp );
-            }
-//            // aux values
-//            for(int m=1; m<=maux; m++)
-//            {
-//                double tmp = aux.get(i,j - my,m);
-//                aux.set(i,j,m, tmp );
-//            }
+            aux.set(i, j, 1,
+                    A3_periodic_to_original(i, j, 
+                        A3_original_to_periodic(i, j - my, aux.get(i, j - my, 1))));
         }
     }
     // ***********************************************
@@ -184,19 +168,10 @@ void SetBndValues( StateVars& Q )
             {     
                 q.set(1-i,1-j,m, q.get(mx + 1 - i, my + 1 - j,m) );
             }
-            double x, y;
-            ij_to_xy(xlow, ylow, dx, dy, 1-i, 1-j, x, y);
-            // aux values
-            for(int m=1; m<=maux; m++)
-            {
-//                double tmp = aux.get(mx + i,j,m);
-                double tmp = A3_exact(angle, t, x, y);
-                aux.set(1-i,1-j,m, tmp );
-            }
-//            for(int m=1; m<=maux; m++)
-//            {     
-//                aux.set(1-i,1-j,m, aux.get(mx + 1 - i, my + 1 - j,m) );
-//            }
+            aux.set(1-i, 1-j, 1,
+                    A3_periodic_to_original(1-i, 1-j, 
+                        A3_original_to_periodic(mx + 1 - i, my + 1 - j, 
+                            aux.get(mx + 1 - i, my + 1 - j, 1))));
         }
     // ***********************************************
 
@@ -212,19 +187,10 @@ void SetBndValues( StateVars& Q )
                 q.set(mx+i,1-j,m, q.get(i, my + 1 - j, m) );
             }
 
-            double x, y;
-            ij_to_xy(xlow, ylow, dx, dy, mx+i, 1-j, x, y);
-            // aux values
-            for(int m=1; m<=maux; m++)
-            {
-//                double tmp = aux.get(mx + i,j,m);
-                double tmp = A3_exact(angle, t, x, y);
-                aux.set(mx+i,1-j,m, tmp );
-            }
-//            for(int m=1; m<=maux; m++)
-//            {     
-//                aux.set(mx+i,1-j,m, aux.get(i, my + 1 - j, m) );
-//            }
+            aux.set(mx + i, 1-j, 1,
+                    A3_periodic_to_original(mx + i, 1-j, 
+                        A3_original_to_periodic(i, my + 1 - j, 
+                            aux.get(i, my + 1 - j, 1))));
         }
     // ***********************************************
 
@@ -239,19 +205,10 @@ void SetBndValues( StateVars& Q )
             {     
                 q.set(mx+i,my+j,m, q.get(i, j, m) );
             }
-            double x, y;
-            ij_to_xy(xlow, ylow, dx, dy, mx+i, mx+j, x, y);
-            // aux values
-            for(int m=1; m<=maux; m++)
-            {
-//                double tmp = aux.get(mx + i,j,m);
-                double tmp = A3_exact(angle, t, x, y);
-                aux.set(mx+i,mx+j,m, tmp );
-            }
-//            for(int m=1; m<=maux; m++)
-//            {     
-//                aux.set(mx+i,my+j,m, aux.get(i, j, m) );
-//            }
+            aux.set(mx + i, my + j, 1,
+                    A3_periodic_to_original(mx + i, my + j, 
+                        A3_original_to_periodic(i, j, 
+                            aux.get(i, j, 1))));
         }
     // ***********************************************
 
@@ -266,20 +223,12 @@ void SetBndValues( StateVars& Q )
             {     
                 q.set(1-i,my+j,m, q.get(mx + 1 - i, j, m) );
             }
-            double x, y;
-            ij_to_xy(xlow, ylow, dx, dy, 1-i, my+j, x, y);
-            // aux values
-            for(int m=1; m<=maux; m++)
-            {
-//                double tmp = aux.get(mx + i,j,m);
-                double tmp = A3_exact(angle, t, x, y);
-                aux.set(1-i,my+j,m, tmp );
-            }
-//            for(int m=1; m<=maux; m++)
-//            {     
-//                aux.set(1-i,my+j,m, aux.get(mx + 1 - i, j, m) );
-//            }
+            aux.set(1 - i, my + j, 1,
+                    A3_periodic_to_original(1 - i, my + j, 
+                        A3_original_to_periodic(mx + 1 - i, j, 
+                            aux.get(mx + 1 - i, j, 1))));
         }
     // ***********************************************
+
 
 }

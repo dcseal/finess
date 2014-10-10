@@ -40,8 +40,8 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
 	+ 0.5*(B1*B1 + B2*B2 + B3*B3);
 
       qvals.set(i,1, rho );     // density
-      qvals.set(i,2, rho*( u1*cos(angle) + u2*sin(angle)) );  // 1-momentum
-      qvals.set(i,3, rho*(-u1*sin(angle) + u2*cos(angle)) );  // 2-momentum
+      qvals.set(i,2, rho*( u1*cos(angle) - u2*sin(angle)) );  // 1-momentum
+      qvals.set(i,3, rho*( u1*sin(angle) + u2*cos(angle)) );  // 2-momentum
       qvals.set(i,4, rho*u3 );  // 3-momentum
       qvals.set(i,5, energy );  // energy
       qvals.set(i,6,  B1*cos(angle) - B2*sin(angle) );      // B1

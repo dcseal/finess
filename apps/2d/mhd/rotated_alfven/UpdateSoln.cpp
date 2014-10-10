@@ -37,7 +37,12 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
     const int    mbc = global_ini_params.get_mbc();
 
     dTensorBC3 Lauxstar(mx, my, maux, mbc);
+    const int numel_Lauxstar = Lauxstar.numel();
+#pragma omp parallel for
+    for(int k = 0; k < numel_Lauxstar; ++k)
+        Lauxstar.vset(k, 0.0);
     ConstructHJ_L(Qstar, Lauxstar);
+
 
     const int numel_aux = auxnew.numel();
 #pragma omp parallel for
