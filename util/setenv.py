@@ -70,6 +70,11 @@ print "  plot2d_generic = %s" % plot2d_generic_command
 write_shortcut_alias(csh_file,bash_file,"plot2d_generic", plot2d_generic_command)
 print ""
 
+plot2d_generic_command = "python $FINESS/viz/plot2d_generic_contour.py"
+print "  plot2d_generic_contour = %s" % plot2d_generic_command
+write_shortcut_alias(csh_file,bash_file,"plot2d_generic_contour", plot2d_generic_command)
+print ""
+
 # Close output files
 csh_file.close()
 bash_file.close()
