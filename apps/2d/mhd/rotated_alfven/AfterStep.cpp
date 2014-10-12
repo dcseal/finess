@@ -57,10 +57,10 @@ void AfterStep(double dt, StateVars& Q )
             cerr << "AfterStep, B2: " << B2 << endl;
             cerr << "AfterStep, A3 exact: " << A3_exact(angle, t, x, y) << endl;
             cerr << "AfterStep, A3: " << aux.get(i, j, 1) << endl;
-//            assert(abs(B1) < 1.1);
-//            assert(abs(B2) < 1.1);
-//            assert(abs(B1 - q.get(i, j, 6)) < 0.2);
-//            assert(abs(B2 - q.get(i, j, 7)) < 0.2);
+            assert(abs(B1) < 1.2);
+            assert(abs(B2) < 1.2);
+            assert(abs(B1 - q.get(i, j, 6)) < 0.2);
+            assert(abs(B2 - q.get(i, j, 7)) < 0.2);
             
             q.set(i, j, 6, B1);
             q.set(i, j, 7, B2);

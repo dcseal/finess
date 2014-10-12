@@ -50,14 +50,13 @@ void ConstructHJ_L(const StateVars& Q, dTensorBC3& Lauxstar)
     const double max_speed_y = max_speed_x_y.second;
     
     assert(maux == 1);
-    dTensor2 weno_input(maux, ws);
-    dTensor2 weno_result(maux, 1);
-
     assert(mbc >= 2 + r);
 #pragma omp parallel for
     for(int i = 1 - 2 ; i <= mx + 2 ; ++i){
-        for(int j = 1 - 2 ; j <= my + 2; ++j){
-            
+         dTensor2 weno_input(maux, ws);
+         dTensor2 weno_result(maux, 1);
+         for(int j = 1 - 2 ; j <= my + 2; ++j){
+        
             // A^{3}_{,x}^{-}
             double A3xm;
             for(int k = 1; k <= ws; ++k)
