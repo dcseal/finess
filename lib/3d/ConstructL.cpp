@@ -85,7 +85,7 @@ void ConstructL( StateVars& Q, dTensorBC4& Lstar, dTensorBC4& smax)
             double tmp = 0.5*( q.get(i,j,k,m) + q.get(i-1,j,k,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(maux);
+        dTensor1 Auxavg( maux );
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,k,ma) + aux.get(i-1,j,k,ma) );
@@ -99,7 +99,6 @@ void ConstructL( StateVars& Q, dTensorBC4& Lstar, dTensorBC4& smax)
         // Sample q over the stencil:
         dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1  );
         dTensor2 qvals_t( ws+1, meqn ), auxvals_t( ws+1, maux  );
-
         dTensor2 xvals( ws+1, 3 );
         for( int s=1; s <= ws+1; s++ )
         {

@@ -15,7 +15,7 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
         const double y = xpts.get(i,2);
         const double z = xpts.get(i,3);
 
-        const double r2 = pow(x-0.40,2)+pow(y-0.50,2)+pow(z,2);
+        const double r2 = pow(x-0.40,2)+pow(y-0.50,2)+pow(z-0.60,2);
         const double r  = sqrt(r2);
         if (r<0.3)
         {  

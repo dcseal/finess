@@ -22,7 +22,7 @@ space_order = %(s_order)i   ; order of accuracy in space
 time_order  = %(t_order)i   ; order of accuracy in time
 verbosity   = 1   ; verbosity of output
 mcapa       = 0   ; mcapa (capacity function index in aux arrays)
-maux        = 2   ; maux (number of aux arrays, maux >= mcapa)
+maux        = 3   ; maux (number of aux arrays, maux >= mcapa)
 source_term = false   ; source term (1-yes, 0-no)
 meqn        = 1   ; number of equations
 output_dir  = %(output)s ; location of the output directory
@@ -34,7 +34,7 @@ output_dir  = %(output)s ; location of the output directory
 mx    =  %(mx)i  ; number of grid elements in x-direction
 my    =  %(my)i  ; number of grid elements in y-direction
 mz    =  %(mz)i  ; number of grid elements in z-direction
-mbc   =   5      ; number of ghost cells on each boundary
+mbc   =   3      ; number of ghost cells on each boundary
 xlow  =   0.0e0  ; left end point
 xhigh =   1.0e0  ; right end point
 ylow  =   0.0e0  ; lower end point

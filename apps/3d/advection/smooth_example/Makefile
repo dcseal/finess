@@ -22,6 +22,6 @@ $(COMMON_SOURCES) \
 
 ### targets ###
 
-include $(FINESS)/lib/2d/Makefile.targets
+include $(FINESS)/lib/3d/Makefile.targets
 
 ### DO NOT remove this line - make depends on it ###
