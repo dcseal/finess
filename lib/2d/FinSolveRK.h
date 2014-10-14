@@ -2,7 +2,6 @@
 #define _FINSOLVE_RK_
 
 #include <string>
-
 #include "StateVars.h"
 
 // ------------------------------------------------------------

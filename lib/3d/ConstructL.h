@@ -1,8 +1,10 @@
 #ifndef _CONSTRUCT_L_H_
 #define _CONSTRUCT_L_H_
 
+#include "StateVars.h"
+
 // --- User supplied functions --- //
-void SetBndValues(dTensorBC4& aux, dTensorBC4& q);
+void SetBndValues(StateVars& Q);
 
 void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
 void SourceTermFunc(const dTensor2& xpts, const dTensor2& qvals, 

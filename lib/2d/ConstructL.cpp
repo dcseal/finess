@@ -13,9 +13,6 @@
 void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
 {
 
-//  const dTensorBC3&   q = Q.const_ref_q();
-//  const dTensorBC3& aux = Q.const_ref_aux();
-
     dTensorBC3&   q = Q.ref_q();
     dTensorBC3& aux = Q.ref_aux();
 

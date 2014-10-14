@@ -4,25 +4,21 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "IniParams.h"
-#include "WenoParams.h"
 #include "ConstructL.h"
+#include "StateVars.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
-//       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
+//       q_t + f(q,x,t)_x + g(q,x,t)_y + h(q,x,t)_z = Psi(q,x,t)
 //
-void ConstructL(
-        dTensorBC4& aux,
-        dTensorBC4& q,      // SetBndValues modifies q and aux
-        dTensorBC4& Lstar,
-        dTensorBC4& smax)
+void ConstructL( StateVars& Q, dTensorBC4& Lstar, dTensorBC4& smax)
 {
 
+    dTensorBC4&   q = Q.ref_q();
+    dTensorBC4& aux = Q.ref_aux();
+
     // Boundary conditions
-    //
-    // TODO - this should be moved before ConstructL is called, and q
-    // and aux should be changed to const values (-DS)
-    SetBndValues( aux, q );
+    SetBndValues( Q );
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
@@ -150,7 +146,6 @@ void ConstructL(
             g.set(me, s, fvals_t.get( s, me, 2 ) );  // 2nd-component - g
             h.set(me, s, fvals_t.get( s, me, 3 ) );  // 3nd-component - h
         }
-
 
         // Project entire stencil onto the characteristic variables:
         dTensor2 wvals( meqn, ws+1  ), gvals( meqn, ws+1 );

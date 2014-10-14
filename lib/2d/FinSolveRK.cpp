@@ -43,7 +43,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     // this tensor is one longer in each direction.
     dTensorBC3 smax( mx+1, my+1, 2, mbc );           
 
-    // Needed for rejecting a time step
+    // Allocate storage for this solver
     StateVars Qold( t, mx, my, meqn, maux, mbc );
     dTensorBC3& qold   = Qold.ref_q();
     dTensorBC3& auxold = Qold.ref_aux();

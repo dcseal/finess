@@ -8,12 +8,9 @@
 #include "RunFinpack.h"           // Function declarations
 #include "StateVars.h"
 
-
 /*
  * Top level function to RunFinpack.  Briefly, this function calls the
  * following functions in the following order:
- *
- * TODO
  *
  */
 int RunFinpack( )
@@ -66,19 +63,16 @@ int RunFinpack( )
     dTensorBC3& aux  = Qnew.ref_aux();
 
     // Set any auxiliary variables on computational grid
-    // Set values and apply L2-projection
     if( maux > 0 )
     {  SampleFunction(1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, aux, &AuxFunc);  }
 
     // Set initial data on computational grid
-    // Set values and apply L2-projection
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
     AfterQinit( Qnew );
 
     // Output initial data to file
-    // For each element, we output ``method[1]'' number of values
     Output( Qnew, 0 );
 
     // Compute conservation and print to file
