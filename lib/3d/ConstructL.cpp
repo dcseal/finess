@@ -521,7 +521,7 @@ void ConstructL( StateVars& Q, dTensorBC4& Lstar, dTensorBC4& smax)
         }
 
         dTensor2 fhat_loc( ghat );
-        ProjectRightEig(2, Auxavg, Qavg, ghat, fhat_loc);
+        ProjectRightEig(3, Auxavg, Qavg, ghat, fhat_loc);
         for( int m=1; m <= meqn; m++ )
         {
             Hhat.set(i,j,k,m, fhat_loc.get(m,1) );
