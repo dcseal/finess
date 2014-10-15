@@ -46,7 +46,7 @@ zhigh =   1.0e0  ; upper end point
 ;   WENO values
 ; -------------------------------------------------
 [weno]
-weno_version  = JS     ; type of WENO reconstruction (e.g. JS, FD, Z)
+weno_version  = FD     ; type of WENO reconstruction (e.g. JS, FD, Z)
 epsilon       = 1e-6   ; regulization parameter  ( epsilon > 0.0        )
 alpha_scaling = 1.0    ; scaling parameter       ( alpha_scaling >= 1.0 )
 '''

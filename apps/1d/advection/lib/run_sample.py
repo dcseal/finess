@@ -3,38 +3,7 @@ from __future__ import with_statement
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 
-dogpack_data_template = '''
-; Parameters common to FINESS applications
-[finess]
-ndims       = 1          ; 1, 2, or 3
-nout        = 1          ; number of output times to print results
-tfinal      = 1.0        ; final time
-initial_dt  = 1.0        ; initial dt
-max_dt      = 1.0e10     ; max allowable dt 
-max_cfl     = 1.50       ; max allowable Courant number
-desired_cfl = %(cfl)f    ; desired Courant number
-nv          = 500000     ; max number of time steps per call to DogSolve
-time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
-space_order = %(s_order)i   ; order of accuracy in space 
-time_order  = %(t_order)i   ; order of accuracy in time
-verbosity   = 0   ; verbosity of output
-mcapa       = 0   ; mcapa (capacity function index in aux arrays)
-maux        = 1   ; maux (number of aux arrays, maux >= mcapa)
-source_term = false   ; source term (true or false)
-meqn        = 1   ; number of equations
-output_dir  = %(output)s ; location of the output directory
-
-[grid]
-mx    = %(mx)i  ; number of grid elements in x-direction
-mbc   = 3     ; number of ghost cells on each boundary
-xlow  = 0.0e0 ; left end point
-xhigh = 1.0e0 ; right end point
-
-[weno]
-weno_version  = JS     ; type of WENO reconstruction (e.g. JS, FD, Z)
-epsilon       = 1e-29  ; regulization parameter  ( epsilon > 0.0        )
-alpha_scaling = 1.0    ; scaling parameter       ( alpha_scaling >= 1.0 )
-'''
+from params_template import finess_data_template
 
 def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start):
     '''Simple script for performing a batch refinement study.
@@ -54,14 +23,8 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
     for i in range(iterations):
         mx_now = mx_start * ratio**i
 
-        # we want to do:
-        #   data = open('dogpack.data','w')
-        #   print >> data, dogpack_data_template % { 'mx': mx_now, 'ts_method': ts_method} 
-        #   data.close()
-        # and we avoid the .close() (even in case of exception) with 'with':
         with closing(open(data_file,'w')) as data:
 
-            # print >> data, dogpack_data_template % locals() 
             ## if we had used same names for everything
             my_dictionary = {'s_order' : space_order, 't_order' : time_order,
                     'cfl' : cfl,
@@ -69,7 +32,7 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
                     "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
             }
             my_dictionary['output'] = 'output_%(i_now)04i' % my_dictionary
-            print >> data, dogpack_data_template % my_dictionary
+            print >> data, finess_data_template % my_dictionary
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
