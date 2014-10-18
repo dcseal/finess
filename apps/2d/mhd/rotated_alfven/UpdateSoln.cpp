@@ -6,6 +6,8 @@
 
 #include "ConstructHJ_L.h"
 
+#include "app_defined.h"
+
 // Update the solution using the constructed Lstar
 //
 // The Low-Storage RK methods use a combination of two different values of q,
@@ -57,7 +59,7 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
         qnew.vset( k, tmp );
     }
 
-
+    SetBndValues(Qnew);
 }
 
 // Update the solution using the constructed Lstar
