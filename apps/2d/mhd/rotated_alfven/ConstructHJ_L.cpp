@@ -95,7 +95,7 @@ void ConstructHJ_L(const StateVars& Q, dTensorBC3& Lauxstar)
             Lauxstar.set(i, j, 1,
                     -u1 * 0.5 * (A3xm + A3xp) -u2 * 0.5 * (A3ym + A3yp)
                     +max_speed_x * 0.5 * (A3xp - A3xm)
-                    +max_speed_x * 0.5 * (A3yp - A3ym)   );
+                    +max_speed_y * 0.5 * (A3yp - A3ym)   );
         }
     }
 // #pragma omp parallel for
@@ -137,8 +137,8 @@ static std::pair<double, double> max_speed_in_x_y_directions(const StateVars& Q)
     const int     mx = global_ini_params.get_mx();
     const int     my = global_ini_params.get_my();
     
-    double max_x_speed = 0;
-    double max_y_speed = 0;
+    double max_x_speed = 1e-15;
+    double max_y_speed = 1e-15;
     for(int i = 1; i <= mx; ++i){
         for(int j = 1; j <= my; ++j){
             assert(q.get(i, j, 1) != 0);
@@ -150,7 +150,7 @@ static std::pair<double, double> max_speed_in_x_y_directions(const StateVars& Q)
     }
     using std::cerr;
     using std::endl;
-    cerr << "max_x_speed: " << max_x_speed << endl;
-    cerr << "max_y_speed: " << max_y_speed << endl;
+//    cerr << "max_x_speed: " << max_x_speed << endl;
+//    cerr << "max_y_speed: " << max_y_speed << endl;
     return make_pair(max_x_speed, max_y_speed);
 }
