@@ -243,6 +243,19 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 
                     }
 
+                    if( maux > 0 )
+                    {
+                        int numel_aux = aux1.numel();
+                        #pragma omp parallel for
+                        for( int k=0; k < numel_aux; k++ )
+                        {
+                            double tmp = (aux2.vget(k) + 9.0*aux1.vget(k))/25.0;
+                            aux2.vset(k, tmp );
+                            aux1.vset(k, 15.0*tmp - 5.0*aux1.vget(k) );
+
+                        }
+                    }
+
                     // Swap the time values as well (L=1)
                     tmp_t = (Q2.get_t() + 9.0*Q1.get_t())/25.0;
                     Q2.set_t( tmp_t );
