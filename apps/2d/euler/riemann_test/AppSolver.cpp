@@ -1,5 +1,5 @@
 #include "IniDocument.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 #include "AppSolver.h"
 
 EulerParams eulerParams;

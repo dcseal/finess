@@ -1,8 +1,8 @@
 #include "dogdefs.h"
 #include "dog_math.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
 #include "GlobalWaveSpd.h"
+
+#include "IniParams.h"
 
 // Compute a global wave speed.
 //
@@ -24,17 +24,17 @@ void GlobalWaveSpd(
 {
 
     // Grid and problem information
-    const int mx     = dogParamsCart2.get_mx();
-    const int my     = dogParamsCart2.get_my();
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
-    const int mbc    = dogParamsCart2.get_mbc();
+    const int mx     = global_ini_params.get_mx();
+    const int my     = global_ini_params.get_my();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
+    const int mbc    = global_ini_params.get_mbc();
 
     // Needed to define derivatives
-    const double dx    = dogParamsCart2.get_dx();
-    const double dy    = dogParamsCart2.get_dy();
-    const double xlow  = dogParamsCart2.get_xlow();
-    const double ylow  = dogParamsCart2.get_ylow();
+    const double dx    = global_ini_params.get_dx();
+    const double dy    = global_ini_params.get_dy();
+    const double xlow  = global_ini_params.get_xlow();
+    const double ylow  = global_ini_params.get_ylow();
 
     alpha1 = alpha2 = 0.0;
 

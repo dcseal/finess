@@ -3,12 +3,10 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
 #include "RKinfo.h"
-#include "FinSolveRK.h"
 #include "ConstructL.h"
-#include "WenoParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
+#include "FinSolveRK.h"
 
 // Used for construcing the flux function
 void SampleFunction( 
@@ -39,20 +37,11 @@ void ConstructL(
 
 using namespace std;
 
-void DogSolveUser( dTensorBC2& aux, dTensorBC2& qold,
-        dTensorBC2& qnew, dTensorBC1& smax,
-        double tstart, double tend,int nv, 
-        double dtv[], const double cflv[],string outputdir)
+// Wrapper for RK-PIF solver
+void FinSolveUser( StateVars& Qstate, double tend, double dtv[] )
 {
-
-    void FinSolveRK_PIF(
-        dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-        dTensorBC1& smax,
-        double tstart, double tend, int nv,
-        double dtv[], const double cflv[], string outputdir);
-    FinSolveRK_PIF( aux, qold, qnew, smax, tstart, tend, nv,
-        dtv, cflv, outputdir);
-
+    void FinSolveRK_PIF( StateVars& Qstate, double tend, double dtv[] );
+    FinSolveRK_PIF( Qstate, tend, dtv );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,33 +71,37 @@ void DogSolveUser( dTensorBC2& aux, dTensorBC2& qold,
 // WENO, together with the projection onto characteristic variables.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void FinSolveRK_PIF(
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-    dTensorBC1& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+void FinSolveRK_PIF( StateVars& Qstate, double tend, double dtv[] )
 {
 
+    dTensorBC2& qnew = Qstate.ref_q  ();
+    dTensorBC2&  aux = Qstate.ref_aux();
+
+/*
     // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    const int time_order = global_ini_params.get_time_order();
     RKinfo rk;
     SetRKinfo(time_order, rk);
 
-    double t            = tstart;
+    const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+
+    double t            = Qstate.get_t();
     double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max   CFL number
-    double CFL_target   = cflv[2];  // targe CFL number
     double cfl          = 0.0;      // current CFL number
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
 
-    const int mx = qold.getsize(1);
-    const int meqn   = qold.getsize(2);
+    const int mx     = qnew.getsize(1);
+    const int meqn   = qnew.getsize(2);
     const int maux   = aux.getsize(2);
-    const int mbc = qnew.getmbc();
+    const int mbc    = qnew.getmbc();
 
+    // Maximum wave speed
+    dTensorBC1    smax(mx, mbc);
 
     // Allocate storage for this solver
+    dTensorBC2 qold(mx, meqn, mbc);
     dTensorBC2 qstar(mx, meqn, mbc);
 
     // Flux function (from the PDE)
@@ -131,7 +124,8 @@ dTensorBC2 k4(mx, meqn, mbc);
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;
+    const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while( t<tend )
     {
         // initialize time step
@@ -177,14 +171,14 @@ dTensorBC2 k4(mx, meqn, mbc);
                 case 4:
 
                     // Stage 1:
-                    SetBndValues(aux, qnew);
+                    SetBndValues(Qnew);
                     SampleFunction( 1-mbc, mx+mbc, qnew, aux, f1, &FluxFunc );
 
                     // Stage 2:
                     ConstructL_NOC(aux, qnew, Lstar, smax                    );
                     k1.copyfrom( Lstar );
                     t = EulerStep( tn, 0.5*dt, qold, Lstar, qstar            );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, qstar, aux, f2, &FluxFunc );
 
 
@@ -192,7 +186,7 @@ dTensorBC2 k4(mx, meqn, mbc);
                     ConstructL_NOC( aux, qstar, Lstar, smax       );
                     k2.copyfrom( Lstar );
                     t = EulerStep( tn, 0.5*dt, qold, Lstar, qstar );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, qstar, aux, f3, &FluxFunc );
 
 
@@ -200,7 +194,7 @@ dTensorBC2 k4(mx, meqn, mbc);
                     ConstructL_NOC( aux, qstar, Lstar, smax   );
                     k3.copyfrom( Lstar );
                     t = EulerStep( tn, dt, qold, Lstar, qstar );
-                    SetBndValues(aux, qstar);
+                    SetBndValues(Qstar);
                     SampleFunction( 1-mbc, mx+mbc, qstar, aux, f4, &FluxFunc );
 
 ConstructL_NOC( aux, qstar, Lstar, smax   );
@@ -221,10 +215,10 @@ k4.copyfrom( Lstar );
                     }
 
                     // WENO reconstruction, with projections (for final update)
-                    SetBndValues(aux, qnew);
+                    SetBndValues(Qnew);
                     ConstructL( aux, qnew, fstar, Lstar, smax );
                     t = EulerStep( tn, dt, qold, Lstar, qnew );
-                    SetBndValues(aux, qnew);
+                    SetBndValues(Qnew);
 
                     // ------------------------------------------------------------- //
                     // Finished taking a single RK4 time step
@@ -246,7 +240,7 @@ k4.copyfrom( Lstar );
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolve1D ... Step" << setw(5) << n_step;
@@ -273,7 +267,7 @@ k4.copyfrom( Lstar );
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";
@@ -287,8 +281,8 @@ k4.copyfrom( Lstar );
         } // End of m_accept loop
 
         // compute conservation and print to file
-        SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t, outputdir);
+        SetBndValues(Qnew);
+        ConSoln( Qstate );
 
     } // End of while loop
 
@@ -296,6 +290,8 @@ k4.copyfrom( Lstar );
     dtv[1] = dt;
 
     DeleteRKInfo(rk);
+
+*/
 
 }
 
@@ -344,7 +340,7 @@ void ConstructL_NOC(
     void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -354,11 +350,11 @@ void ConstructL_NOC(
     dTensorBC2  fhat(mx+1, meqn, mbc );
 
     // Grid spacing
-    const double   xlow = dogParamsCart1.get_xlow();
-    const double     dx = dogParamsCart1.get_dx();
+    const double   xlow = global_ini_params.get_xlow();
+    const double     dx = global_ini_params.get_dx();
 
     double alpha1 = 0.;
-    if( dogParams.get_global_alpha() )
+    if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
         GlobalWaveSpd( q, aux, alpha1 );
@@ -440,7 +436,7 @@ void ConstructL_NOC(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         // Compute the source term.
         SampleFunction( 1-mbc, mx+mbc, q, aux, Lstar, &SourceTermFunc);
@@ -497,7 +493,7 @@ void ConstructL(
     void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -507,11 +503,11 @@ void ConstructL(
     dTensorBC2  fhat(mx+1, meqn, mbc );
 
     // Grid spacing
-    const double   xlow = dogParamsCart1.get_xlow();
-    const double     dx = dogParamsCart1.get_dx();
+    const double   xlow = global_ini_params.get_xlow();
+    const double     dx = global_ini_params.get_dx();
 
     double alpha1 = 0.;
-    if( dogParams.get_global_alpha() )
+    if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
         GlobalWaveSpd( q, aux, alpha1 );
@@ -613,7 +609,7 @@ void ConstructL(
         SetWaveSpd(xedge, Ql, Qr, Auxl, Auxr, s1, s2);  // application specific
         const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, alpha  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
         dTensor2 gp( meqn, ws ), gm( meqn, ws );
@@ -656,7 +652,7 @@ void ConstructL(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // ---------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         // Compute the source term.
         SampleFunction( 1-mbc, mx+mbc, q, aux, Lstar, &SourceTermFunc);

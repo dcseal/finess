@@ -1,49 +1,24 @@
 #ifndef _RUN_FINESS_H_
 #define _RUN_FINESS_H_
 
-using namespace std;
+#include "StateVars.h"
 
-// ------------------------------------------------------------
-// Functions use in RunDogpack.cpp
+void WriteQhelp( void );
 
-void Output( const dTensorBC3& aux, const dTensorBC3& q,
-        double t, int nframe, string outputdir);
-
+void Output( const StateVars& Qnew, int nframe );
 void QinitFunc(const dTensor2& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals);
 void AuxFunc(const dTensor2& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& auxvals);
-void AfterQinit(dTensorBC3& aux, dTensorBC3& q);
+void AfterQinit( StateVars& Qnew );
 
-void ConSoln(
-    const dTensorBC3& aux, const dTensorBC3& q, 
-    double t, string outputdir);
+void ConSoln( const StateVars& Q );
 
-void FinSolveRK(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
-    dTensorBC3& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir);
-
-void FinSolveLxW(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
-    dTensorBC3& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir);
-
-void FinSolveMD(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
-    dTensorBC3& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir);
-
-void DogSolveUser(
-        dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew,
-        dTensorBC3& smax,
-        double tstart, double tend,int nv, 
-        double dtv[], const double cflv[],string outputdir);
-
-void InitApp(IniDocument& ini_doc);
+// Time stepping methods:
+void FinSolveRK     ( StateVars& Qnew, double tend, double dtv[] );
+void FinSolveLxW    ( StateVars& Qnew, double tend, double dtv[] );
+void FinSolveMD     ( StateVars& Qnew, double tend, double dtv[] );
+void FinSolveUser   ( StateVars& Qnew, double tend, double dtv[] );
 
 void SampleFunction( 
     int istart, int iend,

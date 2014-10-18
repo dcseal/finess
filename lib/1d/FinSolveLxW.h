@@ -1,37 +1,26 @@
 #ifndef _FINSOLVE_RK_
 #define _FINSOLVE_RK_
 
-// ------------------------------------------------------------
-// Function definitions
-void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
+#include "StateVars.h"
 
-void CopyQ(const dTensorBC2&, dTensorBC2&);
+void SetBndValues( StateVars& Q );
+void ConSoln( const StateVars& Qstate );
 
-void ConSoln( 
-    const dTensorBC2& aux,
-    const dTensorBC2& q, 
-    double t, string outputdir);
-
-void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
-void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
+// These four functions get called in the following order for each stage in
+// the Runge-Kutta method:
+void BeforeStep(double dt, StateVars& Q );
+void ConstructL( const StateVars& Q, dTensorBC2& Lstar, dTensorBC1& smax);
+void AfterStep(double dt, StateVars& Q );
 
 double GetCFL(double dt, double dtmax,
         const dTensorBC2& aux,
         const dTensorBC1& smax);
 
-// TODO - add these calls in later
 void BeforeFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
+    const StateVars& Qold, StateVars& Qnew );
 void AfterFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
+    const StateVars& Qold, StateVars& Qnew );
 
-// ------------------------------------------------------------
-// Runge-Kutta information
-//void SetRKinfo(int method2, RKinfo& rk);
-//void DeleteRKInfo(RKinfo& rk);
-// ------------------------------------------------------------
 
 // ------------------------------------------------------------
 // LxW functions -- See LaxWendroff/

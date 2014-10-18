@@ -1,8 +1,8 @@
 #include "dogdefs.h"
 #include "dog_math.h"
 #include "stdlib.h"
-#include "DogParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
+#include "IniParams.h"
 #include "assert.h"
 
 // Time-integrated flux-function.  This one uses new "Diff1" and "Diff2" to try
@@ -65,8 +65,8 @@ void ConstructIntegratedF( double dt,
     const int mbc    = q.getmbc();
 
     // Needed to define derivatives
-    const double dx    = dogParamsCart1.get_dx();
-    const double xlow  = dogParamsCart1.get_xlow();
+    const double dx    = global_ini_params.get_dx();
+    const double xlow  = global_ini_params.get_xlow();
 
     // Compute the first derivative, q_x (and/or f_x)
     dTensorBC2 f   (mx, meqn, mbc );
@@ -177,7 +177,7 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
         // ---  Third-order terms --- //
         dTensor1 f_tt( meqn );   f_tt.setall(0.);
-        if( dogParams.get_time_order() > 2 )
+        if( global_ini_params.get_time_order() > 2 )
         {
 
             // Hessian
@@ -365,8 +365,8 @@ void ConstructIntegratedF( double dt,
     const int mbc    = q1.getmbc();
 
     // Needed to define derivatives
-    const double dx    = dogParamsCart1.get_dx();
-    const double xlow  = dogParamsCart1.get_xlow();
+    const double dx    = global_ini_params.get_dx();
+    const double xlow  = global_ini_params.get_xlow();
 
     // Sample the flux function on the entire domain:
     //
@@ -426,8 +426,8 @@ void ConstructIntegratedF( double dt,
     const int mbc    = q1.getmbc();
 
     // Needed to define derivatives
-    const double dx    = dogParamsCart1.get_dx();
-    const double xlow  = dogParamsCart1.get_xlow();
+    const double dx    = global_ini_params.get_dx();
+    const double xlow  = global_ini_params.get_xlow();
 
     // Sample the flux function on the entire domain:
     //

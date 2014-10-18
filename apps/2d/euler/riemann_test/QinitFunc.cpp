@@ -1,6 +1,6 @@
 #include <fstream>
 #include "dogdefs.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 #include "dog_math.h"
 
 // This is a user-supplied routine that sets the
@@ -9,8 +9,8 @@
 void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
 {
   const int numpts=xpts.getsize(1);
-  const double gamma = eulerParams.gamma;
-  const int OPT = eulerParams.OPT;
+  const double gamma = global_ini_params.get_gamma();
+  const int OPT = global_ini_params.get_OPT();
 
   // Loop over grid points
   for (int i=1; i<=numpts; i++)

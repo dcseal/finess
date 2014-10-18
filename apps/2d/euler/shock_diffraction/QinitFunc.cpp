@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "dogdefs.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // initial conditions at all the points "xpts"
@@ -12,9 +12,9 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
     const int numpts=xpts.getsize(1);
 
     // Gas consant
-    const double gamma = eulerParams.gamma;
-    const double gm1   = eulerParams.gamma - 1.0;
-    const double gp1   = eulerParams.gamma + 1.0;
+    const double gamma = global_ini_params.get_gamma();
+    const double gm1   = global_ini_params.get_gamma() - 1.0;
+    const double gp1   = global_ini_params.get_gamma() + 1.0;
 
     const double Mach  = 5.09;
     const double M2    = Mach*Mach;

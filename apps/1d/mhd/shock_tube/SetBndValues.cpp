@@ -1,16 +1,20 @@
 #include "tensors.h"
+#include "StateVars.h"
+
 
 // Zeroth order extrapolation boundary conditions
-void SetBndValues(
-        //const dTensor2& node, 
-        dTensorBC2& aux, 
-        dTensorBC2& q)
+void SetBndValues(StateVars& Q)
 {
+    dTensorBC2&  q  = Q.ref_q  ();
+    dTensorBC2& aux = Q.ref_aux();
+    double t        = Q.get_t  ();
+
 
     const int mx     = q.getsize(1);
     const int meqn   = q.getsize(2);
     const int maux   = aux.getsize(2);
     const int mbc    = q.getmbc();
+
 
     // ***********************************************
     // LEFT BOUNDARY

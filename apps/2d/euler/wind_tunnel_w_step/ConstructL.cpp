@@ -1,29 +1,28 @@
 #include <cmath>
 #include "assert.h"            // for assert_eq.  Can be removed in future
-#include "DogParams.h"
+#include "IniParams.h"
 #include "tensors.h"
 #include "dog_math.h"
-#include "DogParamsCart2.h"
-#include "WenoParams.h"
-
-#include "EulerParams.h"
+#include "StateVars.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
 void ConstructL(
-        dTensorBC3& aux,
-        dTensorBC3& q,      // SetBndValues modifies q and aux
+        StateVars& Q,      // SetBndValues modifies q and aux
         dTensorBC3& Lstar,
         dTensorBC3& smax)
 {
 
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
+
     // Boundary conditions
     //
 //  void SetBndValues (dTensorBC3& aux, dTensorBC3& q);  // The "wrong" one.
-    void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q);  // Only set conditions along x-direction
-    void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q);  // Only set conditions along y-direction
+    void SetBndValuesX(StateVars& Q);  // Only set conditions along x-direction
+    void SetBndValuesY(StateVars& Q);  // Only set conditions along y-direction
 
     // --- User supplied functions --- //
     void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
@@ -54,14 +53,14 @@ void ConstructL(
     void ConvertTranspose( const dTensor2& qin, dTensor2& qout );
 
     // Parameters for the current grid
-    const int   meqn = dogParams.get_meqn();
-    const int   maux = dogParams.get_maux();
-    const int     mx = dogParamsCart2.get_mx();
-    const int     my = dogParamsCart2.get_my();
-    const int    mbc = dogParamsCart2.get_mbc();
+    const int   meqn = global_ini_params.get_meqn();
+    const int   maux = global_ini_params.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int     my = global_ini_params.get_my();
+    const int    mbc = global_ini_params.get_mbc();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -73,16 +72,16 @@ void ConstructL(
     dTensorBC3  Ghat(mx,   my+1, meqn, mbc );
 
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
-    const double     dx = dogParamsCart2.get_dx();
-    const double     dy = dogParamsCart2.get_dy();
-    const double   xlow = dogParamsCart2.get_xlow();
-    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dx = global_ini_params.get_dx();
+    const double     dy = global_ini_params.get_dy();
+    const double   xlow = global_ini_params.get_xlow();
+    const double   ylow = global_ini_params.get_ylow();
 
 
     // --------------------------------------------------------------------- //
     // Compute Fhat{i-1/2, j} - 1st component of the flux function
     // --------------------------------------------------------------------- //
-    SetBndValuesX(aux, q);
+    SetBndValuesX(Q);
 
     // Normal vector.  This is a carry-over from the DG code.
     dTensor1 nvec(2);
@@ -127,7 +126,7 @@ void ConstructL(
         double energyl = q.get(i-1,j,5);
         double energyr = q.get(i,j,5);
 
-        const double gamma = eulerParams.gamma;
+        const double gamma = global_ini_params.get_gamma();
         const double gm1   = gamma-1.0;
 
         double pressl  = gm1*(energyl-0.5e0*rhol*(u1l*u1l+u2l*u2l));
@@ -251,7 +250,7 @@ void ConstructL(
 
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -290,7 +289,7 @@ void ConstructL(
     // --------------------------------------------------------------------- //
     // Compute Ghat{i, j-1/2} - 2nd-component of the flux function
     // --------------------------------------------------------------------- //
-    SetBndValuesY(aux, q);
+    SetBndValuesY(Q);
     nvec.set(1, 0.0 );  nvec.set(2, 1.0 );
 #pragma omp parallel for
     for (int i = 1; i<= mx;   i++)
@@ -331,7 +330,7 @@ void ConstructL(
         double energyl = q.get(i-1,j,5);
         double energyr = q.get(i,j,5);
 
-        const double gamma = eulerParams.gamma;
+        const double gamma = global_ini_params.get_gamma();
         const double gm1   = gamma-1.0;
 
         double pressl  = gm1*(energyl-0.5e0*rhol*(u1l*u1l+u2l*u2l));
@@ -453,7 +452,7 @@ void ConstructL(
 
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -499,7 +498,7 @@ void ConstructL(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
 
         // Compute the source term.

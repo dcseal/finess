@@ -10,7 +10,7 @@ LIB2D = $(FINESS)/lib/2d
 LIB2D_INCLUDE = -I$(LIB2D) $(TOPLIB_INCLUDE)
 
 # inheriting libraries are expected to override this
-INCLUDE_LIBS = $(LIB2D_INCLUDE)
+INCLUDE_LIBS = -I. $(LIB2D_INCLUDE)
 
 # added to by applications
 #
@@ -77,8 +77,8 @@ SOURCES_EXPECTED = \
 # overridden by some application)
 #
 RunFinpack           = $(LIB2D)/RunFinpack
-InitApp              = $(LIB2D)/InitApp
 Output               = $(LIB2D)/Output
+WriteQhelp           = $(LIB2D)/WriteQhelp
 ConSoln              = $(LIB2D)/ConSoln
 AfterQinit           = $(LIB2D)/AfterQinit
 AfterStep            = $(LIB2D)/AfterStep
@@ -94,7 +94,7 @@ AfterFullTimeStep    = $(LIB2D)/AfterFullTimeStep
 FinSolveRK           = $(LIB2D)/FinSolveRK
 FinSolveLxW          = $(LIB2D)/FinSolveLxW
 FinSolveMD           = $(LIB2D)/FinSolveMD
-DogSolveUser         = $(LIB2D)/DogSolveUser
+FinSolveUser         = $(LIB2D)/FinSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
 GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
@@ -103,20 +103,13 @@ GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
 DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
 D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
 
-# TODO - these should be added in at a later time (-DS)
-#DogSolveLxW          = $(LIB2D)/DogSolveLxW
-#LaxWendroff          = $(LIB2D)/LaxWendroff/LaxWendroff
-#LaxWendroffTD        = $(LIB2D)/LaxWendroff/LaxWendroffTD
-#RiemannSolveLxW      = $(LIB2D)/LaxWendroff/RiemannSolveLxW_LLF
-
 LIB2D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
   $(RunFinpack).o \
-  $(InitApp).o \
-  $(LIB2D)/DogParamsCart2.o \
   $(GridSetup).o \
   $(SampleFunction).o \
   $(Output).o \
+  $(WriteQhelp).o \
   $(ConSoln).o \
   $(FinSolveRK).o \
   $(FinSolveLxW).o \
@@ -125,7 +118,7 @@ LIB2D_OBJECTS = \
   $(LIB2D)/GetCFL.o \
   $(GlobalWaveSpd).o \
   $(AfterQinit).o \
-  $(DogSolveUser).o \
+  $(FinSolveUser).o \
   $(BeforeFullTimeStep).o \
   $(BeforeStep).o \
   $(AfterStep).o \
@@ -141,11 +134,10 @@ LIB2D_SOURCES = \
   $(LIB2D)/*.h \
   $(TOPLIB_SOURCES) \
   $(RunFinpack).cpp \
-  $(InitApp).cpp \
-  $(LIB2D)/DogParamsCart2.cpp \
   $(GridSetup).cpp \
   $(SampleFunction).cpp \
   $(Output).cpp \
+  $(WriteQhelp).cpp \
   $(ConSoln).cpp \
   $(FinSolveRK).cpp \
   $(FinSolveLxW).cpp \
@@ -154,7 +146,7 @@ LIB2D_SOURCES = \
   $(LIB2D)/GetCFL.cpp \
   $(GlobalWaveSpd).cpp \
   $(AfterQinit).cpp \
-  $(DogSolveUser).cpp \
+  $(FinSolveUser).cpp \
   $(BeforeFullTimeStep).cpp \
   $(BeforeStep).cpp \
   $(AfterStep).cpp \

@@ -5,7 +5,7 @@
 #include "tensors.h"
 
 #include "WenoParams.h"
-#include "DogParams.h"
+#include "IniParams.h"
 
 #include "WenoReconstruct.h"
 
@@ -46,25 +46,25 @@ void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst)
 {
 
     // TODO - implement WENO3 and WENO-Z version
-    if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 5)
+    if(global_ini_params.get_weno_version() == IniParams::WenoVersion::JS && global_ini_params.get_space_order() == 5)
         return &WenoReconstruct_JS5;
-    else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 7)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::JS && global_ini_params.get_space_order() == 7)
         return &WenoReconstruct_JS7;
-    else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 9)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::JS && global_ini_params.get_space_order() == 9)
         return &WenoReconstruct_JS9;
-    else if(wenoParams.weno_version == WENOParams::JS && dogParams.get_space_order() == 11)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::JS && global_ini_params.get_space_order() == 11)
         return &WenoReconstruct_JS11;
-    else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 5)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::FD && global_ini_params.get_space_order() == 5)
         return &WenoReconstruct_FD5;
-    else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 7)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::FD && global_ini_params.get_space_order() == 7)
         return &WenoReconstruct_FD7;
-    else if(wenoParams.weno_version == WENOParams::FD && dogParams.get_space_order() == 9)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::FD && global_ini_params.get_space_order() == 9)
         return &WenoReconstruct_FD9;
-    else if(wenoParams.weno_version == WENOParams::Z  && dogParams.get_space_order() == 5)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 5)
         return &WenoReconstruct_Z5;
-    else if(wenoParams.weno_version == WENOParams::Z  && dogParams.get_space_order() == 7)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 7)
         return &WenoReconstruct_Z7;
-    else if(wenoParams.weno_version == WENOParams::Z  && dogParams.get_space_order() == 9)
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 9)
     {
         printf("Warning: we're not sure these are the correct coefficients for WENOZ-9!\n");
         return &WenoReconstruct_Z9;
@@ -107,8 +107,8 @@ void WenoReconstruct_JS5( const dTensor2& g, dTensor2& g_reconst )
     g0 = 0.1; g1 = 0.6; g2 = 0.3;
 
 
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     const int meqn = g.getsize(1);
     for( int m=1; m <= meqn; m++ )
@@ -164,8 +164,8 @@ void WenoReconstruct_JS7( const dTensor2& g, dTensor2& g_reconst )
 
     const int meqn = g.getsize(1);
     
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     for(int m = 1; m <= meqn; m++){
         uim3 = g.get(m, 1);
@@ -221,8 +221,8 @@ void WenoReconstruct_JS9( const dTensor2& g, dTensor2& g_reconst )
 
     const int meqn = g.getsize(1);
     
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     for(int m = 1; m <= meqn; m++)
     {
@@ -297,8 +297,8 @@ void WenoReconstruct_JS11( const dTensor2& g, dTensor2& g_reconst )
 
     const int meqn = g.getsize(1);
     
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     for(int m = 1; m <= meqn; m++)
     {
@@ -401,8 +401,8 @@ void WenoReconstruct_Z5( const dTensor2& g, dTensor2& g_reconst )
     double g0, g1, g2;           
     g0 = 0.1; g1 = 0.6; g2 = 0.3;
 
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     const int meqn = g.getsize(1);
     for( int m=1; m <= meqn; m++ )
@@ -454,8 +454,8 @@ void WenoReconstruct_Z7( const dTensor2& g, dTensor2& g_reconst )
 
     const int meqn = g.getsize(1);
     
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     for(int m = 1; m <= meqn; m++){
         uim3 = g.get(m, 1);
@@ -511,8 +511,8 @@ void WenoReconstruct_Z9( const dTensor2& g, dTensor2& g_reconst )
 
     const int meqn = g.getsize(1);
     
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     for(int m = 1; m <= meqn; m++)
     {
@@ -751,8 +751,8 @@ void Diff1( double dx, const dTensor2& g, dTensor1& fx )
     double g0, g1, g2;           
     g0 = 1./6.; g1 = 2./3.; g2 = 1./6.;
 
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     const int meqn = g.getsize(1);
     for( int m=1; m <= meqn; m++ )
@@ -814,8 +814,8 @@ void Diff2( double dx, const dTensor2& g, dTensor1& fxx )
     g1 =  7./6. ;
     g2 = -1./12.;
 
-    const double eps         = wenoParams.epsilon;       // Default: 1e-6
-    const double power_param = wenoParams.power_param;   // Default: p=2
+    const double eps         = global_ini_params.get_epsilon();       // Default: 1e-6
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
 
     const int meqn = g.getsize(1);
     for( int m=1; m <= meqn; m++ )

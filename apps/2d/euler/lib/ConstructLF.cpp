@@ -2,9 +2,11 @@
 #include "dogdefs.h"
 #include "dog_math.h"
 #include "stdlib.h"
-#include "DogParams.h"       // the usual parameters
-#include "DogParamsCart2.h"  // 2D geometry
-#include "EulerParams.h"     // Gamma gas constant (used for computing wave speeds)
+#include "IniParams.h"       
+#include "StateVars.h"
+
+using std::cout;
+using std::endl;
 
 // User supplied functions defining the Flux function, Jacobian, and
 // Hessian of the flux function.
@@ -19,32 +21,38 @@ void SampleFunction(
           dTensorBC4& Fout,
     void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&));
 
+void SetBndValues(StateVars& Q);  // Sets boundary conditions ONCE for a single call to ConstructL
+void SetBndValuesX(StateVars& Q); // Only set conditions along x-direction
+void SetBndValuesY(StateVars& Q); // Only set conditions along y-direction
+
+
 // First-order Lax-Friedrichs solver where the boundary conditions are applied
 // twice - once for constructing F, and second for constructing G.  This is used
 // for the problems that have "geometry".
 //
 // See also ConstructLF. (same file)
 void ConstructLF2( const double dt, 
-    dTensorBC3& aux, dTensorBC3& q,
+    StateVars& Q,
     dTensorBC3& F, dTensorBC3& G,
     dTensorBC3& Lstar,
     dTensorBC3& smax)
 
 {    
-    void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q); // Only set conditions along x-direction
-    void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q); // Only set conditions along y-direction
+
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     // Grid and problem information
-    const int mx     = dogParamsCart2.get_mx();
-    const int my     = dogParamsCart2.get_my();
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
-    const int mbc    = dogParamsCart2.get_mbc();
+    const int mx     = global_ini_params.get_mx();
+    const int my     = global_ini_params.get_my();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
+    const int mbc    = global_ini_params.get_mbc();
 
-    const double     dx = dogParamsCart2.get_dx();
-    const double     dy = dogParamsCart2.get_dy();
-    const double   xlow = dogParamsCart2.get_xlow();
-    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dx = global_ini_params.get_dx();
+    const double     dy = global_ini_params.get_dy();
+    const double   xlow = global_ini_params.get_xlow();
+    const double   ylow = global_ini_params.get_ylow();
 
     dTensorBC3  Fhat(mx+1, my,   meqn, mbc );
     dTensorBC3  Ghat(mx,   my+1, meqn, mbc );
@@ -59,7 +67,7 @@ const int mbc_small      = 3;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
-    SetBndValuesX(aux, q);
+    SetBndValuesX(Q);
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
@@ -73,7 +81,7 @@ const int mbc_small      = 3;
     }
 
     double alpha_x = 1.0e-15;
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
 
     for (int i = 1; i <= mx;  i++)
     for (int j = 1; j <= my;  j++)
@@ -113,7 +121,7 @@ const int mbc_small      = 3;
         }
 
 
-    SetBndValuesY(aux, q);
+    SetBndValuesY(Q);
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
@@ -177,7 +185,7 @@ const int mbc_small      = 3;
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         printf("Error: source-term not implemented for Lax-Wendroff method\n");
         exit(1);
@@ -205,24 +213,26 @@ const int mbc_small      = 3;
 //
 // See also ConstructLF2 (same file).
 void ConstructLF( const double dt, 
-    dTensorBC3& aux, dTensorBC3& q,
+    StateVars& Q,
     dTensorBC3& smax, 
     dTensorBC3& F, dTensorBC3& G,
     dTensorBC3& Lstar )
 {
-    void SetBndValues(dTensorBC3& aux, dTensorBC3& q); 
+
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     // Grid and problem information
-    const int mx     = dogParamsCart2.get_mx();
-    const int my     = dogParamsCart2.get_my();
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
-    const int mbc    = dogParamsCart2.get_mbc();
+    const int mx     = global_ini_params.get_mx();
+    const int my     = global_ini_params.get_my();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
+    const int mbc    = global_ini_params.get_mbc();
 
-    const double     dx = dogParamsCart2.get_dx();
-    const double     dy = dogParamsCart2.get_dy();
-    const double   xlow = dogParamsCart2.get_xlow();
-    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dx = global_ini_params.get_dx();
+    const double     dy = global_ini_params.get_dy();
+    const double   xlow = global_ini_params.get_xlow();
+    const double   ylow = global_ini_params.get_ylow();
 
     dTensorBC3  Fhat(mx+1, my,   meqn, mbc );
     dTensorBC3  Ghat(mx,   my+1, meqn, mbc );
@@ -237,7 +247,7 @@ const int mbc_small      = 3;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
-    SetBndValues(aux, q);
+    SetBndValues(Q);
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
@@ -252,7 +262,7 @@ const int mbc_small      = 3;
     }
 
     double alpha_x = 1.0e-15, alpha_y = 1.0e-15;
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
 
     for (int i = 1; i <= mx;  i++)
     for (int j = 1; j <= my;  j++)
@@ -315,7 +325,7 @@ const int mbc_small      = 3;
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
         printf("Error: source-term not implemented for Lax-Wendroff method\n");
         exit(1);

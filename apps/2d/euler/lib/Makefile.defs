@@ -24,23 +24,20 @@ ProjectRightEig     = $(APP_LIB)/ProjectRightEig
 # Wave speed functions
 SetWaveSpd          = $(APP_LIB)/SetWaveSpd
 
-
 # Auxilary function
 AuxFunc             = $(APP_LIB)/AuxFunc
 
 # Extra stuff!
-#EulerParams = $(APP_LIB)/EulerParams
-AfterQinit          = $(APP_LIB)/AfterQinit
+# Lax-Friedrichs solver
 ConstructLF         = $(APP_LIB)/ConstructLF
 
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
 $(ConstructLF).o \
-EulerParams.o \
 
 #
 APP_LIB_SOURCES = \
-EulerParams.cpp \
+$(ConstructLF).cpp \
 
 #

@@ -8,6 +8,4 @@
 #include "constants.h"
 #include "tensors.h"
 
-using namespace std;
-
 #endif /*_DOGDEFS_H_*/

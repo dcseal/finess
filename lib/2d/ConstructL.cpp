@@ -1,42 +1,34 @@
 #include <cmath>
 #include "assert.h"            // for assert_eq.  Can be removed in future
-#include "DogParams.h"
 #include "tensors.h"
 #include "dog_math.h"
-#include "DogParamsCart2.h"
-#include "WenoParams.h"
+#include "StateVars.h"
+#include "IniParams.h"
 #include "ConstructL.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
-void ConstructL(
-        dTensorBC3& aux,
-        dTensorBC3& q,      // SetBndValues modifies q and aux
-        dTensorBC3& Lstar,
-        dTensorBC3& smax)
+void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
 {
 
-    // Boundary conditions
-    //
-    // @todo TODO - this should be moved before ConstructL is called, and q
-    // and aux should be changed to const values (-DS)
-    SetBndValues( aux, q );
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
     void (*WenoReconstruct)( const dTensor2& gin, dTensor2& diff_g ) = GetWenoReconstruct();
 
     // Parameters for the current grid
-    const int   meqn = dogParams.get_meqn();
-    const int   maux = dogParams.get_maux();
-    const int     mx = dogParamsCart2.get_mx();
-    const int     my = dogParamsCart2.get_my();
-    const int    mbc = dogParamsCart2.get_mbc();
+    const int   meqn = global_ini_params.get_meqn();
+    const int   maux = global_ini_params.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int     my = global_ini_params.get_my();
+    const int    mbc = global_ini_params.get_mbc();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -48,14 +40,14 @@ void ConstructL(
     dTensorBC3  Ghat(mx,   my+1, meqn, mbc );
 
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
-    const double     dx = dogParamsCart2.get_dx();
-    const double     dy = dogParamsCart2.get_dy();
-    const double   xlow = dogParamsCart2.get_xlow();
-    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dx = global_ini_params.get_dx();
+    const double     dy = global_ini_params.get_dy();
+    const double   xlow = global_ini_params.get_xlow();
+    const double   ylow = global_ini_params.get_ylow();
 
     double alpha1 = 0.;
     double alpha2 = 0.;
-    if( dogParams.get_global_alpha() )
+    if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
         GlobalWaveSpd( q, aux, alpha1, alpha2);
@@ -83,7 +75,7 @@ void ConstructL(
             double tmp = 0.5*( q.get(i,j,m) + q.get(i-1,j,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg(maux);
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i-1,j,ma) );
@@ -95,8 +87,8 @@ void ConstructL(
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1         );
+        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, maux );
 
         dTensor2 xvals( ws+1, 2 );
         for( int s=1; s <= ws+1; s++ )
@@ -155,7 +147,7 @@ void ConstructL(
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(2), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl(maux), Auxr(maux);
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
 
@@ -179,7 +171,7 @@ void ConstructL(
 
         const double alpha = Max( alpha1, Max( abs(s1), abs(s2) ) );
         smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
 
         // -- Flux splitting -- //
@@ -235,7 +227,7 @@ void ConstructL(
             double tmp = 0.5*( q.get(i,j,m) + q.get(i,j-1,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg(maux);
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i,j-1,ma) );
@@ -247,8 +239,8 @@ void ConstructL(
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1         );
+        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, maux );
         dTensor2 xvals( ws+1, 2 );
         for( int s=1; s <= ws+1; s++ )
         {
@@ -306,7 +298,7 @@ void ConstructL(
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(2), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl(maux), Auxr(maux);
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
 
@@ -330,7 +322,7 @@ void ConstructL(
 
         const double alpha = Max( alpha2, Max( abs(s1), abs(s2) ) );
         smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -376,7 +368,7 @@ void ConstructL(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
 
         // Compute the source term.

@@ -1,46 +1,44 @@
 #include <cmath>
 #include "assert.h"            // for assert_eq.  Can be removed in future
-#include "DogParams.h"
+#include "IniParams.h"
 #include "tensors.h"
 #include "dog_math.h"
-#include "DogParamsCart2.h"
-#include "WenoParams.h"
+#include "IniParams.h"
+#include "StateVars.h"
+
+// Boundary conditions
+void SetBndValuesX(StateVars& Q);  // Only set conditions along x-direction
+void SetBndValuesY(StateVars& Q);  // Only set conditions along y-direction
+
+// --- User supplied functions --- //
+void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
+void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
+    const dTensor2& Qvals, dTensor2& Wvals);
+void ProjectRightEig(int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
+                     const dTensor2& Wvals, dTensor2& Qvals);
+void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge, 
+    const dTensor1& Ql,   const dTensor1& Qr, 
+    const dTensor1& Auxl, const dTensor1& Auxr,
+    double& s1,double& s2);
+void SourceTermFunc(const dTensor2& xpts, const dTensor2& qvals, 
+            const dTensor2& auxvals, dTensor2& source);
+
+void SampleFunction( 
+    int istart, int iend,
+    int jstart, int jend,
+    const dTensorBC3& qin, 
+    const dTensorBC3& auxin,  dTensorBC3& Fout,
+    void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
-void ConstructL(
-        dTensorBC3& aux,
-        dTensorBC3& q,      // SetBndValues modifies q and aux
-        dTensorBC3& Lstar,
-        dTensorBC3& smax)
+void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
 {
 
-    // Boundary conditions
-    //
-    void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q);  // Only set conditions along x-direction
-    void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q);  // Only set conditions along y-direction
-
-    // --- User supplied functions --- //
-    void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
-    void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-        const dTensor2& Qvals, dTensor2& Wvals);
-    void ProjectRightEig(int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
-                         const dTensor2& Wvals, dTensor2& Qvals);
-    void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge, 
-        const dTensor1& Ql,   const dTensor1& Qr, 
-        const dTensor1& Auxl, const dTensor1& Auxr,
-        double& s1,double& s2);
-    void SourceTermFunc(const dTensor2& xpts, const dTensor2& qvals, 
-                const dTensor2& auxvals, dTensor2& source);
-
-    void SampleFunction( 
-        int istart, int iend,
-        int jstart, int jend,
-        const dTensorBC3& qin, 
-        const dTensorBC3& auxin,  dTensorBC3& Fout,
-        void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
@@ -51,14 +49,14 @@ void ConstructL(
     void ConvertTranspose( const dTensor2& qin, dTensor2& qout );
 
     // Parameters for the current grid
-    const int   meqn = dogParams.get_meqn();
-    const int   maux = dogParams.get_maux();
-    const int     mx = dogParamsCart2.get_mx();
-    const int     my = dogParamsCart2.get_my();
-    const int    mbc = dogParamsCart2.get_mbc();
+    const int   meqn = global_ini_params.get_meqn();
+    const int   maux = global_ini_params.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int     my = global_ini_params.get_my();
+    const int    mbc = global_ini_params.get_mbc();
 
     // Size of the WENO stencil
-    const int ws = dogParams.get_space_order();
+    const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
@@ -70,10 +68,10 @@ void ConstructL(
     dTensorBC3  Ghat(mx,   my+1, meqn, mbc );
 
     // Grid information
-    const double     dx = dogParamsCart2.get_dx();
-    const double     dy = dogParamsCart2.get_dy();
-    const double   xlow = dogParamsCart2.get_xlow();
-    const double   ylow = dogParamsCart2.get_ylow();
+    const double     dx = global_ini_params.get_dx();
+    const double     dy = global_ini_params.get_dy();
+    const double   xlow = global_ini_params.get_xlow();
+    const double   ylow = global_ini_params.get_ylow();
 
     // Normal vector.  This is a carry-over from the DG code.
     dTensor1 nvec(2);
@@ -81,7 +79,7 @@ void ConstructL(
     // --------------------------------------------------------------------- //
     // Compute Fhat{i-1/2, j} - 1st component of the flux function
     // --------------------------------------------------------------------- //
-    SetBndValuesX(aux, q);
+    SetBndValuesX(Q);
     nvec.set(1, 1.0 );  nvec.set(2, 0.0 );
 #pragma omp parallel for
     for (int i = 1; i <= mx+1; i++)
@@ -98,7 +96,7 @@ void ConstructL(
             double tmp = 0.5*( q.get(i,j,m) + q.get(i-1,j,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg( maux );
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i-1,j,ma) );
@@ -110,8 +108,8 @@ void ConstructL(
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1         );
+        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, maux );
 
         dTensor2 xvals( ws+1, 2 );
         for( int s=1; s <= ws+1; s++ )
@@ -170,7 +168,7 @@ void ConstructL(
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(1), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl(maux), Auxr(maux);
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
 
         for( int m=1; m<= meqn; m++)
@@ -191,7 +189,7 @@ void ConstructL(
 
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -230,7 +228,7 @@ void ConstructL(
     // --------------------------------------------------------------------- //
     // Compute Ghat{i, j-1/2} - 2nd-component of the flux function
     // --------------------------------------------------------------------- //
-    SetBndValuesY(aux, q);
+    SetBndValuesY(Q);
     nvec.set(1, 0.0 );  nvec.set(2, 1.0 );
 #pragma omp parallel for
     for (int i = 1; i<= mx;   i++)
@@ -247,7 +245,7 @@ void ConstructL(
             double tmp = 0.5*( q.get(i,j,m) + q.get(i,j-1,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(iMax(maux, 1 ) );
+        dTensor1 Auxavg(maux);
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,ma) + aux.get(i,j-1,ma) );
@@ -259,8 +257,8 @@ void ConstructL(
         // --------------------------------------------------------------------
 
         // Sample q over the stencil:
-        dTensor2  qvals( meqn, ws+1  ), auxvals  ( iMax(maux,1), ws+1         );
-        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, iMax(maux,1) );
+        dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1         );
+        dTensor2 qvals_t( ws+1, meqn ), auxvals_t(         ws+1, maux );
         dTensor2 xvals( ws+1, 2 );
         for( int s=1; s <= ws+1; s++ )
         {
@@ -318,7 +316,7 @@ void ConstructL(
         // -- Compute a local wave speed -- //
 
         dTensor1 xedge(1), Ql(meqn), Qr(meqn);
-        dTensor1 Auxl(iMax(1,maux)), Auxr(iMax(1,maux));
+        dTensor1 Auxl(maux), Auxr(maux);
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
         for( int m=1; m<= meqn; m++)
         {
@@ -338,7 +336,7 @@ void ConstructL(
 
         const double alpha = Max( abs(s1), abs(s2) );
         smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
-        const double l_alpha = wenoParams.alpha_scaling*alpha;  // extra safety factor added here
+        const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
 
@@ -384,7 +382,7 @@ void ConstructL(
     // above loop without executing a second loop.  However, this requires 
     // larger strides.  (-DS)
     // --------------------------------------------------------------------- //
-    if( dogParams.get_source_term() )
+    if( global_ini_params.get_source_term() )
     {
 
         // Compute the source term.

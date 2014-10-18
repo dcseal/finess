@@ -5,18 +5,14 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
+#include "StateVars.h"
+
 using namespace std;
 
 // Template used for outputting extra information.
 // Applicaitons can link out this template if desired.
-void Output_Extra(
-            const dTensorBC2& aux,
-            const dTensorBC2& q,
-            double t,
-            int nframe,
-            string outputdir)
+void Output_Extra( const StateVars& Qstate, int nframe )
 {
 
     // See $(FINESS)/lib/1d/Output.cpp to see where this gets called.

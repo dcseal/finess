@@ -1,17 +1,21 @@
 #include "tensors.h"
+#include "StateVars.h"
 
-// Function that is called after each time step
-void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q)
+// *TEMPLATE*
+//
+// This function that is called after each time step
+//
+// The default behaviour is to do nothing.
+//
+// See also: BeforeStep.
+void AfterStep(double dt, StateVars& Q )
 {
-    const int     mx = q.getsize(1);
-    const int   meqn = q.getsize(2);
-    const int   maux = aux.getsize(2);    
-}
 
-// Function that is called after each time step
-void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q, void* data)
-{
-    const int     mx = q.getsize(1);
-    const int   meqn = q.getsize(2);
-    const int   maux = aux.getsize(2);    
+//  To access the state variables, uncomment the following:
+//
+//  dTensorBC2& q       = Qnew.ref_q();
+//  dTensorBC2& aux     = Qnew.ref_aux();
+//  const double t      = Qnew.get_t();
+
+
 }

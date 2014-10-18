@@ -8,8 +8,7 @@ include $(FINESS)/apps/1d/euler/lib/Makefile.defs
 
 # overridden library objects
 #
-InitApp         =  InitApp
-DogSolveUser    =  $(FINESS)/lib/1d/FinSolveRK_PIF
+FinSolveUser    =  $(FINESS)/lib/1d/FinSolveRK_PIF
 
 # place to add object modules
 #

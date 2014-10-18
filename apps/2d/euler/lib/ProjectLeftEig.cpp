@@ -1,6 +1,6 @@
 #include <cmath>
 #include "dogdefs.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that projects
 // Qvals onto the left eigenvectors ofthe flux 
@@ -32,7 +32,7 @@ void ProjectLeftEig(int ixy,
     }
 
     // Average states
-    double const gamma  = eulerParams.gamma;
+    double const gamma  = global_ini_params.get_gamma();
     double const rho    = Q_ave.get(1);
     double const u1     = Q_ave.get(mu)/rho;
     double const u2     = Q_ave.get(mv)/rho;

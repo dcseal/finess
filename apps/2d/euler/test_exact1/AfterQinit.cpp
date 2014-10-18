@@ -2,12 +2,12 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
 */
 
 #include "DogSolverCart2.h"
 #include <string.h>          // For strcpy and strcat (some compilers don't need this)
-#include "EulerParams.h"
+#include "IniParams.h"
 
 // Function that is called after initial condition
 void AfterQinit(DogSolverCart2& solver)
@@ -22,7 +22,7 @@ void AfterQinit(DogSolverCart2& solver)
 //  const int kmax  = q.getsize(4);
 //  const int mbc   = q.getmbc();
 //  const int maux  = aux.getsize(3);  
-//  const int space_order = dogParams.get_space_order();
+//  const int space_order = global_ini_params.get_space_order();
 
     // Output parameters to file in outputdir
     char eulerhelp[200];

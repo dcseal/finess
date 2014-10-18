@@ -1,14 +1,15 @@
 #include <cmath>
 #include <iostream>
 #include "dogdefs.h"
-#include "DogParamsCart2.h"
-#include "DogSolverCart2.h"
-class DogSolverCart2;
-void AfterQinit(DogSolverCart2& solver)
+#include "IniParams.h"
+#include "StateVars.h"
+
+void AfterQinit( StateVars& Qnew );
 {
-    DogStateCart2* dogStateCart2 = &solver.fetch_dogStateCart2();
-    dTensorBC4& qnew             = dogStateCart2->fetch_q();
-    dTensorBC4& aux              = dogStateCart2->fetch_aux();
+
+    dTensorBC2& qnew    = Qnew.ref_q();
+    dTensorBC2& aux     = Qnew.ref_aux();
+    const double t      = Qnew.get_t();
 
     const int mx   = qnew.getsize(1);
     const int my   = qnew.getsize(2);
@@ -16,7 +17,6 @@ void AfterQinit(DogSolverCart2& solver)
     const int kmax = qnew.getsize(4);
     const int mbc  = qnew.getmbc();
     const int maux = aux.getsize(3);
-
 
     for(int i=1-mbc; i <= mx+mbc; i++ )
     for(int j=1-mbc; j <= my+mbc; j++ )
@@ -32,7 +32,7 @@ void AfterQinit(DogSolverCart2& solver)
     }
 
 //  void ApplyPosLimiter(const dTensorBC4& aux, dTensorBC4& q);
-//  if( dogParams.using_moment_limiter() )
+//  if( global_ini_params.using_moment_limiter() )
 //  { 
 //      ApplyPosLimiter(aux, qnew); 
 //  }

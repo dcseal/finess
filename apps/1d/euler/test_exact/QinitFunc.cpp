@@ -1,7 +1,7 @@
-#include "tensors.h"
-#include "EulerParams.h"
-#include "constants.h"
 #include <cmath>
+#include "tensors.h"
+#include "constants.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // initial conditions at all the points "xpts"
@@ -20,10 +20,11 @@
 // See also: AuxFunc.
 void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
 {
+
     const int numpts=xpts.getsize();
 
     // Gas constant
-    const double gamma = eulerParams.gamma;
+    const double gamma = global_ini_params.get_gamma();
 
     // Initial conditions
     for (int i=1; i<=numpts; i++)

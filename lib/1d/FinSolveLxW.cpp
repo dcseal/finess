@@ -3,51 +3,59 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
 #include "FinSolveLxW.h"   // functions directly called from this routine
+#include "StateVars.h"
 
 using namespace std;
 
-void FinSolveLxW(
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-    dTensorBC1& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+// -------------------------------------------------------------------------- //
+// Lax-Wendroff time integration.
+// this routine supports up to third-order in time.  
+//
+// One needs to define DFlux and D2FluxFunc in order to be able to use this routine.
+//
+// See also: FinSolveRK, FinSolveMD, FinSolveSDC, and FinSolveUser other solvers.
+// -------------------------------------------------------------------------- //
+void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 {
 
-    // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    dTensorBC2& qnew = Qnew.ref_q  ();
+    dTensorBC2&  aux = Qnew.ref_aux();
 
-    double t            = tstart;
-    double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max   CFL number
-    double CFL_target   = cflv[2];  // targe CFL number
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
-    double dtmax        = dt;
+    // Time stepping information
+    const double CFL_max        = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target     = global_ini_params.get_desired_cfl();  // target CFL number
+    double t                    = Qnew.get_t();
+    double dt                   = dtv[1];   // Start with time step from last frame
+    double cfl                  = 0.0;      // current CFL number
+    double dtmin                = dt;       // Counters for max and min time step taken
+    double dtmax                = dt;
 
-    const int mx     = qold.getsize(1);
-    const int meqn   = qold.getsize(2);
+    // Grid information
+    const int mx     = qnew.getsize(1);
+    const int meqn   = qnew.getsize(2);
     const int maux   = aux.getsize(2);
     const int mbc    = qnew.getmbc();
+    const int numel  = qnew.numel();
 
-    // Total number of entries in the vector:
-    const int numel = qold.numel();
+    // Maximum wave speed
+    dTensorBC1    smax(mx, mbc);
 
-    // Allocate storage for this solver
+    // Needed for rejecting a time step
+    StateVars Qold( t, mx, meqn, maux, mbc );
+    dTensorBC2& qold   = Qold.ref_q();
+    dTensorBC2& auxold = Qold.ref_aux();
 
     dTensorBC2  Lstar(mx, meqn, mbc); // right hand side (for Euler steps)
     dTensorBC2    F(mx, meqn, mbc );  // time-integrated flux
 
-    // Set initialize auxstar values
-    dTensorBC2 auxold( mx, maux, mbc );
-    if( maux > 0 ){auxold.copyfrom( aux );}
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;
+    const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while( t<tend )
     {
         // initialize time step
@@ -67,13 +75,14 @@ void FinSolveLxW(
         }        
 
         // copy qnew into qold
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
         {
 
             // set current time
+            Qnew.set_t( t );
             double told = t;
             if (told+dt > tend)
             { dt = tend - told; }
@@ -83,12 +92,12 @@ void FinSolveLxW(
             smax.setall(0.);
 
             // do any extra work
-            BeforeFullTimeStep(dt, aux, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew );
 
             // ---------------------------------------------------------
             // Take a full time step of size dt
-            BeforeStep(dt,aux,qnew);
-            SetBndValues(aux, qnew);
+            BeforeStep(dt, Qnew );
+            SetBndValues( Qnew  );
             ConstructIntegratedF( dt, aux, qnew, smax, F);
             ConstructLxWL( aux, qnew, F, Lstar, smax);  // <-- "new" method
 
@@ -99,19 +108,20 @@ void FinSolveLxW(
                 double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
                 qnew.vset(k, tmp );
             }
+            Qnew.set_t( Qnew.get_t() + dt );
 
             // Perform any extra work required:
-            AfterStep(dt,aux,qnew);
+            AfterStep(dt, Qnew );
             // ---------------------------------------------------------
 
             // do any extra work
-            AfterFullTimeStep(dt, auxold, aux, qold, qnew);
+            AfterFullTimeStep(dt, Qold, Qnew );
 
             // compute cfl number
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolve1D ... Step" << setw(5) << n_step;
@@ -138,7 +148,7 @@ void FinSolveLxW(
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";
@@ -146,14 +156,14 @@ void FinSolveLxW(
                 }
 
                 // copy qold into qnew
-                qnew.copyfrom( qold  );
+                Qnew.copyfrom( Qold  );
             }
 
         } // End of m_accept loop
 
         // compute conservation and print to file
-        SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t, outputdir);
+        SetBndValues( Qnew );
+        ConSoln     ( Qnew );
 
     } // End of while loop
 

@@ -1,7 +1,6 @@
 #include <fstream>
 #include "tensors.h"
-#include "MHDParams.h"
-#include "InitialParams.h"
+#include "IniParams.h"
 using namespace std;
 
 // This is a user-supplied routine that sets the
@@ -23,25 +22,25 @@ void QinitFunc(const dTensor1& xpts,
         dTensor2& qvals)
 {
     const int numpts=xpts.getsize();
-    const double gamma1 = mhdParams.gamma-1.0;
+    const double gamma1 = global_ini_params.get_gamma()-1.0;
 
-    const double rhol = initialParams.rhol;
-    const double u1l  = initialParams.unl;
-    const double u2l  = initialParams.utl;
-    const double u3l  = initialParams.u3l;
-    const double pl   = initialParams.pl;
-    const double B1l  = initialParams.Bnl;
-    const double B2l  = initialParams.Btl;
-    const double B3l  = initialParams.B3l;
+    const double rhol = global_ini_params.get_rhol();
+    const double u1l  = global_ini_params.get_unl();
+    const double u2l  = global_ini_params.get_utl();
+    const double u3l  = global_ini_params.get_u3l();
+    const double pl   = global_ini_params.get_pl();
+    const double B1l  = global_ini_params.get_Bnl();
+    const double B2l  = global_ini_params.get_Btl();
+    const double B3l  = global_ini_params.get_B3l();
 
-    const double rhor = initialParams.rhor;
-    const double u1r  = initialParams.unr;
-    const double u2r  = initialParams.utr;
-    const double u3r  = initialParams.u3r;
-    const double pr   = initialParams.pr;
-    const double B1r  = initialParams.Bnr;
-    const double B2r  = initialParams.Btr;
-    const double B3r  = initialParams.B3r;
+    const double rhor = global_ini_params.get_rhor();
+    const double u1r  = global_ini_params.get_unr();
+    const double u2r  = global_ini_params.get_utr();
+    const double u3r  = global_ini_params.get_u3r();
+    const double pr   = global_ini_params.get_pr();
+    const double B1r  = global_ini_params.get_Bnr();
+    const double B2r  = global_ini_params.get_Btr();
+    const double B3r  = global_ini_params.get_B3r();
 
     // Initial conditions
     for (int i=1; i<=numpts; i++)

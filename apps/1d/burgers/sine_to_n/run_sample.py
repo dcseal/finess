@@ -143,5 +143,9 @@ if __name__ == '__main__':
     print(args)
     print('')
 
-    main( args.CFL, args.t_stepper, 
-        args.order[0], args.order[1], args.frames[1], args.frames[0], 0 )
+    print('TODO: this template needs to be rewritten in order to run!  The
+    parameters file is no longer compatible with the code.')
+    return
+
+#   main( args.CFL, args.t_stepper, 
+#       args.order[0], args.order[1], args.frames[1], args.frames[0], 0 )

@@ -13,17 +13,30 @@
 
 # define general compilation rules
 #
-.cpp.o: ; $(COMPILE) $*.cpp -o $*.o
+#.cpp.o: ; $(COMPILE) $*.cpp -o $*.o
 #
-.c.o: ; $(COMPILE) $*.c -o $*.o
-#
+#.c.o: ; $(COMPILE) $*.c -o $*.o
+
 # (these rules are equivalent to the previous ones)
 #
 #%.o : %.c
 #	$(COMPILE) $< -o $@
-#
-#%.o : %.cpp
-#	$(COMPILE) $< -o $@
+
+%.o : %.cpp $(INIPARAMS_H)
+	$(COMPILE) $< -o $@
+
+# IniParser.h  Requires Ragel.  Re-make only necessary.
+# To re-make:
+#   make $FINESS/lib/sys/IniParser.h
+
+$(INIPARSER_H):  $(INIPARSER_RL)
+	@cd $(LIB_SYS) ;  \
+	sha1sum --quiet -c $(INIPARSER_RL).sha1sum ; \
+	if [ $? != 0 ] ; then \
+	  ragel $^ -o $@ ; \
+	  sha1sum $(INIPARSER_RL) > $(INIPARSER_RL).sha1sum ; \
+	fi ; \
+	touch $(INIPARSER_H)
 
 # support cscope (more advanced than ctags)
 cscope:
@@ -38,7 +51,7 @@ retags:
 tags: retags
 
 diff:
-	\git diff $(ALL_SOURCES)
+	\git diff HEAD -- $(ALL_SOURCES)
 
 ls:
 	ls $(ALL_SOURCES)

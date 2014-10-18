@@ -1,62 +1,66 @@
 #include <iostream>
 #include <iomanip>
 #include "dog_math.h"
+#include "IniParams.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "FinSolveLxW.h"     // functions directly called from this function
-#include "DogParams.h"
-#include "DogParamsCart2.h"
+#include "hooks.h"              // hooks (files that a user may wish to relink)
+#include "constructs.h"
+#include "app_defined.h"        // application (required) files
+#include "misc2d.h"
+#include "StateVars.h"
 
 using namespace std;
 
-void FinSolveLxW(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
-    dTensorBC3& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 {
 
-    // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    dTensorBC3& qnew = Qnew.ref_q  ();
+    dTensorBC3&  aux = Qnew.ref_aux();
 
-    double t            = tstart;
-    double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max   CFL number
-    double CFL_target   = cflv[2];  // targe CFL number
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
-    double dtmax        = dt;
+    // Time stepping information
+    const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+    double t                  = Qnew.get_t();
+    double dt                 = dtv[1];   // Start with time step from last frame
+    double cfl                = 0.0;      // current CFL number
+    double dtmin              = dt;       // Counters for max and min time step taken
+    double dtmax              = dt;
 
-    const double xlow = dogParamsCart2.get_xlow();
-    const double ylow = dogParamsCart2.get_ylow();
-    const int     mbc = dogParamsCart2.get_mbc();
+    // Grid information
+    const int mx   = global_ini_params.get_mx();
+    const int my   = global_ini_params.get_my();
+    const int meqn = global_ini_params.get_meqn();
+    const int maux = global_ini_params.get_maux();
+    const int mbc  = global_ini_params.get_mbc();
+    const int numel = qnew.numel();
 
-    const int mx   = dogParamsCart2.get_mx();
-    const int my   = dogParamsCart2.get_my();
+    // Maximum wave speed at each flux interface value.  Note that the size of
+    // this tensor is one longer in each direction.
+    dTensorBC3 smax( mx+1, my+1, 2, mbc );           
 
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
+    // Needed for rejecting a time step
+    StateVars Qold( t, mx, my, meqn, maux, mbc );
+    dTensorBC3& qold   = Qold.ref_q();
+    dTensorBC3& auxold = Qold.ref_aux();
+    Qold.copyfrom( Qnew );
 
-    // Total number of entries in the vector:
-    const int numel = qold.numel();
+    // Intermediate stages
+    StateVars Qstar( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&   qstar = Qstar.ref_q();
+    dTensorBC3& auxstar = Qstar.ref_aux();
+    Qstar.copyfrom( Qnew );
 
     // Allocate storage for this solver
-
-    dTensorBC3 auxstar(mx, my, maux, mbc);   // right hand side (for Euler steps)
-    dTensorBC3   qstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
-    dTensorBC3   Lstar(mx, my, meqn, mbc);   // right hand side (for Euler steps)
     dTensorBC3       F(mx, my, meqn, mbc );  // time-integrated flux
     dTensorBC3       G(mx, my, meqn, mbc );  // time-integrated flux
-
-    // Set initialize qstar and auxstar values
-    // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    if( maux > 0 )
-    { auxstar.copyfrom( aux  ); }
+    dTensorBC3   Lstar(mx, my, meqn, mbc);   // Right hand side of ODE
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;                           // Number of time steps taken
+    const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while( t<tend )
     {
         // initialize time step
@@ -64,29 +68,26 @@ void FinSolveLxW(
         n_step = n_step + 1;
 
         // check if max number of time steps exceeded
-        if( n_step>nv )
+        if( n_step > nv )
         {
-            cout << " Error in FinSolveLxW.cpp: "<< 
-                " Exceeded allowed # of time steps " << endl;
-            cout << "    n_step = " << n_step << endl;
-            cout << "        nv = " << nv << endl;
-            cout << "Terminating program." << endl;
-            cout << endl;
+            printf(" Error in FinSolveRK.cpp: "         );
+            printf("Exceeded allowed # of time steps \n");
+            printf("    n_step = %d\n", n_step          );
+            printf("        nv = %d\n", nv              );
+            printf("Terminating program.\n"             );
             exit(1);
         }        
 
         // copy qnew into qold
-        // CopyQ(qnew, qold);
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
         {
 
             // set current time
+            Qnew.set_t( t );
             double told = t;
-            dogParams.set_time( t );
-
             if (told+dt > tend)
             { dt = tend - told; }
             t = told + dt;
@@ -95,15 +96,15 @@ void FinSolveLxW(
             smax.setall(0.);
 
             // do any extra work
-            BeforeFullTimeStep(dt, aux, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew);
 
             // ---------------------------------------------------------
             // Take a full time step of size dt
-            BeforeStep(dt, aux, qnew);
-            SetBndValues(aux, qnew);
-            ConstructIntegratedR( dt, aux, qnew, smax, F, G);
+            BeforeStep(dt, Qnew);
+            SetBndValues(Qnew);
+            ConstructIntegratedR( dt, Qnew, smax, F, G);
 
-            ConstructLxWL( aux, qnew, F, G, Lstar, smax);  // <-- "new" method
+            ConstructLxWL( Qnew, F, G, Lstar, smax);  // <-- "new" method
 
             // Update the solution:
 #pragma omp parallel for
@@ -112,19 +113,20 @@ void FinSolveLxW(
                 double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
                 qnew.vset(k, tmp );
             }
+            Qnew.set_t( Qnew.get_t() + dt );
 
             // Perform any extra work required:
-            AfterStep(dt,aux,qnew);
+            AfterStep(dt, Qnew);
             // ---------------------------------------------------------
 
             // do any extra work
-            AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
+            AfterFullTimeStep(dt, Qold, Qnew);
 
             // compute cfl number
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolveLxW2D ... Step" << setw(5) << n_step;
@@ -151,7 +153,7 @@ void FinSolveLxW(
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolveLxW2D rejecting step...";
                     cout<<"CFL number too large";
@@ -159,14 +161,13 @@ void FinSolveLxW(
                 }
 
                 // copy qold into qnew
-                // CopyQ(qold, qnew);
-                qnew.copyfrom( qold  );
+                Qnew.copyfrom( Qold  );
             }
 
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln(aux, qnew, t, outputdir);
+        ConSoln(Qnew);
 
     } // End of while loop
 

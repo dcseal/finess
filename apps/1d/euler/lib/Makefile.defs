@@ -27,16 +27,11 @@ SetWaveSpd       = $(APP_LIB)/SetWaveSpd
 # Auxilary function
 AuxFunc     = $(APP_LIB)/AuxFunc
 
-# Extra stuff!
-EulerParams = $(APP_LIB)/EulerParams
-
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
-EulerParams.o \
 
 #
 APP_LIB_SOURCES = \
-EulerParams.cpp \
 
 #

@@ -3,120 +3,67 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
+#include "IniParams.h"
+#include "StateVars.h"
+#include "FinSolveMD.h"
 
 using namespace std;
 
-// ------------------------------------------------------------
-// Function definitions
-void ConSoln( 
-    const dTensorBC2& aux,
-    const dTensorBC2& q, 
-    double t, string outputdir);
-
-// RK functions
-void BeforeStep(double dt, dTensorBC2& aux, dTensorBC2& q);
-
-void ConstructLxWL(
-        const dTensorBC2& aux,
-        const dTensorBC2& q,
-        const dTensorBC2& F,  // <-- new term: integrated flux
-        dTensorBC2& Lstar,
-        dTensorBC1& smax);
-
-void AfterStep(double dt, dTensorBC2& aux, dTensorBC2& q);
-
-double GetCFL(double dt, double dtmax,
-        const dTensorBC2& aux,
-        const dTensorBC1& smax);
-
-void BeforeFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
-void AfterFullTimeStep(double dt, 
-		       dTensorBC2& auxold, dTensorBC2& aux, 
-		       dTensorBC2& qold,   dTensorBC2& q);
-// ------------------------------------------------------------
-
-// ------------------------------------------------------------
-// Taylor series integration
-void ConstructIntegratedF( double dt, 
-    dTensorBC2& aux, dTensorBC2& q,
-    dTensorBC1& smax, dTensorBC2& F);
-// ------------------------------------------------------------
-
-// ------------------------------------------------------------
-// Multiderivative integration
+// -------------------------------------------------------------------------- //
+// Two-stage multiderivative time integration.  Currently, 
+// this routine supports a fourth and fifth-order method.
 //
-// These functions are for the two-stage methods.  One contains
-// two-derivatives, and the second contains three derivatives.
-void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1,
-    dTensorBC2& aux1, dTensorBC2& q1,
-    double alpha2, double beta2,
-    dTensorBC2& aux2, dTensorBC2& q2,
-    dTensorBC1& smax, dTensorBC2& F);
-
-void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1, double charlie1,
-    dTensorBC2& aux1, dTensorBC2& q1,
-    double alpha2, double beta2, double charlie2,
-    dTensorBC2& aux2, dTensorBC2& q2,
-    dTensorBC1& smax, dTensorBC2& F);
-// ------------------------------------------------------------
-
-
-void SetBndValues(dTensorBC2& aux, dTensorBC2& q);
-
-// ------------------------------------------------------------
-// Two-stage multiderivative integration.  Currently, this routine supports
-// fourth and fifth-order integration.
-// ------------------------------------------------------------
-void FinSolveMD(
-        dTensorBC2& aux, 
-        dTensorBC2& qold,
-        dTensorBC2& qnew,
-        dTensorBC1& smax,
-        double tstart, double tend,int nv, 
-        double dtv[], const double cflv[],string outputdir)
+// One needs to have a Jacobian defined in DFlux in order to be able to use 
+// this routine.
+//
+// See also: FinSolveRK, FinSolveLxW, FinSolveSDC, and FinSolveUser other solvers.
+// -------------------------------------------------------------------------- //
+void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 {
 
-    double t            = tstart;
-    double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max   CFL number
-    double CFL_target   = cflv[2];  // target CFL number
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
-    double dtmax        = dt;
+    dTensorBC2& qnew = Qnew.ref_q  ();
+    dTensorBC2&  aux = Qnew.ref_aux();
 
-    const int mx    = qold.getsize(1);
-    const int meqn  = qold.getsize(2);
-    const int maux  = aux.getsize(2);
-    const int mbc   = qnew.getmbc();
+    // Time stepping information
+    const double CFL_max        = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target     = global_ini_params.get_desired_cfl();  // target CFL number
+    double t                    = Qnew.get_t();
+    double dt                   = dtv[1];   // Start with time step from last frame
+    double cfl                  = 0.0;      // current CFL number
+    double dtmin                = dt;       // Counters for max and min time step taken
+    double dtmax                = dt;
 
-    // Total number of entries in the vector:
-    const int numel = qold.numel();
+    // Grid information
+    const int mx     = qnew.getsize(1);
+    const int meqn   = qnew.getsize(2);
+    const int maux   = aux.getsize(2);
+    const int mbc    = qnew.getmbc();
+    const int numel  = qnew.numel();
 
-    // Allocate storage for this solver
-    dTensorBC2   qstar(mx, meqn, mbc);
+    // Maximum wave speed
+    dTensorBC1    smax(mx, mbc);
 
-    // extra aux arrays
-    dTensorBC2  auxstar( mx, maux, mbc );
+    // Needed for rejecting a time step
+    StateVars Qold( t, mx, meqn, maux, mbc );
+    dTensorBC2& qold   = Qold.ref_q();
+    dTensorBC2& auxold = Qold.ref_aux();
 
+    // Intermediate storage
+    StateVars Qstar( t, mx, meqn, maux, mbc );
+    dTensorBC2& qstar   = Qstar.ref_q();
+    dTensorBC2& auxstar = Qstar.ref_aux();
+
+    // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
 
     // Time-averaged flux function
     dTensorBC2   F(mx, meqn, mbc);
 
-    // Set initialize qstar and auxstar values
-    qstar.copyfrom( qnew );   
-    if( maux > 0 )
-    { auxstar.copyfrom( aux  ); }
-
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;
+    const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while (t<tend)
     {
         // initialize time step
@@ -124,7 +71,7 @@ void FinSolveMD(
         n_step = n_step + 1;
 
         // check if max number of time steps exceeded
-        if (n_step>nv)
+        if( n_step > nv )
         {
             cout << " Error in DogSolveUser.cpp: "<< 
                 " Exceeded allowed # of time steps " << endl;
@@ -135,12 +82,14 @@ void FinSolveMD(
         }        
 
         // copy qnew into qold
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while (m_accept==0)
         {
+
             // set current time
+            Qnew.set_t( t );
             double told = t;
             if (told+dt > tend)
             { dt = tend - told; }
@@ -150,12 +99,12 @@ void FinSolveMD(
             smax.setall(0.);
 
             // ----------------------------------------------------------------
-            BeforeFullTimeStep(dt, aux, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew );
 
-            SetBndValues(aux,      qnew);
-            SetBndValues(auxstar, qstar);
+            SetBndValues( Qnew  );
+            SetBndValues( Qstar );
 
-            switch( dogParams.get_time_order() )
+            switch( global_ini_params.get_time_order() )
             {
 
 
@@ -185,8 +134,8 @@ void FinSolveMD(
 //              // Perform any extra work required:
 //              AfterStep(dt, auxstar, qstar );
 
-//              SetBndValues(aux,      qnew);
-//              SetBndValues(auxstar, qstar);
+//              SetBndValues(Qnew);
+//              SetBndValues(Qstar);
 
                 // -- Stage 2 -- //
 //              ConstructIntegratedF( dt, 
@@ -208,12 +157,13 @@ void FinSolveMD(
                     double tmp = qold.vget( k ) + dt*Lstar.vget(k);
                     qnew.vset(k, tmp );
                 }
+                Qnew.set_t( Qnew.get_t() + dt );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues( Qnew  );
+                SetBndValues( Qstar );
 
                 // Perform any extra work required:
-                AfterStep(dt, aux, qnew );
+                AfterStep(dt, Qnew );
 
                 break;
 
@@ -239,12 +189,13 @@ void FinSolveMD(
                     double tmp = qnew.vget( k ) + (2.0/5.0*dt)*Lstar.vget(k);
                     qstar.vset(k, tmp );
                 }
+                Qstar.set_t( Qnew.get_t() + (2.0/5.0)*dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, auxstar, qstar );
+                AfterStep(dt, Qstar );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues( Qnew  );
+                SetBndValues( Qstar );
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
@@ -260,29 +211,30 @@ void FinSolveMD(
                     double tmp = qold.vget( k ) + dt*Lstar.vget(k);
                     qnew.vset(k, tmp );
                 }
+                Qnew.set_t( Qold.get_t() + dt );
 
-                SetBndValues(aux,      qnew);
-                SetBndValues(auxstar, qstar);
+                SetBndValues( Qnew  );
+                SetBndValues( Qstar );
 
                 // Perform any extra work required:
-                AfterStep(dt, auxstar, qstar );
+                AfterStep(dt, Qstar );
 
                 break;
 
                 default:
-                printf("Error.  Time order %d not implemented for multiderivative\n", dogParams.get_time_order() );
+                printf("Error.  Time order %d not implemented for multiderivative\n", global_ini_params.get_time_order() );
                 exit(1);
 
             }
 
             // do any extra work      
-            AfterFullTimeStep(dt,aux,aux,qold,qnew);
+            AfterFullTimeStep(dt, Qold, Qnew );
 
             // compute cfl number
             cfl = GetCFL(dt,dtv[2],aux,smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "DogSolve1D ... Step" << setw(5) << n_step;
@@ -311,7 +263,7 @@ void FinSolveMD(
                 //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolve1D rejecting step...";
                     cout<<"CFL number too large";
@@ -319,14 +271,14 @@ void FinSolveMD(
                 }
 
                 // copy qold into qnew
-                qnew.copyfrom( qold );
+                Qnew.copyfrom( Qold  );
             }
 
         }
 
         // compute conservation and print to file
-        SetBndValues(aux, qnew);
-        ConSoln(aux, qnew, t, outputdir);
+        SetBndValues( Qnew );
+        ConSoln     ( Qnew );
 
     }
 

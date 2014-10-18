@@ -1,5 +1,5 @@
 #include<cmath>
-#include "DogParams.h"
+#include "IniParams.h"
 #include "dogdefs.h"
 #include "dog_math.h"
 

@@ -4,11 +4,13 @@
 
 NDIMS=1
 include $(FINESS)/lib/Makefile.defs
+
 # library this file is in
 LIB1D = $(FINESS)/lib/1d
 LIB1D_INCLUDE = -I$(LIB1D) $(TOPLIB_INCLUDE)
+
 # inheriting libraries are expected to override this
-INCLUDE_LIBS = $(LIB1D_INCLUDE)
+INCLUDE_LIBS = -I. $(LIB1D_INCLUDE)
 
 # added to by applications
 #
@@ -77,6 +79,7 @@ SOURCES_EXPECTED = \
 RunFinpack           = $(LIB1D)/RunFinpack
 Output               = $(LIB1D)/Output
 Output_Extra         = $(LIB1D)/Output_Extra
+WriteQhelp           = $(LIB1D)/WriteQhelp
 ConSoln              = $(LIB1D)/ConSoln
 AfterQinit           = $(LIB1D)/AfterQinit
 AfterStep            = $(LIB1D)/AfterStep
@@ -86,10 +89,9 @@ ApplyLimiter         = $(LIB1D)/ApplyLimiter
 ApplyPosLimiter      = $(LIB1D)/ApplyPosLimiter
 ConstructL           = $(LIB1D)/ConstructL
 ConstructLxWL        = $(LIB1D)/ConstructLxWL
-InitApp              = $(LIB1D)/InitApp
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
-DogSolveUser         = $(LIB1D)/DogSolveUser
+FinSolveUser         = $(LIB1D)/FinSolveUser
 SampleFunction       = $(LIB1D)/SampleFunction
 GlobalWaveSpd        = $(LIB1D)/GlobalWaveSpd
 #FinSolveRK_PIF       = $(LIB1D)/FinSolveRK_PIF
@@ -116,16 +118,16 @@ FinSolveMD            = $(LIB1D)/FinSolveMD
 LIB1D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
   $(RunFinpack).o \
-  $(LIB1D)/DogParamsCart1.o \
   $(SampleFunction).o \
   $(Output).o \
   $(Output_Extra).o \
+  $(WriteQhelp).o \
   $(ConSoln).o \
   $(LIB1D)/FinSolveRK.o \
   $(FinSolveSDC).o \
   $(FinSolveLxW).o \
   $(FinSolveMD).o \
-  $(DogSolveUser).o \
+  $(FinSolveUser).o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
   $(ConstructIntegratedF).o \
@@ -136,7 +138,6 @@ LIB1D_OBJECTS = \
   $(AfterStep).o \
   $(BeforeFullTimeStep).o \
   $(AfterFullTimeStep).o \
-  $(InitApp).o \
   $(AfterUpdateSoln).o \
   $(ApplyLimiter).o \
   $(ApplyPosLimiter).o \
@@ -155,16 +156,16 @@ LIB1D_SOURCES = \
   $(LIB1D)/*.h \
   $(TOPLIB_SOURCES) \
   $(RunFinpack).cpp \
-  $(LIB1D)/DogParamsCart1.cpp \
   $(SampleFunction).cpp \
   $(Output).cpp \
   $(Output_Extra).cpp \
+  $(WriteQhelp).cpp \
   $(ConSoln).cpp \
   $(LIB1D)/FinSolveRK.cpp \
   $(FinSolveSDC).cpp \
   $(FinSolveLxW).cpp \
   $(FinSolveMD).cpp \
-  $(DogSolveUser).cpp \
+  $(FinSolveUser).cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \
   $(ConstructIntegratedF).cpp \
@@ -175,7 +176,6 @@ LIB1D_SOURCES = \
   $(AfterStep).cpp \
   $(BeforeFullTimeStep).cpp \
   $(AfterFullTimeStep).cpp \
-  $(InitApp).cpp \
   $(AfterUpdateSoln).cpp \
   $(ApplyLimiter).cpp \
   $(ApplyPosLimiter).cpp \

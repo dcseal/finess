@@ -4,8 +4,7 @@
 #include "stdlib.h"
 #include "dogdefs.h"
 #include "FinSolveLxW.h"     // functions directly called from this function
-#include "DogParams.h"
-#include "DogParamsCart3.h"
+#include "IniParams.h"
 
 using namespace std;
 
@@ -21,7 +20,7 @@ exit(1);
 
 /*
     // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    const int time_order = global_ini_params.get_time_order();
 
     double t            = tstart;
     double dt           = dtv[1];   // Start with time step from last frame
@@ -31,15 +30,15 @@ exit(1);
     double dtmin        = dt;       // Counters for max and min time step taken
     double dtmax        = dt;
 
-    const double xlow = dogParamsCart3.get_xlow();
-    const double ylow = dogParamsCart3.get_ylow();
-    const int     mbc = dogParamsCart3.get_mbc();
+    const double xlow = global_ini_params.get_xlow();
+    const double ylow = global_ini_params.get_ylow();
+    const int     mbc = global_ini_params.get_mbc();
 
-    const int mx   = dogParamsCart3.get_mx();
-    const int my   = dogParamsCart3.get_my();
+    const int mx   = global_ini_params.get_mx();
+    const int my   = global_ini_params.get_my();
 
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
+    const int meqn   = global_ini_params.get_meqn();
+    const int maux   = global_ini_params.get_maux();
 
     // Total number of entries in the vector:
     const int numel = qold.numel();
@@ -89,7 +88,7 @@ exit(1);
 
             // set current time
             double told = t;
-            dogParams.set_time( t );
+            global_ini_params.set_time( t );
 
             if (told+dt > tend)
             { dt = tend - told; }
@@ -128,7 +127,7 @@ exit(1);
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolveLxW2D ... Step" << setw(5) << n_step;
@@ -155,7 +154,7 @@ exit(1);
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolveLxW2D rejecting step...";
                     cout<<"CFL number too large";

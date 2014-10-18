@@ -1,57 +1,31 @@
 #ifndef _RUN_FINESS_H_
 #define _RUN_FINESS_H_
 
-using namespace std;
+#include "StateVars.h"
 
-// ------------------------------------------------------------
-// Functions use in RunDogpack.cpp
-void Output(const dTensorBC2& aux, const dTensorBC2& q,
-        double t, int nframe, string outputdir);
+void WriteQhelp( void );
+
+void Output( const StateVars& Qstate, int nframe );
 
 void QinitFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals);
 void AuxFunc(const dTensor1& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& auxvals);
-void AfterQinit(dTensorBC2& aux, dTensorBC2& q);
+void AfterQinit( StateVars& Qstate );
 
-void ConSoln(
-    const dTensorBC2& aux,
-    const dTensorBC2& q, double t, string outputdir);
+void ConSoln( const StateVars& Qstate );
 
-void FinSolveRK(
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-    dTensorBC1& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir);
+void FinSolveRK( StateVars& Qstate, double tend, double dtv[] );
 
-void FinSolveLxW(
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-    dTensorBC1& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir);
+void FinSolveLxW( StateVars& Qstate, double tend, double dtv[] );
 
-void FinSolveMD(
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-    dTensorBC1& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir);
+void FinSolveMD( StateVars& Qstate, double tend, double dtv[] );
 
-void FinSolveSDC(
-    dTensorBC2& aux, dTensorBC2& qold, dTensorBC2& qnew, 
-    dTensorBC1& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir);
+void FinSolveSDC( StateVars& Qstate, double tend, double dtv[] );
 
-void DogSolveUser(
-        dTensorBC2& aux, 
-        dTensorBC2& qold,
-        dTensorBC2& qnew,
-        dTensorBC1& smax,
-        double tstart, double tend,int nv, 
-        double dtv[], const double cflv[],string outputdir);
+void FinSolveUser( StateVars& Qstate, double tend, double dtv[] );
 
-void InitApp(IniDocument& ini_doc);
-
+// TODO - replace qin, auxin with StateVars ...
 void SampleFunction( 
     int istart, int iend,
     const dTensorBC2& qin, 

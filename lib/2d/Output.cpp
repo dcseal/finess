@@ -5,22 +5,23 @@
 #include <iostream>
 #include <iomanip>
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
+#include "StateVars.h"
 using namespace std;
 
-void Output(
-        const dTensorBC3& aux,
-        const dTensorBC3& q,
-        double t,
-        int nframe,
-        string outputdir)
+void Output( const StateVars& Q, int nframe )
 {
 
-    const int meqn    = dogParams.get_meqn();
-    const int maux    = dogParams.get_maux();
-    const int mx      = dogParamsCart2.get_mx();
-    const int my      = dogParamsCart2.get_my();
+    const dTensorBC3& q   = Q.const_ref_q  ();
+    const dTensorBC3& aux = Q.const_ref_aux();
+    const double t        = Q.get_t();
+
+    const int meqn    = global_ini_params.get_meqn();
+    const int maux    = global_ini_params.get_maux();
+    const int mx      = global_ini_params.get_mx();
+    const int my      = global_ini_params.get_my();
+
+    string outputdir = global_ini_params.get_output_dir();
 
     // Open file -- q
     ostringstream fname1;

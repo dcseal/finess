@@ -3,87 +3,103 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "RKinfo.h"           // Coefficients for the RK method
-#include "FinSolveRK.h"       // Functions directly called from this function
-#include "DogParams.h"
-#include "DogParamsCart2.h"
-
+#include "RKinfo.h"             // Coefficients for the RK method
+#include "FinSolveRK.h"         // Functions directly called from this function
+#include "app_defined.h"
+#include "StateVars.h"          // Information for state variables
+#include "IniParams.h"          // Global parameters accessor
 using namespace std;
 
-void FinSolveRK(
-    dTensorBC3& aux, dTensorBC3& qold, dTensorBC3& qnew, 
-    dTensorBC3& smax,
-    double tstart, double tend, int nv,
-    double dtv[], const double cflv[], string outputdir)
+void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 {
 
+    dTensorBC3& qnew = Qnew.ref_q  ();
+    dTensorBC3&  aux = Qnew.ref_aux();
+
+    // Time stepping information
+    const double CFL_max      = global_ini_params.get_max_cfl();      // max CFL number
+    const double CFL_target   = global_ini_params.get_desired_cfl();  // target CFL number
+    double t                  = Qnew.get_t();
+    double dt                 = dtv[1];   // Start with time step from last frame
+    double cfl                = 0.0;      // current CFL number
+    double dtmin              = dt;       // Counters for max and min time step taken
+    double dtmax              = dt;
+
     // Declare information about the Runge-Kutta method
-    const int time_order = dogParams.get_time_order();
+    const int time_order = global_ini_params.get_time_order();
     RKinfo rk;
     SetRKinfo(time_order, rk);
+    double tmp_t = 0.;                    // used for fourth-order stepping
 
-    double t            = tstart;
-    double dt           = dtv[1];   // Start with time step from last frame
-    double CFL_max      = cflv[1];  // max    CFL number
-    double CFL_target   = cflv[2];  // target CFL number
-    double cfl          = 0.0;      // current CFL number
-    double dtmin        = dt;       // Counters for max and min time step taken
-    double dtmax        = dt;
+    // Grid information
+    const int mx   = global_ini_params.get_mx();
+    const int my   = global_ini_params.get_my();
+    const int meqn = global_ini_params.get_meqn();
+    const int maux = global_ini_params.get_maux();
+    const int mbc  = global_ini_params.get_mbc();
+    const int numel = qnew.numel();
 
-    const double xlow = dogParamsCart2.get_xlow();
-    const double ylow = dogParamsCart2.get_ylow();
-    const int     mbc = dogParamsCart2.get_mbc();
-
-    const int mx   = dogParamsCart2.get_mx();
-    const int my   = dogParamsCart2.get_my();
-
-    const int meqn   = dogParams.get_meqn();
-    const int maux   = dogParams.get_maux();
+    // Maximum wave speed at each flux interface value.  Note that the size of
+    // this tensor is one longer in each direction.
+    dTensorBC3 smax( mx+1, my+1, 2, mbc );           
 
     // Allocate storage for this solver
-    dTensorBC3   qstar(mx, my, meqn, mbc);
-    dTensorBC3 auxstar(mx, my, maux, mbc);
-    dTensorBC3   Lstar(mx, my, meqn, mbc);
-    dTensorBC3    Lold(mx, my, meqn, mbc);
-    dTensorBC3      q1(mx, my, meqn, mbc);
-    dTensorBC3      q2(mx, my, meqn, mbc);
+    StateVars Qold( t, mx, my, meqn, maux, mbc );
+    dTensorBC3& qold   = Qold.ref_q();
+    dTensorBC3& auxold = Qold.ref_aux();
+    Qold.copyfrom( Qnew );
 
-    // Set initialize qstar and auxstar values
-    // TODO - we can use the 'copyfrom' routine from the tensor class (-DS)
-    qstar.copyfrom( qold   );
-    if( maux > 0 )
-    { auxstar.copyfrom( aux  ); }
+    // Intermediate stages
+    StateVars Qstar( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&   qstar = Qstar.ref_q();
+    dTensorBC3& auxstar = Qstar.ref_aux();
+    Qstar.copyfrom( Qnew );
+
+    dTensorBC3   Lstar(mx, my, meqn, mbc);   // Right hand side of ODE
+    dTensorBC3    Lold(mx, my, meqn, mbc);
+
+    // Local storage (for 4th- and 5th-order time stepping)
+    StateVars    Q1( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&  q1   = Q1.ref_q();
+    dTensorBC3&  aux1 = Q1.ref_aux();
+    Q1.copyfrom( Qnew );
+
+    StateVars    Q2( t, mx, my, meqn, maux, mbc );
+    dTensorBC3&  q2   = Q2.ref_q();
+    dTensorBC3&  aux2 = Q2.ref_aux();
+    Q2.copyfrom( Qnew );
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
-    int n_step = 0;
+    int n_step   = 0;                           // Number of time steps taken
+    const int nv = global_ini_params.get_nv();  // Maximum allowable time steps
     while( t<tend )
     {
         // initialize time step
         int m_accept = 0;      
-        n_step = n_step + 1;
+        n_step       = n_step + 1;
 
         // check if max number of time steps exceeded
-        if( n_step>nv )
+        if( n_step > nv )
         {
-            cout << " Error in FinSolveRK.cpp: "<< 
-                " Exceeded allowed # of time steps " << endl;
-            cout << "    n_step = " << n_step << endl;
-            cout << "        nv = " << nv << endl;
-            cout << "Terminating program." << endl;
-            cout << endl;
+            printf(" Error in FinSolveRK.cpp: "         );
+            printf("Exceeded allowed # of time steps \n");
+            printf("    n_step = %d\n", n_step          );
+            printf("        nv = %d\n", nv              );
+            printf("Terminating program.\n"             );
             exit(1);
         }        
 
         // copy qnew into qold
-        qold.copyfrom( qnew );
+        Qold.copyfrom( Qnew );
 
         // keep trying until we get time step that doesn't violate CFL condition
         while( m_accept==0 )
         {
 
             // set current time
+            Qnew.set_t( t );
             double told = t;
             if (told+dt > tend)
             { dt = tend - told; }
@@ -93,21 +109,23 @@ void FinSolveRK(
             smax.setall(0.);
 
             // do any extra work
-            BeforeFullTimeStep(dt, auxstar, aux, qold, qnew);
+            BeforeFullTimeStep(dt, Qold, Qnew);
 
             // Take a full time step of size dt
             switch( time_order )
             {
-                case 1:  // First order in time (Forward-Euler)
+
+                case 1:  // First order in time
 
                     // --------------------------------------------------------
                     // Stage #1 (the only one in this case)
                     rk.mstage = 1;
-                    BeforeStep(dt,aux,qnew);
-                    ConstructL( aux, qnew, Lstar, smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qnew);
-                    AfterStep(dt,aux,qnew);
+                    SetBndValues( Qnew  );
+                    BeforeStep(dt, Qnew );
+                    ConstructL(Qnew, Lstar, smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qnew);
+                    AfterStep(dt, Qnew );
                     // --------------------------------------------------------
 
                     break;
@@ -117,20 +135,22 @@ void FinSolveRK(
                     // ---------------------------------------------------------
                     // Stage #1
                     rk.mstage = 1;
-                    BeforeStep(dt,aux,qnew);
-                    ConstructL(aux,qnew,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);      
-                    AfterStep(dt,auxstar,qstar);
+                    SetBndValues(  Qnew );
+                    BeforeStep(dt, Qnew );
+                    ConstructL(Qnew, Lstar, smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qstar);      
+                    AfterStep(dt , Qstar );
 
                     // ---------------------------------------------------------
                     // Stage #2
                     rk.mstage = 2;
-                    BeforeStep(dt,auxstar,qstar);
-                    ConstructL(aux,qstar,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);
-                    AfterStep(dt,aux,qnew); 
+                    SetBndValues(Qstar);
+                    BeforeStep(dt, Qstar);
+                    ConstructL(Qstar, Lstar, smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Qstar, Lstar, Qnew);
+                    AfterStep(dt, Qnew );
                     // ---------------------------------------------------------
 
                     break;
@@ -139,145 +159,164 @@ void FinSolveRK(
 
 //     qnew = alpha1 * qstar + alpha2 * qnew + beta * dt * L( qstar )
 
-// alpha1 = 1.0
-// alpha2 = 0.0
-// beta   = 1.0
 
                     // ---------------------------------------------------------
                     // Stage #1
+                    //      alpha1 = 1.0
+                    //      alpha2 = 0.0
+                    //      beta   = 1.0
+                    // ---------------------------------------------------------
                     rk.mstage = 1;
-dogParams.set_time( told );
-                    BeforeStep(dt,aux,qnew);    
-                    ConstructL(aux,qnew,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
-                    AfterStep(dt,auxstar,qstar);
+                    SetBndValues(Qnew);
+                    BeforeStep(dt,Qnew);    
+                    ConstructL(Qnew,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qstar);
+                    AfterStep(dt, Qstar);
 
-dogParams.set_time( told + dt );
-// alpha1 = 0.75
-// alpha2 = 0.25
-// beta   = 0.25
+
                     // ---------------------------------------------------------
                     // Stage #2
-                    rk.mstage = 2;
-                    BeforeStep(dt,auxstar,qstar);
-                    ConstructL(aux,qstar,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,qnew,Lstar,qstar);
-                    AfterStep(dt,auxstar,qstar);
+                    //      alpha1 = 0.75
+                    //      alpha2 = 0.25
+                    //      beta   = 0.25
+                    // ---------------------------------------------------------
 
-dogParams.set_time( told + (2.0/3.0)*dt );
-// alpha1 = 2/3
-// alpha2 = 1/3
-// beta   = 2/3
+                    rk.mstage = 2;
+                    SetBndValues(Qstar);
+                    BeforeStep(dt, Qstar);
+                    ConstructL(Qstar, Lstar, smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qstar);
+                    AfterStep(dt, Qstar);
+
                     // ---------------------------------------------------------
                     // Stage #3
+                    //      alpha1 = 2/3
+                    //      alpha2 = 1/3
+                    //      beta   = 2/3
+                    // ---------------------------------------------------------
+
                     rk.mstage = 3;
-                    BeforeStep(dt,auxstar,qstar);
-                    ConstructL(auxstar,qstar,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,auxstar,qstar,Lstar,qnew);   
-                    AfterStep(dt,aux,qnew);
+                    SetBndValues(Qstar);
+                    BeforeStep(dt,Qstar);
+                    ConstructL(Qstar,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Qstar, Lstar, Qnew);   
+                    AfterStep(dt, Qnew);
                     // ---------------------------------------------------------
 
                     break;
 
-                case 4:  // Fourth order in time (10-stages)
+                case 4: // Fourth order in time (10-stages) See Pseudocode 3 in
+                        //
+                        // "Highly Efficient Strong Stability Preserving Runge-Kutta Methods with
+                        // Low-Storage Implementations," David I. Ketcheson, SIAM Journal on Scientific 
+                        // Computing, 30(4):2113-2136 (2008)
+                        //
 
                     // -----------------------------------------------
-                    q1.copyfrom( qnew );
-                    q2.copyfrom(   q1 );
+                    Q1.copyfrom( Qnew );
+                    Q2.copyfrom( Qnew );
 
                     // Stage: 1,2,3,4, and 5
                     for (int s=1; s<=5; s++)
                     {
                         rk.mstage = s;
-                        BeforeStep(dt,aux,q1);
-                        ConstructL(aux,q1,Lstar,smax);
+                        SetBndValues(Q1);
+                        BeforeStep(dt, Q1);
+                        ConstructL(Q1, Lstar, smax);
                         if (s==1)
                         {  Lold.copyfrom( Lstar ); }
-                        UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                                rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
-                        AfterStep(dt,aux,q1);
+                        UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                                rk.beta->get(rk.mstage), dt, Q1, Lstar, Q1);
+                        AfterStep(dt, Q1);
                     }
 
                     // Temporary storage
-                    for(int i = (1-mbc); i <= (mx+mbc); i++)
-                    for(int j = (1-mbc); j <= (my+mbc); j++)
-                    for(int m = 1; m <= meqn; m++)
+                    #pragma omp parallel for
+                    for( int k=0; k < numel; k++ )
                     {
-                        double tmp = ( q2.get(i,j,m) + 9.0*q1.get(i,j,m) )/25.0;
-                        q2.set(i,j,m, tmp );
-                        q1.set(i,j,m, 15.0*tmp - 5.0*q1.get(i,j,m) );
+                        double tmp = (q2.vget(k) + 9.0*q1.vget(k))/25.0;
+                        q2.vset(k, tmp );
+                        q1.vset(k, 15.0*tmp - 5.0*q1.vget(k) );
+
                     }
+
+                    // Swap the time values as well (L=1)
+                    tmp_t = (Q2.get_t() + 9.0*Q1.get_t())/25.0;
+                    Q2.set_t( tmp_t );
+                    Q1.set_t( 15.0*tmp_t - 5.0*Q1.get_t() );
 
                     // Stage: 6,7,8, and 9
                     for (int s=6; s<=9; s++)
                     {
                         rk.mstage = s;
-                        BeforeStep(dt,aux,q1);
-                        ConstructL(aux,q1,Lstar,smax);
-                        UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                                rk.beta->get(rk.mstage),dt,aux,q1,Lstar,q1);
-                        AfterStep(dt,aux,q1);
+                        SetBndValues(Q1);
+                        BeforeStep(dt, Q1);
+                        ConstructL(Q1, Lstar, smax);
+                        UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                                rk.beta->get(rk.mstage), dt, Q1, Lstar, Q1);
+                        AfterStep(dt, Q1);
                     }
 
                     // Stage: 10
                     rk.mstage = 10;
-                    BeforeStep(dt,aux,q1);
-                    ConstructL(aux,q1,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage),rk.alpha2->get(rk.mstage),
-                            rk.beta->get(rk.mstage),dt,aux,q2,Lstar,q1);
-                    AfterStep(dt,aux,q1);
+                    SetBndValues(Q1);
+                    BeforeStep(dt,Q1);
+                    ConstructL(Q1,Lstar,smax);
+                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Q2, Lstar, Q1);
+                    AfterStep(dt, Q1);
 
-                    qnew.copyfrom( q1 );
-                    // -----------------------------------------------          
+                    Qnew.copyfrom( Q1 );
+
                     break;
 
-                case 5:  // Fifth order in time (8-stages)
+                case 5: // Fifth order in time (8-stages)
+                        // TODO - what paper did these coefficients come from?
 
-                    // -----------------------------------------------
-                    q1.copyfrom( qnew );
-                    q2.setall(0.);
+//                  Q1.copyfrom( Qnew );   // we can remove two replacements
+                                           // here
+                    q2.setall(0.);      
+                    Q2.set_t( 0.);
 
                     for (int s=1; s<=8; s++)
                     {
                         rk.mstage = s;
-                        BeforeStep(dt,aux,q1);
-                        ConstructL(aux,q1,Lstar,smax);
-                        if (s==1)
-                        {  Lold.copyfrom(Lstar); }
+                        SetBndValues( Qnew );
+                        BeforeStep(dt, Qnew );
+                        ConstructL(Qnew, Lstar, smax);
+                        if( s==1 )
+                        {  Lold.copyfrom( Lstar ); }
 
-                        UpdateSoln(
-                                rk.gamma->get(1,s), 
-                                rk.gamma->get(2,s), 
-                                rk.gamma->get(3,s), 
-                                rk.delta->get(s), rk.beta->get(s),
-                                dt,  aux, qold, Lstar, q1, q2);
+                        UpdateSoln( rk.gamma->get(1,s), rk.gamma->get(2,s), rk.gamma->get(3,s), 
+                                rk.delta->get(s), rk.beta->get(s), dt,  Qold, Lstar, Qnew, Q2);
 
-                        AfterStep(dt,aux,q1);
+                        AfterStep(dt, Qnew);
                     }
 
-                    qnew.copyfrom( q1 );
-                    // -----------------------------------------------          
+// TODO - the time information for this isn't working correctly.
+//printf("Q, t1, t2 = %f, %f, %f \n", qnew.get(1,1), Qnew.get_t(), Q2.get_t() );
+//assert_lt( fabs( Qnew.get_t() - t ), 1e-8 );
+
                     break;
 
                 default:
 
                     printf("WARNING: torder = %d has not been implemented\n", time_order );
-
                     break;
 
             }  // End of switch statement over time-order
 
             // Do any extra work
-            AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
+            AfterFullTimeStep(dt, Qold, Qnew);
 
             // compute cfl number
             cfl = GetCFL(dt, dtv[2], aux, smax);
 
             // output time step information
-            if( dogParams.get_verbosity() )
+            if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
                 cout << "FinSolveRK2D ... Step" << setw(5) << n_step;
@@ -304,7 +343,7 @@ dogParams.set_time( told + (2.0/3.0)*dt );
             else                    //reject
             {   
                 t = told;
-                if( dogParams.get_verbosity() )
+                if( global_ini_params.get_verbosity() )
                 {
                     cout<<"FinSolveRK2D rejecting step...";
                     cout<<"CFL number too large";
@@ -312,13 +351,13 @@ dogParams.set_time( told + (2.0/3.0)*dt );
                 }
 
                 // copy qold into qnew
-                qnew.copyfrom( qold );
+                Qnew.copyfrom( Qold );
             }
 
         } // End of m_accept loop
 
         // compute conservation and print to file
-        ConSoln( aux, qnew, t, outputdir);
+        ConSoln( Qnew );
 
     } // End of while loop
 

@@ -3,20 +3,19 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "RKinfo.h"
+#include "IniParams.h"
+#include "StateVars.h"
 
 using namespace std;
 
-void DogSolveUser(
-        dTensorBC4& aux, dTensorBC4& qold, dTensorBC4& qnew,
-        dTensorBC4& smax,
-        double tstart, double tend,int nv, 
-        double dtv[], const double cflv[],string outputdir)
+void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 {
 
+/* TODO - write a template here, and pull it from FinSolveRK.  See the
+ * template already created in the 1D code.  (-DS)
+ */
 
-/* TODO - write a template here.  (-DS)
+/* 
     // ------------------------------------------------------------
     // Function definitions
     void CopyQ(const dTensorBC3&,dTensorBC3&);

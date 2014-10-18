@@ -1,10 +1,10 @@
+#include <string>
 #include <iostream>
 #include <iomanip>
 #include <stdlib.h>
 #include "dogdefs.h"
-#include "IniDocument.h"
-#include "OutputDir.h"
 #include "dimdefs.h"
+#include "IniParams.h"
 
 /*
  * Common main function that's called by every application.
@@ -20,29 +20,36 @@
  */
 int main_global(int argc, char* argv[])
 {
-    // Open parameters.ini file, (and read [dogParams]? -DS)
-    ini_doc.initFromFile("parameters.ini");
-    IniDocument::Section& ini_sec = ini_doc["dogParams"];
+    using std::string;
+    using std::cout;
+    using std::setprecision;
+    using std::setw;
+    using std::scientific;
+    using std::endl;
+
+    string parameters_ini_filename;
+
+    parameters_ini_filename = 
+        argc == 1 ? "parameters.ini" : argv[1];
+       
+    cout << "Running with configuration file: "
+         << parameters_ini_filename
+         << endl;
+
+    global_ini_params.init(parameters_ini_filename);
 
     // Get current time
     double time1 = time(NULL);
 
-    // Parse the command line arguments.  (e.g. -o sets a different output
-    // directory, and -d sets a different debug level).
-    //
-    // TODO - there is no need for this to be a class.  A single global
-    // variable containing the output directory would suffice. (-DS)
-    OutputDir::parse_arguments(argc, argv);
-
     // Call startscript (Default: scripts/startscript, otherwise it checks for
     // a local file called 'startscript' from the application's directory)
-    void RunStartScript(int ndims);
-    RunStartScript(NDIMS);
+    void RunStartScript(string parameters_ini_filename);
+    RunStartScript(parameters_ini_filename);
 
     // Call the ``RunFinpack'' routine, which executes the code
     // Each dimension has its own version of this routine.
-    int RunFinpack( string outputdir );
-    int m = RunFinpack( get_outputdir() );
+    int RunFinpack( );
+    int m = RunFinpack( );
 
     // Get current time
     double time2 = time(NULL);

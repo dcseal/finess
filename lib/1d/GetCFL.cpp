@@ -2,7 +2,7 @@
 #include "dog_math.h"
 #include "tensors.h"
 #include "stdlib.h"
-#include "DogParamsCart1.h"
+#include "IniParams.h"
 
 using namespace std;
 
@@ -11,8 +11,8 @@ double GetCFL(double dt, double dtmax,
         const dTensorBC1& smax)
 {
 
-    const int    mx = dogParamsCart1.get_mx();
-    const double dx = dogParamsCart1.get_dx();
+    const int    mx = global_ini_params.get_mx();
+    const double dx = global_ini_params.get_dx();
 
     double cfl   = -100.0;
 

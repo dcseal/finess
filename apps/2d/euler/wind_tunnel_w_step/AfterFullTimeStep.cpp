@@ -1,24 +1,27 @@
 #include "dogdefs.h"
 #include "tensors.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
+#include "StateVars.h"
 
 // Function that is called after a full time step (i.e., after all stages are complete)
 //
 // This routine exists because the domain for this problem is weird.  Here, we
 // reset the values of the function to be constant inside the wedge.  Next
 // time ConstructL is called, these values get overwritten.
-void AfterFullTimeStep(double dt,
-		       dTensorBC3& auxold, dTensorBC3& aux, 
-		       dTensorBC3& qold,   dTensorBC3& q)
+void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Q )
 {
+
+    dTensorBC3& q    = Q.ref_q();
+    dTensorBC3& aux  = Q.ref_aux();
+
     const int   mx   = q.getsize(1);
     const int   my   = q.getsize(2);
     const int meqn   = q.getsize(3);
     const int mbc    = q.getmbc();
     const int maux   = aux.getsize(3);
 
-    const double dx   = dogParamsCart2.get_dx();
-    const double dy   = dogParamsCart2.get_dy();
+    const double dx   = global_ini_params.get_dx();
+    const double dy   = global_ini_params.get_dy();
 
     if( mx%5 != 0 || my%5 != 0 )
     {

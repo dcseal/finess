@@ -1,9 +1,6 @@
 /*
- * Top level function to RunFinpack.  Briefly, this function calls the
- * following functions in the following order:
- *
- * TODO - write some more documentation!
- *
+ * Top level function to Run FINESS.  Each application has its own main, which
+ * calls this function.
  */
 
 #include <fstream>
@@ -12,14 +9,20 @@
 #include <iomanip>
 #include "dog_math.h"
 #include "dogdefs.h"
-#include "DogParams.h"            // accessors for the parameters.ini file
-#include "DogParamsCart3.h"       // accessors for the parameters.ini file
-#include "IniDocument.h"
-#include "WenoParams.h"
+#include "IniParams.h"            // accessors for the parameters.ini file
 #include "RunFinpack.h"           // Function declarations
+#include "StateVars.h"
 
-int RunFinpack(string outputdir)
+int RunFinpack()
 {
+
+    using std::cout;
+    using std::endl;
+    using std::string;
+    using std::scientific;
+    using std::setw;
+    using std::setprecision;
+
 
     // Output title information
     cout << endl;
@@ -33,67 +36,49 @@ int RunFinpack(string outputdir)
     cout << "   ------------------------------------------------   " << endl;
     cout << endl;
 
-    // Get parameters
-    dogParams.init();
-    dogParamsCart3.init(ini_doc);
-    wenoParams.init(ini_doc);
-    cout << endl;
+    // Get parameters and print to screen
+    cout << global_ini_params.ini_doc_as_string() << endl;
+    const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
+	  global_ini_params.get_time_stepping_method();
 
-    // Get addtional parameters (application specific parameters)
-    InitApp( ini_doc );
-    cout << endl;
+    // Print information about the parameters to file.  In order to use the
+    // MATLAB plotting routines, this call is necessary to pull information
+    // from the parameters.ini file.
+    WriteQhelp( );
 
-    // Quick error check (WENO methods)
-
-    const string time_stepping_method = dogParams.get_time_stepping_method();
-    const int&     nout     = dogParams.get_nout();
-    const double&  tfinal   = dogParams.get_tfinal();
+    const int&     nout     = global_ini_params.get_nout();
+    const double&  tfinal   = global_ini_params.get_tfinal();
     double dtv[2+1];
-    dtv[1] = dogParams.get_initial_dt();
-    dtv[2] = dogParams.get_max_dt();
-    const double*  cflv     = dogParams.get_cflv();
-    const int      nv       = dogParams.get_nv();
-    const int&     meqn     = dogParams.get_meqn();
-    const int&     maux     = dogParams.get_maux();
-    const int&     mdim     = dogParams.get_ndims();     assert_eq( mdim, 3 );
-    const int&     mx       = dogParamsCart3.get_mx();
-    const int&     my       = dogParamsCart3.get_my();
-    const int&     mz       = dogParamsCart3.get_mz();
-    const int&     mbc      = dogParamsCart3.get_mbc();
-    const int&     mrestart = dogParams.get_mrestart();
-
-    // Output helpful stuff to qhelp.dat for plotting purposes
-    string qhelp;
-    qhelp=outputdir+"/qhelp.dat";
-    dogParams.write_qhelp(qhelp.c_str());
-    dogParamsCart3.append_qhelp(qhelp.c_str());
-
+    dtv[1] = global_ini_params.get_initial_dt();
+    dtv[2] = global_ini_params.get_max_dt();
+    const int&     meqn     = global_ini_params.get_meqn();
+    const int&     maux     = global_ini_params.get_maux();
+    const int&     mdim     = global_ini_params.get_ndims();     assert_eq( mdim, 3 );
+    const int&     mx       = global_ini_params.get_mx();
+    const int&     my       = global_ini_params.get_my();
+    const int&     mz       = global_ini_params.get_mz();
+    const int&     mbc      = global_ini_params.get_mbc();
 
     // Dimension arrays
-    dTensorBC4    qnew(mx,my,mz, meqn, mbc);
-    dTensorBC4    qold(mx,my,mz, meqn, mbc);
-    dTensorBC4    smax(mx,my,mz, mdim, mbc);
-    dTensorBC4    aux (mx,my,mz, maux, mbc);
+    StateVars Qnew(0., mx, my, mz, meqn, maux, mbc );
+    dTensorBC4& qnew = Qnew.ref_q();
+    dTensorBC4& aux  = Qnew.ref_aux();
 
     // Set any auxiliary variables on computational grid
-    // Set values and apply L2-projection
     if( maux > 0 )
     {  SampleFunction(1-mbc, mx+mbc, 1-mbc, my+mbc, 1-mbc, mz+mbc, qnew, aux, aux, &AuxFunc);  }
 
     // Set initial data on computational grid
-    // Set values and apply L2-projection
     SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, 1-mbc, mz+mbc, qnew, aux, qnew, &QinitFunc);
-    qold.copyfrom(qnew);
 
     // Run AfterQinit to set any necessary variables
-    AfterQinit( aux, qnew);
+    AfterQinit( Qnew );
 
     // Output initial data to file
-    // For each element, we output ``method[1]'' number of values
-    Output( aux, qnew, 0.0, 0, outputdir);
+    Output( Qnew, 0 );
 
     // Compute conservation and print to file
-    ConSoln( aux, qnew, 0.0, outputdir);
+    ConSoln( Qnew );
 
     // Main loop for time stepping
     double tstart = 0.0;
@@ -105,29 +90,15 @@ int RunFinpack(string outputdir)
         tend   = tstart + dtout;
 
         // Solve hyperbolic system from tstart to tend
-        if (time_stepping_method == "Runge-Kutta")
+        if (time_stepping_method == IniParams::TimeSteppingMethod::RK)
         {  
             // Runge-Kutta time-stepping scheme
-            FinSolveRK( aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+            FinSolveRK( Qnew, tend, dtv );
         }
-        else if (time_stepping_method == "Lax-Wendroff")
+        else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
-            FinSolveLxW(aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
-        }
-        else if (time_stepping_method == "Multiderivative" )
-        {
-            // User-defined time-stepping scheme
-//          FinSolveMD(aux, qold, qnew, smax, tstart, tend, 
-//                  nv, dtv, cflv, outputdir);
-        }
-        else if (time_stepping_method == "User-Defined")
-        {
-            // User-defined time-stepping scheme
-            DogSolveUser(  aux, qold, qnew, smax, tstart, tend, 
-                    nv, dtv, cflv, outputdir);
+            FinSolveUser( Qnew, tend, dtv );
         }
         else
         {
@@ -136,7 +107,7 @@ int RunFinpack(string outputdir)
         }
 
         // Output data to file
-        Output( aux, qnew, tend, n, outputdir);
+        Output( Qnew, n );
 
         // Done with solution from tstart to tend
         cout << setprecision(5);
@@ -145,7 +116,6 @@ int RunFinpack(string outputdir)
         cout << setw(12) << scientific << tend << endl;
         cout << endl;
     }
-
     return 0;
 }
 

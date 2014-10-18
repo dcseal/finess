@@ -34,13 +34,12 @@ def main( ):
 
         # Grab the current cfl number:
         config.readfp(open(folder + '/parameters.ini'))
-        cfl_now = float( config.get('dogParams','cflv(2)') )
+        cfl_now = float( config.get('finess','desired_cfl') )
 
         data = np.loadtxt( folder + '/total-variation.dat' )
         t    = data[:,0]
         tv   = data[:,1]
         dtv  = max( tv[1:] - tv[0:len(tv)-1] )
-        #print("cfl, tvd-change = %2.3f, %2.5e" % ( cfl_now, dtv ) )
         print("%2.3f %2.5e" % ( cfl_now, dtv ) )
 
 if __name__ == '__main__':

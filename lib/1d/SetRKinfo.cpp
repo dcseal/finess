@@ -66,7 +66,10 @@ void SetRKinfo(int method2, RKinfo& rk)
 
             break;
 
-        case 4: // fourth-order
+        case 4: // fourth-order.  See
+                // "Highly Efficient Strong Stability Preserving Runge-Kutta Methods with
+                // Low-Storage Implementations," David I. Ketcheson, SIAM Journal on Scientific 
+                // Computing, 30(4):2113-2136 (2008)
 
             for (int i=1; i<=9; i++)
             {

@@ -1,21 +1,24 @@
 #include "dogdefs.h"
-#include "DogParams.h"
-#include "DogParamsCart2.h"
+#include "IniParams.h"
+#include "StateVars.h"
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
 //      ZEROTH ORDER EXTRAPOLATION BOUNDARY CONDITIONS
 //
-void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
+void SetBndValues( StateVars& Q )
 {
+
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     int i,j,m;
 
-    const int mx   = dogParamsCart2.get_mx();
-    const int my   = dogParamsCart2.get_my();
-    const int meqn = dogParams.get_meqn();
-    const int mbc  = dogParamsCart2.get_mbc();
-    const int maux = dogParams.get_maux();
+    const int mx   = global_ini_params.get_mx();
+    const int my   = global_ini_params.get_my();
+    const int meqn = global_ini_params.get_meqn();
+    const int mbc  = global_ini_params.get_mbc();
+    const int maux = global_ini_params.get_maux();
 
     // -----------------------
     // BOUNDARY CONDITION LOOP
@@ -112,8 +115,8 @@ void SetBndValues( dTensorBC3& aux, dTensorBC3& q )
 }
 
 // Wrappers for main Euler library
-void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q)
-{ SetBndValues( aux, q ); }
+void SetBndValuesX( StateVars& Q )
+{ SetBndValues( Q ); }
 
-void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q)
-{ SetBndValues( aux, q ); }
+void SetBndValuesY( StateVars& Q )
+{ SetBndValues( Q ); }

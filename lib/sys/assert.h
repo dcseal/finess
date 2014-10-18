@@ -42,10 +42,6 @@
 #else // ifndef NDEBUG
 
 // override system assert.h
-//#define assert_fileLine(e, file, line) \
-//    ((void)printf ("%s:%u: failed assertion `%s'\n", file, line, e), abort())
-//void eprintf_fileLine(const char *func, const char *file, int line_number,
-//  const char *format, ...);
 #define dassert_fileLine(e, file, line, func) \
     (void)(printf("ERROR: file %s, line %d, function %s:\n\tfailed assertion: (%s)\n", file, line, func,e),abort())
 #define dassert_printf_fileLine(e, file, line, func, args...) \
@@ -55,16 +51,12 @@
 #define USE_GCC_OPTIMIZATION
 #ifndef USE_GCC_OPTIMIZATION
 // override system assert.h
-//#define assert(e)  \
-//    ((void) ((e) ? (void)0 : assert_fileLine (#e, __FILE__, __LINE__)))
 #define dassert_(e)  \
     ((void) ((e) ? (void)0 : dassert_fileLine(#e, __FILE__, __LINE__, __func__)))
 #define dassert_printf_(e, args...)  \
     ((void) ((e) ? (void)0 : dassert_printf_fileLine(#e, __FILE__, __LINE__, __func__,##args)))
 #else // ifdef USE_GCC_OPTIMIZATION
 // optimized version of preceding
-//#define assert(e)  \
-//    (__builtin_expect(!(e), 0) ? assert_fileLine (#e, __FILE__, __LINE__) : (void)0)
 #define dassert_(e)  \
     (__builtin_expect(!(e), 0) ? dassert_fileLine (#e, __FILE__, __LINE__, __func__) : (void)0)
 #define dassert_printf(e, args...)  \

@@ -31,9 +31,9 @@ void FluxFunc(const dTensor2& xpts, const dTensor2& Q,const dTensor2& Aux, dTens
         // Variables
         double qc = Q.get(i,m);
 
-        // Flux function
-        flux.set(i, m, 1, u*qc );
-        flux.set(i, m, 2, v*qc );
+        // Flux function (In 2D, it has two components)
+//      flux.set(i, m, 1, u*qc );
+//      flux.set(i, m, 2, v*qc );
     }
 
 }

@@ -1,12 +1,19 @@
 #include "tensors.h"
+#include "StateVars.h"
 
 // *TEMPLATE*
 //
-// This function is called ONCE per simulation, after 
-// the initial conditions are set
-void AfterQinit(dTensorBC2& aux, dTensorBC2& q)
+// This function is called ONCE per simulation, and immediately after 
+// the initial conditions are set.
+//
+// The default behaviour is to do nothing.
+void AfterQinit( StateVars& Qnew )
 {
-    const int melems = q.getsize(1);
-    const int   meqn = q.getsize(2);
-    const int   maux = aux.getsize(2);  
+
+//  To access the state variables, uncomment the following:
+//
+//  dTensorBC2& q       = Qnew.ref_q();
+//  dTensorBC2& aux     = Qnew.ref_aux();
+//  const double t      = Qnew.get_t();
+
 }
