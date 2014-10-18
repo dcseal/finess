@@ -98,32 +98,7 @@ void ConstructHJ_L(const StateVars& Q, dTensorBC3& Lauxstar)
                     +max_speed_y * 0.5 * (A3yp - A3ym)   );
         }
     }
-// #pragma omp parallel for
-//    for(int i = 1; i <= mx; ++i){
-//        for(int j = 1; j <= my; ++j){
-//            const double B1 = 
-//                1.0 / (12.0 * dy)
-//                * (aux.get(i, j - 2, 1) - 8*aux.get(i, j-1, 1) 
-//                   + 8*aux.get(i, j+1, 1) - aux.get(i, j+2, 1));
-//            const double B2 =
-//                -1.0 / (12.0 * dx)
-//                * (aux.get(i-2, j, 1) - 8*aux.get(i-1, j, 1)
-//                   + 8*aux.get(i+1, j, 1) - aux.get(i+2, j, 1));
-//
-//            using std::abs;
-//            assert(B1 != 0);
-//            assert(B2 != 0);
-//            using std::cerr;
-//            using std::endl;
-//            cerr << "ConstructHJ_L, B1: " << B1 << endl;
-////            assert(abs(B1) < 1.1);
-//            cerr << "ConstructHJ_L, B2: " << B2 << endl;
-//            cerr << "ConstructHJ_L, B1 from q: " << q.get(i, j, 6) << endl;
-//            cerr << "ConstructHJ_L, B2 from q: " << q.get(i, j, 7) << endl;
-//            assert(abs(B2) < 2);
-//        }
-//    } 
-    
+   
     
 }
 
