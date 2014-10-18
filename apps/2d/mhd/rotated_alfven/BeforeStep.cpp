@@ -47,7 +47,8 @@ void BeforeStep(double dt, StateVars& Q)
             double x, y;
             ij_to_xy(xlow, ylow, dx, dy, i, j, x, y);
             double a3e = A3_exact(angle, t, x, y);
-            aux.set(i, j, 1, a3e);
+            if(i < 1 || i > mx || j < 1 || j > my)
+                aux.set(i, j, 1, a3e);
 
         }
     } 
