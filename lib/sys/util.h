@@ -1,6 +1,7 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
 
+#include <iomanip>
 #include <sstream>
 template<typename T>
 T stringToAny(const std::string& s){
@@ -13,7 +14,9 @@ T stringToAny(const std::string& s){
 template<typename T>
 std::string anyToString(const T& a){
     std::stringstream ss;
-    ss << std::boolalpha << a;
+    ss << std::boolalpha
+       << std::setprecision(17)
+       << a;
     return ss.str();
 }
 
