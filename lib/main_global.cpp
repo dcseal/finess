@@ -43,8 +43,8 @@ int main_global(int argc, char* argv[])
 
     // Call startscript (Default: scripts/startscript, otherwise it checks for
     // a local file called 'startscript' from the application's directory)
-    void RunStartScript(string parameters_ini_filename);
-    RunStartScript(parameters_ini_filename);
+    void RunStartScript(string parameters_ini_filename, string finess_exe_path);
+    RunStartScript(parameters_ini_filename, argv[0]);
 
     // Call the ``RunFinpack'' routine, which executes the code
     // Each dimension has its own version of this routine.
