@@ -1,7 +1,8 @@
-function plotfin1(points_per_dir, outputdir_in,  point_type )
+function plotfin1(parameters_ini_filename_in)
 %PLOTFIN1    Generic 1D plotting routine for FINESS.
 %
-% PLOTFIN1( outputdir_in )
+% PLOTFIN1( outputdir_in ) is the main MATLAB plotting routine used in FINESS
+% for all the 1D problems.
 %
 % outputdir_in = location for output directory.  default = 'output'
 %
@@ -13,19 +14,38 @@ function plotfin1(points_per_dir, outputdir_in,  point_type )
 %
 % This script was borrowed and modified from DoGPack (dogpack-code.org).
 %
+% Input parameters:
+%
+%   outputdir_in - string identifying the output directory.  This can be
+%   relative or an absolute pathname.  Default = 'output'.
+%
+% Output parameters:
+%
+%    None.
+%
 % See also: plotq1, plotfin2, for the other dimensional plotters.
 
-  % pull the output directory.  Default is 'output'.
-  outputdir = 'output';
-  if(nargin>1)
-    outputdir=outputdir_in;
-  elseif(isempty(outputdir))
-    outputdir='output';
+  if( nargin )
+    parameters_ini_filename = parameters_ini_filename_in;
+  else
+    parameters_ini_filename = 'parameters.ini';
   end
-  disp(' ');
-  disp(['       outputdir = ',outputdir]);
-  disp(' ');
 
+  % Read in any user-supplied paramters.
+  INI = ConvertIniFile2Struct(parameters_ini_filename);
+
+  % pull the output directory.
+  if( isfield( INI.finess, 'output_dir' ) )
+      outputdir = INI.finess.output_dir;
+  else
+      outputdir = 'output';
+  end
+
+  % Pull more information from parameters file
+  ndims = sscanf(INI.finess.ndims, '%d');
+  if (ndims~=1)
+      error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
+  end
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%  Parse QHELP.DAT (or parameters.ini file)
@@ -50,12 +70,6 @@ function plotfin1(points_per_dir, outputdir_in,  point_type )
 
   % Grid information
   dx = (xhigh-xlow)/mx;                                 % cell spacing
-
-  xlow
-  xhigh
-  dx
-  mx
-
   xc = transpose(linspace(xlow+dx/2, xhigh-dx/2, mx));  % cell centers
 
   % q - flag for determining whether or not to quit

@@ -4,6 +4,12 @@ function plotfin2(parameters_ini_filename_in)
 % PLOTFIN2(outputdir_in) is the main plotting
 % routine used in FINESS for all the 2D problems.
 %
+% In almost every application in FINESS, there is a single script, plotq1.m 
+% that this function calls once per frame.  There is a default script located
+% here in the library.  That script is where a
+% user is expected to modify extra desired plotting stuff, for example setting
+% axes, linecolors, exact solutions etc.
+%
 % Input parameters:
 %
 %   outputdir_in - string identifying the output directory.  This can be
@@ -21,17 +27,17 @@ else
   parameters_ini_filename = 'parameters.ini';
 end
 
-global INI;
-INI = ini2struct(parameters_ini_filename);
+% Read in any user-supplied paramters.
+INI = ConvertIniFile2Struct(parameters_ini_filename);
 
 % pull the output directory.
 if( isfield( INI.finess, 'output_dir' ) )
-    outputdir_long_str = INI.finess.output_dir;
-    outputdir = outputdir_long_str( 1:(min(find(outputdir_long_str==';'))-1) );
-    outputdir = outputdir( 1:(min(find(outputdir==' '))-1) );
+  outputdir = INI.finess.output_dir;
 else
-    outputdir = 'output';
+  outputdir = 'output';
 end
+INI.finess
+
 
 % Pull more information from parameters file
 ndims = sscanf(INI.finess.ndims, '%d');
