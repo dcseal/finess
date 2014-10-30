@@ -19,10 +19,14 @@ void WenoReconstruct_FD5( const dTensor2& g, dTensor2& g_reconst );
 void WenoReconstruct_FD7( const dTensor2& g, dTensor2& g_reconst );
 void WenoReconstruct_FD9( const dTensor2& g, dTensor2& g_reconst );
 
+// -- Lax-Friedrichs solver -- //
+// Although this is not a "WENO" reconstruction, we include this here so that
+// we can use the same call to ConstructL for all solvers
+void WenoReconstructLLF( const dTensor2& g, dTensor2& g_reconst );
+
 // Wrapper function that provides access to each of the above through looking
 // at the global variable wenoParams.
 //void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
-
 typedef void (*reconstruct_t)(const dTensor2&, dTensor2&);
 reconstruct_t GetWenoReconstruct();
 

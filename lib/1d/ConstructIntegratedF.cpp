@@ -2,7 +2,7 @@
 #include "dog_math.h"
 #include "stdlib.h"
 #include "IniParams.h"
-#include "IniParams.h"
+#include "StateVars.h"
 #include "assert.h"
 
 // Time-integrated flux-function.
@@ -201,6 +201,19 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
 }
 
+// Construct the integral of the flux function at grid cell x_i.  This routine
+// accesses values of q over some stencil surrounding x_i in order to conduct
+// this integral.
+//
+// The number nterms defines how many derivatives to save.  
+//
+//      nterms == 1 : compute f only.
+//      nterms == 2 : compute f and f_t.
+//      nterms == 3 : compute f, f_t and f_tt.
+// 
+// We still have yet to work out the full expansion for f_ttt, which is quite
+// ugly.
+//
 void LocalIntegrate( 
     int nterms,
     double dx, double xc, int meqn, int maux, int mpts_sten, int half_mpts_sten,
@@ -314,6 +327,7 @@ void LocalIntegrate(
 
 }
 
+// Two stage, two-derivative method
 void ConstructIntegratedF( double dt, 
     double alpha1, double beta1,
     dTensorBC2& aux1, dTensorBC2& q1,
@@ -375,6 +389,80 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
 }
 
+// Three stage, two-derivative method
+void ConstructIntegratedF( double dt, 
+    double alpha1, double beta1, const StateVars& Q1,
+    double alpha2, double beta2, const StateVars& Q2,
+    double alpha3, double beta3, const StateVars& Q3,
+    dTensorBC1& smax, dTensorBC2& F)
+{
+
+    dTensorBC2& q1 = Q1.const_ref_q();
+    dTensorBC2& q2 = Q2.const_ref_q();
+    dTensorBC2& q3 = Q3.const_ref_q();
+
+    const int mx     = q1.getsize(1);
+    const int meqn   = q1.getsize(2);
+    const int maux   = aux1.getsize(2);
+    const int mbc    = q1.getmbc();
+
+    // Needed to define derivatives
+    const double dx    = global_ini_params.get_dx();
+    const double xlow  = global_ini_params.get_xlow();
+
+    // Sample the flux function on the entire domain:
+    //
+    // If "1st-order" (Euler step), then this completes this function call.
+    //
+    dTensorBC2 f1( mx, meqn, mbc );
+    dTensorBC2 f2( mx, meqn, mbc );
+    dTensorBC2 f3( mx, meqn, mbc );
+    SampleFunction( 1-mbc, mx+mbc, q1, aux1, f1, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, q2, aux2, f2, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, q3, aux3, f3, &FluxFunc );
+
+// TODO  - allow for different sized stencils for different orders (-DS)
+const int mbc_small      = 3;
+const int      mpts_sten = 5;
+const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
+
+    // Compute finite difference approximations on all of the conserved
+    // variables:
+#pragma omp parallel for
+    for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
+    {
+
+        dTensor1 f1_t( meqn );    f1_t.setall(0.);
+        dTensor1 f1_tt( meqn );   f1_tt.setall(0.);
+        dTensor1 f2_t( meqn );    f2_t.setall( 0.);
+        dTensor1 f2_tt( meqn );   f2_tt.setall(0.);
+        dTensor1 f3_t( meqn );    f3_t.setall( 0.);
+        dTensor1 f3_tt( meqn );   f3_tt.setall(0.);
+
+        double xc = xlow + double(i)*dx - 0.5*dx;
+        LocalIntegrate( 2, dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, q1, aux1, f1, f1_t, f1_tt );
+
+        LocalIntegrate( 2, dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, q2, aux2, f2, f2_t, f2_tt );
+
+        LocalIntegrate( 2, dx, xc, meqn, maux, mpts_sten, half_mpts_sten,
+            i, q3, aux3, f3, f3_t, f3_tt );
+
+        // Second/Third-order accuracy:
+        for( int m=1; m<=meqn; m++ )
+        {
+            F.set( i, m, alpha1*f1.get(i,m) + beta1*dt*(f1_t.get(m)) + 
+                         alpha2*f2.get(i,m) + beta2*dt*(f2_t.get(m)) +
+                         alpha3*f3.get(i,m) + beta3*dt*(f3_t.get(m)) );
+        }
+
+    }
+
+}
+
+
+// Two-stage, three derivative method
 void ConstructIntegratedF( double dt, 
     double alpha1, double beta1, double charlie1,
     dTensorBC2& aux1, dTensorBC2& q1,
