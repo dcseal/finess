@@ -16,8 +16,9 @@ function plotfin1(parameters_ini_filename_in)
 %
 % Input parameters:
 %
-%   outputdir_in - string identifying the output directory.  This can be
-%   relative or an absolute pathname.  Default = 'output'.
+%   parameters_ini_filename_in - string identifying the location of the
+%   parameters file used to construct this solution.  This can be
+%   relative or an absolute pathname.  Default = 'parameters.ini'.
 %
 % Output parameters:
 %

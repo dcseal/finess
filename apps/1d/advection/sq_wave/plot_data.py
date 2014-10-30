@@ -11,7 +11,6 @@ data  = np.loadtxt( fname )
 cfl_bad   = data[:,0]
 tvd_bad   = data[:,1]
 
-
 fig = plt.figure()
 
 ax1  = fig.add_subplot(111)

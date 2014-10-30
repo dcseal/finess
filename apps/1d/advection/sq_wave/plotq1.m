@@ -37,7 +37,7 @@ set(gca,'plotboxaspectratio',[2 1 1]);
 set(gca,'xtick',-2:0.25:2);
 set(gca,'ytick',-2:0.5:2);
 set(gca,'fontsize',16);
-t1 = title(['q(x,t) at t = ',num2str(time),'     [DoGPack]']); 
+t1 = title(['q(x,t) at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
 if ( abs(time-round(time)) < 1.0e-10 && time > 0)

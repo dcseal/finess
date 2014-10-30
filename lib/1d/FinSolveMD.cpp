@@ -52,6 +52,7 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
     StateVars Qstar( t, mx, meqn, maux, mbc );
     dTensorBC2& qstar   = Qstar.ref_q();
     dTensorBC2& auxstar = Qstar.ref_aux();
+    Qstar.copyfrom( Qnew );
 
     // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
@@ -111,43 +112,39 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 case 4:
 
                 // -- Stage 1 -- //
-//              ConstructIntegratedF( 0.5*dt, aux, qnew, smax, F);
+//              ConstructIntegratedF( dt, aux, qnew, smax, F);
 
                 // That call is equivalent to the following call:
                 // Note that the dt has been rescaled in order to retain the
                 // correct units for the flux splitting that will occur in a
                 // second.
-//              ConstructIntegratedF( 0.5*dt, 
-//                  1.0, 0.5, aux,     qnew, 
-//                  0.0, 0.0, auxstar, qstar,
-//                  smax, F);
-
-//              // Update the solution:
-//              ConstructLxWL( aux, qnew, F, Lstar, smax);
-//  #pragma omp parallel for
-//              for( int k=0; k < numel; k++ )
-//              {
-//                  double tmp = qnew.vget( k ) + 0.5*dt*Lstar.vget(k);
-//                  qstar.vset(k, tmp );
-//              }
-
-//              // Perform any extra work required:
-//              AfterStep(dt, auxstar, qstar );
-
-//              SetBndValues(Qnew);
-//              SetBndValues(Qstar);
-
-                // -- Stage 2 -- //
-//              ConstructIntegratedF( dt, 
-//                  1.0, (1.0/6.0), aux, qnew, 
-//                  0.0, (1.0/3.0), auxstar, qstar,
-//                  smax, F);
                 ConstructIntegratedF( dt, 
-                    1.0, 0.5, aux, qnew, 
-                    0.0, 0.0, auxstar, qstar,
+                    1.0, 0.25, aux,     qnew, 
+                    0.0, 0.0,  auxstar, qstar,
                     smax, F);
 
-                // ConstructLxWL( auxstar, qstar, F, Lstar, smax);
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + 0.5*dt*Lstar.vget(k);
+                    qstar.vset(k, tmp );
+                }
+
+                // Perform any extra work required:
+                AfterStep(dt, Qstar );
+
+                SetBndValues(Qnew);
+                SetBndValues(Qstar);
+
+                // -- Stage 2 -- //
+                ConstructIntegratedF( dt, 
+                    1.0, (1.0/6.0), aux, qnew, 
+                    0.0, (1.0/3.0), auxstar, qstar,
+                    smax, F);
+
+                // Construct a new right hand side
                 ConstructLxWL( aux, qnew, F, Lstar, smax);
 
                 // Update the solution:
