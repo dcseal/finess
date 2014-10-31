@@ -18,6 +18,46 @@
 // The main loop covers all elements (including boundary cells) of the arrays.
 //
 // See also: RKinfo.h and SetRKinfo.cpp
+void UpdateSolnWithAux(double alpha1, double alpha2, double beta, double dt,
+    const StateVars& Qstar, const dTensorBC3& Lstar, const dTensorBC3& Lauxstar, StateVars& Qnew)
+{
+
+    const dTensorBC3& qstar   = Qstar.const_ref_q();
+    const dTensorBC3& auxstar = Qstar.const_ref_aux();
+    double tstar              = Qstar.get_t  ();
+
+    dTensorBC3&  qnew   = Qnew.ref_q  ();
+    dTensorBC3& auxnew  = Qnew.ref_aux();
+    double tnew         = Qnew.get_t  ();
+
+    // Update time
+    Qnew.set_t( alpha1*tstar + alpha2*tnew + beta*dt );
+
+    const int   maux = global_ini_params.get_maux();
+    const int     mx = global_ini_params.get_mx();
+    const int     my = global_ini_params.get_my();
+    const int    mbc = global_ini_params.get_mbc();
+
+    const int numel_aux = auxnew.numel();
+#pragma omp parallel for
+    for( int k=0; k < numel_aux; k++ )
+    {
+        double tmp = alpha1*auxstar.vget(k)+alpha2*auxnew.vget(k)+beta*dt*Lauxstar.vget(k);
+        auxnew.vset( k, tmp );
+    }
+
+    const int numel_q = qnew.numel();
+#pragma omp parallel for
+    for( int k=0; k < numel_q; k++ )
+    {
+        double tmp = alpha1*qstar.vget(k)+alpha2*qnew.vget(k)+beta*dt*Lstar.vget(k);
+        qnew.vset( k, tmp );
+    }
+
+    SetBndValues(Qnew);
+}
+
+
 void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
     const StateVars& Qstar, const dTensorBC3& Lstar, StateVars& Qnew)
 {
@@ -43,13 +83,13 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
     ConstructHJ_L(Qstar, Lauxstar);
 
 
-    const int numel_aux = auxnew.numel();
-#pragma omp parallel for
-    for( int k=0; k < numel_aux; k++ )
-    {
-        double tmp = alpha1*auxstar.vget(k)+alpha2*auxnew.vget(k)+beta*dt*Lauxstar.vget(k);
-        auxnew.vset( k, tmp );
-    }
+//    const int numel_aux = auxnew.numel();
+//#pragma omp parallel for
+//    for( int k=0; k < numel_aux; k++ )
+//    {
+//        double tmp = alpha1*auxstar.vget(k)+alpha2*auxnew.vget(k)+beta*dt*Lauxstar.vget(k);
+//        auxnew.vset( k, tmp );
+//    }
 
     const int numel_q = qnew.numel();
 #pragma omp parallel for
@@ -59,7 +99,7 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
         qnew.vset( k, tmp );
     }
 
-    SetBndValues(Qnew);
+//    SetBndValues(Qnew);
 }
 
 // Update the solution using the constructed Lstar
