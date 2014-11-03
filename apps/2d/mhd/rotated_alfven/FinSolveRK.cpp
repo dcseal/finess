@@ -235,10 +235,11 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                         SetBndValues(Q1);
                         BeforeStep(dt, Q1);
                         ConstructL(Q1, Lstar, smax);
+                        ConstructHJ_L(Q1, Lauxstar);
                         if (s==1)
                         {  Lold.copyfrom( Lstar ); }
-                        UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
-                                rk.beta->get(rk.mstage), dt, Q1, Lstar, Q1);
+                        UpdateSolnWithAux(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                                rk.beta->get(rk.mstage), dt, Q1, Lstar, Lauxstar, Q1);
                         AfterStep(dt, Q1);
                     }
 
@@ -277,8 +278,9 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                         SetBndValues(Q1);
                         BeforeStep(dt, Q1);
                         ConstructL(Q1, Lstar, smax);
-                        UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
-                                rk.beta->get(rk.mstage), dt, Q1, Lstar, Q1);
+                        ConstructHJ_L(Q1, Lauxstar);
+                        UpdateSolnWithAux(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                                rk.beta->get(rk.mstage), dt, Q1, Lstar, Lauxstar, Q1);
                         AfterStep(dt, Q1);
                     }
 
@@ -287,8 +289,9 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     SetBndValues(Q1);
                     BeforeStep(dt,Q1);
                     ConstructL(Q1,Lstar,smax);
-                    UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
-                            rk.beta->get(rk.mstage), dt, Q2, Lstar, Q1);
+                    ConstructHJ_L(Q1, Lauxstar);
+                    UpdateSolnWithAux(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
+                            rk.beta->get(rk.mstage), dt, Q2, Lstar, Lauxstar, Q1);
                     AfterStep(dt, Q1);
 
                     Qnew.copyfrom( Q1 );
