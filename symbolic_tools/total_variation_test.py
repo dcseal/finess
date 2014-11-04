@@ -37,7 +37,66 @@ def reconstruct_left( eps, p, u_stencil ):
     om   = [ o / omts for o in omt ]
     
     # Return 5th-order conservative reconstruction
+    return sympy.limit( om[0]*u1 + om[1]*u2 + om[2]*u3, eps, 0 )
+
+def diff1NC( eps, p, u_stencil ):
+    """ Compute a non-conservative difference using WENO weights.
+    
+    We compute u_x( x_i ) using a five-point stencil,
+
+        {u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2}
+
+    This is a 'non-conservative' operator, because we do not attempt to
+    reconstruct a primitive function from cell averages.
+    """
+
+    # lazy, but readable indexing into list that's being passed in:
+    uim2, uim1, ui, uip1, uip2 = u_stencil
+    
+    # Compute smoothness indicators (identical for left/right values):
+    beta = [None]*3
+    beta[0]=sympy.Rational(13,12)*(uim2-2*uim1+ui)**2+sympy.Rational(1,4)*(uim2-4*uim1+3*ui)**2
+    beta[1]=sympy.Rational(13,12)*(uim1-2*ui+uip1)**2+sympy.Rational(1,4)*(uim1-uip1)**2
+    beta[2]=sympy.Rational(13,12)*(ui-2*uip1+uip2)**2+sympy.Rational(1,4)*(3*ui-4*uip1+uip2)**2
+
+    # 3rd-order reconstructions using small 3-point stencils
+    u1 = Rational( 1,2)*uim2 - 2*uim1 + Rational(3,2)*ui
+    u2 = Rational(-1,2)*uim1          + Rational(1,2)*uip1
+    u3 = Rational(-3,2)*ui   + 2*uip1 - Rational(1,2)*uip2
+    
+    # Get linear weights and regularization parameter
+    gamma = [Rational(1,6), Rational(2,3), Rational(1,6)]
+    
+    # Compute nonlinear weights and normalize their sum to 1
+    omt  = [ g/(eps+b)**2 for g,b in zip(gamma,beta) ]
+    omts = sum(omt)
+    om   = [ o / omts for o in omt ]
+    
+    # Return 5th-order conservative reconstruction
     return om[0]*u1 + om[1]*u2 + om[2]*u3
+
+def diff1( eps, p, u_stencil ):
+    """ Compute a centered difference of u on a five point stencil,
+    
+        {u_{i-2}, u_{i-1}, u_i, u_{i+1}, u_{i+2}
+
+    We return an approximation to u_x( x_i ).
+    """
+
+    # lazy, but readable indexing into list that's being passed in:
+    uim2, uim1, ui, uip1, uip2 = u_stencil
+    
+    # 3rd-order reconstructions using small 3-point stencils
+    u1 = Rational( 1,2)*uim2 - 2*uim1 + Rational(3,2)*ui
+    u2 = Rational(-1,2)*uim1          + Rational(1,2)*uip1
+    u3 = Rational(-3,2)*ui   + 2*uip1 - Rational(1,2)*uip2
+    
+    # Get linear weights and regularization parameter
+    gamma = [Rational(1,6), Rational(2,3), Rational(1,6)]
+    
+    # Return 5th-order conservative reconstruction
+    return gamma[0]*u1 + gamma[1]*u2 + gamma[2]*u3
+
 
 def single_step_small_stencil( eps, eps_num ):
     """Take a single Euler step on a small stencil with discontinuous initial
@@ -84,7 +143,7 @@ def single_step_small_stencil( eps, eps_num ):
 
     return Unp1, Unp1Ap
 
-def ConstructL( Un, eps, eps_num ):
+def ConstructL( Un, eps ):
     """Construct the right hand side of q_t = L(q) with the WENO method.
 
     We will do the entire thing symbolically.
@@ -116,20 +175,64 @@ def ConstructL( Un, eps, eps_num ):
         L[i] = sympy.simplify( -(Fp[i+1]-Fp[i]) )
     return L, Fp
 
-def EulerStep( Un, Unp1Ap, L, nu ):
+def ConstructUx( Un, eps ):
+    """Compute a derivative of Un.
+    """
+
+    import numpy as np
+
+    mx    = len( Un )
+    mbc   = 3
+
+    # Flux function, with extra padding added in (zeroth-order extrapolation)
+    BigU = np.concatenate( (np.array([0,0]), Un    ) )
+    BigU = np.concatenate( (BigU, np.array([1,1]) ) )
+
+    Ux = np.zeros( mx, dtype=object )
+    for i in range(mx):
+        
+        # Pull the current stencil
+        u_stencil = BigU[i:i+2*mbc-1]
+        Ux[i]     = sympy.simplify( diff1( eps, 2, u_stencil ) )
+
+    return Ux 
+
+def ConstructUxNC( Un, eps ):
+    """Compute a derivative of Un.
+    """
+
+    import numpy as np
+
+    mx    = len( Un )
+    mbc   = 3
+
+    # Flux function, with extra padding added in (zeroth-order extrapolation)
+    BigU = np.concatenate( (np.array([0,0]), Un    ) )
+    BigU = np.concatenate( (BigU, np.array([1,1]) ) )
+
+    Ux = np.zeros( mx, dtype=object )
+    for i in range(mx):
+        
+        # Pull the current stencil
+        u_stencil = BigU[i:i+2*mbc-1]
+        Ux[i]     = sympy.limit( sympy.simplify( diff1NC( eps, 2, u_stencil )), eps, 0 )
+
+    return Ux 
+
+
+def EulerStep( Un, L, nu ):
     """Take a single Euler step."""
 
     Unp1   = np.zeros( mx, dtype=object )
-    Unp1Ap = np.zeros( mx               )
     for i in range(mx):
-        Unp1[i] = sympy.simplify( Un[i] - nu*(Fp[i+1]-Fp[i]) )
-    return Unp1, Unp1Ap
+        Unp1[i] = sympy.simplify( Un[i] + nu*L[i] )
+    return Unp1
 
 
 nu      = sympy.symbols('nu')
+#nu      = 1.0
 eps     = sympy.symbols('eps')
-eps_num = 1e-29
-
+#eps     = 1e-6
 
 #Unp1Sm, Unp1ApSm = single_step_small_stencil( eps, eps_num )
 
@@ -149,14 +252,29 @@ Un   = np.concatenate( (np.zeros( mx/2, dtype=int), np.ones( mx/2, dtype=int )) 
 UnAp = np.concatenate( (np.zeros( mx/2, dtype=float), np.ones( mx/2, dtype=float )) )
 
 # Construct right hand side for an Euler step
-L,Fp = ConstructL( Un, eps, eps_num )
+print("Constructing right hand side values")
+L,Fp = ConstructL   ( Un, eps )
+Ux   = ConstructUx  ( Un, eps )
+UxNC = ConstructUxNC( Un, eps )
 
-# Euler step
-Unp1, Unp1Ap = EulerStep( Un, UnAp, L, nu )
+# Euler step.
+print("Taking an Euler step")
+Ustar         = EulerStep( Un, L, nu )
+
+print("Constructing new right hand side value")
+Lstar, Fpstar = ConstructL( Ustar, eps )
+
+Unp1 = Ustar
+Unp1  = Un + nu/2*( L + Lstar )
 
 # Quick sanity check, do we get a reasonable value here!?
+print("printing Unp1")
 for u in Unp1:
     print( u )
-    print( sympy.limit( u, eps, 0 ) )
+#   print( sympy.limit( u, eps, 0 ) )
 
 
+print("printing Ux")
+for i in range( len(UxNC) ):
+#   print( ux )
+    print('UxNC = ', UxNC[i], 'WENO[u] = ', L[i] )
