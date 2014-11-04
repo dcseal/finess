@@ -1,5 +1,14 @@
-import sympy
+"""Test total variation.
 
+The purpose of this module is to test WENO methods on a single step function
+example.  The WENO method has been implemented symbolically, and we wish to
+study the total variation on a variety of methods.
+
+In particular, the original motivation for studying these schemes was to look
+at multiderivative formulations of the Picard integral formulation of the PDE.
+"""
+
+import sympy
 from sympy import Rational
 
 def reconstruct_left( eps, p, u_stencil ):
@@ -30,53 +39,124 @@ def reconstruct_left( eps, p, u_stencil ):
     # Return 5th-order conservative reconstruction
     return om[0]*u1 + om[1]*u2 + om[2]*u3
 
-# Consider initial conditions, defined by
-#
-#      u_i = 1, i > 0, and u_i = 0, otherwise
+def single_step_small_stencil( eps, eps_num ):
+    """Take a single Euler step on a small stencil with discontinuous initial
+    data.  This function is deprecated in favor of ConstructL and EulerStep.
+    """
 
-F0 = [0, 0, 0, 0, 0]        # i = -4, -3, -2, -1, 0, centered at i = -2
-F1 = [0, 0, 0, 0, 1]        # i = -3, -2, -1, 0,  1, centered at i = -1
-F2 = [0, 0, 0, 1, 1]        # i = -2, -1, 0, 1, 2,   centered at i =  0
-F3 = [0, 0, 1, 1, 1]        # i = -1, 0, 1, 2, 3,    centered at i =  1
-F4 = [0, 1, 1, 1, 1]        # i = 0, 1, 2, 3, 4,     centered at i =  2
-F5 = [1, 1, 1, 1, 1]        # i = 1, 2, 3, 4, 5,     centered at i =  3
-F6 = [1, 1, 1, 1, 1]        # i = 2, 3, 4, 5, 6,     centered at i =  4
+    # Consider initial conditions, defined by
+    #
+    #      u_i = 1, i > 0, and u_i = 0, otherwise
 
+    F0 = [0, 0, 0, 0, 0]        # i = -4, -3, -2, -1, 0, centered at i = -2
+    F1 = [0, 0, 0, 0, 1]        # i = -3, -2, -1, 0,  1, centered at i = -1
+    F2 = [0, 0, 0, 1, 1]        # i = -2, -1, 0, 1, 2,   centered at i =  0
+    F3 = [0, 0, 1, 1, 1]        # i = -1, 0, 1, 2, 3,    centered at i =  1
+    F4 = [0, 1, 1, 1, 1]        # i = 0, 1, 2, 3, 4,     centered at i =  2
+    F5 = [1, 1, 1, 1, 1]        # i = 1, 2, 3, 4, 5,     centered at i =  3
+    F6 = [1, 1, 1, 1, 1]        # i = 2, 3, 4, 5, 6,     centered at i =  4
+
+    # Both of these are not needed, because we will be multiplying the result by
+    # nu, the CFL number
+    #dx  = sympy.symbols('dx')
+    #dt  = sympy.symbols('dt')
+
+    Fp0 = sympy.simplify( reconstruct_left(eps,2, F0 ) )
+    Fp1 = sympy.simplify( reconstruct_left(eps,2, F1 ) )
+    Fp2 = sympy.simplify( reconstruct_left(eps,2, F2 ) )
+    Fp3 = sympy.simplify( reconstruct_left(eps,2, F3 ) )
+    Fp4 = sympy.simplify( reconstruct_left(eps,2, F4 ) )
+    Fp5 = sympy.simplify( reconstruct_left(eps,2, F5 ) )
+    Fp6 = sympy.simplify( reconstruct_left(eps,2, F6 ) )
+    Fp  = [Fp0, Fp1, Fp2, Fp3, Fp4 ]
+
+    dx_times_Fx = sympy.simplify( [ (Fp1-Fp0), (Fp2-Fp1), (Fp3-Fp2), (Fp4-Fp3), (Fp5-Fp4), (Fp6-Fp5) ] )
+
+    nu = sympy.symbols('nu')
+    # i=-1,0,1,2,3,4
+    Un   = [0, 0, 1, 1, 1, 1]
+
+    Unp1Ap = []
+    Unp1   = []
+    for (i,u) in enumerate( Un ):
+        Unp1Ap.append( sympy.simplify( u - nu * dx_times_Fx[ i ] ).subs(eps, eps_num))
+        Unp1.append( sympy.simplify( u - nu * dx_times_Fx[ i ] ) )
+
+    return Unp1, Unp1Ap
+
+def ConstructL( Un, eps, eps_num ):
+    """Construct the right hand side of q_t = L(q) with the WENO method.
+
+    We will do the entire thing symbolically.
+    """
+
+    import numpy as np
+
+    mx    = len( Un )
+    mbc   = 3
+
+    # Flux function, with extra padding added in (zeroth-order extrapolation)
+    F_Vec = np.concatenate( (np.array([0,0,0]), Un    ) )
+    F_Vec = np.concatenate( (F_Vec, np.array([1,1,1]) ) )
+
+    # Flux function.  Fp[0] = left-most flux value.  Fp[mx] = right-most value
+    Fp = np.zeros( mx+1, dtype=object )
+    for i in range(mx+1):
+        
+        # Pull the current stencil
+        u_stencil = F_Vec[i:i+2*mbc-1]
+        Fp[i] = sympy.simplify( reconstruct_left( eps, 2, u_stencil ) )
+
+    # Flux values
+    Fp = np.array( Fp )
+
+    # Construct right-hand side values:
+    L = np.zeros( mx, dtype=object )
+    for i in range(mx):
+        L[i] = sympy.simplify( -(Fp[i+1]-Fp[i]) )
+    return L, Fp
+
+def EulerStep( Un, Unp1Ap, L, nu ):
+    """Take a single Euler step."""
+
+    Unp1   = np.zeros( mx, dtype=object )
+    Unp1Ap = np.zeros( mx               )
+    for i in range(mx):
+        Unp1[i] = sympy.simplify( Un[i] - nu*(Fp[i+1]-Fp[i]) )
+    return Unp1, Unp1Ap
+
+
+nu      = sympy.symbols('nu')
 eps     = sympy.symbols('eps')
 eps_num = 1e-29
 
-# Both of these are not needed, because we will be multiplying the result by
-# nu, the CFL number
-#dx  = sympy.symbols('dx')
-#dt  = sympy.symbols('dt')
 
-Fp0 = sympy.simplify( reconstruct_left(eps,2, F0 ) )
-Fp1 = sympy.simplify( reconstruct_left(eps,2, F1 ) )
-Fp2 = sympy.simplify( reconstruct_left(eps,2, F2 ) )
-Fp3 = sympy.simplify( reconstruct_left(eps,2, F3 ) )
-Fp4 = sympy.simplify( reconstruct_left(eps,2, F4 ) )
-Fp5 = sympy.simplify( reconstruct_left(eps,2, F5 ) )
-Fp6 = sympy.simplify( reconstruct_left(eps,2, F6 ) )
-Fp  = [Fp0, Fp1, Fp2, Fp3, Fp4 ]
+#Unp1Sm, Unp1ApSm = single_step_small_stencil( eps, eps_num )
 
-dx_times_Fx = sympy.simplify( [ (Fp1-Fp0), (Fp2-Fp1), (Fp3-Fp2), (Fp4-Fp3), (Fp5-Fp4), (Fp6-Fp5) ] )
+###############################
+# More general method
+###############################
 
-nu = sympy.symbols('nu')
-# i=-1,0,1,2,3,4
-Un   = [0, 0, 1, 1, 1, 1]
-Unp1   = []
-Unp1Ap = []
-for (i,u) in enumerate( Un ):
-    Unp1Ap.append( sympy.simplify( u - nu * dx_times_Fx[ i ] ).subs(eps, eps_num))
-    Unp1.append( sympy.simplify( u - nu * dx_times_Fx[ i ] ) )
+import numpy as np
 
-#def compute_tv_euler_step( nu ):
-tv = 0
-#for i in range(1,len(Unp1)):
-#    tv = tv + abs( Unp1[i].subs( eps, 1e-29 ) - Unp1[i-1].subs( eps, 1e-29 ) )
+# Consider initial conditions, defined by
+#
+#      u_i = 1, i > 0, and u_i = 0, otherwise
+#
+# Place half of the points to the left, and half to the right
+mx   = 30
+Un   = np.concatenate( (np.zeros( mx/2, dtype=int), np.ones( mx/2, dtype=int )) )
+UnAp = np.concatenate( (np.zeros( mx/2, dtype=float), np.ones( mx/2, dtype=float )) )
 
-#print( tv )
+# Construct right hand side for an Euler step
+L,Fp = ConstructL( Un, eps, eps_num )
 
+# Euler step
+Unp1, Unp1Ap = EulerStep( Un, UnAp, L, nu )
 
+# Quick sanity check, do we get a reasonable value here!?
+for u in Unp1:
+    print( u )
+    print( sympy.limit( u, eps, 0 ) )
 
 
