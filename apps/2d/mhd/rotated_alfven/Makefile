@@ -10,8 +10,6 @@ include $(FINESS)/apps/2d/mhd/lib/Makefile.defs
 FinSolveRK = FinSolveRK
 
 AfterQinit = AfterQinit
-BeforeStep = BeforeStep
-ConstructL = ConstructL
 UpdateSoln = UpdateSoln
 AfterStep = AfterStep
 
