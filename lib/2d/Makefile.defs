@@ -97,6 +97,7 @@ FinSolveUser         = $(LIB2D)/FinSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
 GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
+GetCFL               = $(LIB2D)/GetCFL
 
 # Although not as likely to be overridden as the above, UpdateSoln
 # does get overridden in order to implement Runge-Kutta Constrained
@@ -118,7 +119,7 @@ LIB2D_OBJECTS = \
   $(FinSolveLxW).o \
   $(FinSolveMD).o \
   $(LIB2D)/SetRKinfo.o \
-  $(LIB2D)/GetCFL.o \
+  $(GetCFL).o \
   $(GlobalWaveSpd).o \
   $(AfterQinit).o \
   $(FinSolveUser).o \

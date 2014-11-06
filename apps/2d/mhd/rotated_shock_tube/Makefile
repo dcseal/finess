@@ -12,6 +12,7 @@ FinSolveRK = FinSolveRK
 AfterQinit = AfterQinit
 UpdateSoln = UpdateSoln
 AfterStep = AfterStep
+GetCFL = GetCFL
 
 # Hamilton-Jacobi rhs for magnetic potential
 ConstructHJ_L = ConstructHJ_L
