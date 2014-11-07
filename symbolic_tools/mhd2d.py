@@ -43,8 +43,6 @@ g8 = sympy.symbols("g8")
 u1 = sympy.symbols("u1")
 u2 = sympy.symbols("u2")
 u3 = sympy.symbols("u3")
-en = sympy.symbols("en")  # energy
-pr = sympy.symbols("pr")  # pressure
 
 rho = q1
 u1 = q2/q1
@@ -61,7 +59,7 @@ Bm = (B1*B1 + B2*B2 + B3*B3) / 2
 Bu = u1*B1 + u2*B2 + u3*B3
 
 f1 = rho*u1
-f2 = rho*u1**2 + pr + Bm - B1*B1
+f2 = rho*u1**2 + pressure + Bm - B1*B1
 f3 = rho*u1*u2 - B1*B2
 f4 = rho*u1*u3 - B1*B3
 f5 = u1*(energy + pressure + Bm) - B1*Bu
@@ -70,7 +68,7 @@ f7 = u1*B2 - u2*B1
 f8 = u1*B3 - u3*B1
 
 g1 = rho*u2
-g2 = rho*u2*u1 - B2*B1
+g2 = rho*u1*u2 - B2*B1
 g3 = rho*u2**2 + pressure + Bm - B2*B2
 g4 = rho*u2*u3 - B2*B3
 g5 = u2*(energy + pressure + Bm) - B2*Bu
