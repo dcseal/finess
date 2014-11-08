@@ -37,7 +37,7 @@ def reconstruct_left( eps, p, u_stencil ):
     om   = [ o / omts for o in omt ]
     
     # Return 5th-order conservative reconstruction
-    return sympy.limit( om[0]*u1 + om[1]*u2 + om[2]*u3, eps, 0 )
+    return om[0]*u1 + om[1]*u2 + om[2]*u3
 
 def diff1NC( eps, p, u_stencil ):
     """ Compute a non-conservative difference using WENO weights.
@@ -175,6 +175,38 @@ def ConstructL( Un, eps ):
         L[i] = sympy.simplify( -(Fp[i+1]-Fp[i]) )
     return L, Fp
 
+def ConstructPIFL( Un, Unx, nu, eps ):
+    """Construct right hand side for Picard Integral Formulation.
+
+    This routine computs L = WENO( Un - dt*Un_x ).
+    """
+
+    import numpy as np
+
+    mx    = len( Un )
+    mbc   = 3
+
+    # Flux function, with extra padding added in (zeroth-order extrapolation)
+    F_Vec = np.concatenate( (np.array([0,0,0]), Un-nu*Unx/2 ) )
+    F_Vec = np.concatenate( (F_Vec, np.array([1,1,1])       ) )
+
+    # Flux function.  Fp[0] = left-most flux value.  Fp[mx] = right-most value
+    Fp = np.zeros( mx+1, dtype=object )
+    for i in range(mx+1):
+        
+        # Pull the current stencil
+        u_stencil = F_Vec[i:i+2*mbc-1]
+        Fp[i] = sympy.simplify( reconstruct_left( eps, 2, u_stencil ) )
+
+    # Flux values
+    Fp = np.array( Fp )
+
+    # Construct right-hand side values:
+    L = np.zeros( mx, dtype=object )
+    for i in range(mx):
+        L[i] = sympy.simplify( -(Fp[i+1]-Fp[i]) )
+    return L, Fp
+
 def ConstructUx( Un, eps ):
     """Compute a derivative of Un.
     """
@@ -185,8 +217,8 @@ def ConstructUx( Un, eps ):
     mbc   = 3
 
     # Flux function, with extra padding added in (zeroth-order extrapolation)
-    BigU = np.concatenate( (np.array([0,0]), Un    ) )
-    BigU = np.concatenate( (BigU, np.array([1,1]) ) )
+    BigU = np.concatenate( (np.array([Un[0],Un[0]]), Un     ) )
+    BigU = np.concatenate( (BigU, np.array([Un[-1],Un[-1]]) ) )
 
     Ux = np.zeros( mx, dtype=object )
     for i in range(mx):
@@ -207,8 +239,8 @@ def ConstructUxNC( Un, eps ):
     mbc   = 3
 
     # Flux function, with extra padding added in (zeroth-order extrapolation)
-    BigU = np.concatenate( (np.array([0,0]), Un    ) )
-    BigU = np.concatenate( (BigU, np.array([1,1]) ) )
+    BigU = np.concatenate( (np.array([Un[0],Un[0]]), Un     ) )
+    BigU = np.concatenate( (BigU, np.array([Un[-1],Un[-1]]) ) )
 
     Ux = np.zeros( mx, dtype=object )
     for i in range(mx):
@@ -228,11 +260,18 @@ def EulerStep( Un, L, nu ):
         Unp1[i] = sympy.simplify( Un[i] + nu*L[i] )
     return Unp1
 
+def TaylorStep( Un, Ut, Utt, nu ):
+    """Take a single Euler step."""
+
+    Unp1   = np.zeros( mx, dtype=object )
+    for i in range(mx):
+        Unp1[i] = sympy.simplify( Un[i] + nu*Ut[i] + nu**2/2*Utt[i] )
+    return Unp1
 
 nu      = sympy.symbols('nu')
 #nu      = 1.0
 eps     = sympy.symbols('eps')
-#eps     = 1e-6
+#eps     = 1e-29
 
 #Unp1Sm, Unp1ApSm = single_step_small_stencil( eps, eps_num )
 
@@ -248,33 +287,65 @@ import numpy as np
 #
 # Place half of the points to the left, and half to the right
 mx   = 30
-Un   = np.concatenate( (np.zeros( mx/2, dtype=int), np.ones( mx/2, dtype=int )) )
+Un   = np.concatenate( (np.zeros( mx/2, dtype=int),   np.ones( mx/2, dtype=int   )) )
 UnAp = np.concatenate( (np.zeros( mx/2, dtype=float), np.ones( mx/2, dtype=float )) )
 
 # Construct right hand side for an Euler step
-print("Constructing right hand side values")
-L,Fp = ConstructL   ( Un, eps )
-Ux   = ConstructUx  ( Un, eps )
-UxNC = ConstructUxNC( Un, eps )
 
-# Euler step.
+print("Constructing an Euler RHS")
+L,Fp = ConstructL( Un, eps )
 print("Taking an Euler step")
-Ustar         = EulerStep( Un, L, nu )
+UFE = EulerStep( Un, L, nu )
 
-print("Constructing new right hand side value")
-Lstar, Fpstar = ConstructL( Ustar, eps )
+Unx   = ConstructUx  ( Un, eps )
+UnxNC = ConstructUxNC( Un, eps )
 
-Unp1 = Ustar
-Unp1  = Un + nu/2*( L + Lstar )
+print("Constructing a time-averaged RHS (CFD)")
+Lt,Fpt      = ConstructPIFL( Un, Unx, nu, eps )
+print("Taking an Euler step on time-averaged RHS (CFD)")
+U_TaylorCFD = EulerStep( Un, Lt, nu )
+
+print("Constructing a time-averaged RHS (NCW)")
+LtNC,FptNC  = ConstructPIFL( Un, UnxNC, nu, eps )
+print("Taking an Euler step on time-averaged RHS (NCW)")
+U_TaylorNCW = EulerStep( Un, LtNC, nu )
+
+print("Constructing Utt directly")
+Utt = ConstructUx( -L, eps )
+print("Taking Taylor step from Ut and Utt")
+U_TaylorQS = TaylorStep( Un, L, Utt, nu )
+
+print("printing u from Forward-Euler time stepping")
+for u in UFE:
+    print( 'u = ', sympy.limit( u, eps, 0 ), ';' )
+
+print("printing U (CFD)")
+for u in U_TaylorCFD:
+    print( 'u = ', sympy.limit( u, eps, 0 ), ';' )
+
+print("printing U (NCW)")
+for u in U_TaylorNCW:
+    print( 'u = ', sympy.limit( u, eps, 0 ), ';' )
+
+print("printing U (Utt)")
+for u in U_TaylorQS:
+    print( 'u = ', sympy.limit( u, eps, 0 ), ';' )
+
+
+#print("Constructing new right hand side value")
+#Lstar, Fpstar = ConstructL( Ustar, eps )
+
+#Unp1 = Ustar
+#Unp1  = Un + nu/2*( L + Lstar )
 
 # Quick sanity check, do we get a reasonable value here!?
-print("printing Unp1")
-for u in Unp1:
-    print( u )
+#print("printing Unp1")
+#for u in Unp1:
+#    print( u )
 #   print( sympy.limit( u, eps, 0 ) )
 
 
-print("printing Ux")
-for i in range( len(UxNC) ):
+#print("printing Ux")
+#for i in range( len(UxNC) ):
 #   print( ux )
-    print('UxNC = ', UxNC[i], 'WENO[u] = ', L[i] )
+#    print('UxNC = ', UxNC[i], 'WENO[u] = ', L[i] )
