@@ -8,6 +8,7 @@ include $(FINESS)/apps/2d/mhd/lib/Makefile.defs
 
 # overridden library objects
 FinSolveRK = FinSolveRK
+FinSolveLxW = FinSolveLxW
 
 AfterQinit = AfterQinit
 UpdateSoln = UpdateSoln
