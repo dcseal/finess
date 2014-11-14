@@ -32,8 +32,8 @@ void SampleFunction(
 // EXPERIMENTAL CODE - This routine performs the Lax-Friedrich's flux
 // splitting on a modified flux function, F and G.
 void ConstructLxWL( const StateVars& Q,
-        dTensorBC3& F,         // <--- new term: integrated flux, f
-        dTensorBC3& G,         // <--- new term: integrated flux, g
+        const dTensorBC3& F,         // <--- new term: integrated flux, f
+        const dTensorBC3& G,         // <--- new term: integrated flux, g
         dTensorBC3& Lstar,
         dTensorBC3& smax)
 {
