@@ -294,7 +294,7 @@ const int ndim = 2;
 
 }
 
-void LocalIntegrate( 
+static void LocalIntegrate( 
     int nterms, double dx, double dy, double xc, double yc,
     int meqn, int maux, int mpts_sten, int half_mpts_sten,
     const int i, const int j, const dTensorBC3& q, const dTensorBC3& aux, 
