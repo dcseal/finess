@@ -35,6 +35,7 @@ def main( ):
     print("CFL; Deviation in TV; Largest undershoot; Largest overshoot")
     print("-----------------------------------------------------------------------")
 
+    fids = open('data2.dat', 'w')
     for i in range( len(tvd_vec) ):
 
         directory_num = my_dictionary['dir_num'] = i
@@ -52,9 +53,12 @@ def main( ):
         maxq = max( data[:,3] )
         dtv  = max( tv[1:] - tv[0:len(tv)-1] )
         print("%2.3f;    %2.5e;    %2.5e;    %2.5e" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) )
+        fids.write( "%2.3f    %2.15e    %2.5e    %2.5e\n" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) )
 
         tvd_vec[i] = dtv
         cfl_vec[i] = cfl_now
+
+    fids.close()
 
     if( plt_soln ):
 
