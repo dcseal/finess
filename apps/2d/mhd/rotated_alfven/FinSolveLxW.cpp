@@ -16,6 +16,8 @@ using namespace std;
 void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 {
 
+    void (*ConstructHJ_L)(const StateVars& Q, dTensorBC3& Lauxstar, double dt) = ConstructHJ_L_Order3;
+
     dTensorBC3& qnew = Qnew.ref_q  ();
     dTensorBC3&  aux = Qnew.ref_aux();
 
@@ -109,7 +111,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 
             ConstructLxWL( Qnew, F, G, Lstar, smax);  // <-- "new" method
 
-            ConstructHJ_L(Qnew, Lauxstar);
+            ConstructHJ_L(Qnew, Lauxstar, dt);
 
             // Update the solution:
 #pragma omp parallel for

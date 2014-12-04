@@ -16,6 +16,7 @@ using namespace std;
 
 void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 {
+    void (*ConstructHJ_L)(const StateVars& Q, dTensorBC3& Lauxstar) = ConstructHJ_L_Order1;
 
     dTensorBC3& qnew = Qnew.ref_q  ();
     dTensorBC3&  aux = Qnew.ref_aux();
