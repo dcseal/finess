@@ -80,7 +80,7 @@ void UpdateSoln(double alpha1, double alpha2, double beta, double dt,
 
     dTensorBC3 Lauxstar(mx, my, maux, mbc);
     Lauxstar.setall(0.0);
-    ConstructHJ_L(Qstar, Lauxstar);
+//    ConstructHJ_L(Qstar, Lauxstar);
 
 
 //    const int numel_aux = auxnew.numel();
