@@ -27,7 +27,6 @@ void AfterStep(double dt, StateVars& Q )
     const double dx = global_ini_params.get_dx();
     const double dy = global_ini_params.get_dy();
 
-    const double angle = global_ini_params.get_angle();
     const double t = Q.get_t();
 
 #pragma omp parallel for
