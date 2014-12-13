@@ -99,17 +99,17 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
         double rescale[2][2] = {{1.0,1.0},{1.0,1.0}};
 
         for(int i1=0; i1<2; i1++)
-            for(int i2=0; i2<2; i2++)
-            {
-                aa[0] = i1*amin[i-1][0];
-                aa[1] = i2*amin[i-1][1];
+        for(int i2=0; i2<2; i2++)
+        {
 
+            aa[0] = i1*amin[i-1][0];
+            aa[1] = i2*amin[i-1][1];
             for( int m=1; m <= meqn; m++ )
-                {
+            {
                 ff[0] = aa[0]*fhat_local[0][m-1]+(1.0-aa[0])*flf_local[0][m-1];
                 ff[1] = aa[1]*fhat_local[1][m-1]+(1.0-aa[1])*flf_local[1][m-1];
                 qh[m-1] = qtmp[m-1] + dtx*(ff[0]-ff[1]);
-                }
+            }
 
             rho    = qh[0];
             u1     = qh[1]/rho;
@@ -120,44 +120,50 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
 
             if (phigh < 0.0)
             {
-            ac = (qh[1]-qlf[1])*(qh[5]-qlf[5])-0.5*( pow(qh[2]-qlf[2],2)+pow(qh[3]-qlf[3],2)+pow(qh[4]-qlf[4],2) );
-            bc = (qh[5]-qlf[5])*qlf[1]+(qh[1]-qlf[1])*qlf[5]-(qh[2]-qlf[2])*qlf[2]-(qh[3]-qlf[3])*qlf[3]-(qh[4]-qlf[4])*qlf[4]-plow/gm1*(qh[1]-qlf[1]);
-            cc = qlf[1]*qlf[5]-0.5*(pow(qlf[2],2)+pow(qlf[3],2)+pow(qlf[4],2)) - plow/gm1*qlf[1];
+                ac = (qh[1]-qlf[1])*(qh[5]-qlf[5])-0.5*( pow(qh[2]-qlf[2],2)+pow(qh[3]-qlf[3],2)+pow(qh[4]-qlf[4],2) );
+                bc = (qh[5]-qlf[5])*qlf[1]+(qh[1]-qlf[1])*qlf[5]-(qh[2]-qlf[2])*qlf[2]-(qh[3]-qlf[3])*qlf[3]-(qh[4]-qlf[4])*qlf[4]-plow/gm1*(qh[1]-qlf[1]);
+                cc = qlf[1]*qlf[5]-0.5*(pow(qlf[2],2)+pow(qlf[3],2)+pow(qlf[4],2)) - plow/gm1*qlf[1];
 
-            if (fabs(ac) >= eps)
-            {
-                delta = sqrt(fabs(bc*bc-4.0*ac*cc));
-                root1 = (-bc-delta)/(2.0*ac);
-                root2 = (-bc+delta)/(2.0*ac);
-            if (ac > 0.0) {
-                rate = 1.0;
-                if (root1 >=0.0)
-                    rate = Min(root1,rate);
-                if (root2 >=0.0)
-                    rate = Min(root2,rate); }
-            else {
-                rate = 0.0;
-                if (root1 <=1.0)
-                    rate = Max(rate,root1);
-                if (root2 <=1.0)
-                    rate = Max(rate,root2); }
-            }
-            else {
-               rate = 0.0;
-                if ( fabs(bc)>0.0 )
+                if (fabs(ac) >= eps)
                 {
-                    root1 = -cc/bc; 
-                    if ((root1>=0.0) && (root1<=1.0))
-                        rate = root1;
+                    delta = sqrt(fabs(bc*bc-4.0*ac*cc));
+                    root1 = (-bc-delta)/(2.0*ac);
+                    root2 = (-bc+delta)/(2.0*ac);
+                    if (ac > 0.0) 
+                    {
+                        rate = 1.0;
+                        if (root1 >=0.0)
+                            rate = Min(root1,rate);
+                        if (root2 >=0.0)
+                            rate = Min(root2,rate); 
+                    }
+                    else 
+                    {
+                        rate = 0.0;
+                        if (root1 <=1.0)
+                            rate = Max(rate,root1);
+                        if (root2 <=1.0)
+                            rate = Max(rate,root2); 
+                    }
                 }
-            }
-            rescale[i1][i2] = rate;
+                else 
+                {
+                    rate = 0.0;
+                    if ( fabs(bc)>0.0 )
+                    {
+                        root1 = -cc/bc; 
+                        if ((root1>=0.0) && (root1<=1.0))
+                            rate = root1;
+                    }
+                }
+                rescale[i1][i2] = rate;
             }
 
-            }   //end of for i1,i2 loop
+        }   //end of for i1,i2 loop
         
         double rescale2[2] = {1.0, 1.0};
-        for(int i1=0; i1<2; i1++){
+        for(int i1=0; i1<2; i1++)
+        {
             rescale2[0] = Min(rescale2[0],rescale[1][i1]);
             rescale2[1] = Min(rescale2[1],rescale[i1][1]);
         }

@@ -99,14 +99,38 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             BeforeStep(dt, Qnew );
             SetBndValues( Qnew  );
             ConstructIntegratedF( dt, aux, qnew, smax, F);
-            ConstructLxWL( aux, qnew, F, Lstar, smax);  // <-- "new" method
 
-            // Update the solution:
-#pragma omp parallel for
-            for( int k=0; k < numel; k++ )
+            if( 0 )  // mpp-flag?
             {
-                double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
-                qnew.vset(k, tmp );
+                // TODO: 
+                //
+                // * replace this flag with a test for MPP method.
+                //
+                // * Write a new ConstructLxWL that returns flux values at
+                //   interfaces as opposed to "L" values.
+                //
+                // * insert a call to ConstructLFL here (a single routine to
+                //   construct fluxes for a Lax-Friedrich's method)
+                //
+                // * Call the MPP limiter function
+                //
+                // * Update the solution (from the fluxes, not from the RHS
+                //   function.
+
+            }
+            else
+            { 
+
+                ConstructLxWL( aux, qnew, F, Lstar, smax); 
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+
             }
             Qnew.set_t( Qnew.get_t() + dt );
 
