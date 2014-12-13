@@ -84,8 +84,6 @@ AfterQinit           = $(LIB2D)/AfterQinit
 AfterStep            = $(LIB2D)/AfterStep
 BeforeStep           = $(LIB2D)/BeforeStep
 AfterUpdateSoln      = $(LIB2D)/AfterUpdateSoln
-ApplyLimiter         = $(LIB2D)/ApplyLimiter
-ApplyPosLimiter      = $(LIB2D)/ApplyPosLimiter
 ConstructL           = $(LIB2D)/ConstructL
 ConstructLxWL        = $(LIB2D)/ConstructLxWL
 ConstructIntegratedR = $(LIB2D)/ConstructIntegratedR
@@ -102,6 +100,10 @@ GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
 D2FluxFunc           = $(LIB2D)/LaxWendroff/D2FluxFunc
+
+# Positivity preserving limiter
+ApplyMPPLimiter2D    = $(LIB2D)/ApplyMPPLimiter2D
+
 
 LIB2D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
@@ -129,6 +131,7 @@ LIB2D_OBJECTS = \
   $(LIB2D)/UpdateSoln.o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
+  $(ApplyMPPLimiter2D).o \
 
 LIB2D_SOURCES = \
   $(LIB2D)/*.h \
@@ -157,9 +160,8 @@ LIB2D_SOURCES = \
   $(LIB2D)/UpdateSoln.cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \
+  $(ApplyMPPLimiter2D).cpp \
 # $(AfterUpdateSoln).cpp \
-# $(ApplyLimiter).cpp \
-# $(ApplyPosLimiter).cpp \
 # $(LIB2D)/ConvertQtoW.cpp \
 # $(LIB2D)/ConvertWtoQ.cpp \
 # $(LIB2D)/ResInt.cpp \

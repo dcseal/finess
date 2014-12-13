@@ -31,6 +31,9 @@ AuxFunc             = $(APP_LIB)/AuxFunc
 # Lax-Friedrichs solver
 ConstructLF         = $(APP_LIB)/ConstructLF
 
+# Positivity-preserving limiter
+ApplyMPPLimiter2D   = $(APP_LIB)/ApplyMPPLimiter2D
+
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
