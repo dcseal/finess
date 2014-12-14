@@ -9,7 +9,8 @@
 
 // Construct flux values for a Lax-Friedrich's flux
 //
-// fhat : fhat(1:mx+1, meqn, mbc)
+// fhat(1:mx+1, meqn, mbc), fhat(i) = fhat_{i-1/2}.
+//
 void ConstructLFL( const StateVars& Q, dTensorBC2& fhat )
 {
 
@@ -29,7 +30,6 @@ void ConstructLFL( const StateVars& Q, dTensorBC2& fhat )
     // (Global) Wave speed
     double alpha = 0.;
     GlobalWaveSpd( q, aux, alpha );
-//  printf("alpha = %f\n", alpha );
 
     // ---------------------------------------------------------
     // Compute fhat_{i-1/2}

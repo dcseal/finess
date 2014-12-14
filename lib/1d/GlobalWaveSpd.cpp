@@ -47,15 +47,20 @@ void GlobalWaveSpd(
         // Solution values
         dTensor1 Ql(meqn), Qr(meqn);
         for( int me=1; me <= meqn; me++ )
-        { Ql.set( me, q.get(i,me) ); }
+        { 
+            Ql.set( me, q.get(i,me) ); 
+            Qr.set( me, q.get(i,me) ); 
+        }
 
         // Aux values
-        dTensor1 Auxl(maux);
+        dTensor1 Auxl(maux), Auxr(maux);
         for( int me=1; me <= maux; me++ )
-        { Auxl.set( me, aux.get(i,me) ); }
+        { 
+            Auxl.set( me, aux.get(i,me) ); 
+            Auxr.set( me, aux.get(i,me) ); 
+        }
 
         double s1 = 0.;
-
         SetWaveSpd(xedge, Ql, Ql, Auxl, Auxl, s1, s1);  // application specific
         alpha1 = Max( alpha1, s1 );
 
