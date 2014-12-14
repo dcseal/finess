@@ -38,6 +38,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     const int maux   = aux.getsize(2);
     const int mbc    = qnew.getmbc();
     const int numel  = qnew.numel();
+    const double dx  = global_ini_params.get_dx();
 
     // Maximum wave speed
     dTensorBC1    smax(mx, mbc);
@@ -50,6 +51,14 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2  Lstar(mx, meqn, mbc); // right hand side (for Euler steps)
     dTensorBC2    F(mx, meqn, mbc );  // time-integrated flux
 
+    // Storage for the MPP limiter
+    dTensorBC2* fhat;
+    dTensorBC2* fLF;
+    if( global_ini_params.get_mpp_limiter() )
+    {
+        fhat = new dTensorBC2( mx+1, meqn, mbc );
+        fLF  = new dTensorBC2( mx+1, meqn, mbc );
+    }
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -100,22 +109,27 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             SetBndValues( Qnew  );
             ConstructIntegratedF( dt, aux, qnew, smax, F);
 
-            if( 0 )  // mpp-flag?
+            ConstructLxWL( aux, qnew, F, Lstar, smax); 
+            if( global_ini_params.get_mpp_limiter() )
             {
-                // TODO: 
-                //
-                // * replace this flag with a test for MPP method.
-                //
-                // * Write a new ConstructLxWL that returns flux values at
-                //   interfaces as opposed to "L" values.
-                //
-                // * insert a call to ConstructLFL here (a single routine to
-                //   construct fluxes for a Lax-Friedrich's method)
-                //
-                // * Call the MPP limiter function
-                //
-                // * Update the solution (from the fluxes, not from the RHS
-                //   function.
+
+                // Construct the high-order flux
+                ConstructLxWL( aux, qnew, F, *fhat, Lstar, smax );
+       
+                // Construct the low-order flux
+                ConstructLFL( Qnew, *fLF );
+
+                // Limit the high-order flux
+                ApplyMPPLimiter1D( dt, qnew, *fLF, *fhat );
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int i=1; i <= mx; i++   )
+                for( int m=1; m <= meqn; m++ )
+                {
+                    double tmp = (fhat->get(i+1,m)-fhat->get(i,m) );
+                    qnew.set(i, m, qnew.get(i,m) - (dt/dx)*tmp );
+                }
 
             }
             else
@@ -195,3 +209,6 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     dtv[1] = dt;
 
 }
+
+
+

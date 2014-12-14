@@ -83,7 +83,7 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
         plow  = (gamma-1.0)*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3));
 
         if (plow < 0.0)
-            cout << "Negative solution in Lax-Fridrichs flux" << endl;
+            cout << "Negative solution in Lax-Friedrich's flux" << endl;
 
         for( int m=1; m <= meqn; m++ )
         {

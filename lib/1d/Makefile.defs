@@ -87,6 +87,7 @@ BeforeStep           = $(LIB1D)/BeforeStep
 AfterUpdateSoln      = $(LIB1D)/AfterUpdateSoln
 ApplyMPPLimiter1D    = $(LIB1D)/ApplyMPPLimiter1D
 ConstructL           = $(LIB1D)/ConstructL
+ConstructLFL         = $(LIB1D)/ConstructLFL
 ConstructLxWL        = $(LIB1D)/ConstructLxWL
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
@@ -142,6 +143,7 @@ LIB1D_OBJECTS = \
   $(LIB1D)/ConvertQtoW.o \
   $(LIB1D)/ConvertWtoQ.o \
   $(ConstructL).o \
+  $(ConstructLFL).o \
   $(ConstructLxWL).o \
   $(LIB1D)/UpdateSoln.o \
   $(LIB1D)/GetCFL.o \
@@ -179,6 +181,7 @@ LIB1D_SOURCES = \
   $(LIB1D)/ConvertQtoW.cpp \
   $(LIB1D)/ConvertWtoQ.cpp \
   $(ConstructL).cpp \
+  $(ConstructLFL).cpp \
   $(ConstructLxWL).cpp \
   $(LIB1D)/UpdateSoln.cpp \
   $(LIB1D)/GetCFL.cpp \
