@@ -124,8 +124,6 @@ function plotfin1(parameters_ini_filename_in)
       %% Conserved variables -- qsoln
       time  = fscanf(fids,'%e', 1);
       qtmp  = fscanf(fids,'%e', [1,inf]);
-      mx
-      meqn
       qsoln = reshape( qtmp, mx, meqn );
       clear qtmp;
 

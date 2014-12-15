@@ -188,7 +188,6 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
                 f_tt.set( m1, f_tt.get(m1) + tmp );
             }
 
-
         }
 
         // Second/Third-order accuracy:

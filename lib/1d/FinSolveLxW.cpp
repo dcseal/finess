@@ -127,8 +127,8 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
                 for( int i=1; i <= mx; i++   )
                 for( int m=1; m <= meqn; m++ )
                 {
-                    double tmp = (fhat->get(i+1,m)-fhat->get(i,m) );
 //                  double tmp = (fLF->get(i+1,m)-fLF->get(i,m) );
+                    double tmp = (fhat->get(i+1,m)-fhat->get(i,m) );
                     qnew.set(i, m, qnew.get(i,m) - (dt/dx)*tmp );
                 }
 

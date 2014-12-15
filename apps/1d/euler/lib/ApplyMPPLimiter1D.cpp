@@ -24,6 +24,7 @@ using namespace std;
 // details.
 void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& fLF, dTensorBC2& fHat )
 {
+
     // Parameters for the current grid
     const int     mx = q.getsize(1);
     const int   meqn = q.getsize(2);
@@ -32,9 +33,11 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
     const double eps = 1.0e-12;     // TODO - do we want this hard-coded? -DS
     const double dtx = dt/dx;
     const double rho_min = eps;
+
     const double gamma = global_ini_params.get_gamma();
     const double gm1 = gamma - 1.0;
 
+    // Storage
     double gmin[mx],amin[mx][2],thex[mx+1],ff[2],aa[2];
     double qh[meqn],qtmp[meqn],qlf[meqn],fhat_local[2][meqn],flf_local[2][meqn];
     double rho,u1,u2,u3,energy,plow,phigh,ffsum,ftmp;
@@ -43,7 +46,7 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
 
     // limiting on rho
     for (int i=1; i<=mx; i++)
-        gmin[i-1] = rho_min-( q.get(i,1) + dtx*( fLF.get(i,1) - fLF.get(i+1,1)) );
+    { gmin[i-1] = rho_min-( q.get(i,1) + dtx*( fLF.get(i,1) - fLF.get(i+1,1))); }
 
     for (int i=1; i<=mx; i++)
     {
@@ -80,10 +83,10 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
         u2     = qlf[2]/rho;
         u3     = qlf[3]/rho;
         energy = qlf[4];
-        plow  = (gamma-1.0)*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3));
+        plow   = gm1*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3));
 
         if (plow < 0.0)
-            cout << "Negative solution in Lax-Friedrich's flux" << endl;
+        { cout << "Negative solution in Lax-Friedrich's flux" << endl; }
 
         for( int m=1; m <= meqn; m++ )
         {
@@ -93,11 +96,9 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
             flf_local[1][m-1]  =  fLF.get(i+1,m);
             qtmp[m-1] = q.get(i,m);
         }
-
         plow = min(eps,plow);
 
         double rescale[2][2] = {{1.0,1.0},{1.0,1.0}};
-
         for(int i1=0; i1<2; i1++)
         for(int i2=0; i2<2; i2++)
         {
@@ -116,7 +117,7 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
             u2     = qh[2]/rho;
             u3     = qh[3]/rho;
             energy = qh[4];
-            phigh  = (gamma-1.0)*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3));
+            phigh  = gm1*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3));
 
             if (phigh < 0.0)
             {
@@ -175,16 +176,22 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
 
     for (int i=1; i<=mx-1; i++)
     {
-        thex[i] = Min(amin[i][0],amin[i-1][1]);
+        thex[i] = Min( amin[i][0], amin[i-1][1] );
     }
-    thex[0] = amin[0][0];
-    thex[mx]= amin[mx-1][1];
+    thex[0]  = amin[0][0];
+    thex[mx] = amin[mx-1][1];
 
+    // Overwrite current flux with the MPP limiter
     for (int i=1; i<=mx+1; i++)
-        for( int m=1; m <= meqn; m++ )
-        {
-            ftmp = thex[i-1]*(fHat.get(i,m)-fLF.get(i,m))+fLF.get(i,m);
-            fHat.set(i,m,ftmp);
-        }
+    for( int m=1; m <= meqn; m++ )
+    {
+
+// Check whether or not we actually limit the fluxes.
+//  if( fabs( 1.0-thex[i-1] ) > 1e-12 )
+//  printf("1.0-thex[%d] = %2.13e\n", i-1, 1.0-thex[i-1] );
+
+        ftmp = thex[i-1]*(fHat.get(i,m)-fLF.get(i,m))+fLF.get(i,m);
+        fHat.set(i,m,ftmp);
+    }
 
 }

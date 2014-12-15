@@ -30,6 +30,7 @@ void ConstructLFL( const StateVars& Q, dTensorBC2& fhat )
     // (Global) Wave speed
     double alpha = 0.;
     GlobalWaveSpd( q, aux, alpha );
+// printf("alpha, = %f \n", alpha );
 
     // ---------------------------------------------------------
     // Compute fhat_{i-1/2}
@@ -63,7 +64,7 @@ void ConstructLFL( const StateVars& Q, dTensorBC2& fhat )
         // Save the flux function
         for( int m=1; m <= meqn; m++ )
         {
-            fhat.set( i, m, 0.5*( (fvals_t.get(1,m)+fvals_t.get(2,m)) - alpha*(q.get(i,m) - q.get(i-1,m))) );
+            fhat.set( i, m, 0.5*( (fvals_t.get(1,m)+fvals_t.get(2,m)) + alpha*(q.get(i-1,m) - q.get(i,m))) );
         }
     }
 
