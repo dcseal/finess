@@ -10,17 +10,19 @@ meqn = 5
 # Ratio of specific heats
 gamma = sympy.symbols("gamma")
 
+# Conserved variables (mass, momentum and energy)
 q1 = sympy.symbols("q1")
 q2 = sympy.symbols("q2")
 q3 = sympy.symbols("q3")
 q4 = sympy.symbols("q4")
 q5 = sympy.symbols("q5")
 
-f1 = sympy.symbols("f1")
-f2 = sympy.symbols("f2")
-f3 = sympy.symbols("f3")
-f4 = sympy.symbols("f4")
-f5 = sympy.symbols("f5")
+# Flux variables
+#f1 = sympy.symbols("f1")
+#f2 = sympy.symbols("f2")
+#f3 = sympy.symbols("f3")
+#f4 = sympy.symbols("f4")
+#f5 = sympy.symbols("f5")
 
 # Primitive variables:
 u1 = sympy.symbols("u1")
@@ -29,18 +31,21 @@ u3 = sympy.symbols("u3")
 en = sympy.symbols("en")  # energy
 pr = sympy.symbols("pr")  # pressure
 
+# Primitive variables ( velocity, pressure and energy )
 u1 = q2/q1
 u2 = q3/q1
 u3 = q4/q1
 pr = (gamma-1)*(en-q1/2*(u1**2+u2**2+u3**2))
 en = q5
 
+# Flux values
 f1 = q1*u1
 f2 = q1*u1**2 + pr
 f3 = q1*u1*u2
 f4 = q1*u1*u3
 f5 = u1*(en+pr)
 
+# Vector of conserved variables, and components of the flux function.
 Q = [q1, q2, q3, q4, q5]
 F = [f1, f2, f3, f4, f5]
 
