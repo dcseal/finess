@@ -186,9 +186,12 @@ void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q, const dTensorBC2& 
     for( int m=1; m <= meqn; m++ )
     {
 
-// Check whether or not we actually limit the fluxes.
+// Check whether or not we actually limited the fluxes.
 //  if( fabs( 1.0-thex[i-1] ) > 1e-12 )
-//  printf("1.0-thex[%d] = %2.13e\n", i-1, 1.0-thex[i-1] );
+//  {
+//  printf("thex[%d] = %2.13e\n", i-1, thex[i-1] );
+//  thex[i-1] = 0.0;
+//  }
 
         ftmp = thex[i-1]*(fHat.get(i,m)-fLF.get(i,m))+fLF.get(i,m);
         fHat.set(i,m,ftmp);

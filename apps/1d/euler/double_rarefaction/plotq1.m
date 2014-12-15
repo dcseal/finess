@@ -25,6 +25,7 @@ else
     gamma = 1.4;
 end
 
+% Density
 figure(1);
 clf;
 pz=plot(xc,qsoln(:,1),'bo');
@@ -34,12 +35,13 @@ hold off;
 axis on; box on; grid off;
 axis([-1 1 0 7.5]);
 set(gca,'plotboxaspectratio',[1.5 1 1]);
-set(gca,'xtick',0:0.25:1);
+set(gca,'xtick',-1:0.25:1);
 set(gca,'ytick',0:1:7);
 set(gca,'fontsize',16);
 t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
+% Pressure
 figure(2);
 clf;
 press = (gamma-1).*(qsoln(:,5)-0.5*(qsoln(:,2).^2 + ...
@@ -58,6 +60,7 @@ set(gca,'fontsize',16);
 t1 = title(['Pressure at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
+% Velocity (u1)
 figure(3);
 clf;
 pz=plot(xc,qsoln(:,2)./qsoln(:,1),'bo');
