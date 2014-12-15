@@ -109,7 +109,6 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             SetBndValues( Qnew  );
             ConstructIntegratedF( dt, aux, qnew, smax, F);
 
-            ConstructLxWL( aux, qnew, F, Lstar, smax); 
             if( global_ini_params.get_mpp_limiter() )
             {
 
