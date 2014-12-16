@@ -45,7 +45,7 @@ void GlobalWaveSpd(
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
 
         // Solution values
-        dTensor1 Ql(meqn)
+        dTensor1 Ql(meqn);
         // , Qr(meqn);
         for( int me=1; me <= meqn; me++ )
         { 
