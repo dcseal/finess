@@ -4,7 +4,11 @@
 
 // This is a user-supplied routine that sets the the boundary conditions
 //
-//      ZEROTH ORDER EXTRAPOLATION BOUNDARY CONDITIONS
+// For this problem, there are a total of two types of boundary conditions
+// applied:
+//
+//      hard surface                : left and bottom boundary, and
+//      zeroth-order extrapolation  : top and right boundary.
 //
 void SetBndValues( StateVars& Q )
 {
@@ -37,12 +41,9 @@ void SetBndValues( StateVars& Q )
                 double tmp = q.get(1,j,m);
                 q.set(i,j,m, tmp );
             }
-            // aux values
-            for (m=1; m<=maux; m++)
-            {
-                double tmp = q.get(1,j,m);
-                aux.set(i,j,m, tmp );
-            }
+
+            // Flip the momentum
+            q.set(i, j, 2, -q.get(i,j,2) )
 
         }
     }
@@ -63,13 +64,6 @@ void SetBndValues( StateVars& Q )
                 double tmp = q.get(mx,j,m);                    
                 q.set(i,j,m, tmp );
             }
-            // aux values
-            for (m=1; m<=maux; m++)
-            {
-                double tmp = q.get(mx,j,m);                    
-                aux.set(i,j,m, tmp );
-            }
-
         }
     }
     // ***********************************************
@@ -90,6 +84,10 @@ void SetBndValues( StateVars& Q )
                 q.set(i, j, m, tmp );
             }
         }
+
+        // Flip the momentum
+        q.set(i, j, 2, -q.get(i,j,2) )
+
     }
     // ***********************************************
 
@@ -111,7 +109,8 @@ void SetBndValues( StateVars& Q )
     }
     // ***********************************************
 
-// TODO - cross terms!?
+    // TODO - cross terms!?
+
 }
 
 // Wrappers for main Euler library
