@@ -7,6 +7,10 @@
 // This is a user-supplied routine that sets the
 // initial conditions at all the points "xpts"
 //
+// For Sedov blast problem, this is supposed to be a delta function in energy
+// at x=y=0.  To approximate this, we simply set a single spike at the lower
+// left most corner of the domain.
+//
 void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
 {
     const int numpts=xpts.getsize(1);
@@ -24,18 +28,13 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
         double rho,u1,u2,u3,energy;
 
         rho = 1.0;
-        u1 = 0.0;
-        u2 = 0.0;
-        u3 = 0.0;
+        u1  = 0.0;
+        u2  = 0.0;
+        u3  = 0.0;
         if(x < dx - 1.e-4 && y < dy - 1.e-4 )
-        {
-            energy =  0.244816/dx/dy;
-        }
+        { energy =  0.244816/dx/dy; }
         else
-        {
-            energy =  1.0e-12;
-        } 
-
+        { energy =  1.0e-12; } 
 
         qvals.set(i,1, rho    );
         qvals.set(i,2, rho*u1 );

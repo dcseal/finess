@@ -1,7 +1,7 @@
 #include "dogdefs.h"
 #include "dog_math.h"
 #include "GlobalWaveSpd.h"
-
+#include "StateVars.h"
 #include "IniParams.h"
 
 // Compute a global wave speed.
@@ -18,10 +18,12 @@
 //
 // See also: SetWaveSpd for the local version of this function.
 void GlobalWaveSpd(
-    const dTensorBC3& q, 
-    const dTensorBC3& aux, 
+    const StateVars& Q, 
     double& alpha1, double& alpha2)
 {
+
+    const dTensorBC3& q   = Q.const_ref_q  ();
+    const dTensorBC3& aux = Q.const_ref_aux();
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();

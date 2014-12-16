@@ -85,6 +85,7 @@ AfterStep            = $(LIB2D)/AfterStep
 BeforeStep           = $(LIB2D)/BeforeStep
 AfterUpdateSoln      = $(LIB2D)/AfterUpdateSoln
 ConstructL           = $(LIB2D)/ConstructL
+ConstructLFL         = $(LIB2D)/ConstructLFL
 ConstructLxWL        = $(LIB2D)/ConstructLxWL
 ConstructIntegratedR = $(LIB2D)/ConstructIntegratedR
 BeforeFullTimeStep   = $(LIB2D)/BeforeFullTimeStep
@@ -125,6 +126,7 @@ LIB2D_OBJECTS = \
   $(BeforeStep).o \
   $(AfterStep).o \
   $(ConstructL).o \
+  $(ConstructLFL).o \
   $(ConstructLxWL).o \
   $(ConstructIntegratedR).o \
   $(AfterFullTimeStep).o \
@@ -154,6 +156,7 @@ LIB2D_SOURCES = \
   $(BeforeStep).cpp \
   $(AfterStep).cpp \
   $(ConstructL).cpp \
+  $(ConstructLFL).cpp \
   $(ConstructLxWL).cpp \
   $(ConstructIntegratedR).cpp \
   $(AfterFullTimeStep).cpp \

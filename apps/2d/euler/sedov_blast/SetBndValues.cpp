@@ -43,7 +43,7 @@ void SetBndValues( StateVars& Q )
             }
 
             // Flip the momentum
-            q.set(i, j, 2, -q.get(i,j,2) )
+            q.set(i, j, 2, -q.get(i,j,2) );
 
         }
     }
@@ -86,7 +86,7 @@ void SetBndValues( StateVars& Q )
         }
 
         // Flip the momentum
-        q.set(i, j, 2, -q.get(i,j,2) )
+        q.set(i, j, 2, -q.get(i,j,2) );
 
     }
     // ***********************************************

@@ -23,10 +23,7 @@ void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
     double& s1,double& s2);
 
 // Global wave speed
-void GlobalWaveSpd(
-    const dTensorBC3& q, 
-    const dTensorBC3& aux, 
-    double& alpha1, double& alpha2);
+void GlobalWaveSpd( const StateVars& Q, double& alpha1, double& alpha2);
 
 // Routine for sampling a given function
 void SampleFunction( 
