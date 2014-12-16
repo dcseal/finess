@@ -45,15 +45,15 @@ void SetWaveSpd(const dTensor1& nvec,
 
     // Sound speeds
     const double nmag = sqrt(pow(nvec.get(1),2) + pow(nvec.get(2),2));
-    const double cl = nmag*sqrt( gamma*pressl/rhol );
-    const double cr = nmag*sqrt( gamma*pressr/rhor );
-    const double c  = nmag*sqrt( gamma*press/rho   );
+    const double cl = nmag*sqrt( fabs(gamma*pressl/rhol ) );
+    const double cr = nmag*sqrt( fabs(gamma*pressr/rhor ) );
+    const double c  = nmag*sqrt( fabs(gamma*press/rho   ) );
 
     if( press < 0 || rho < 0 )
     {
         printf("negative pressure or density\n");
         printf(" press = %f, rho = %f\n", press, rho );
-        exit(1);
+//      exit(1);
     }
 
     // normal velocities
