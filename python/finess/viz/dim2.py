@@ -28,7 +28,8 @@ def ask_which_component_and_which_frame_and_plot(parameters_ini_filename, plotti
              **kwargs)
     
     interactive_plot(params["finess", "nout"], 
-                     draw_ith_frame = draw_ith_frame)
+                     draw_ith_frame = draw_ith_frame,
+                     new_window_for_each_frame = False)
 
 
 
@@ -41,7 +42,9 @@ def ask_which_component_and_which_frame_and_plot_wireframe(parameters_ini_filena
 
 def ask_which_component_and_which_frame_and_plot_contour(parameters_ini_filename):
     from matplotlib.axes import Axes
-    ask_which_component_and_which_frame_and_plot(parameters_ini_filename, Axes.contour)
+    ask_which_component_and_which_frame_and_plot(parameters_ini_filename, 
+                                                 lambda ax, X, Y, Z: \
+                                                     Axes.contour(ax, X, Y, Z, 30))
 
 def meshgrid(params):
     """Returns meshgrid (a pair (X, Y)) that can be used for 2D plotting.
