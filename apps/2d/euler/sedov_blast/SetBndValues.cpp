@@ -2,6 +2,15 @@
 #include "IniParams.h"
 #include "StateVars.h"
 
+void SetBndValues( StateVars& Q );
+
+// Wrappers for main Euler library
+void SetBndValuesX( StateVars& Q )
+{ SetBndValues( Q ); }
+
+void SetBndValuesY( StateVars& Q )
+{ SetBndValues( Q ); }
+
 // This is a user-supplied routine that sets the the boundary conditions
 //
 // For this problem, there are a total of two types of boundary conditions
@@ -29,7 +38,7 @@ void SetBndValues( StateVars& Q )
     // -----------------------
 
     // ***********************************************
-    // LEFT BOUNDARY
+    // LEFT BOUNDARY (hard surface)
     // ***********************************************
     for (i=0; i>=(1-mbc); i--)
     {
@@ -38,7 +47,7 @@ void SetBndValues( StateVars& Q )
             // q values
             for (m=1; m<=meqn; m++)
             {
-                double tmp = q.get(1,j,m);
+                double tmp = q.get(1-i,j,m);
                 q.set(i,j,m, tmp );
             }
 
@@ -49,10 +58,8 @@ void SetBndValues( StateVars& Q )
     }
     // ***********************************************
 
-
-
     // ***********************************************
-    // RIGHT BOUNDARY
+    // RIGHT BOUNDARY (zeroth-order extrapolation)
     // ***********************************************
     for( i=(mx+1); i<=(mx+mbc); i++ )
     {
@@ -64,14 +71,20 @@ void SetBndValues( StateVars& Q )
                 double tmp = q.get(mx,j,m);                    
                 q.set(i,j,m, tmp );
             }
+            // aux values
+            for (m=1; m<=maux; m++)
+            {
+                double tmp = q.get(mx,j,m);                    
+                aux.set(i,j,m, tmp );
+            }
+
         }
     }
     // ***********************************************
 
 
-
     // ***********************************************
-    // BOTTOM BOUNDARY
+    // BOTTOM BOUNDARY (hard surface)
     // ***********************************************
     for( j=0; j >= (1-mbc); j--)
     {
@@ -80,20 +93,20 @@ void SetBndValues( StateVars& Q )
             // q values
             for (m=1; m<=meqn; m++)
             {
-                double tmp = q.get(i, 1, m);                    
+                double tmp = q.get(i, 1-j, m);                    
                 q.set(i, j, m, tmp );
             }
+
+            // Flip the momentum
+            q.set(i, j, 3, -q.get(i,j,3) );
+
         }
-
-        // Flip the momentum
-        q.set(i, j, 2, -q.get(i,j,2) );
-
     }
     // ***********************************************
 
 
     // ***********************************************
-    // TOP BOUNDARY
+    // TOP BOUNDARY (zeroth-order extrapolation)
     // ***********************************************
     for( j=(my+1); j<=(my+mbc); j++)
     {
@@ -109,13 +122,21 @@ void SetBndValues( StateVars& Q )
     }
     // ***********************************************
 
-    // TODO - cross terms!?
+    // ***********************************************
+    // BOTTOM LEFT CORNER
+    // ***********************************************
+/*    for(int i=1; i<=mbc; i++)
+        for(int j=1; j<=mbc; j++)
+        {
+            for(int m=1; m<=meqn; m++)
+                {     
+                    q.set(1-i,1-j,m, q.get(i,j,m) );
+                }
+        }
+    // ***********************************************
+*/
 
+// TODO - cross terms!?
 }
 
-// Wrappers for main Euler library
-void SetBndValuesX( StateVars& Q )
-{ SetBndValues( Q ); }
 
-void SetBndValuesY( StateVars& Q )
-{ SetBndValues( Q ); }

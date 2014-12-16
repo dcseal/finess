@@ -1,35 +1,26 @@
-/*
-#include <iostream>
-#include <iomanip>
-#include "DogParams.h"
-*/
-
-//#include "DogSolverCart2.h"
 #include "dogdefs.h"
-#include <string.h>          // For strcpy and strcat (some compilers don't need this)
-#include "EulerParams.h"
-
-const char* get_outputdir();
+#include "StateVars.h"
+#include "IniParams.h"
 
 // Function that is called after initial condition
-void AfterQinit(dTensorBC3& aux, dTensorBC3& q)
+//
+// The purpose of this routine is to insert a single delta function into the
+// lower-left corner of the domain.  The reason for doing this, is to make
+// sure that the correct initial conditions are set.
+//
+// See also: Qinit.cpp
+void AfterQinit( StateVars& Q )
 {
 
-//  DogStateCart2& state = solver.fetch_state();
-//  dTensorBC4& aux = state.fetch_aux();
-//  dTensorBC4& q   = state.fetch_q();
-//  const int mx    = q.getsize(1);
-//  const int my    = q.getsize(2);
-//  const int meqn  = q.getsize(3);
-//  const int kmax  = q.getsize(4);
-//  const int mbc   = q.getmbc();
-//  const int maux  = aux.getsize(3);  
-//  const int space_order = dogParams.get_space_order();
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
-    // Output parameters to file in outputdir
-    char eulerhelp[200];
-    strcpy( eulerhelp, get_outputdir() );
-    strcat( eulerhelp, "/eulerhelp.dat");
-    eulerParams.write_eulerhelp( eulerhelp );
+    const double dx = global_ini_params.get_dx();
+    const double dy = global_ini_params.get_dy();
+
+//  double energy = 0.244816/(dx*dy);
+    double energy = 0.979264/(dx*dy);
+
+    q.set(1,1,5, energy );
 
 }

@@ -146,6 +146,11 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
                     qnew.set(i, j, m, qnew.get(i,j,m) - (dt/dx)*tmp );
                     tmp = (ghat->get(i,j+1,m)-ghat->get(i,j,m) );
                     qnew.set(i, j, m, qnew.get(i,j,m) - (dt/dy)*tmp );
+
+// Test the LF solver by uncommenting this chunk
+//                  double tmp = Lstar.get(i,j,m);
+//                  qnew.set(i, j, m, qnew.get(i,j,m) + dt*tmp );
+
                 }
 
             }

@@ -113,7 +113,7 @@ void ApplyMPPLimiter2D(
 
         // Quick error check
         if (plow < 0.0)
-            cout << "Negative solution in Lax-Fridrichs flux" << endl;
+            cout << "Negative solution in Lax-Friedrich's flux" << endl;
 
         for( int m=1; m <= meqn; m++ )
         {

@@ -68,14 +68,12 @@ void GlobalWaveSpd(
         for( int me=1; me <= maux; me++ )
         { Auxl.set( me, aux.get(i,j,me) ); }
 
-        double s1 = 0.;
-        double s2 = 0.;
+        double s1, s2;
+        SetWaveSpd(nvecx, xedge, Ql, Ql, Auxl, Auxl, s1, s2 );
+        alpha1 = Max( alpha1, Max( fabs(s1), fabs(s2) ) );
 
-        SetWaveSpd(nvecx, xedge, Ql, Ql, Auxl, Auxl, s1, s1 );
-        alpha1 = Max( alpha1, s1 );
-
-        SetWaveSpd(nvecy, xedge, Ql, Ql, Auxl, Auxl, s2, s2 );
-        alpha2 = Max( alpha2, s2 );
+        SetWaveSpd(nvecy, xedge, Ql, Ql, Auxl, Auxl, s1, s2 );
+        alpha2 = Max( alpha2, Max( fabs(s1), fabs(s2) ) );
 
     }
 

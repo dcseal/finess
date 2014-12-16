@@ -45,11 +45,12 @@ void GlobalWaveSpd(
         xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
 
         // Solution values
-        dTensor1 Ql(meqn), Qr(meqn);
+        dTensor1 Ql(meqn)
+        // , Qr(meqn);
         for( int me=1; me <= meqn; me++ )
         { 
             Ql.set( me, q.get(i,me) ); 
-            Qr.set( me, q.get(i,me) ); 
+//          Qr.set( me, q.get(i,me) ); 
         }
 
         // Aux values
@@ -57,12 +58,12 @@ void GlobalWaveSpd(
         for( int me=1; me <= maux; me++ )
         { 
             Auxl.set( me, aux.get(i,me) ); 
-            Auxr.set( me, aux.get(i,me) ); 
+//          Auxr.set( me, aux.get(i,me) ); 
         }
 
-        double s1 = 0.;
-        SetWaveSpd(xedge, Ql, Ql, Auxl, Auxl, s1, s1);  // application specific
-        alpha1 = Max( alpha1, s1 );
+        double s1,s2;
+        SetWaveSpd(xedge, Ql, Ql, Auxl, Auxl, s1, s2);  // application specific
+        alpha1 = Max( alpha1, Max( fabs(s1), fabs(s2) ) );
 
     }
 
