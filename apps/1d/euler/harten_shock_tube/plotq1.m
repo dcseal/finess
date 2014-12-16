@@ -19,11 +19,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % gas constant
-%% ----
-%% HACK
-%% ----
-gamma = 1.4;
-%% ----
+gamma = str2num( INI.euler.gamma );
 
 % pressure
 press = (gamma-1)*(qsoln(:,5)-0.5*(qsoln(:,2).^2+...
@@ -74,8 +70,7 @@ set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',-2:0.2:5);
 set(gca,'ytick',-3:0.2:12);
 set(gca,'fontsize',16);
-%t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
-t1 = title(['Density']);
+t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
 if(fids_extra ~= -1)
@@ -88,8 +83,8 @@ if(fids ~= -1)
     plot( xex, qex(:,1), '-r' );
     hold off;
 end
-l1 = legend('Lax-Wendroff', 'Runge-Kutta', 'Exact');
-set(l1, 'Location', 'NorthWest');
+%l1 = legend('Lax-Wendroff', 'Runge-Kutta', 'Exact');
+%set(l1, 'Location', 'NorthWest');
 
 figure(2);
 clf;
@@ -104,8 +99,7 @@ set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',-2:0.20:5);
 set(gca,'ytick',-0:0.5:40);
 set(gca,'fontsize',16);
-%t1 = title(['Pressure at t = ',num2str(time),'     [FINESS]']);
-t1 = title(['Pressure']);
+t1 = title(['Pressure at t = ',num2str(time),'     [FINESS]']);
 set(t1,'fontsize',16);
 
 if(fids_extra ~= -1)
@@ -118,8 +112,8 @@ if(fids ~= -1)
     plot( xex, pex, '-r' );
     hold off;
 end
-l2 = legend('Lax-Wendroff', 'Runge-Kutta', 'Exact');
-set(l2,'Location', 'Best');
+%l2 = legend('Lax-Wendroff', 'Runge-Kutta', 'Exact');
+%set(l2,'Location', 'Best');
 
 figure(3);
 clf;
@@ -148,10 +142,10 @@ if(fids ~= -1)
     plot( xex, qex(:,2)./qex(:,1), '-r' );
     hold off;
 end
-l3 = legend('Lax-Wendroff', 'Runge-Kutta', 'Exact');
-set( l3, 'Location', 'South' );
+%l3 = legend('Lax-Wendroff', 'Runge-Kutta', 'Exact');
+%set( l3, 'Location', 'South' );
 
 % Save the pretty pictures!
-print(1, '-depsc', 'harten_density.eps'  );
-print(2, '-depsc', 'harten_pressure.eps' );
-print(3, '-depsc', 'harten_velocity.eps' );
+%print(1, '-depsc', 'harten_density.eps'  );
+%print(2, '-depsc', 'harten_pressure.eps' );
+%print(3, '-depsc', 'harten_velocity.eps' );

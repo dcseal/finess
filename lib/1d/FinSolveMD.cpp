@@ -13,9 +13,11 @@ using namespace std;
 
 // -------------------------------------------------------------------------- //
 // Two-stage multiderivative time integration.  Currently, 
-// this routine supports a fourth and fifth-order method.
+// this routine supports a third and fourth-order two derivative, and a 
+// fifth-order three-derivative method.
 //
-// One needs to have a Jacobian defined in DFlux in order to be able to use 
+// One needs to have a Jacobian defined in DFlux, as well as the Hessian in
+// D2FluxFunc (for the three-derivative method) in order to be able to use 
 // this routine.
 //
 // See also: FinSolveRK, FinSolveLxW, FinSolveSDC, and FinSolveUser other solvers.
@@ -63,20 +65,37 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2   F(mx, meqn, mbc);
 
     // Coefficients for the third-order method
-    const double A21    = 6.666666666666666e-01;
+//  const double A21    = 6.666666666666666e-01;
+//  const double A31    = 0.0;
+//  const double A32    = 0.0;
+
+//  const double Ahat21 = 2.222222222222222e-01;
+//  const double Ahat31 = 0.0;
+//  const double Ahat32 = 0.0;
+
+//  const double b1     = 6.250000000000000e-01;
+//  const double b2     = 3.749999999999999e-01;
+//  const double b3     = 0.0;
+
+//  const double bhat1  = 1.250000000000000e-01;
+//  const double bhat2  = 1.250000000000000e-01;
+//  const double bhat3  = 0.0;
+
+    // Coefficients for the third-order method
+    const double A21    = 1.0;
     const double A31    = 0.0;
     const double A32    = 0.0;
 
-    const double Ahat21 = 2.222222222222222e-01;
+    const double Ahat21 = 0.5;
     const double Ahat31 = 0.0;
     const double Ahat32 = 0.0;
 
-    const double b1     = 6.250000000000000e-01;
-    const double b2     = 3.749999999999999e-01;
+    const double b1     = 2.0/3.0;
+    const double b2     = 1.0/3.0;
     const double b3     = 0.0;
 
-    const double bhat1  = 1.250000000000000e-01;
-    const double bhat2  = 1.250000000000000e-01;
+    const double bhat1  = 1.0/6.0;
+    const double bhat2  = 0.0;
     const double bhat3  = 0.0;
 
     // ---------------------------------------------- //
@@ -178,14 +197,66 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // Perform any extra work required:
                 AfterStep(dt, Qnew );
 
-
-
-
-break;
-
-
+                break;
 
                 case 3:
+
+                // -- Stage 1 -- //
+
+                ConstructIntegratedF( dt, 
+                    1.0, 0.5, aux,     qnew, 
+                    0.0, 0.0,  auxstar, qstar,
+                    smax, F);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + A21*dt*Lstar.vget(k);
+                    qstar.vset(k, tmp );
+                }
+
+                // Perform any extra work required:
+                AfterStep(dt, Qstar );
+
+                SetBndValues(Qnew);
+                SetBndValues(Qstar);
+
+                // -- Stage 2 -- //
+
+                // Construct a new right hand side
+                ConstructL( Qnew, Lstar, smax);
+                // Update (part) of the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+
+                ConstructL( Qstar, Lstar, smax);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (1./3.)*( qstar.vget( k ) + dt*Lstar.vget(k));
+                    qnew.vset(k, 2./3.*qnew.vget(k) + tmp );
+                }
+
+                Qnew.set_t( Qnew.get_t() + dt );
+
+                SetBndValues( Qnew  );
+                SetBndValues( Qstar );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+
+                break;
+
+
+/*
 
                 // -- Stage 1 -- //
 
@@ -199,7 +270,7 @@ break;
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
-                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    double tmp = qnew.vget( k ) + A21*dt*Lstar.vget(k);
                     qstar.vset(k, tmp );
                 }
 
@@ -236,6 +307,8 @@ break;
                 AfterStep(dt, Qnew );
 
                 break;
+
+*/
 
 /*
                 // -- Stage 1 -- //
@@ -304,6 +377,7 @@ break;
                 AfterStep(dt, Qnew );
 
                 break;
+
 */
 
                 case 4:

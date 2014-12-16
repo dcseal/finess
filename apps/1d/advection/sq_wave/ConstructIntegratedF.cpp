@@ -13,8 +13,8 @@
 // schemes" available on arxiv: http://arxiv.org/abs/1403.1282
 
 // Central Finite difference approximations.  See lib/WenoReconstruct.cpp
-void Diff1      ( double dx, const dTensor2& f, dTensor1& fx );
-void Diff2      ( double dx, const dTensor2& f, dTensor1& fxx );
+//void Diff1      ( double dx, const dTensor2& f, dTensor1& fx );
+//void Diff2      ( double dx, const dTensor2& f, dTensor1& fxx );
 
 // !!! NEW TERMS !!! //
 void Diff1NC    ( double dx, const dTensor2& f, dTensor1& fx );

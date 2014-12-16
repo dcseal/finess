@@ -13,7 +13,9 @@ def _parameters_accessors_checks():
     gamma = Parameter(variable_name = "gamma",
                       section = "mhd",
                       name = "gamma",
-                      type_ = "double")
+                      type_ = "double",
+                      default_value = 1.4
+                      )
     parameters.append(gamma)
     checks.append(CheckGreaterThan(gamma, 0.0))
 
