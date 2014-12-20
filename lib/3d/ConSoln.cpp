@@ -6,13 +6,18 @@
 #include <iomanip>
 #include "dogdefs.h"
 #include "IniParams.h"
-#include "IniParams.h"
+#include "StateVars.h"
 
 using namespace std;
 
-void ConSoln( const dTensorBC4& aux, const dTensorBC4& q, 
-              double t, string outputdir)
+void ConSoln( const StateVars& Q )
 {
+
+    const dTensorBC4& q   = Q.const_ref_q  ();
+    const dTensorBC4& aux = Q.const_ref_aux();
+    const double t        = Q.get_t();
+    
+    string outputdir = global_ini_params.get_output_dir();
 
     // Size of the solution
     const int     mx = global_ini_params.get_mx();

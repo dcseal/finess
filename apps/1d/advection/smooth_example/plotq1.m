@@ -1,16 +1,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%   Information you have available to you:
+%%   Information you have available to you
 %%
 %%     Basic information:
 %%              mx:  number of points
 %%    [xlow,xhigh]:  min/max values of grid
 %%            meqn:  number of equations
 %%            maux:  number of aux components
-%%           meth1:  spatial order of accuracy
 %%
 %%   Grid information:
-%%              xc: grid points (cell centers), size = (mx,my)
+%%              xc: grid points (cell centers), size = (mx,1)
 %%
 %%   Solution information:
 %%           qsoln:  solution sampled on mesh, size = (mx,meqn)
@@ -37,7 +36,7 @@ set(gca,'plotboxaspectratio',[2 1 1]);
 set(gca,'xtick',-2:0.25:2);
 set(gca,'ytick',-2:0.5:2);
 set(gca,'fontsize',16);
-t1 = title(['q(x,t) at t = ',num2str(time),'     [DoGPack]']); 
+t1 = title(['q(x,t) at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
 if ( abs(time-round(time)) < 1.0e-10 && time > 0)

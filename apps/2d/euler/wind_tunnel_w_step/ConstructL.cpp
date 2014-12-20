@@ -3,27 +3,26 @@
 #include "IniParams.h"
 #include "tensors.h"
 #include "dog_math.h"
-#include "IniParams.h"
-
-
-#include "IniParams.h"
+#include "StateVars.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
 void ConstructL(
-        dTensorBC3& aux,
-        dTensorBC3& q,      // SetBndValues modifies q and aux
+        StateVars& Q,      // SetBndValues modifies q and aux
         dTensorBC3& Lstar,
         dTensorBC3& smax)
 {
 
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
+
     // Boundary conditions
     //
 //  void SetBndValues (dTensorBC3& aux, dTensorBC3& q);  // The "wrong" one.
-    void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q);  // Only set conditions along x-direction
-    void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q);  // Only set conditions along y-direction
+    void SetBndValuesX(StateVars& Q);  // Only set conditions along x-direction
+    void SetBndValuesY(StateVars& Q);  // Only set conditions along y-direction
 
     // --- User supplied functions --- //
     void FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor3& flux);
@@ -82,7 +81,7 @@ void ConstructL(
     // --------------------------------------------------------------------- //
     // Compute Fhat{i-1/2, j} - 1st component of the flux function
     // --------------------------------------------------------------------- //
-    SetBndValuesX(aux, q);
+    SetBndValuesX(Q);
 
     // Normal vector.  This is a carry-over from the DG code.
     dTensor1 nvec(2);
@@ -290,7 +289,7 @@ void ConstructL(
     // --------------------------------------------------------------------- //
     // Compute Ghat{i, j-1/2} - 2nd-component of the flux function
     // --------------------------------------------------------------------- //
-    SetBndValuesY(aux, q);
+    SetBndValuesY(Q);
     nvec.set(1, 0.0 );  nvec.set(2, 1.0 );
 #pragma omp parallel for
     for (int i = 1; i<= mx;   i++)

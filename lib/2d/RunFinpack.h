@@ -3,6 +3,8 @@
 
 #include "StateVars.h"
 
+void WriteQhelp( void );
+
 void Output( const StateVars& Qnew, int nframe );
 void QinitFunc(const dTensor2& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals);

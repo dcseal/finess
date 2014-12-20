@@ -86,7 +86,8 @@ void ConstructIntegratedR( double dt, const StateVars& Q,
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
 const int      mpts_sten = 5;
-const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
+//const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
+const int half_mpts_sten = 3;
 
 const int ndim = 2;
 
@@ -294,7 +295,7 @@ const int ndim = 2;
 
 }
 
-void LocalIntegrate( 
+static void LocalIntegrate( 
     int nterms, double dx, double dy, double xc, double yc,
     int meqn, int maux, int mpts_sten, int half_mpts_sten,
     const int i, const int j, const dTensorBC3& q, const dTensorBC3& aux, 

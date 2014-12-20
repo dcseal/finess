@@ -1,0 +1,42 @@
+#include <sstream>
+#include <fstream>
+#include <string>
+#include "stdlib.h"
+#include "IniParams.h"      // Needed for outputdirectory
+
+using namespace std;
+
+// This routine is called once per simulation.  The purpose of this routine is
+// to provide access to the plotting routines provided from DoGPack.
+//
+// Make sure that the global IniParams has already been called before calling
+// this function.
+void WriteQhelp( )
+{
+
+    string outputdir = global_ini_params.get_output_dir();
+
+    ostringstream fname;
+    fname << outputdir << "/" << "qhelp.dat";
+
+    // Open file -- qhelp.dat
+    ostringstream fname1;
+    fname1 << outputdir << "/" << "qhelp.dat";
+    FILE* file = fopen( fname1.str().c_str(), "w" );
+
+    fprintf(file,"%16d   : ndims   \n", global_ini_params.get_ndims() );
+    fprintf(file,"%16d   : meqn    \n", global_ini_params.get_meqn()  );
+    fprintf(file,"%16d   : maux    \n", global_ini_params.get_maux()  );
+    fprintf(file,"%16d   : nout    \n", global_ini_params.get_nout()  );
+    fprintf(file,"%16d   : mx      \n", global_ini_params.get_mx()    );
+    fprintf(file,"%16d   : my      \n", global_ini_params.get_my()    );
+    fprintf(file,"%16d   : mz      \n", global_ini_params.get_mz()    );
+    fprintf(file,"%16.8e : xlow    \n", global_ini_params.get_xlow()  );
+    fprintf(file,"%16.8e : xhigh   \n", global_ini_params.get_xhigh() );
+    fprintf(file,"%16.8e : ylow    \n", global_ini_params.get_ylow()  );
+    fprintf(file,"%16.8e : yhigh   \n", global_ini_params.get_yhigh() );
+    fprintf(file,"%16.8e : zlow    \n", global_ini_params.get_zlow()  );
+    fprintf(file,"%16.8e : zhigh   \n", global_ini_params.get_zhigh() );
+    fclose(file);
+
+}

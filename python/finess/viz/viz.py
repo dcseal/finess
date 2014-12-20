@@ -43,8 +43,9 @@ def interactive_plot(max_i, draw_ith_frame, new_window_for_each_frame = False):
                 fig = pyplot.figure(1)
                 fig.clf()
                 draw_ith_frame(fig, i)
-                i = get_next_i(i)
                 fig.canvas.draw()
+                i = get_next_i(i)
+                
         else:
             while i != -1:
                 fig = pyplot.figure()

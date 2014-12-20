@@ -4,25 +4,21 @@
 #include "tensors.h"
 #include "dog_math.h"
 #include "IniParams.h"
-#include "WenoParams.h"
 #include "ConstructL.h"
+#include "StateVars.h"
 
 // Right-hand side for hyperbolic PDE in divergence form
 //
-//       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
+//       q_t + f(q,x,t)_x + g(q,x,t)_y + h(q,x,t)_z = Psi(q,x,t)
 //
-void ConstructL(
-        dTensorBC4& aux,
-        dTensorBC4& q,      // SetBndValues modifies q and aux
-        dTensorBC4& Lstar,
-        dTensorBC4& smax)
+void ConstructL( StateVars& Q, dTensorBC4& Lstar, dTensorBC4& smax)
 {
 
+    dTensorBC4&   q = Q.ref_q();
+    dTensorBC4& aux = Q.ref_aux();
+
     // Boundary conditions
-    //
-    // TODO - this should be moved before ConstructL is called, and q
-    // and aux should be changed to const values (-DS)
-    SetBndValues( aux, q );
+    SetBndValues( Q );
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
@@ -89,7 +85,7 @@ void ConstructL(
             double tmp = 0.5*( q.get(i,j,k,m) + q.get(i-1,j,k,m) );
             Qavg.set(m, tmp );
         }
-        dTensor1 Auxavg(maux);
+        dTensor1 Auxavg( maux );
         for( int ma=1; ma <= maux; ma++ )
         {
             double tmp = 0.5*( aux.get(i,j,k,ma) + aux.get(i-1,j,k,ma) );
@@ -103,7 +99,6 @@ void ConstructL(
         // Sample q over the stencil:
         dTensor2  qvals( meqn, ws+1  ), auxvals  ( maux, ws+1  );
         dTensor2 qvals_t( ws+1, meqn ), auxvals_t( ws+1, maux  );
-
         dTensor2 xvals( ws+1, 3 );
         for( int s=1; s <= ws+1; s++ )
         {
@@ -150,7 +145,6 @@ void ConstructL(
             g.set(me, s, fvals_t.get( s, me, 2 ) );  // 2nd-component - g
             h.set(me, s, fvals_t.get( s, me, 3 ) );  // 3nd-component - h
         }
-
 
         // Project entire stencil onto the characteristic variables:
         dTensor2 wvals( meqn, ws+1  ), gvals( meqn, ws+1 );
@@ -527,7 +521,7 @@ void ConstructL(
         }
 
         dTensor2 fhat_loc( ghat );
-        ProjectRightEig(2, Auxavg, Qavg, ghat, fhat_loc);
+        ProjectRightEig(3, Auxavg, Qavg, ghat, fhat_loc);
         for( int m=1; m <= meqn; m++ )
         {
             Hhat.set(i,j,k,m, fhat_loc.get(m,1) );

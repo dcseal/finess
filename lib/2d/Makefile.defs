@@ -78,6 +78,7 @@ SOURCES_EXPECTED = \
 #
 RunFinpack           = $(LIB2D)/RunFinpack
 Output               = $(LIB2D)/Output
+WriteQhelp           = $(LIB2D)/WriteQhelp
 ConSoln              = $(LIB2D)/ConSoln
 AfterQinit           = $(LIB2D)/AfterQinit
 AfterStep            = $(LIB2D)/AfterStep
@@ -97,6 +98,7 @@ FinSolveUser         = $(LIB2D)/FinSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
 GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
+GetCFL               = $(LIB2D)/GetCFL
 
 # Although not as likely to be overridden as the above, UpdateSoln
 # does get overridden in order to implement Runge-Kutta Constrained
@@ -113,12 +115,13 @@ LIB2D_OBJECTS = \
   $(GridSetup).o \
   $(SampleFunction).o \
   $(Output).o \
+  $(WriteQhelp).o \
   $(ConSoln).o \
   $(FinSolveRK).o \
   $(FinSolveLxW).o \
   $(FinSolveMD).o \
   $(LIB2D)/SetRKinfo.o \
-  $(LIB2D)/GetCFL.o \
+  $(GetCFL).o \
   $(GlobalWaveSpd).o \
   $(AfterQinit).o \
   $(FinSolveUser).o \
@@ -140,6 +143,7 @@ LIB2D_SOURCES = \
   $(GridSetup).cpp \
   $(SampleFunction).cpp \
   $(Output).cpp \
+  $(WriteQhelp).cpp \
   $(ConSoln).cpp \
   $(FinSolveRK).cpp \
   $(FinSolveLxW).cpp \
