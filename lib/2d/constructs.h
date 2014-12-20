@@ -33,8 +33,8 @@ void ConstructIntegratedR( double dt,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
 void ConstructLxWL( const StateVars& Q,
-        dTensorBC3& F,         // <--- new term: integrated flux, f
-        dTensorBC3& G,         // <--- new term: integrated flux, g
+        const dTensorBC3& F,         // <--- new term: integrated flux, f
+        const dTensorBC3& G,         // <--- new term: integrated flux, g
         dTensorBC3& Lstar,
         dTensorBC3& smax);
 

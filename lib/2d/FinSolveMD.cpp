@@ -13,19 +13,6 @@
 //
 // These functions are for the two-stage methods.  One contains
 // two-derivatives, and the second contains three derivatives.
-void ConstructIntegratedR( double dt, 
-    double alpha1, double beta1,
-    const StateVars& Q1,
-    double alpha2, double beta2,
-    const StateVars& Q2,
-    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
-
-void ConstructIntegratedR( double dt, 
-    double alpha1, double beta1, double charlie1,
-    const StateVars& Q1,
-    double alpha2, double beta2, double charlie2,
-    const StateVars& Q2,
-    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 // ------------------------------------------------------------
 
 
