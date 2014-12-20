@@ -79,6 +79,7 @@ SOURCES_EXPECTED = \
 RunFinpack           = $(LIB1D)/RunFinpack
 Output               = $(LIB1D)/Output
 Output_Extra         = $(LIB1D)/Output_Extra
+WriteQhelp           = $(LIB1D)/WriteQhelp
 ConSoln              = $(LIB1D)/ConSoln
 AfterQinit           = $(LIB1D)/AfterQinit
 AfterStep            = $(LIB1D)/AfterStep
@@ -120,6 +121,7 @@ LIB1D_OBJECTS = \
   $(SampleFunction).o \
   $(Output).o \
   $(Output_Extra).o \
+  $(WriteQhelp).o \
   $(ConSoln).o \
   $(LIB1D)/FinSolveRK.o \
   $(FinSolveSDC).o \
@@ -157,6 +159,7 @@ LIB1D_SOURCES = \
   $(SampleFunction).cpp \
   $(Output).cpp \
   $(Output_Extra).cpp \
+  $(WriteQhelp).cpp \
   $(ConSoln).cpp \
   $(LIB1D)/FinSolveRK.cpp \
   $(FinSolveSDC).cpp \

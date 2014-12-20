@@ -1,4 +1,4 @@
-"""Provides functions for dealing with output of 2D apps.
+"""This module provides functions for dealing with output of 2D apps.
 """
 
 def read_qa(params, i_output):

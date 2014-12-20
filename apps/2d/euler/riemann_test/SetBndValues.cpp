@@ -115,8 +115,8 @@ void SetBndValues( StateVars& Q )
 }
 
 // Wrappers for main Euler library
-void SetBndValuesX(dTensorBC3& aux, dTensorBC3& q)
-{ SetBndValues( aux, q ); }
+void SetBndValuesX( StateVars& Q )
+{ SetBndValues( Q ); }
 
-void SetBndValuesY(dTensorBC3& aux, dTensorBC3& q)
-{ SetBndValues( aux, q ); }
+void SetBndValuesY( StateVars& Q )
+{ SetBndValues( Q ); }

@@ -1,12 +1,15 @@
 #include "tensors.h"
+#include "StateVars.h"
 
 // *TEMPLATE*
 //
 // Function that is called before a full time step
-void BeforeFullTimeStep(double dt, 
-        dTensorBC4& auxold, dTensorBC4& aux, 
-        dTensorBC4& qold,   dTensorBC4& q)
+void BeforeFullTimeStep(double dt, StateVars& Qold, StateVars& Q)
 {
+    dTensorBC4& q    = Q.ref_q();
+    dTensorBC4& aux  = Q.ref_aux();
+    double time      = Q.get_t();
+
     const int   mx   = q.getsize(1);
     const int   my   = q.getsize(2);
     const int   mz   = q.getsize(3);
@@ -14,4 +17,5 @@ void BeforeFullTimeStep(double dt,
 
     const int mbc    = q.getmbc();
     const int maux   = aux.getsize(4);
+
 }

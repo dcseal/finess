@@ -17,7 +17,7 @@ def main( ):
 
         directory_num = my_dictionary['dir_num'] =  i
 
-        folder = (os.getcwd() + '/output_00%(dir_num)i/') % my_dictionary
+        folder = (os.getcwd() + '/output_000%(dir_num)i/') % my_dictionary
         print folder
         if( not os.path.exists(folder) ):
             print('    Did not find folder: %s' % folder )

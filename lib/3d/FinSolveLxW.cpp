@@ -5,7 +5,6 @@
 #include "dogdefs.h"
 #include "FinSolveLxW.h"     // functions directly called from this function
 #include "IniParams.h"
-#include "IniParams.h"
 
 using namespace std;
 
