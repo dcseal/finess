@@ -248,6 +248,7 @@ def ConstructUxNC( Un, eps ):
         # Pull the current stencil
         u_stencil = BigU[i:i+2*mbc-1]
         Ux[i]     = sympy.limit( sympy.simplify( diff1NC( eps, 2, u_stencil )), eps, 0 )
+#       Ux[i]     = sympy.simplify( diff1NC( eps, 2, u_stencil ) )
 
     return Ux 
 
@@ -300,37 +301,44 @@ UFE = EulerStep( Un, L, nu )
 Unx   = ConstructUx  ( Un, eps )
 UnxNC = ConstructUxNC( Un, eps )
 
+"""
 print("Constructing a time-averaged RHS (CFD)")
 Lt,Fpt      = ConstructPIFL( Un, Unx, nu, eps )
 print("Taking an Euler step on time-averaged RHS (CFD)")
 U_TaylorCFD = EulerStep( Un, Lt, nu )
+"""
 
 print("Constructing a time-averaged RHS (NCW)")
 LtNC,FptNC  = ConstructPIFL( Un, UnxNC, nu, eps )
 print("Taking an Euler step on time-averaged RHS (NCW)")
 U_TaylorNCW = EulerStep( Un, LtNC, nu )
 
+"""
 print("Constructing Utt directly")
 Utt = ConstructUx( -L, eps )
 print("Taking Taylor step from Ut and Utt")
 U_TaylorQS = TaylorStep( Un, L, Utt, nu )
+"""
 
 print("printing u from Forward-Euler time stepping")
 for u in UFE:
-    print( 'u = ', sympy.limit( u, eps, 0 ), ';' )
+    print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
 
+"""
 print("printing U (CFD)")
 for u in U_TaylorCFD:
-    print( 'u = ', sympy.limit( u, eps, 0 ), ';' )
+    print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
+"""
 
 print("printing U (NCW)")
 for u in U_TaylorNCW:
-    print( 'u = ', sympy.limit( u, eps, 0 ), ';' )
+    print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
 
-print("printing U (Utt)")
+"""
+print("printing U (QiuShu)")
 for u in U_TaylorQS:
-    print( 'u = ', sympy.limit( u, eps, 0 ), ';' )
-
+    print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
+"""
 
 #print("Constructing new right hand side value")
 #Lstar, Fpstar = ConstructL( Ustar, eps )
