@@ -29,7 +29,7 @@ void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Qnew );
 // ------------------------------------------------------------
 
 void ConstructLxWL( const StateVars& Q,
-        dTensorBC3& F, dTensorBC3& G,
+        const dTensorBC3& F, const dTensorBC3& G,
         dTensorBC3& Lstar, dTensorBC3& smax);
 
 void ConstructLxWL( const StateVars& Q,
