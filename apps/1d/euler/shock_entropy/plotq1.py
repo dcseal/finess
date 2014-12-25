@@ -57,12 +57,11 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.draw()
 
 
-    # Save data file in a different format, if so desired
-#   data = np.array( [xc, qsoln[:,0], qsoln[:,1], qsoln[:,4] ] )
-#   fmt = '%.15e'
-#   with open( 'dg_picture.dat', 'wb' ) as f:
-#     print( fmt % time, file=f )         # time instant on first row
-#     np.savetxt( 'weno_picture.dat', np.transpose( data ), fmt=fmt )
-#   np.savetxt( 'weno_picture.dat', np.transpose( data ) )
+    # print data to file.
+    data = np.array( [xc, qsoln[:,0], qsoln[:,1], qsoln[:,4] ] )
+    fmt   = '%1.15e'
+    with open( 'soln.dat', 'wb' ) as f:
+      #print( fmt % time, file=f )         # time instant on first row
+      np.savetxt( 'soln.dat', np.transpose( data ), fmt=fmt )
  
 #-----------------------------------------------------------------------------#

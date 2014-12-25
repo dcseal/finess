@@ -33,21 +33,9 @@ void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Q )
     const int istep = (mx / 5);
     const int jstep = (my / 5)+1;
 
-    // Reset the domain inside the wedge to be the initial conditions.
+    // Reset the domain inside the wedge to be a constant
     //
     // This will be overwritten next time ConstructL is called.
-    void QinitFunc(const dTensor2& xpts,
-        const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
-        dTensor2& qvals);
-//  void SampleFunction( 
-//      int istart, int iend,
-//      int jstart, int jend,
-//      const dTensorBC3& qin, 
-//      const dTensorBC3& auxin,  
-//            dTensorBC3& Fout,
-//      void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
-//  SampleFunction( istep+1, mx+mbc, 1-mbc, jstep-1, q, aux, q, &QinitFunc );
-
     for( int i = istep+1; i <= mx+mbc; i++)
     for( int j = jstep-1; j >= 1-mbc; j-- )
     {
@@ -57,6 +45,5 @@ void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Q )
             q.set(i,j,m, 0.0 );
         }
     }
-
 
 }

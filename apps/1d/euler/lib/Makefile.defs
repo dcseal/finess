@@ -10,12 +10,7 @@ APP_NAME  = euler
 APP_LIB   = $(FINESS)/apps/1d/$(APP_NAME)/lib
 
 # Flux function, and its derivatives
-FluxFunc    = $(APP_LIB)/FluxFunc
-
-# These time derivatives are required for the Lax-Wendroff (and
-# two-derivative) code:
-DFluxFunc   = $(APP_LIB)/DFluxFunc
-D2FluxFunc  = $(APP_LIB)/D2FluxFunc
+FluxFunc         = $(APP_LIB)/FluxFunc
 
 # Eigen decomposition of the Flux function
 ProjectLeftEig   = $(APP_LIB)/ProjectLeftEig
@@ -25,7 +20,15 @@ ProjectRightEig  = $(APP_LIB)/ProjectRightEig
 SetWaveSpd       = $(APP_LIB)/SetWaveSpd
 
 # Auxilary function
-AuxFunc     = $(APP_LIB)/AuxFunc
+AuxFunc          = $(APP_LIB)/AuxFunc
+
+# These time derivatives are required for the Lax-Wendroff (and
+# two-derivative) code:
+DFluxFunc        = $(APP_LIB)/DFluxFunc
+D2FluxFunc       = $(APP_LIB)/D2FluxFunc
+
+# Positivity-preserving limiter
+ApplyMPPLimiter1D = $(APP_LIB)/ApplyMPPLimiter1D
 
 # place to add objects and sources
 #

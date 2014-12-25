@@ -50,7 +50,7 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
     if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
-        GlobalWaveSpd( q, aux, alpha1, alpha2);
+        GlobalWaveSpd( Q, alpha1, alpha2);
     }
 
     // Normal vector.  This is a carry-over from the DG code.

@@ -1,13 +1,10 @@
 #include <cmath>
 #include <stdexcept>
-
 #include "assert.h"
 #include "tensors.h"
-
-
 #include "WenoReconstruct.h"
-
 #include "IniParams.h"
+
 // All purpose routine for computing a conservative WENO reconstruction that
 // is based on matching polynomials with cell averages.  Upon taking
 // differences of these values, you get a high-order approximation to the
@@ -39,8 +36,6 @@
 //
 //     u_{i-1/2} = { u_{i+2}, u_{i+1}, u_i, u_{i-1}, u_{i-2} }.
 //
-// TODO - move this selection step outside of the massive for loops in 1- and
-// 2D codes in order to avoid the overhead with each of these checks.
 //void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst)
 reconstruct_t GetWenoReconstruct()
 {
@@ -64,6 +59,8 @@ reconstruct_t GetWenoReconstruct()
         return &WenoReconstruct_Z5;
     else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 7)
         return &WenoReconstruct_Z7;
+    else if(global_ini_params.get_space_order() == 1)
+        return &WenoReconstructLLF;
     else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 9)
     {
         printf("Warning: we're not sure these are the correct coefficients for WENOZ-9!\n");
@@ -686,6 +683,17 @@ void WenoReconstruct_FD9( const dTensor2& g, dTensor2& g_reconst )
     }
 }
 
+void WenoReconstructLLF( const dTensor2& g, dTensor2& g_reconst )
+{
+    
+    const int meqn = g.getsize(1);
+    for(int m = 1; m <= meqn; m++)
+    {
+        g_reconst.set(m, 1, g.get(m,1) );
+    }
+
+}
+
 // ------------------------------------------------- // 
 // SECTION: Central Finite difference approximations //
 // ------------------------------------------------- // 
@@ -785,7 +793,7 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
 
     const int mcomps = f.getsize( 1 );
 
-    // TODO - include options for larger stencils:
+    // TODO - include options for larger stencils
     assert_eq( f.getsize( 2 ), 5 );
     for( int m=1; m <= mcomps; m++ )
     {
@@ -793,6 +801,61 @@ void Diff2( double dx, const dTensor2& f, dTensor1& fxx )
         tmp       += (  f.get( m, 2 ) + f.get( m, 4 ) )*(4.0/ 3.0);
         tmp       += ( -f.get( m, 3 )                 )*(5.0/ 2.0);
         fxx.set( m, tmp / (dx*dx) );
+    }
+
+}
+
+// First-derivative non-conservative, based on WENO differentation (not
+// WENO-reconstruction).
+void Diff2NC( double dx, const dTensor2& f, dTensor1& fxx )
+{
+
+    assert_eq( f.getsize(2), 5 );
+
+    // Stencil and the smaller three point derivatives:
+    double uim2,uim1,ui,uip1,uip2;
+    double u1,u2,u3;
+
+    double beta0, beta1, beta2;  // smoothness indicators
+    double omt0, omt1, omt2, omts;
+
+    // linear weights
+    const double g0 = -1./12.; 
+    const double g1 =  7./6.; 
+    const double g2 = -1./12.;
+
+    const double eps         = global_ini_params.get_epsilon();       
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
+
+    const int meqn = f.getsize(1);
+    for( int m=1; m <= meqn; m++ )
+    {
+
+        uim2 = f.get(m,1);
+        uim1 = f.get(m,2);
+        ui   = f.get(m,3);
+        uip1 = f.get(m,4);
+        uip2 = f.get(m,5);
+
+        // Compute smoothness indicators (identical for left/right values):
+        beta0 = pow(uim2-2.*uim1+ui,2);
+        beta1 = pow(uim1-2.*ui+uip1,2);
+        beta2 = pow(ui-2.*uip1+uip2,2);
+
+        // 3rd-order reconstructions using small 3-point stencils
+        u1 = ( 1.0  )*uim2 - (2.   )*uim1 + ( 1.0  )*ui;
+        u2 = ( 1.0  )*uim1 - (2.   )*ui   + ( 1.0  )*uip1;
+        u3 = ( 1.0  )*ui   - (2.   )*uip1 + ( 1.0  )*uip2;
+        
+        // Compute nonlinear weights and normalize their sum to 1
+        omt0 = g0*pow(eps+beta0,-power_param);
+        omt1 = g1*pow(eps+beta1,-power_param);
+        omt2 = g2*pow(eps+beta2,-power_param);
+        omts = omt0+omt1+omt2;
+
+        // # Return 5th-order approximation to derivative
+        fxx.set(m, ( (omt0*u1 + omt1*u2 + omt2*u3)/omts) / (dx*dx) );
+
     }
 
 }

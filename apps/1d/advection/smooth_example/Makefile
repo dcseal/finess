@@ -10,8 +10,9 @@ include $(FINESS)/apps/1d/advection/lib/Makefile.defs
 #
 # overridden library objects
 #
-FinSolveUser           = $(FINESS)/lib/1d/FinSolveRK_PIF
-ConstructIntegratedF   = ConstructIntegratedF
+#FinSolveUser           = $(FINESS)/lib/1d/FinSolveRK_PIF
+ConstructIntegratedF    = ConstructIntegratedF
+FinSolveUser            = FinSolveUser
 
 # place to add object modules
 #

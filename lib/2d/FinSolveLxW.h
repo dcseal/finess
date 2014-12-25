@@ -28,13 +28,26 @@ void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Qnew );
 //
 // ------------------------------------------------------------
 
-//void ConstructLxWL( const StateVars& Q,
-//        dTensorBC3& F,         // <--- new term: integrated flux, f
-//        dTensorBC3& G,         // <--- new term: integrated flux, g
-//        dTensorBC3& Lstar,
-//        dTensorBC3& smax);
+void ConstructLxWL( const StateVars& Q,
+        dTensorBC3& F, dTensorBC3& G,
+        dTensorBC3& Lstar, dTensorBC3& smax);
 
-//void ConstructIntegratedR( double dt, const StateVars& Q, 
-//    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
+void ConstructLxWL( const StateVars& Q,
+        dTensorBC3& F, dTensorBC3& G,
+        dTensorBC3& Fhat, dTensorBC3& Ghat,
+        dTensorBC3& Lstar, dTensorBC3& smax);
+
+void ConstructIntegratedR( double dt, const StateVars& Q, 
+    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
+
+// Construct a Lax-Friedrich's flux
+void ConstructLFL( const double dt, StateVars& Q,
+    dTensorBC3& Fhat, dTensorBC3& Ghat,
+    dTensorBC3& Lstar, dTensorBC3& smax);
+
+void ApplyMPPLimiter2D( 
+        const double dt, const dTensorBC3& q, 
+        const dTensorBC3& fLF, const dTensorBC3& gLF,
+        dTensorBC3& fHat, dTensorBC3& gHat );
 
 #endif

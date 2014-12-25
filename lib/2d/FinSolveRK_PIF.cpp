@@ -350,7 +350,7 @@ void ConstructL(
     if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
-        GlobalWaveSpd( q, aux, alpha1, alpha2);
+        GlobalWaveSpd( Q, alpha1, alpha2);
     }
 
     // Normal vector.  This is a carry-over from the DG code.
@@ -761,7 +761,7 @@ void ConstructL_NOC( StateVars& Q,
     if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
-        GlobalWaveSpd( q, aux, alpha1, alpha2);
+        GlobalWaveSpd( Q, alpha1, alpha2);
     }
 
     // Normal vector.  This is a carry-over from the DG code.

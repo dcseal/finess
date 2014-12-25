@@ -11,6 +11,7 @@ include $(FINESS)/apps/1d/advection/lib/Makefile.defs
 # overridden library objects
 #
 ConstructIntegratedF    = ConstructIntegratedF
+FinSolveUser            = FinSolveUser
 
 # place to add object modules
 #
