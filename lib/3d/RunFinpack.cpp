@@ -13,7 +13,7 @@
 #include "RunFinpack.h"           // Function declarations
 #include "StateVars.h"
 
-int RunFinpack()
+int RunFinpack(std::string parameters_ini_filename)
 {
 
     using std::cout;
@@ -38,7 +38,14 @@ int RunFinpack()
 
     // Get parameters and print to screen
     cout << global_ini_params.ini_doc_as_string() << endl;
-    const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
+    // Also dump that to the output directory
+    {
+        using std::ofstream;
+        ofstream ofs((global_ini_params.get_output_dir() + "/" + parameters_ini_filename + ".dump").c_str());
+        ofs << global_ini_params.ini_doc_as_string() << endl;
+        ofs.close();
+    }
+ const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
 	  global_ini_params.get_time_stepping_method();
 
     // Print information about the parameters to file.  In order to use the
