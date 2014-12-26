@@ -1,6 +1,5 @@
-#include <silo.h>
 #include <stdexcept>
-
+#include <silo.h>
 #include <cmath>
 #include <sstream>
 #include <fstream>
@@ -12,6 +11,7 @@
 #include "IniParams.h"
 #include "StateVars.h"
 #include "util.h"
+#include "silo_wrapper.h"
 
 
 namespace {
@@ -20,6 +20,7 @@ namespace {
 }
 
 using namespace std;
+using namespace finess;
 
 void Output(const StateVars& Q, int nframe){
     IniParams::DataFormat::enum_type datafmt = global_ini_params.get_datafmt();
@@ -101,66 +102,6 @@ namespace {
 
     }
     
-    // Utility classes.  Mainly for RAII.
-
-    namespace silo {
-        class Exception: runtime_error {
-            public:
-                explicit Exception(const string& what_arg) :
-                    runtime_error(what_arg)   
-                { }
-        };
-        class SetCompression {
-            private:
-                string old_options;
-            public:
-                SetCompression(string options){
-                    const char* s = DBGetCompression();
-                    old_options = (s == NULL) ? "" : s;
-                    DBSetCompression(options.c_str());
-                }
-                ~SetCompression(){
-                    DBSetCompression(old_options == "" ? NULL : old_options.c_str());
-                }
-        };
-        class File {
-            private:
-                DBfile *dbfile;
-            public:
-                File(string filename, string comment = "")
-                {
-                    dbfile = NULL;
-                    dbfile = DBCreate(filename.c_str(), DB_CLOBBER, DB_LOCAL, comment.c_str(), DB_HDF5);
-                    if(dbfile == NULL)
-                        throw Exception( string("Could not create Silo file: ") + filename );
-                }
-                ~File(){
-                    DBClose(dbfile);
-                }
-                DBfile *get_ptr(){
-                    return dbfile;
-                }
-        };
-        class TimeOptions {
-            private:
-                DBoptlist *optlist;
-            public:
-                TimeOptions(int nframe, double time){
-                    optlist = DBMakeOptlist(2);
-                    if(optlist == NULL)
-                        throw Exception(string("Could not create Silo optlist."));
-                    DBAddOption(optlist, DBOPT_CYCLE, &nframe);
-                    DBAddOption(optlist, DBOPT_DTIME, &time);
-                }
-                ~TimeOptions(){
-                    DBFreeOptlist(optlist);
-                }
-                DBoptlist* get_ptr() const{
-                    return optlist;
-                }
-        };
-    }
-
     void OutputSilo( const StateVars& Q, int nframe )
     {
         const dTensorBC4& q   = Q.const_ref_q  ();
