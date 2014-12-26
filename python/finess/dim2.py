@@ -1,8 +1,20 @@
 """This module provides functions for dealing with output of 2D apps.
 """
 
+
 def read_qa(params, i_output):
     """Returns (t, q, aux) from (i_output)-th frame."""
+    datafmt = params["finess", "datafmt"]
+    if datafmt == "ASCII":
+        return _read_qa_ascii(params, i_output)
+    elif datafmt == "Silo":
+        return _read_qa_silo(params, i_output)
+    else:
+        raise RuntimeError("datafmt %s not supported" % datafmt)
+
+
+def _read_qa_ascii(params, i_output):
+    """Plain text reader."""
     output_dir = params["finess", "output_dir"]
     q_filename = output_dir + '/' + ('q%.4d.dat' % i_output)
     aux_filename = output_dir + '/' + ('a%.4d.dat' % i_output)
@@ -35,3 +47,38 @@ def read_qa(params, i_output):
     
     return t_q, q, aux
 
+
+def _read_qa_silo(params, i_output):
+    """Silo reader."""
+    output_dir = params["finess", "output_dir"]
+    qa_filename = output_dir + '/' + ('qa%.4d.silo' % i_output)
+    mx = params['grid', 'mx']
+    my = params['grid', 'my']
+    meqn = params['finess', 'meqn']
+    maux = params['finess', 'maux']
+
+    from pylab import empty
+    q = empty([mx, my, meqn])
+    aux = empty([mx, my, maux])
+   
+    from pyvisfile import silo
+    qafile = silo.SiloFile(qa_filename, create = False)
+
+    quadmesh = qafile.get_quadmesh("quadmesh")
+    t = quadmesh.dtime
+    
+    from pylab import empty
+    q = empty([mx, my, meqn])
+    aux = empty([mx, my, maux])
+    
+    q_raw = qafile.get_quadvar("q")
+    for i in range(meqn):
+        q[:, :, i] = q_raw.vals[i]
+    if maux > 0:
+        aux_raw = qafile.get_quadvar("a")
+        for i in range(maux):
+            aux[:, :, i] = aux_raw.vals[i]
+        
+    return t, q, aux
+
+        

@@ -39,6 +39,7 @@ finessM = "".join((finess_path,"/viz/matlab"))
 
 python_path = ":".join((finessP,python_path))
 matlab_path = ":".join((finessM,matlab_path))
+hdf5_disable_version_check = "1"
 
 print ""
 print "The following variables will be set:"
@@ -50,6 +51,9 @@ write_environment_variable(csh_file,bash_file,"PYTHONPATH",python_path)
 
 print "  MATLABPATH = %s" % matlab_path
 write_environment_variable(csh_file,bash_file,"MATLABPATH",matlab_path)
+
+print "  HDF5_DISABLE_VERSION_CHECK = %s" % hdf5_disable_version_check
+write_environment_variable(csh_file,bash_file,"HDF5_DISABLE_VERSION_CHECK", hdf5_disable_version_check)
 
 pdog1_command = "python $FINESS/python/finess/viz/plotdog1.py"
 print "  plotdog1 = %s" %pdog1_command
