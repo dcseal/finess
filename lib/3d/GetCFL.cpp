@@ -60,9 +60,10 @@ double GetCFL(double dt, double dtmax,
     for (int j=1; j<=my; j++)
     for (int k=1; k<=mz; k++)
     {
-        cfl = Max( dt*smax.get(i,j,k, 1) / dx,  cfl );
-        cfl = Max( dt*smax.get(i,j,k, 2) / dy,  cfl );
-        cfl = Max( dt*smax.get(i,j,k, 3) / dz,  cfl );
+        cfl = max( cfl, dt * max(smax.get(i, j, k, 1), max(smax.get(i, j, k, 2), smax.get(i, j, k, 3))) * (1.0 / dx + 1.0 / dy + 1.0 / dz));
+//        cfl = Max( dt*smax.get(i,j,k, 1) / dx,  cfl );
+//        cfl = Max( dt*smax.get(i,j,k, 2) / dy,  cfl );
+//        cfl = Max( dt*smax.get(i,j,k, 3) / dz,  cfl );
     }
 
     if( cfl > 1.0e8 )
