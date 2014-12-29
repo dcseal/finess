@@ -26,7 +26,7 @@ void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
 void GlobalWaveSpd( const StateVars& Q, double& alpha1, double& alpha2);
 
 // Routine for sampling a given function
-void SampleFunction( 
+void SampleFunctionTypeA( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 

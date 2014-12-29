@@ -17,7 +17,7 @@ void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
 void SourceTermFunc(const dTensor2& xpts, const dTensor2& qvals, 
             const dTensor2& auxvals, dTensor2& source);
 
-void SampleFunction( 
+void SampleFunctionTypeA( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
@@ -368,7 +368,7 @@ void ConstructLxWL( const StateVars& Q,
         printf("Error: source-term not implemented for Lax-Wendroff method\n");
         exit(1);
 //      // Compute the source term.
-//      SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
+//      SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
 //#pragma omp parallel for
 //      for (int i=1; i<=mx; i++)
 //      for (int j=1; j<=my; j++)
@@ -734,7 +734,7 @@ void ConstructLxWL( const StateVars& Q,
         printf("Error: source-term not implemented for Lax-Wendroff method\n");
         exit(1);
 //      // Compute the source term.
-//      SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
+//      SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
 //#pragma omp parallel for
 //      for (int i=1; i<=mx; i++)
 //      for (int j=1; j<=my; j++)

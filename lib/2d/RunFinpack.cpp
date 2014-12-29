@@ -74,10 +74,10 @@ int RunFinpack(std::string parameters_ini_filename)
 
     // Set any auxiliary variables on computational grid
     if( maux > 0 )
-    {  SampleFunction(1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, aux, &AuxFunc);  }
+    {  SampleFunctionTypeA(1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, aux, &AuxFunc);  }
 
     // Set initial data on computational grid
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
+    SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
     AfterQinit( Qnew );

@@ -11,7 +11,7 @@
 #include "app_defined.h"
 
 // Used for construcing the flux function
-void SampleFunction( 
+void SampleFunctionTypeB( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
@@ -173,28 +173,28 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 
                     // Stage 1:
                     SetBndValues(Qnew);
-                    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, R1, &FluxFunc );
+                    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, R1, &FluxFunc );
 
 
                     // Stage 2:
                     ConstructL_NOC(Qnew, k1, smax      );
                     EulerStep( 0.5*dt, Qold, k1, Qstar );
                     SetBndValues(Qstar);
-                    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R2, &FluxFunc );
+                    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R2, &FluxFunc );
 
 
                     // Stage 3:
                     ConstructL_NOC( Qstar, k2, smax    );
                     EulerStep( 0.5*dt, Qold, k2, Qstar );
                     SetBndValues(Qstar);
-                    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R3, &FluxFunc );
+                    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R3, &FluxFunc );
 
 
                     // Stage 4:
                     ConstructL_NOC( Qstar, k3, smax   );
                     EulerStep( dt, Qold, k3, Qstar    );
                     SetBndValues(Qstar);
-                    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R4, &FluxFunc );
+                    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, qstar, aux, R4, &FluxFunc );
 
                     // Define right hand side value of q, for final WENO
                     // reconstruction
@@ -679,7 +679,7 @@ void ConstructL(
     {
 
         // Compute the source term.
-        SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
+        SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
 #pragma omp parallel for
         for (int i=1; i<=mx; i++)
         for (int j=1; j<=my; j++)
@@ -939,7 +939,7 @@ void ConstructL_NOC( StateVars& Q,
     {
 
         // Compute the source term.
-        SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
+        SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
 #pragma omp parallel for
         for (int i=1; i<=mx; i++)
         for (int j=1; j<=my; j++)
