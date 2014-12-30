@@ -42,12 +42,13 @@ for parameters_ini_filename in parameters_ini_filename_list:
     print "Processing %s" % parameters_ini_filename
     q = read_q1(parameters_ini_filename)
     qexact = read_qexact(parameters_ini_filename)
-    L1_error = sum(abs(q - qexact)) / sum(abs(qexact))
-    error_list.append(L1_error)
-#    error = abs(q-qexact)
-#    error_list.append(max(error))
+#    L1_error = sum(abs(q - qexact)) / sum(abs(qexact))
+#    error_list.append(L1_error)
+    error = abs(q-qexact)
+    error_list.append(max(error))
+
 order_list = log2_adjacent_ratio(error_list)
 
-print "L1, error and order"
+print "Linfinity, error and order"
 print error_list
 print order_list

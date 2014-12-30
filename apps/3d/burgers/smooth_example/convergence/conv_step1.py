@@ -10,7 +10,7 @@ nout        = 1          ; number of output times to print results
 tfinal      = 0.08
 initial_dt  = 0.001        ; initial dt
 max_dt      = 1.0e10     ; max allowable dt 
-max_cfl     = 1.00       ; max allowable Courant number
+max_cfl     = %(max_cfl)f       ; max allowable Courant number
 desired_cfl = %(cfl)f    ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, Lax-Wendroff, Multiderivative, User-Defined)
@@ -49,8 +49,9 @@ alpha_scaling = 1.1    ; scaling parameter       ( alpha_scaling >= 1.0 )
 
 def generate_parameters_ini_files():
     nruns = 4 
-    cfl = 0.40
-    ts_method_str = "Runge-Kutta"
+    max_cfl = 0.6
+    cfl = 0.5
+    ts_method_str = "Lax-Wendroff"
     s_order = 5
     t_order = 3
     mx = 30
@@ -61,6 +62,7 @@ def generate_parameters_ini_files():
         parameters_ini_filename = "parameters%02d.ini" % nframe
         output_dir = "output%02d" % nframe
         parameters_dict = {"cfl": cfl,
+                            "max_cfl": max_cfl,
                            "ts_method_str": ts_method_str,
                            "s_order": s_order,
                            "t_order": t_order,
