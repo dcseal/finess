@@ -1,5 +1,4 @@
 #include "dogdefs.h"
-#include "math.h"
 
 // This is a user-supplied routine that sets the
 // auxiliary arrays at all the points "xpts"

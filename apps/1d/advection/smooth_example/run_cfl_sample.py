@@ -67,7 +67,6 @@ def main(cfl_vec, num_frames, ts_method, space_order, time_order, mx_start, n_st
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
-        #%cmd = './dog.exe -o outputSL%(s_order)i_%(t_order)i_%(i_now)03i' % my_dictionary
         cmd = './finess.exe'
         print(cmd)
         call(cmd, shell=True)

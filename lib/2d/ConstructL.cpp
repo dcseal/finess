@@ -10,11 +10,11 @@
 //
 //       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
 //
-void ConstructL( const StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
+void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
 {
 
-    const dTensorBC3&   q = Q.const_ref_q();
-    const dTensorBC3& aux = Q.const_ref_aux();
+    dTensorBC3&   q = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
 
     // Routine for WENO reconstrution
     void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
@@ -50,7 +50,7 @@ void ConstructL( const StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
     if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
-        GlobalWaveSpd( q, aux, alpha1, alpha2);
+        GlobalWaveSpd( Q, alpha1, alpha2);
     }
 
     // Normal vector.  This is a carry-over from the DG code.
@@ -372,7 +372,7 @@ void ConstructL( const StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
     {
 
         // Compute the source term.
-        SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
+        SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
 #pragma omp parallel for
         for (int i=1; i<=mx; i++)
         for (int j=1; j<=my; j++)

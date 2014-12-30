@@ -3,6 +3,8 @@
 
 #include "StateVars.h"
 
+void WriteQhelp( void );
+
 void Output( const StateVars& Qnew, int nframe );
 void QinitFunc(const dTensor2& xpts, const dTensor2& NOT_USED_1,
         const dTensor2& NOT_USED_2, dTensor2& qvals);
@@ -18,7 +20,7 @@ void FinSolveLxW    ( StateVars& Qnew, double tend, double dtv[] );
 void FinSolveMD     ( StateVars& Qnew, double tend, double dtv[] );
 void FinSolveUser   ( StateVars& Qnew, double tend, double dtv[] );
 
-void SampleFunction( 
+void SampleFunctionTypeA( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 

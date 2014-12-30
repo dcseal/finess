@@ -32,7 +32,7 @@ double GetCFL(double dt, double dtmax,
         cfl = Max( dt*smax.get(j) / dx, cfl);  
     }
 
-    if (cfl>1.0e8)
+    if( cfl > 1.0e10 )
     {
         cout << endl;
         cout << " Error: CFL number is out of bounds ... " << endl;

@@ -41,7 +41,7 @@ def main( ):
 
         # Grab the current cfl number:
         config.readfp(open(folder + '/parameters.ini'))
-        cfl_now = float( config.get('dogParams','cflv(2)') )
+        cfl_now = float( config.get('finess','desired_cfl') )
 
         data   = np.loadtxt( folder + '/conservation.dat' )
         t      = data[:,0]

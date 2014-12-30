@@ -33,8 +33,8 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
       double expsomething = exp(1.0 - r2);
       
       rho = rho_m;
-      press = press_m + 1.0/(8.0*M_PI) * pow(mu/(2.0*M_PI), 2) * (1 - r2) * expsomething
-                      - 0.5 * pow(kappa/(2.0*M_PI), 2) * expsomething;
+      press = press_m + 1.0/(8.0*M_PI*M_PI) * expsomething
+                         *((1-r2)*mu*mu - kappa*kappa);
       u1 = u1_m + kappa/(2.0*M_PI) * exphalfsomething * (-y);
       u2 = u2_m + kappa/(2.0*M_PI) * exphalfsomething * x;
       u3 = u3_m;

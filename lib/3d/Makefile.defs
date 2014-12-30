@@ -10,7 +10,7 @@ LIB3D = $(FINESS)/lib/3d
 LIB3D_INCLUDE = -I$(LIB3D) $(TOPLIB_INCLUDE)
 
 # inheriting libraries are expected to override this
-INCLUDE_LIBS = $(LIB3D_INCLUDE)
+INCLUDE_LIBS = -I. $(LIB3D_INCLUDE)
 
 # added to by applications
 #
@@ -77,13 +77,15 @@ SOURCES_EXPECTED = \
 # overridden by some application)
 #
 RunFinpack           = $(LIB3D)/RunFinpack
-InitApp              = $(LIB3D)/InitApp
 Output               = $(LIB3D)/Output
+WriteQhelp           = $(LIB3D)/WriteQhelp
 ConSoln              = $(LIB3D)/ConSoln
 AfterQinit           = $(LIB3D)/AfterQinit
 AfterStep            = $(LIB3D)/AfterStep
 BeforeStep           = $(LIB3D)/BeforeStep
 ConstructL           = $(LIB3D)/ConstructL
+ConstructLxWL        = $(LIB3D)/ConstructLxWL
+ConstructIntegratedR = $(LIB3D)/ConstructIntegratedR
 BeforeFullTimeStep   = $(LIB3D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB3D)/AfterFullTimeStep
 FinSolveRK           = $(LIB3D)/FinSolveRK
@@ -104,10 +106,9 @@ D2FluxFunc           = $(LIB3D)/LaxWendroff/D2FluxFunc
 LIB3D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
   $(RunFinpack).o \
-  $(InitApp).o \
-  $(LIB3D)/DogParamsCart3.o \
   $(SampleFunction).o \
   $(Output).o \
+  $(WriteQhelp).o \
   $(ConSoln).o \
   $(FinSolveRK).o \
   $(FinSolveLxW).o \
@@ -120,6 +121,8 @@ LIB3D_OBJECTS = \
   $(BeforeStep).o \
   $(AfterStep).o \
   $(ConstructL).o \
+  $(ConstructLxWL).o \
+  $(ConstructIntegratedR).o \
   $(AfterFullTimeStep).o \
   $(LIB3D)/UpdateSoln.o \
   $(DFluxFunc).o \
@@ -129,10 +132,9 @@ LIB3D_SOURCES = \
   $(LIB3D)/*.h \
   $(TOPLIB_SOURCES) \
   $(RunFinpack).cpp \
-  $(InitApp).cpp \
-  $(LIB3D)/DogParamsCart3.cpp \
   $(SampleFunction).cpp \
   $(Output).cpp \
+  $(WriteQhelp).cpp \
   $(ConSoln).cpp \
   $(FinSolveRK).cpp \
   $(FinSolveLxW).cpp \
@@ -145,6 +147,8 @@ LIB3D_SOURCES = \
   $(BeforeStep).cpp \
   $(AfterStep).cpp \
   $(ConstructL).cpp \
+  $(ConstructLxWL).cpp \
+  $(ConstructIntegratedR).cpp \
   $(AfterFullTimeStep).cpp \
   $(LIB3D)/UpdateSoln.cpp \
   $(DFluxFunc).cpp \

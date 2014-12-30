@@ -16,6 +16,7 @@
 void Diff1      ( double dx, const dTensor2& f, dTensor1& fx );
 void Diff1NC    ( double dx, const dTensor2& f, dTensor1& fx );
 void Diff2      ( double dx, const dTensor2& f, dTensor1& fxx );   // <-- not used
+void Diff2NC    ( double dx, const dTensor2& f, dTensor1& fxx );   // <-- not used
 
 void FluxFunc  (const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
 void DFluxFunc(const dTensor1& xpts, const dTensor2& Q, const dTensor2& Aux,
@@ -183,9 +184,9 @@ void LocalIntegrate(
         dTensor1 fxx_val ( meqn );
 
         // Compute a FD approximation to the derivatives:
-        Diff1( dx, Fvals, fx_val  );
-        Diff1( dx, qvals, qx_val  );
-        Diff2( dx, Fvals, fxx_val );
+        Diff1NC( dx, Fvals, fx_val  );
+        Diff1NC( dx, qvals, qx_val  );
+        Diff2NC( dx, Fvals, fxx_val );
 
         // Construct the first product: A f_x:
         dTensor3 A( 1, meqn, meqn );

@@ -62,8 +62,8 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     # print data to file.
     data = np.array( [xc, qsoln[:,0], qsoln[:,1], qsoln[:,4] ] )
     fmt   = '%1.15e'
-    with open( 'dg_picture.dat', 'wb' ) as f:
+    with open( 'soln.dat', 'wb' ) as f:
       #print( fmt % time, file=f )         # time instant on first row
-      np.savetxt( 'dg_picture.dat', np.transpose( data ), fmt=fmt )
+      np.savetxt( 'soln.dat', np.transpose( data ), fmt=fmt )
  
 #-----------------------------------------------------------------------------#

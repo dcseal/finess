@@ -9,12 +9,9 @@
 #include "RunFinpack.h"           // Function declarations
 #include "StateVars.h"
 
-
 /*
  * Top level function to RunFinpack.  Briefly, this function calls the
  * following functions in the following order:
- *
- * TODO
  *
  */
 int RunFinpack(std::string parameters_ini_filename)
@@ -54,6 +51,11 @@ int RunFinpack(std::string parameters_ini_filename)
     const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
 	  global_ini_params.get_time_stepping_method();
 
+    // Print information about the parameters to file.  In order to use the
+    // MATLAB plotting routines, this call is necessary to pull information
+    // from the parameters.ini file.
+    WriteQhelp( );
+
     const int&     nout     = global_ini_params.get_nout();
     const double&  tfinal   = global_ini_params.get_tfinal();
     double dtv[2+1];
@@ -71,19 +73,16 @@ int RunFinpack(std::string parameters_ini_filename)
     dTensorBC3& aux  = Qnew.ref_aux();
 
     // Set any auxiliary variables on computational grid
-    // Set values and apply L2-projection
     if( maux > 0 )
-    {  SampleFunction(1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, aux, &AuxFunc);  }
+    {  SampleFunctionTypeA(1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, aux, &AuxFunc);  }
 
     // Set initial data on computational grid
-    // Set values and apply L2-projection
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
+    SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
     AfterQinit( Qnew );
 
     // Output initial data to file
-    // For each element, we output ``method[1]'' number of values
     Output( Qnew, 0 );
 
     // Compute conservation and print to file
