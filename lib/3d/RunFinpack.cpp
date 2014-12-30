@@ -102,6 +102,11 @@ int RunFinpack(std::string parameters_ini_filename)
             // Runge-Kutta time-stepping scheme
             FinSolveRK( Qnew, tend, dtv );
         }
+        else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
+        {
+            // Lax-Wendroff time stepping
+            FinSolveLxW(Qnew, tend, dtv );
+        }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme

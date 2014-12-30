@@ -84,6 +84,8 @@ AfterQinit           = $(LIB3D)/AfterQinit
 AfterStep            = $(LIB3D)/AfterStep
 BeforeStep           = $(LIB3D)/BeforeStep
 ConstructL           = $(LIB3D)/ConstructL
+ConstructLxWL        = $(LIB3D)/ConstructLxWL
+ConstructIntegratedR = $(LIB3D)/ConstructIntegratedR
 BeforeFullTimeStep   = $(LIB3D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB3D)/AfterFullTimeStep
 FinSolveRK           = $(LIB3D)/FinSolveRK
@@ -119,6 +121,8 @@ LIB3D_OBJECTS = \
   $(BeforeStep).o \
   $(AfterStep).o \
   $(ConstructL).o \
+  $(ConstructLxWL).o \
+  $(ConstructIntegratedR).o \
   $(AfterFullTimeStep).o \
   $(LIB3D)/UpdateSoln.o \
   $(DFluxFunc).o \
@@ -143,6 +147,8 @@ LIB3D_SOURCES = \
   $(BeforeStep).cpp \
   $(AfterStep).cpp \
   $(ConstructL).cpp \
+  $(ConstructLxWL).cpp \
+  $(ConstructIntegratedR).cpp \
   $(AfterFullTimeStep).cpp \
   $(LIB3D)/UpdateSoln.cpp \
   $(DFluxFunc).cpp \
