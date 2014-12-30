@@ -190,3 +190,9 @@ void SetBndValues( StateVars& Q )
 
 
 }
+
+void SetBndValuesX( StateVars& Q )
+{ SetBndValues( Q ); }
+
+void SetBndValuesY( StateVars& Q )
+{ SetBndValues( Q ); }
