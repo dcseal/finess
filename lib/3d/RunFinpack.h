@@ -23,7 +23,7 @@ void FinSolveLxW    ( StateVars& Qnew, double tend, double dtv[] );
 void FinSolveMD     ( StateVars& Qnew, double tend, double dtv[] );
 void FinSolveUser   ( StateVars& Qnew, double tend, double dtv[] );
 
-void SampleFunction( 
+void SampleFunctionTypeA( 
     int istart, int iend,
     int jstart, int jend,
     int kstart, int kend,

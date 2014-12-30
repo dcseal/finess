@@ -30,7 +30,7 @@ void GlobalWaveSpd(
     double& alpha1, double& alpha2, double& alpha3 );
 
 // Routine for sampling a given function
-void SampleFunction( 
+void SampleFunctionTypeA( 
     int istart, int iend,
     int jstart, int jend,
     int kstart, int kend,
