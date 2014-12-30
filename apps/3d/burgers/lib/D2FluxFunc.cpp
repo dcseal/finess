@@ -18,5 +18,11 @@ void D2FluxFunc(const dTensor2& xpts,
     const int meqn   = Q.getsize(2);
 
     D2flux.setall(0.);
+    for(int i=1; i<=numpts; i++){
+        double q = Q.get(i, 1);
+        D2flux.set(i, 1, 1, 1, 1, 1.0);
+        D2flux.set(i, 1, 1, 1, 2, 1.0);
+        D2flux.set(i, 1, 1, 1, 3, 1.0);
+    }
 
 }

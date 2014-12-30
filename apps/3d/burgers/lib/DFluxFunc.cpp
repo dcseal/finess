@@ -6,7 +6,6 @@
 // The expected format is Dflux.get(:,i,j,1:2) = 
 //            (\partial f_i, \partial q_j, \partial g_i, \partial q_j )
 //
-//     Simple advection equation, f'(q) = u1, g'(q) = u2, h'(q) = u3.
 //
 void DFluxFunc(const dTensor2& xpts, 
 	       const dTensor2& Q,
@@ -23,13 +22,10 @@ void DFluxFunc(const dTensor2& xpts,
 
         // Variables 
         double qc = Q.get(i,1);
-        double u1 = Aux.get(i,1);
-        double u2 = Aux.get(i,2);
-        double u3 = Aux.get(i,3);
 
-        Dflux.set(i,1,1,1, u1 );  // First component of flux func
-        Dflux.set(i,1,1,2, u2 );  // Second component of flux func
-        Dflux.set(i,1,1,3, u3 );  // Third component of flux func
+        Dflux.set(i,1,1,1, qc );  // First component of flux func
+        Dflux.set(i,1,1,2, qc );  // Second component of flux func
+        Dflux.set(i,1,1,3, qc );  // Third component of flux func
     }
 
 }
