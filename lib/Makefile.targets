@@ -1,11 +1,7 @@
-
+# MAIN EXECUTABLE - NOTE, I found that SHARED_OBJECTS needs to be included
+# LAST in order to get the code to compile with PAPI counters! -DS
 finess.exe: $(ALL_OBJECTS) $(ALL_SOURCES)
-	$(LINK) $(ALL_OBJECTS) -o $(EXECUTABLE)
-
-# does anyone use this any more?
-# you can also do this using: make -s ls | xargs cat > dog2program.cpp
-#program : $(ALL_SOURCES)
-#	cat $(ALL_SOURCES) > dog2program.cpp
+	$(LINK) $(ALL_OBJECTS) $(SHARED_OBJECTS) -o $(EXECUTABLE)
 
 include $(FINESS)/lib/sys/Makefile.targets
 

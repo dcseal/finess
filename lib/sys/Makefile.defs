@@ -7,7 +7,7 @@ LIB_SYS = $(FINESS)/lib/sys
 
 # define inherited symbols
 #
-LIB_SYS_INCLUDE = -I$(LIB_SYS)
+LIB_SYS_INCLUDE = -I$(LIB_SYS) -I/usr/include
 #
 LIB_SYS_OBJECTS = \
   $(LIB_SYS)/debug.o \
@@ -19,6 +19,9 @@ LIB_SYS_SOURCES = \
   $(LIB_SYS)/assert.h \
   $(LIB_SYS)/debug.cpp \
   $(LIB_SYS)/assert.cpp
+#
+SHARED_OBJECTS = \
+  /usr/lib/x86_64-linux-gnu/libpapi.so \
 
 #IniParser.h
 INIPARSER_H = \

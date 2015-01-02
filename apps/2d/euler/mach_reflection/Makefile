@@ -8,6 +8,7 @@ include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 
 # overridden library objects
 #
+FinSolveUser    = $(FINESS)/lib/2d/FinSolveRK_PIF
 
 ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
 

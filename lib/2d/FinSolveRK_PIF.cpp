@@ -10,6 +10,18 @@
 #include "IniParams.h"
 #include "app_defined.h"
 
+// Stuff used for papi counters
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <memory.h>
+#include <malloc.h>
+#include "papi.h"
+static void test_fail(char *file, int line, char *call, int retval);
+
+
 // Used for construcing the flux function
 void SampleFunction( 
     int istart, int iend,
@@ -165,6 +177,17 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
             // do any extra work
             BeforeFullTimeStep(dt, Qold, Qnew);
 
+            // ---------------------- //
+            // Set up PAPI stuff
+            // ---------------------- //
+            float real_time, proc_time, mflops;
+            long long flpins;
+            int retval;
+
+            /* Setup PAPI library and begin collecting data from the counters */
+            if((retval=PAPI_flops( &real_time, &proc_time, &flpins, &mflops))<PAPI_OK)
+                test_fail(__FILE__, __LINE__, "PAPI_flops", retval);
+
             // Take a full time step of size dt
             switch( global_ini_params.get_time_order() )
             {
@@ -230,12 +253,72 @@ void FinSolveRK_PIF( StateVars& Qnew, double tend, double dtv[] )
 
                     break;
 
+                case 5:
+
+                    // TODO - this is classical MOL + RK4 used to compare number
+                    // of flops, and is not technically fourth-order accurate.
+
+                    // Stage 1:
+                    SetBndValues(Qnew);
+                    BeforeStep(dt, Qnew );
+                    ConstructL(Qnew, k1, smax);
+                    EulerStep( 0.5*dt, Qold, k1, Qstar    );
+                    AfterStep(dt, Qnew );
+
+                    // Stage 2:
+                    SetBndValues(Qstar);
+                    BeforeStep(dt, Qstar );
+                    ConstructL(Qstar, k2, smax);
+                    EulerStep( 0.5*dt, Qold, k2, Qstar    );
+                    AfterStep(dt, Qnew );
+
+                    // Stage 3:
+                    SetBndValues(Qstar);
+                    BeforeStep(dt, Qstar );
+                    ConstructL(Qstar, k3, smax);
+                    EulerStep( dt, Qold, k3, Qstar );
+                    AfterStep(dt, Qnew );
+
+                    // Final step
+                    SetBndValues(Qstar);
+                    BeforeStep(dt, Qstar );
+                    ConstructL(Qstar, k4, smax);
+#pragma omp parallel for
+                    for( int i=1-mbc; i <= mx+mbc;   i++ )
+                    for( int j=1-mbc; j <= my+mbc;   j++ )
+                    for( int m=1; m <= meqn; m++ )
+                    {
+                        double tmp = 0.;
+                        tmp +=     k1.get(i,j,m);
+                        tmp += 2.0*k2.get(i,j,m);
+                        tmp += 2.0*k3.get(i,j,m);
+                        tmp +=     k4.get(i,j,m);
+                        qnew.set(i,j,m, qnew.get(i,j,m) + dt*tmp/6.0);
+                    }
+
+                    // ------------------------------------------------------------- //
+                    // Finished taking a single RK4 time step
+                    // ------------------------------------------------------------- //
+
+                    break;
+
+
                 default:
 
                     printf("WARNING: torder = %d has not been implemented\n", global_ini_params.get_time_order() );
                     break;
 
             }  // End of switch statement over time-order
+
+            /* Collect the data into the variables passed in */
+            if((retval=PAPI_flops( &real_time, &proc_time, &flpins, &mflops))<PAPI_OK)
+                test_fail(__FILE__, __LINE__, "PAPI_flops", retval);
+
+            printf("Real_time:\t%f\nProc_time:\t%f\nTotal flpins:\t%lld\nMFLOPS:\t\t%f\n",
+                    real_time, proc_time, flpins, mflops);
+            printf("%s\tPASSED\n", __FILE__);
+            PAPI_shutdown();
+            exit(0);
 
             // do any extra work (TODO - add this in later)
             // AfterFullTimeStep(dt, auxstar, aux, qold, qnew);
@@ -1003,4 +1086,18 @@ void EulerStep( double dt, const StateVars& Qold, const dTensorBC3& Lstar, State
 
 }
 
-
+static void test_fail(char *file, int line, char *call, int retval){
+    printf("%s\tFAILED\nLine # %d\n", file, line);
+    if ( retval == PAPI_ESYS ) {
+        char buf[128];
+        memset( buf, '\0', sizeof(buf) );
+        sprintf(buf, "System error in %s:", call );
+        perror(buf);
+    }
+    else if ( retval > 0 ) {
+        printf("Error calculating: %s\n", call );
+    }
+    else { printf("Error in %s: %s\n", call, PAPI_strerror(retval) ); }
+    printf("\n");
+    exit(1);
+}
