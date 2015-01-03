@@ -14,8 +14,8 @@ FluxFunc    = $(APP_LIB)/FluxFunc
 
 # These time derivatives are required for the Lax-Wendroff (and
 # two-derivative) code:
-#DFluxFunc   = $(APP_LIB)/DFluxFunc
-#D2FluxFunc  = $(APP_LIB)/D2FluxFunc
+DFluxFunc   = $(APP_LIB)/DFluxFunc
+D2FluxFunc  = $(APP_LIB)/D2FluxFunc
 
 # Eigen decomposition of the Flux function
 ProjectLeftEig   = $(APP_LIB)/ProjectLeftEig
