@@ -31,8 +31,6 @@ void DFluxFunc(const dTensor2& xpts,
         double q3 = Q.get(i,3);
         double q4 = Q.get(i,4);
         double q5 = Q.get(i,5);
-        double en = q5;
-        
         Dflux.set(i,1,1,1, 0);
         Dflux.set(i,1,2,1, 1);
         Dflux.set(i,1,3,1, 0);
@@ -42,7 +40,7 @@ void DFluxFunc(const dTensor2& xpts,
         Dflux.set(i,2,2,1, q2*(-gamma + 3)/q1);
         Dflux.set(i,2,3,1, q3*(-gamma + 1)/q1);
         Dflux.set(i,2,4,1, q4*(-gamma + 1)/q1);
-        Dflux.set(i,2,5,1, 0);
+        Dflux.set(i,2,5,1, gamma - 1);
         Dflux.set(i,3,1,1, -q2*q3/pow( q1, 2 ));
         Dflux.set(i,3,2,1, q3/q1);
         Dflux.set(i,3,3,1, q2/q1);
@@ -53,14 +51,13 @@ void DFluxFunc(const dTensor2& xpts,
         Dflux.set(i,4,3,1, 0);
         Dflux.set(i,4,4,1, q2/q1);
         Dflux.set(i,4,5,1, 0);
-        Dflux.set(i,5,1,1, q2*(gamma*pow( q2, 2 ) + gamma*pow( q3, 2 ) + gamma*pow( q4, 2 ) + q1*(-en*gamma + en - q5) - pow( q2, 2 ) - pow( q3, 2 ) - pow( q4, 2 ))/pow( q1, 3 ));
-        Dflux.set(i,5,2,1, (-3*gamma*pow( q2, 2 ) - gamma*pow( q3, 2 ) - gamma*pow( q4, 2 ) + 2*q1*(en*gamma - en + q5) + 3*pow( q2, 2 ) + pow( q3, 2 ) + pow( q4, 2 ))/(2*pow( q1, 2 )));
+        Dflux.set(i,5,1,1, q2*(-gamma*q1*q5 + gamma*pow( q2, 2 ) + gamma*pow( q3, 2 ) + gamma*pow( q4, 2 ) - pow( q2, 2 ) - pow( q3, 2 ) - pow( q4, 2 ))/pow( q1, 3 ));
+        Dflux.set(i,5,2,1, (2*gamma*q1*q5 - 3*gamma*pow( q2, 2 ) - gamma*pow( q3, 2 ) - gamma*pow( q4, 2 ) + 3*pow( q2, 2 ) + pow( q3, 2 ) + pow( q4, 2 ))/(2*pow( q1, 2 )));
         Dflux.set(i,5,3,1, q2*q3*(-gamma + 1)/pow( q1, 2 ));
         Dflux.set(i,5,4,1, q2*q4*(-gamma + 1)/pow( q1, 2 ));
-        Dflux.set(i,5,5,1, q2/q1);
+        Dflux.set(i,5,5,1, gamma*q2/q1);
 
-
-
+        //Computing the Jacobian of the flux function, g'(q)
         Dflux.set(i,1,1,2, 0);
         Dflux.set(i,1,2,2, 0);
         Dflux.set(i,1,3,2, 1);
@@ -75,18 +72,19 @@ void DFluxFunc(const dTensor2& xpts,
         Dflux.set(i,3,2,2, q2*(-gamma + 1)/q1);
         Dflux.set(i,3,3,2, q3*(-gamma + 3)/q1);
         Dflux.set(i,3,4,2, q4*(-gamma + 1)/q1);
-        Dflux.set(i,3,5,2, 0);
+        Dflux.set(i,3,5,2, gamma - 1);
         Dflux.set(i,4,1,2, -q3*q4/pow( q1, 2 ));
         Dflux.set(i,4,2,2, 0);
         Dflux.set(i,4,3,2, q4/q1);
         Dflux.set(i,4,4,2, q3/q1);
         Dflux.set(i,4,5,2, 0);
-        Dflux.set(i,5,1,2, q3*(gamma*pow( q2, 2 ) + gamma*pow( q3, 2 ) + gamma*pow( q4, 2 ) + q1*(-en*gamma + en - q5) - pow( q2, 2 ) - pow( q3, 2 ) - pow( q4, 2 ))/pow( q1, 3 ));
+        Dflux.set(i,5,1,2, q3*(-gamma*q1*q5 + gamma*pow( q2, 2 ) + gamma*pow( q3, 2 ) + gamma*pow( q4, 2 ) - pow( q2, 2 ) - pow( q3, 2 ) - pow( q4, 2 ))/pow( q1, 3 ));
         Dflux.set(i,5,2,2, q2*q3*(-gamma + 1)/pow( q1, 2 ));
-        Dflux.set(i,5,3,2, (-gamma*pow( q2, 2 ) - 3*gamma*pow( q3, 2 ) - gamma*pow( q4, 2 ) + 2*q1*(en*gamma - en + q5) + pow( q2, 2 ) + 3*pow( q3, 2 ) + pow( q4, 2 ))/(2*pow( q1, 2 )));
+        Dflux.set(i,5,3,2, (2*gamma*q1*q5 - gamma*pow( q2, 2 ) - 3*gamma*pow( q3, 2 ) - gamma*pow( q4, 2 ) + pow( q2, 2 ) + 3*pow( q3, 2 ) + pow( q4, 2 ))/(2*pow( q1, 2 )));
         Dflux.set(i,5,4,2, q3*q4*(-gamma + 1)/pow( q1, 2 ));
-        Dflux.set(i,5,5,2, q3/q1);
+        Dflux.set(i,5,5,2, gamma*q3/q1);
 
+        //Computing the Jacobian of the flux function, h'(q)
         Dflux.set(i,1,1,3, 0);
         Dflux.set(i,1,2,3, 0);
         Dflux.set(i,1,3,3, 0);
@@ -106,13 +104,12 @@ void DFluxFunc(const dTensor2& xpts,
         Dflux.set(i,4,2,3, q2*(-gamma + 1)/q1);
         Dflux.set(i,4,3,3, q3*(-gamma + 1)/q1);
         Dflux.set(i,4,4,3, q4*(-gamma + 3)/q1);
-        Dflux.set(i,4,5,3, 0);
-        Dflux.set(i,5,1,3, q4*(gamma*pow( q2, 2 ) + gamma*pow( q3, 2 ) + gamma*pow( q4, 2 ) + q1*(-en*gamma + en - q5) - pow( q2, 2 ) - pow( q3, 2 ) - pow( q4, 2 ))/pow( q1, 3 ));
+        Dflux.set(i,4,5,3, gamma - 1);
+        Dflux.set(i,5,1,3, q4*(-gamma*q1*q5 + gamma*pow( q2, 2 ) + gamma*pow( q3, 2 ) + gamma*pow( q4, 2 ) - pow( q2, 2 ) - pow( q3, 2 ) - pow( q4, 2 ))/pow( q1, 3 ));
         Dflux.set(i,5,2,3, q2*q4*(-gamma + 1)/pow( q1, 2 ));
         Dflux.set(i,5,3,3, q3*q4*(-gamma + 1)/pow( q1, 2 ));
-        Dflux.set(i,5,4,3, (-gamma*pow( q2, 2 ) - gamma*pow( q3, 2 ) - 3*gamma*pow( q4, 2 ) + 2*q1*(en*gamma - en + q5) + pow( q2, 2 ) + pow( q3, 2 ) + 3*pow( q4, 2 ))/(2*pow( q1, 2 )));
-        Dflux.set(i,5,5,3, q4/q1);
-
+        Dflux.set(i,5,4,3, (2*gamma*q1*q5 - gamma*pow( q2, 2 ) - gamma*pow( q3, 2 ) - 3*gamma*pow( q4, 2 ) + pow( q2, 2 ) + pow( q3, 2 ) + 3*pow( q4, 2 ))/(2*pow( q1, 2 )));
+        Dflux.set(i,5,5,3, gamma*q4/q1);
 
 
     }

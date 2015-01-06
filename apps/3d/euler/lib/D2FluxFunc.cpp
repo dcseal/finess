@@ -22,7 +22,9 @@ void D2FluxFunc(const dTensor2& xpts,
         double q3 = Q.get(i,3);
         double q4 = Q.get(i,4);
         double q5 = Q.get(i,5);
-        double en = q5;
+
+        //****HESSIAN*****
+        //Computing the Hessian of the flux function: f''(q)
 
         D2flux.set(i,1,1,1,1, 0);
         D2flux.set(i,1,1,2,1, 0);
@@ -128,16 +130,16 @@ void D2FluxFunc(const dTensor2& xpts,
         D2flux.set(i,4,5,4,1, 0);
         D2flux.set(i,4,5,5,1, 0);
 
-        D2flux.set(i,5,1,1,1, 2*en*gamma*q2/pow( q1, 3 ) - 2*en*q2/pow( q1, 3 ) - 3*gamma*pow( q2, 3 )/pow( q1, 4 ) - 3*gamma*q2*pow( q3, 2 )/pow( q1, 4 ) - 3*gamma*q2*pow( q4, 2 )/pow( q1, 4 ) + 2*q2*q5/pow( q1, 3 ) + 3*pow( q2, 3 )/pow( q1, 4 ) + 3*q2*pow( q3, 2 )/pow( q1, 4 ) + 3*q2*pow( q4, 2 )/pow( q1, 4 ));
-        D2flux.set(i,5,1,2,1, -en*gamma/pow( q1, 2 ) + en/pow( q1, 2 ) + 3*gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - q5/pow( q1, 2 ) - 3*pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,5,1,1,1, 2*gamma*q2*q5/pow( q1, 3 ) - 3*gamma*pow( q2, 3 )/pow( q1, 4 ) - 3*gamma*q2*pow( q3, 2 )/pow( q1, 4 ) - 3*gamma*q2*pow( q4, 2 )/pow( q1, 4 ) + 3*pow( q2, 3 )/pow( q1, 4 ) + 3*q2*pow( q3, 2 )/pow( q1, 4 ) + 3*q2*pow( q4, 2 )/pow( q1, 4 ));
+        D2flux.set(i,5,1,2,1, -gamma*q5/pow( q1, 2 ) + 3*gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - 3*pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
         D2flux.set(i,5,1,3,1, 2*gamma*q2*q3/pow( q1, 3 ) - 2*q2*q3/pow( q1, 3 ));
         D2flux.set(i,5,1,4,1, 2*gamma*q2*q4/pow( q1, 3 ) - 2*q2*q4/pow( q1, 3 ));
-        D2flux.set(i,5,1,5,1, -q2/pow( q1, 2 ));
-        D2flux.set(i,5,2,1,1, -en*gamma/pow( q1, 2 ) + en/pow( q1, 2 ) + 3*gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - q5/pow( q1, 2 ) - 3*pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,5,1,5,1, -gamma*q2/pow( q1, 2 ));
+        D2flux.set(i,5,2,1,1, -gamma*q5/pow( q1, 2 ) + 3*gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - 3*pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
         D2flux.set(i,5,2,2,1, -3*gamma*q2/pow( q1, 2 ) + 3*q2/pow( q1, 2 ));
         D2flux.set(i,5,2,3,1, -gamma*q3/pow( q1, 2 ) + q3/pow( q1, 2 ));
         D2flux.set(i,5,2,4,1, -gamma*q4/pow( q1, 2 ) + q4/pow( q1, 2 ));
-        D2flux.set(i,5,2,5,1, 1/q1);
+        D2flux.set(i,5,2,5,1, gamma/q1);
         D2flux.set(i,5,3,1,1, 2*gamma*q2*q3/pow( q1, 3 ) - 2*q2*q3/pow( q1, 3 ));
         D2flux.set(i,5,3,2,1, -gamma*q3/pow( q1, 2 ) + q3/pow( q1, 2 ));
         D2flux.set(i,5,3,3,1, -gamma*q2/pow( q1, 2 ) + q2/pow( q1, 2 ));
@@ -148,12 +150,13 @@ void D2FluxFunc(const dTensor2& xpts,
         D2flux.set(i,5,4,3,1, 0);
         D2flux.set(i,5,4,4,1, -gamma*q2/pow( q1, 2 ) + q2/pow( q1, 2 ));
         D2flux.set(i,5,4,5,1, 0);
-        D2flux.set(i,5,5,1,1, -q2/pow( q1, 2 ));
-        D2flux.set(i,5,5,2,1, 1/q1);
+        D2flux.set(i,5,5,1,1, -gamma*q2/pow( q1, 2 ));
+        D2flux.set(i,5,5,2,1, gamma/q1);
         D2flux.set(i,5,5,3,1, 0);
         D2flux.set(i,5,5,4,1, 0);
         D2flux.set(i,5,5,5,1, 0);
 
+        //Computing the Hessian of the flux function: g''(q)
 
         D2flux.set(i,1,1,1,2, 0);
         D2flux.set(i,1,1,2,2, 0);
@@ -259,32 +262,33 @@ void D2FluxFunc(const dTensor2& xpts,
         D2flux.set(i,4,5,4,2, 0);
         D2flux.set(i,4,5,5,2, 0);
 
-        D2flux.set(i,5,1,1,2, 2*en*gamma*q3/pow( q1, 3 ) - 2*en*q3/pow( q1, 3 ) - 3*gamma*pow( q2, 2 )*q3/pow( q1, 4 ) - 3*gamma*pow( q3, 3 )/pow( q1, 4 ) - 3*gamma*q3*pow( q4, 2 )/pow( q1, 4 ) + 2*q3*q5/pow( q1, 3 ) + 3*pow( q2, 2 )*q3/pow( q1, 4 ) + 3*pow( q3, 3 )/pow( q1, 4 ) + 3*q3*pow( q4, 2 )/pow( q1, 4 ));
+        D2flux.set(i,5,1,1,2, 2*gamma*q3*q5/pow( q1, 3 ) - 3*gamma*pow( q2, 2 )*q3/pow( q1, 4 ) - 3*gamma*pow( q3, 3 )/pow( q1, 4 ) - 3*gamma*q3*pow( q4, 2 )/pow( q1, 4 ) + 3*pow( q2, 2 )*q3/pow( q1, 4 ) + 3*pow( q3, 3 )/pow( q1, 4 ) + 3*q3*pow( q4, 2 )/pow( q1, 4 ));
         D2flux.set(i,5,1,2,2, 2*gamma*q2*q3/pow( q1, 3 ) - 2*q2*q3/pow( q1, 3 ));
-        D2flux.set(i,5,1,3,2, -en*gamma/pow( q1, 2 ) + en/pow( q1, 2 ) + gamma*pow( q2, 2 )/pow( q1, 3 ) + 3*gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - q5/pow( q1, 2 ) - pow( q2, 2 )/pow( q1, 3 ) - 3*pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,5,1,3,2, -gamma*q5/pow( q1, 2 ) + gamma*pow( q2, 2 )/pow( q1, 3 ) + 3*gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - pow( q2, 2 )/pow( q1, 3 ) - 3*pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
         D2flux.set(i,5,1,4,2, 2*gamma*q3*q4/pow( q1, 3 ) - 2*q3*q4/pow( q1, 3 ));
-        D2flux.set(i,5,1,5,2, -q3/pow( q1, 2 ));
+        D2flux.set(i,5,1,5,2, -gamma*q3/pow( q1, 2 ));
         D2flux.set(i,5,2,1,2, 2*gamma*q2*q3/pow( q1, 3 ) - 2*q2*q3/pow( q1, 3 ));
         D2flux.set(i,5,2,2,2, -gamma*q3/pow( q1, 2 ) + q3/pow( q1, 2 ));
         D2flux.set(i,5,2,3,2, -gamma*q2/pow( q1, 2 ) + q2/pow( q1, 2 ));
         D2flux.set(i,5,2,4,2, 0);
         D2flux.set(i,5,2,5,2, 0);
-        D2flux.set(i,5,3,1,2, -en*gamma/pow( q1, 2 ) + en/pow( q1, 2 ) + gamma*pow( q2, 2 )/pow( q1, 3 ) + 3*gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - q5/pow( q1, 2 ) - pow( q2, 2 )/pow( q1, 3 ) - 3*pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,5,3,1,2, -gamma*q5/pow( q1, 2 ) + gamma*pow( q2, 2 )/pow( q1, 3 ) + 3*gamma*pow( q3, 2 )/pow( q1, 3 ) + gamma*pow( q4, 2 )/pow( q1, 3 ) - pow( q2, 2 )/pow( q1, 3 ) - 3*pow( q3, 2 )/pow( q1, 3 ) - pow( q4, 2 )/pow( q1, 3 ));
         D2flux.set(i,5,3,2,2, -gamma*q2/pow( q1, 2 ) + q2/pow( q1, 2 ));
         D2flux.set(i,5,3,3,2, -3*gamma*q3/pow( q1, 2 ) + 3*q3/pow( q1, 2 ));
         D2flux.set(i,5,3,4,2, -gamma*q4/pow( q1, 2 ) + q4/pow( q1, 2 ));
-        D2flux.set(i,5,3,5,2, 1/q1);
+        D2flux.set(i,5,3,5,2, gamma/q1);
         D2flux.set(i,5,4,1,2, 2*gamma*q3*q4/pow( q1, 3 ) - 2*q3*q4/pow( q1, 3 ));
         D2flux.set(i,5,4,2,2, 0);
         D2flux.set(i,5,4,3,2, -gamma*q4/pow( q1, 2 ) + q4/pow( q1, 2 ));
         D2flux.set(i,5,4,4,2, -gamma*q3/pow( q1, 2 ) + q3/pow( q1, 2 ));
         D2flux.set(i,5,4,5,2, 0);
-        D2flux.set(i,5,5,1,2, -q3/pow( q1, 2 ));
+        D2flux.set(i,5,5,1,2, -gamma*q3/pow( q1, 2 ));
         D2flux.set(i,5,5,2,2, 0);
-        D2flux.set(i,5,5,3,2, 1/q1);
+        D2flux.set(i,5,5,3,2, gamma/q1);
         D2flux.set(i,5,5,4,2, 0);
         D2flux.set(i,5,5,5,2, 0);
 
+        //Computing the Hessian of the flux function: h''(q)
 
         D2flux.set(i,1,1,1,3, 0);
         D2flux.set(i,1,1,2,3, 0);
@@ -390,11 +394,11 @@ void D2FluxFunc(const dTensor2& xpts,
         D2flux.set(i,4,5,4,3, 0);
         D2flux.set(i,4,5,5,3, 0);
 
-        D2flux.set(i,5,1,1,3, 2*en*gamma*q4/pow( q1, 3 ) - 2*en*q4/pow( q1, 3 ) - 3*gamma*pow( q2, 2 )*q4/pow( q1, 4 ) - 3*gamma*pow( q3, 2 )*q4/pow( q1, 4 ) - 3*gamma*pow( q4, 3 )/pow( q1, 4 ) + 2*q4*q5/pow( q1, 3 ) + 3*pow( q2, 2 )*q4/pow( q1, 4 ) + 3*pow( q3, 2 )*q4/pow( q1, 4 ) + 3*pow( q4, 3 )/pow( q1, 4 ));
+        D2flux.set(i,5,1,1,3, 2*gamma*q4*q5/pow( q1, 3 ) - 3*gamma*pow( q2, 2 )*q4/pow( q1, 4 ) - 3*gamma*pow( q3, 2 )*q4/pow( q1, 4 ) - 3*gamma*pow( q4, 3 )/pow( q1, 4 ) + 3*pow( q2, 2 )*q4/pow( q1, 4 ) + 3*pow( q3, 2 )*q4/pow( q1, 4 ) + 3*pow( q4, 3 )/pow( q1, 4 ));
         D2flux.set(i,5,1,2,3, 2*gamma*q2*q4/pow( q1, 3 ) - 2*q2*q4/pow( q1, 3 ));
         D2flux.set(i,5,1,3,3, 2*gamma*q3*q4/pow( q1, 3 ) - 2*q3*q4/pow( q1, 3 ));
-        D2flux.set(i,5,1,4,3, -en*gamma/pow( q1, 2 ) + en/pow( q1, 2 ) + gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + 3*gamma*pow( q4, 2 )/pow( q1, 3 ) - q5/pow( q1, 2 ) - pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - 3*pow( q4, 2 )/pow( q1, 3 ));
-        D2flux.set(i,5,1,5,3, -q4/pow( q1, 2 ));
+        D2flux.set(i,5,1,4,3, -gamma*q5/pow( q1, 2 ) + gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + 3*gamma*pow( q4, 2 )/pow( q1, 3 ) - pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - 3*pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,5,1,5,3, -gamma*q4/pow( q1, 2 ));
         D2flux.set(i,5,2,1,3, 2*gamma*q2*q4/pow( q1, 3 ) - 2*q2*q4/pow( q1, 3 ));
         D2flux.set(i,5,2,2,3, -gamma*q4/pow( q1, 2 ) + q4/pow( q1, 2 ));
         D2flux.set(i,5,2,3,3, 0);
@@ -405,17 +409,16 @@ void D2FluxFunc(const dTensor2& xpts,
         D2flux.set(i,5,3,3,3, -gamma*q4/pow( q1, 2 ) + q4/pow( q1, 2 ));
         D2flux.set(i,5,3,4,3, -gamma*q3/pow( q1, 2 ) + q3/pow( q1, 2 ));
         D2flux.set(i,5,3,5,3, 0);
-        D2flux.set(i,5,4,1,3, -en*gamma/pow( q1, 2 ) + en/pow( q1, 2 ) + gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + 3*gamma*pow( q4, 2 )/pow( q1, 3 ) - q5/pow( q1, 2 ) - pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - 3*pow( q4, 2 )/pow( q1, 3 ));
+        D2flux.set(i,5,4,1,3, -gamma*q5/pow( q1, 2 ) + gamma*pow( q2, 2 )/pow( q1, 3 ) + gamma*pow( q3, 2 )/pow( q1, 3 ) + 3*gamma*pow( q4, 2 )/pow( q1, 3 ) - pow( q2, 2 )/pow( q1, 3 ) - pow( q3, 2 )/pow( q1, 3 ) - 3*pow( q4, 2 )/pow( q1, 3 ));
         D2flux.set(i,5,4,2,3, -gamma*q2/pow( q1, 2 ) + q2/pow( q1, 2 ));
         D2flux.set(i,5,4,3,3, -gamma*q3/pow( q1, 2 ) + q3/pow( q1, 2 ));
         D2flux.set(i,5,4,4,3, -3*gamma*q4/pow( q1, 2 ) + 3*q4/pow( q1, 2 ));
-        D2flux.set(i,5,4,5,3, 1/q1);
-        D2flux.set(i,5,5,1,3, -q4/pow( q1, 2 ));
+        D2flux.set(i,5,4,5,3, gamma/q1);
+        D2flux.set(i,5,5,1,3, -gamma*q4/pow( q1, 2 ));
         D2flux.set(i,5,5,2,3, 0);
         D2flux.set(i,5,5,3,3, 0);
-        D2flux.set(i,5,5,4,3, 1/q1);
+        D2flux.set(i,5,5,4,3, gamma/q1);
         D2flux.set(i,5,5,5,3, 0);
-
     }
 
 }
