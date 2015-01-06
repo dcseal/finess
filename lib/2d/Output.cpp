@@ -129,8 +129,9 @@ namespace {
         int dims[] = {mx, my};
         int ndims = 2;
         double *coords[] = {&xcoords.front(), &ycoords.front()};
-        if(DBPutQuadmesh(qa_file.get_ptr(), meshname.c_str(), NULL,
-                    coords, dims, ndims, DB_DOUBLE, DB_COLLINEAR, time_opt.get_ptr())
+        if(DBPutQuadvar1(qa_file.get_ptr(), component_names_c[i], meshname.c_str(), components[i],
+                    dims, ndims, NULL, 0,
+                    DB_DOUBLE, DB_NODECENT, NULL)
                 == -1)
             throw silo::Exception("Could not put quadmesh: nframe = " + anyToString(nframe)
                     + ", t = " + anyToString(t));
@@ -152,12 +153,12 @@ namespace {
                 v[i].reserve(nnodes);
                 components[i] = &v[i].front();
             }
-                for(int j = 1; j <= my; ++j)
-                    for(int i = 1; i <= mx; ++i)
-                        for(int m = 0; m < nvars; ++m)
-                            v[m].push_back(q.get(i, j, m + 1));
-            if(DBPutQuadvar(qa_file.get_ptr(), varname.c_str(), meshname.c_str(), nvars,
-                        component_names_c, components, dims, ndims, NULL, 0,
+            for(int j = 1; j <= my; ++j)
+                for(int i = 1; i <= mx; ++i)
+                    for(int m = 0; m < nvars; ++m)
+                        v[m].push_back(q.get(i, j, m + 1));
+            if(DBPutQuadvar1(qa_file.get_ptr(), component_names_c[i], meshname.c_str(), components[i],
+                        dims, ndims, NULL, 0,
                         DB_DOUBLE, DB_NODECENT, NULL)
                     == -1)
                 throw silo::Exception("Could not write q: nframe = " + anyToString(nframe)
@@ -180,10 +181,10 @@ namespace {
                 v[i].reserve(nnodes);
                 components[i] = &v[i].front();
             }
-                for(int j = 1; j <= my; ++j)
-                    for(int i = 1; i <= mx; ++i)
-                        for(int m = 0; m < nvars; ++m)
-                            v[m].push_back(aux.get(i, j, m + 1));
+            for(int j = 1; j <= my; ++j)
+                for(int i = 1; i <= mx; ++i)
+                    for(int m = 0; m < nvars; ++m)
+                        v[m].push_back(aux.get(i, j, m + 1));
             if(DBPutQuadvar(qa_file.get_ptr(), varname.c_str(), meshname.c_str(), nvars,
                         component_names_c, components, dims, ndims, NULL, 0,
                         DB_DOUBLE, DB_NODECENT, NULL)

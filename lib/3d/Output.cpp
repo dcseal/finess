@@ -101,7 +101,7 @@ namespace {
         //  Output_Extra(node,aux,q,t,nframe,outputdir);
 
     }
-    
+
     void OutputSilo( const StateVars& Q, int nframe )
     {
         const dTensorBC4& q   = Q.const_ref_q  ();
@@ -121,14 +121,14 @@ namespace {
         const double dx = global_ini_params.get_dx();
         const double dy = global_ini_params.get_dy();
         const double dz = global_ini_params.get_dz();
-        
+
 
         ostringstream filename_oss;
         filename_oss << outputdir << "/" << "qa" << setfill('0') 
             << setw(4) << nframe << ".silo";
         const string filename = filename_oss.str();
         const string comment = "some comments.";
-        
+
         silo::SetCompression setcompression_guard("METHOD=GZIP");
         silo::File qa_file(filename, comment);
 
@@ -145,10 +145,10 @@ namespace {
         int ndims = 3;
         double *coords[] = {&xcoords.front(), &ycoords.front(), &zcoords.front()};
         if(DBPutQuadmesh(qa_file.get_ptr(), meshname.c_str(), NULL,
-                coords, dims, ndims, DB_DOUBLE, DB_COLLINEAR, time_opt.get_ptr())
-           == -1)
+                    coords, dims, ndims, DB_DOUBLE, DB_COLLINEAR, time_opt.get_ptr())
+                == -1)
             throw silo::Exception("Could not put quadmesh: nframe = " + anyToString(nframe)
-                                  + ", t = " + anyToString(t));
+                    + ", t = " + anyToString(t));
 
         const int nnodes = mx * my * mz;        
 
@@ -172,13 +172,13 @@ namespace {
                     for(int i = 1; i <= mx; ++i)
                         for(int m = 0; m < nvars; ++m)
                             v[m].push_back(q.get(i, j, k, m + 1));
-	    for(int i = 0; i < nvars; ++i)
-		if(DBPutQuadvar1(qa_file.get_ptr(), component_names_c[i], meshname.c_str(), components[i],
-			    dims, ndims, NULL, 0,
-			    DB_DOUBLE, DB_NODECENT, NULL)
-			== -1)
-		    throw silo::Exception("Could not write q: nframe = " + anyToString(nframe)
-			    + ", t = " + anyToString(t));
+            for(int i = 0; i < nvars; ++i)
+                if(DBPutQuadvar1(qa_file.get_ptr(), component_names_c[i], meshname.c_str(), components[i],
+                            dims, ndims, NULL, 0,
+                            DB_DOUBLE, DB_NODECENT, NULL)
+                        == -1)
+                    throw silo::Exception("Could not write q: nframe = " + anyToString(nframe)
+                            + ", t = " + anyToString(t));
 
         }
 
@@ -202,14 +202,14 @@ namespace {
                     for(int i = 1; i <= mx; ++i)
                         for(int m = 0; m < nvars; ++m)
                             v[m].push_back(aux.get(i, j, k, m + 1));
-	    for(int i = 0; i < nvars; ++i)
-		if(DBPutQuadvar1(qa_file.get_ptr(), component_names_c[i], meshname.c_str(), components[i],
-			    dims, ndims, NULL, 0,
-			    DB_DOUBLE, DB_NODECENT, NULL)
-			== -1)
-		    throw silo::Exception("Could not write aux: nframe = " + anyToString(nframe)
-			    + ", t = " + anyToString(t));
-	}
+            for(int i = 0; i < nvars; ++i)
+                if(DBPutQuadvar1(qa_file.get_ptr(), component_names_c[i], meshname.c_str(), components[i],
+                            dims, ndims, NULL, 0,
+                            DB_DOUBLE, DB_NODECENT, NULL)
+                        == -1)
+                    throw silo::Exception("Could not write aux: nframe = " + anyToString(nframe)
+                            + ", t = " + anyToString(t));
+        }
     }
 
 }

@@ -66,12 +66,10 @@ def _read_qa_silo(params, i_output):
     q = empty([mx, meqn])
     aux = empty([mx, maux])
     
-    q_raw = qafile.get_quadvar("q")
     for i in range(meqn):
-        q[:, i] = q_raw.vals[i]
+        q[:, i] = qafile.get_quadvar("q%d" % (i+1)).vals[0]
     if maux > 0:
-        aux_raw = qafile.get_quadvar("a")
         for i in range(maux):
-            aux[:, i] = aux_raw.vals[i]
+            aux[:, i] = qafile.get_quadvar("a%d" % (i+1)).vals[0]
         
     return t, q, aux
