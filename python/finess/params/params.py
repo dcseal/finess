@@ -427,7 +427,7 @@ extern %(class_name)s %(global_variable_name)s;
     class_declaration = """
 class %(class_name)s{
 public:
-    void init(const std::string& inputFilename);
+    void init(std::string inputFilename);
 private:
     IniParser::ini_doc_type ini_doc;
 public:
@@ -459,7 +459,7 @@ public:
     cpp_init_method_contents = "// Defining code for member variables\n\n" +                                "\n".join([p.get_defining_code() for p in parameters]) +                                "\n// Checks\n\n" +                                "\n".join([c.get_cpp_code() for c in checks])
             
     cpp_init_method = """
-void %(class_name)s::init(const std::string& inputFilename){
+void %(class_name)s::init(std::string inputFilename){
     using std::string;
     
     IniParser parser;
