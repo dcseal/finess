@@ -184,7 +184,7 @@ void FinSolveLxW ( StateVars& Qnew, double tend, double dtv[] )
             if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
-                cout << "FinSolveLxW2D ... Step" << setw(5) << n_step;
+                cout << "FinSolveLxW3D ... Step" << setw(5) << n_step;
                 cout << "   CFL =" << setw(6) << fixed << cfl;
                 cout << "   dt =" << setw(11) << scientific << dt;
                 cout << "   t =" << setw(11) << scientific << t <<endl;
@@ -210,7 +210,7 @@ void FinSolveLxW ( StateVars& Qnew, double tend, double dtv[] )
                 t = told;
                 if( global_ini_params.get_verbosity() )
                 {
-                    cout<<"FinSolveLxW2D rejecting step...";
+                    cout<<"FinSolveLxW3D rejecting step...";
                     cout<<"CFL number too large";
                     cout<<endl;
                 }
