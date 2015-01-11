@@ -97,7 +97,7 @@ void SetBndValues(StateVars& Q)
     {
         for (int m=1; m<=meqn; m++)
         {
-            double tmp = q.get(i,j,my+k,m);
+            double tmp = q.get(i,j,mz+k,m);
             q.set(i,j,k,m, tmp );
         }
     }
@@ -114,7 +114,7 @@ void SetBndValues(StateVars& Q)
     {
         for (int m=1; m<=meqn; m++)
         {
-            double tmp = q.get(i,j,k-my,m);
+            double tmp = q.get(i,j,k-mz,m);
             q.set(i,j,k,m, tmp );
         }
     }
