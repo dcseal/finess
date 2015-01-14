@@ -316,7 +316,7 @@ void ConstructLxWL( const StateVars& Q,
         SetWaveSpd(nvec, xedge, Ql, Qr, Auxl, Auxr, s1, s2);
 
         const double alpha = Max( alpha2, Max( abs(s1), abs(s2) ) );
-        smax.set( i, j, 2, Max( smax.get(i,j,1), alpha )  );
+        smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
         const double l_alpha = global_ini_params.get_alpha_scaling()*alpha;  // extra safety factor added here
 
         // -- Flux splitting -- //
