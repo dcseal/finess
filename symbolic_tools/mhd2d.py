@@ -20,30 +20,6 @@ q6 = sympy.symbols("q6")
 q7 = sympy.symbols("q7")
 q8 = sympy.symbols("q8")
 
-f1 = sympy.symbols("f1")
-f2 = sympy.symbols("f2")
-f3 = sympy.symbols("f3")
-f4 = sympy.symbols("f4")
-f5 = sympy.symbols("f5")
-f6 = sympy.symbols("f6")
-f7 = sympy.symbols("f7")
-f8 = sympy.symbols("f8")
-
-g1 = sympy.symbols("g1")
-g2 = sympy.symbols("g2")
-g3 = sympy.symbols("g3")
-g4 = sympy.symbols("g4")
-g5 = sympy.symbols("g5")
-g6 = sympy.symbols("g6")
-g7 = sympy.symbols("g7")
-g8 = sympy.symbols("g8")
-
-
-# Primitive variables:
-u1 = sympy.symbols("u1")
-u2 = sympy.symbols("u2")
-u3 = sympy.symbols("u3")
-
 rho = q1
 u1 = q2/q1
 u2 = q3/q1

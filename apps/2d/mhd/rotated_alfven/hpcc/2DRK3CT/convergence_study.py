@@ -70,7 +70,7 @@ def L1_error_list(output_dir_list):
         tfinal, q, aux = finess.dim2.read_qa(params, nout)
         debug_tfinal = tfinal
         print "tfinal: ", tfinal
-        from numpy import sin, cos, sum, abs, pi
+        from numpy import sin, cos, sum, abs, pi, max
         angle = params['initial', 'angle']
         X, Y = finess.viz.dim2.meshgrid(params)
 
@@ -132,9 +132,10 @@ def L1_error_list(output_dir_list):
         L1_B3_exact = sum(abs(B3_exact))
 #        print "B3 error: ", L1_error_B3 / L1_B3_exact
         
-        delta = 0.25 * (L1_error_u_perp / L1_u_perp_exact + L1_error_u3 / L1_u3_exact + L1_error_B_perp / L1_B_perp_exact + L1_error_B3 / L1_B3_exact)
+#        delta = 0.25 * (L1_error_u_perp / L1_u_perp_exact + L1_error_u3 / L1_u3_exact + L1_error_B_perp / L1_B_perp_exact + L1_error_B3 / L1_B3_exact)
 #        delta = 0.5 * (L1_error_B_perp / L1_B_perp_exact + L1_error_B3 / L1_B3_exact)
 #        delta = 0.5 * (L1_error_u_perp / L1_u_perp_exact + L1_error_u3 / L1_u3_exact)
+        delta = max(abs(B_perp - B_perp_exact))
         error_list.append(delta)
     return error_list
 
@@ -200,7 +201,7 @@ def L1_A_error_list(output_dir_list):
 #
 ## In[140]:
 
-output_dir_list = ['output_60deg_%(i)02d' % {'i': i} for i in [0, 1, 2, 3]]
+output_dir_list = ['output_30deg_%(i)02d' % {'i': i} for i in [0, 1, 2, 3]]
 error_list = L1_error_list(output_dir_list)
 order_list = log2_adjacent_ratio(error_list)
 print 'u, B:'

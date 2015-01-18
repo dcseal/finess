@@ -16,7 +16,7 @@
 //    flux( 1:numpts, 1:meqn, 1:ndim ) - ndim == 1: f, ndim == 2: g, ndim ==3: h.
 //
 // See also: blanks/*
-void FluxFunc(const dTensor2& xpts, const dTensor2& Q,const dTensor2& Aux, dTensor2& flux)
+void FluxFunc(const dTensor2& xpts, const dTensor2& Q,const dTensor2& Aux, dTensor3& flux)
 {
 
     const int numpts=xpts.getsize(1);

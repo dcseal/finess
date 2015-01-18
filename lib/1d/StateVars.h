@@ -12,7 +12,7 @@ class StateVars{
             t(t),
             q(mx, meqn, mbc),
             aux(mx, maux, mbc)
-        { }
+        { q.setall(0.0); aux.setall(0.0);}
 
         double get_t() const{
             return this->t;

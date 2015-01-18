@@ -12,22 +12,6 @@ q1 = sympy.symbols("q1")
 q2 = sympy.symbols("q2")
 q3 = sympy.symbols("q3")
 
-# Flux function -- first component
-f1 = sympy.symbols("f1")
-f2 = sympy.symbols("f2")
-f3 = sympy.symbols("f3")
-
-# Flux function -- second component
-g1 = sympy.symbols("g1")
-g2 = sympy.symbols("g2")
-g3 = sympy.symbols("g3")
-
-
-# Primitive variables:
-h  = sympy.symbols("h")
-u1 = sympy.symbols("u1")
-u2 = sympy.symbols("u2")
-
 h  = q1
 u1 = q2/h
 u2 = q3/h
@@ -44,7 +28,7 @@ Q = [q1, q2, q3]
 F = [f1, f2, f3]
 G = [g1, g2, g3]
 
-# A = sympy.Matrix( meqn, meqn )
+print("//****JACOBIAN****")
 print("Computing the Jacobian of the flux function, f'(q)")
 for j in range(meqn):
   for k in range(meqn):
@@ -61,6 +45,7 @@ for j in range(meqn):
       print( tmp, end=");\n")
 print(' ')
 
+print("//****HESSIAN****")
 print("Computing the Hessian of the flux function: f''(q)")
 for m1 in range(meqn):
   print(' ')

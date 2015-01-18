@@ -6,6 +6,9 @@
 #include "dimdefs.h"
 #include "IniParams.h"
 
+
+#include <fenv.h>
+
 /*
  * Common main function that's called by every application.
  *
@@ -20,6 +23,14 @@
  */
 int main_global(int argc, char* argv[])
 {
+     feenableexcept(FE_INVALID  |
+                  FE_DIVBYZERO |
+                  FE_OVERFLOW  );
+//     feenableexcept(FE_INVALID  |
+//                  FE_DIVBYZERO |
+//                  FE_OVERFLOW  |
+//                  FE_UNDERFLOW);
+    
     using std::string;
     using std::cout;
     using std::setprecision;

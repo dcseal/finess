@@ -7,8 +7,8 @@ finess_data_template = '''
 [finess]
 ndims       = 3          ; 1, 2, or 3
 nout        = 1          ; number of output times to print results
-tfinal      = 4 
-initial_dt  = 0.001        ; initial dt
+tfinal      = %(tfinal)f
+initial_dt  = 0.01        ; initial dt
 max_dt      = 1.0e10     ; max allowable dt 
 max_cfl     = %(max_cfl)f       ; max allowable Courant number
 desired_cfl = %(cfl)f    ; desired Courant number
@@ -52,15 +52,16 @@ gamma = 1.666666666666666667
 '''
 
 def generate_parameters_ini_files():
-    nruns = 3 
+    nruns = 5
     max_cfl = 0.6
     cfl = 0.5
+    tfinal = 0.001
     ts_method_str = "Lax-Wendroff"
     s_order = 5
     t_order = 3
-    mx = 16 
-    my = 16
-    mz = 16
+    mx = 256 
+    my = 6 
+    mz = 6
     mbc = 6
     for nframe in range(nruns):
         parameters_ini_filename = "parameters%02d.ini" % nframe
@@ -74,12 +75,11 @@ def generate_parameters_ini_files():
                            "mx": mx,
                            "my": my,
                            "mz": mz,
-                           "mbc": mbc  }
+                           "mbc": mbc,
+                           "tfinal": tfinal}
         with open(parameters_ini_filename, 'w') as f:
             f.write(finess_data_template % parameters_dict)
-        mx *= 2
-        my *= 2
-        mz *= 2
+        tfinal /= 2.0
 
 
 if __name__ == "__main__":

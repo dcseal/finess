@@ -62,7 +62,7 @@ def generate_exact_solution(parameters_ini_filename,
 
 
 parameters_ini_filename_list = \
-    ["parameters%02d.ini" % i for i in [0, 1, 2, 3]]
+    ["parameters%02d.ini" % i for i in [0, 1, 2, 3, 4]]
 
 from math import sin, pi
 q0 = lambda x, y, z: 0.25 + sin(pi*x) * sin(pi*y) * sin(pi*z)

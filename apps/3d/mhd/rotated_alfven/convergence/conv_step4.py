@@ -21,7 +21,7 @@ def log2_adjacent_ratio(error_list):
 
 
 parameters_ini_filename_list = \
-    ["output%(i)02d/parameters%(i)02d.ini.dump" % {"i": i} for i in [0, 1, 2]]
+    ["output%(i)02d/parameters%(i)02d.ini.dump" % {"i": i} for i in [0, 1, 2, 3, 4]]
 
 
 error_list = []
@@ -77,14 +77,16 @@ for parameters_ini_filename in parameters_ini_filename_list:
     # qexact[:, :, :, 5 - 1]
     #L1_error = sum(abs(q[:,:,:, 2 - 1]/q[:,:,:, 1 - 1] - qexact[:,:,:, 2 - 1]/qexact[:,:,:, 1 - 1])) / sum(abs(qexact[:,:,:, 2 - 1]/qexact[:,:,:, 1 - 1]))   #u1
     #L1_error = sum(abs(q[:,:,:, 4 - 1]/q[:,:,:, 1 - 1] - qexact[:,:,:, 4 - 1]/qexact[:,:,:, 1 - 1])) / sum(abs(qexact[:,:,:, 4 - 1]/qexact[:,:,:, 1 - 1]))   #u3
-    L1_error = sum(abs(q[:,:,:, 6 - 1] - qexact[:,:,:, 6 - 1])) / sum(abs(qexact[:,:,:, 6 - 1]))  #B1
+    #L1_error = sum(abs(q[:,:,:, 6 - 1] - qexact[:,:,:, 6 - 1])) / sum(abs(qexact[:,:,:, 6 - 1]))  #B1
     #L1_error = sum(abs(q[:,:,:, 8 - 1] - qexact[:,:,:, 8 - 1])) / sum(abs(qexact[:,:,:, 8 - 1]))  #B3
-    error_list.append(L1_error)
+    #error_list.append(L1_error)
     #error = abs(q[:,:,:,0]-qexact[:,:,:,0])
-    #error_list.append(max(error))
+    #error = abs(q[:,:,:, 6 - 1] - qexact[:,:,:, 6 - 1])  #B1
+    error = abs(q[:,:,:, 1 - 1] - qexact[:,:,:, 1 - 1])   #rho
+    error_list.append(max(error))
 
 order_list = log2_adjacent_ratio(error_list)
 
-print "L1, error and order. B1"
+print "Linfinity, error and order. rho"
 print error_list
 print order_list

@@ -21,7 +21,7 @@ def log2_adjacent_ratio(error_list):
 
 
 parameters_ini_filename_list = \
-    ["parameters%02d.ini" % i for i in [0, 1, 2]]
+    ["parameters%02d.ini" % i for i in [0, 1]]
 
 
 error_list = []

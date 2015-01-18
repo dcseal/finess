@@ -7,7 +7,7 @@ finess_data_template = '''
 [finess]
 ndims       = 3          ; 1, 2, or 3
 nout        = 1          ; number of output times to print results
-tfinal      = 0.25 
+tfinal      = 4.0 
 initial_dt  = 0.001        ; initial dt
 max_dt      = 1.0e10     ; max allowable dt 
 max_cfl     = %(max_cfl)f       ; max allowable Courant number
