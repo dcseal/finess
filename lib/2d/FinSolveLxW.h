@@ -33,8 +33,8 @@ void ConstructLxWL( const StateVars& Q,
         dTensorBC3& Lstar, dTensorBC3& smax);
 
 void ConstructLxWL( const StateVars& Q,
-        dTensorBC3& F, dTensorBC3& G,
-        dTensorBC3& Fhat, dTensorBC3& Ghat,
+        const dTensorBC3& F, const dTensorBC3& G,
+        dTensorBC3* pFhat, dTensorBC3* pGhat,
         dTensorBC3& Lstar, dTensorBC3& smax);
 
 void ConstructIntegratedR( double dt, const StateVars& Q, 

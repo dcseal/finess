@@ -128,7 +128,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             {
 
                 // Construct the high-order flux
-                ConstructLxWL( Qnew, F, G, *fhat, *ghat, Lstar, smax );
+                ConstructLxWL( Qnew, F, G, fhat, ghat, Lstar, smax );
        
                 // Construct the low-order flux
                 ConstructLFL( dt, Qnew, *fLF, *gLF, Lstar, smax );
