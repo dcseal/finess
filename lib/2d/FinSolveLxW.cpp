@@ -134,7 +134,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
                 ConstructLFL( dt, Qnew, *fLF, *gLF, Lstar, smax );
 
                 // Limit the high-order flux
-                ApplyMPPLimiter2D( dt, qnew, *fLF, *fLF, *fhat, *ghat );
+                ApplyMPPLimiter2D( dt, qnew, *fLF, *gLF, *fhat, *ghat );
 
                 // Update the solution:
 #pragma omp parallel for
