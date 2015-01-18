@@ -93,6 +93,7 @@ FinSolveLxW          = $(LIB3D)/FinSolveLxW
 FinSolveUser         = $(LIB3D)/FinSolveUser
 SampleFunction       = $(LIB3D)/SampleFunction
 GlobalWaveSpd        = $(LIB3D)/GlobalWaveSpd
+GetCFL				 = $(LIB3D)/GetCFL
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB3D)/LaxWendroff/DFluxFunc
@@ -113,7 +114,7 @@ LIB3D_OBJECTS = \
   $(FinSolveRK).o \
   $(FinSolveLxW).o \
   $(LIB3D)/SetRKinfo.o \
-  $(LIB3D)/GetCFL.o \
+  $(GetCFL).o \
   $(GlobalWaveSpd).o \
   $(AfterQinit).o \
   $(FinSolveUser).o \
@@ -139,7 +140,7 @@ LIB3D_SOURCES = \
   $(FinSolveRK).cpp \
   $(FinSolveLxW).cpp \
   $(LIB3D)/SetRKinfo.cpp \
-  $(LIB3D)/GetCFL.cpp \
+  $(GetCFL).cpp \
   $(GlobalWaveSpd).cpp \
   $(AfterQinit).cpp \
   $(FinSolveUser).cpp \
