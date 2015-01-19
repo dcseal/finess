@@ -58,6 +58,8 @@ void ConstructHJ_L_Order1(const StateVars& Q, dTensorBC3& Lauxstar)
     
     assert(maux == 1);
     assert(mbc >= 2 + r);
+
+    Lauxstar.setall(0.0);
 #pragma omp parallel for
     for(int i = 1 - 2 ; i <= mx + 2 ; ++i){
          dTensor2 weno_input(maux, ws);
@@ -154,6 +156,7 @@ void ConstructHJ_L_Order3(const StateVars& Q, dTensorBC3& Lauxstar, double dt)
     
     assert(maux == 1);
     assert(mbc >= 7);
+    Lauxstar.setall(0.0);
 #pragma omp parallel for
     for(int i = 1 - 4 ; i <= mx + 4 ; ++i){
          dTensor2 weno_input(maux, ws);
