@@ -22,15 +22,15 @@ void SampleFunctionTypeB(
     void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&));
 
 // Same as above, but this one only returns flux values, and not just the RHS.
-void ConstructLFL( const double dt, StateVars& Qnew, 
+void ConstructLFL( const double dt, const StateVars& Qnew, 
     dTensorBC3& fLF, dTensorBC3& gLF, dTensorBC3& Lstar, dTensorBC3& smax )
 {
 
-    dTensorBC3&    q = Qnew.ref_q  ();
-    dTensorBC3&  aux = Qnew.ref_aux();
+    const dTensorBC3&    q = Qnew.const_ref_q  ();
+    const dTensorBC3&  aux = Qnew.const_ref_aux();
 
-    void SetBndValues(StateVars& Qnew); 
-    SetBndValues( Qnew );
+//    void SetBndValues(StateVars& Qnew); 
+//    SetBndValues( Qnew );
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();

@@ -41,7 +41,7 @@ void ConstructIntegratedR( double dt, const StateVars& Q,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
 // Construct a Lax-Friedrich's flux
-void ConstructLFL( const double dt, StateVars& Q,
+void ConstructLFL( const double dt, const StateVars& Q,
     dTensorBC3& Fhat, dTensorBC3& Ghat,
     dTensorBC3& Lstar, dTensorBC3& smax);
 

@@ -16,6 +16,13 @@ def _parameters_accessors_checks():
                       type_ = "double")
     parameters.append(gamma)
     checks.append(CheckGreaterThan(gamma, 0.0))
+    
+    constrained_transport = Parameter(variable_name = "constrained_transport",
+                                      section = "mhd",
+                                      name = "constrained_transport",
+                                      type_ = "bool",
+                                      default_value = "true")
+    parameters.append(constrained_transport)
 
     return parameters, map(Accessor, parameters), checks
 

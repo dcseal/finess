@@ -10,6 +10,7 @@
 #include "misc2d.h"
 #include "StateVars.h"
 #include "ConstructHJ_L.h"
+#include "FinSolveLxW.h"
 
 using namespace std;
 
@@ -38,6 +39,9 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     const int mbc  = global_ini_params.get_mbc();
     const int numel = qnew.numel();
     const int numel_aux = aux.numel();
+    const double dx = global_ini_params.get_dx();
+    const double dy = global_ini_params.get_dy();
+
     // Maximum wave speed at each flux interface value.  Note that the size of
     // this tensor is one longer in each direction.
     dTensorBC3 smax( mx+1, my+1, 2, mbc );           
@@ -60,6 +64,20 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC3   Lstar(mx, my, meqn, mbc);   // Right hand side of ODE
     
     dTensorBC3 Lauxstar(mx, my, maux, mbc);
+    // Storage for the MPP limiter
+    dTensorBC3* fhat;
+    dTensorBC3* fLF;
+    dTensorBC3* ghat;
+    dTensorBC3* gLF;
+    if( global_ini_params.get_mpp_limiter() )
+    {
+        fhat = new dTensorBC3( mx+1, my, meqn, mbc );
+        fLF  = new dTensorBC3( mx+1, my, meqn, mbc );
+
+        ghat = new dTensorBC3( mx, my+1, meqn, mbc );
+        gLF  = new dTensorBC3( mx, my+1, meqn, mbc );
+    }
+
     
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -109,23 +127,60 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             SetBndValues(Qnew);
             ConstructIntegratedR( dt, Qnew, smax, F, G);
 
-            ConstructLxWL( Qnew, F, G, Lstar, smax);  // <-- "new" method
+            if(global_ini_params.get_mpp_limiter()){
+                ConstructHJ_L(Qnew, Lauxstar, dt);
 
-            ConstructHJ_L(Qnew, Lauxstar, dt);
+                // Construct the high-order flux
+                ConstructLxWL( Qnew, F, G, fhat, ghat, Lstar, smax );
 
-            // Update the solution:
+                // Construct the low-order flux
+                ConstructLFL( dt, Qnew, *fLF, *gLF, Lstar, smax );
+
+
+                // Limit the high-order flux
+                ApplyMPPLimiter2D( dt, qnew, *fLF, *gLF, *fhat, *ghat );
+
+                // Update the solution:
 #pragma omp parallel for
-            for( int k=0; k < numel; k++ )
-            {
-                double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
-                qnew.vset(k, tmp );
-            }
-#pragma omp parallel for
-            for(int k =  0; k < numel_aux; k++){
-                double tmp = aux.vget(k) + dt*Lauxstar.vget(k);
-                aux.vset(k, tmp);
-            }
+                for( int i=1; i <= mx; i++   )
+                    for( int j=1; j <= my; j++   )
+                        for( int m=1; m <= meqn; m++ )
+                        {
+                            double tmp = (fhat->get(i+1,j,m)-fhat->get(i,j,m) );
+                            qnew.set(i, j, m, qnew.get(i,j,m) - (dt/dx)*tmp );
+                            tmp = (ghat->get(i,j+1,m)-ghat->get(i,j,m) );
+                            qnew.set(i, j, m, qnew.get(i,j,m) - (dt/dy)*tmp );
 
+                            // Test the LF solver by uncommenting this chunk
+                            //                  double tmp = Lstar.get(i,j,m);
+                            //                  qnew.set(i, j, m, qnew.get(i,j,m) + dt*tmp );
+
+                        }
+#pragma omp parallel for
+                for(int k =  0; k < numel_aux; k++){
+                    double tmp = aux.vget(k) + dt*Lauxstar.vget(k);
+                    aux.vset(k, tmp);
+                }
+
+            }
+            else{
+                ConstructLxWL( Qnew, F, G, Lstar, smax);  // <-- "new" method
+
+                ConstructHJ_L(Qnew, Lauxstar, dt);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+#pragma omp parallel for
+                for(int k =  0; k < numel_aux; k++){
+                    double tmp = aux.vget(k) + dt*Lauxstar.vget(k);
+                    aux.vset(k, tmp);
+                }
+            }
             Qnew.set_t( Qnew.get_t() + dt );
 
             // Perform any extra work required:
@@ -186,5 +241,14 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 
     // set initial time step for next call to DogSolve:
     dtv[1] = dt;
+    // Clean up allocated memory
+    if( global_ini_params.get_mpp_limiter() )
+    {
+        delete fhat;
+        delete fLF;
+        delete ghat;
+        delete gLF;
+    }
+
 
 }
