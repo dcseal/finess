@@ -7,13 +7,25 @@ def _parameters_accessors_checks():
     
     parameters = []
     checks = []
+
+
+    # Global alpha flag (for Lax-Friedrichs vs. Local Lax-Friedrichs flux splitting)
     global_alpha = Parameter(variable_name = "global_alpha",
                          section = "finess",
                          name = "global_alpha",
                          type_ = "bool",
                          default_value = False)
     parameters.append(global_alpha)
-    
+
+    # Positivity preserving limiter flag
+    mpp_limiter = Parameter(variable_name = "mpp_limiter",
+                         section = "finess",
+                         name = "mpp_limiter",
+                         type_ = "bool",
+                         default_value = False)
+    parameters.append(mpp_limiter)
+
+    # Location of the output directory
     output_dir = Parameter(variable_name = "output_dir",
                            section = "finess",
     		       name = "output_dir",
@@ -21,6 +33,7 @@ def _parameters_accessors_checks():
     		       default_value = "output")
     parameters.append(output_dir)		       
 
+    # Number of dimensions
     ndims = Parameter(variable_name = "ndims",
                       section = "finess",
                       name = "ndims",

@@ -19,7 +19,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % gas constant
-gamma = str2num( INI.euler.gamma );
+if( isfield( INI.euler, 'gamma' ) )
+    gamma = sscanf( INI.euler.gamma, '%f' );
+else
+    gamma = 1.4;
+end
 
 % pressure
 press = (gamma-1)*(qsoln(:,5)-0.5*(qsoln(:,2).^2+...
@@ -32,13 +36,12 @@ press = (gamma-1)*(qsoln(:,5)-0.5*(qsoln(:,2).^2+...
 % file was produced by HYPERPYWS.
 fids = fopen('exact_soln.dat', 'r' );
 if(fids == -1)
-  disp(['File  ', 'rk4-soln-100.dat','  not found.']);
+  disp(['File  ', 'exact_soln.dat','  not found.']);
 else
     qex = fscanf(fids,'%e',[4,inf]);
     fclose( fids );
     mx_ex = length( qex );
     xex = qex( 1, : )';  qex = qex( 2:4, : )';
-
     pex = (gamma-1)*(qex(:,3)-0.5*(qex(:,2).^2)./qex(:,1));
 end    
 % -------------------------------------------- %
@@ -47,7 +50,7 @@ end
 % Secondary solution to compare result to
 fids_extra = fopen('rk4-soln-100.dat', 'r' );
 if(fids_extra == -1)
-  disp(['File  ', 'exact_soln.dat','  not found.']);
+  disp(['File  ', 'rk4-soln-100.dat','  not found.']);
 else
     qextra = fscanf(fids,'%e',[4,inf]);
     fclose( fids );

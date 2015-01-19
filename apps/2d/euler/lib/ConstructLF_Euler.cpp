@@ -8,6 +8,8 @@
 using std::cout;
 using std::endl;
 
+// TODO - THIS ROUTINE IS CURRENTLY NOT BEING USED!!!
+
 // User supplied functions defining the Flux function, Jacobian, and
 // Hessian of the flux function.
 void FluxFunc(const dTensor2&,const dTensor2&,const dTensor2&,dTensor3&);

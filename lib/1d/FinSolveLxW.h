@@ -34,5 +34,17 @@ void ConstructLxWL(
         dTensorBC2& Lstar,
         dTensorBC1& smax);
 
+void ConstructLxWL(
+        const dTensorBC2& aux,
+        const dTensorBC2& q,
+        const dTensorBC2& F,    
+        dTensorBC2& fhat,
+        dTensorBC2& Lstar,
+        dTensorBC1& smax);
+
+void ConstructLFL( const StateVars& Q, dTensorBC2& fhat );
+
+void ApplyMPPLimiter1D( const double dt, const dTensorBC2& q,
+    const dTensorBC2& fLF, dTensorBC2& fHat );
 
 #endif

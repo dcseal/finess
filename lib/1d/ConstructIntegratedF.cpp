@@ -188,7 +188,6 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
                 f_tt.set( m1, f_tt.get(m1) + tmp );
             }
 
-
         }
 
         // Second/Third-order accuracy:
@@ -397,9 +396,13 @@ void ConstructIntegratedF( double dt,
     dTensorBC1& smax, dTensorBC2& F)
 {
 
-    dTensorBC2& q1 = Q1.const_ref_q();
-    dTensorBC2& q2 = Q2.const_ref_q();
-    dTensorBC2& q3 = Q3.const_ref_q();
+    const dTensorBC2& q1 = Q1.const_ref_q();
+    const dTensorBC2& q2 = Q2.const_ref_q();
+    const dTensorBC2& q3 = Q3.const_ref_q();
+
+    const dTensorBC2& aux1 = Q1.const_ref_aux();
+    const dTensorBC2& aux2 = Q2.const_ref_aux();
+    const dTensorBC2& aux3 = Q3.const_ref_aux();
 
     const int mx     = q1.getsize(1);
     const int meqn   = q1.getsize(2);

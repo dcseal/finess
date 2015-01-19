@@ -18,8 +18,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % gas constant
-global INI;
-gamma_gas = sscanf(INI.euler.gamma, '%e');
+if( isfield( INI.euler, 'gamma' ) )
+    gamma_gas = sscanf( INI.euler.gamma, '%f' );
+else
+    disp('Seeting gamma = 1.4');
+    gamma_gas = 1.4;
+end
 
 rr = reshape(sqrt( xc.^2 + yc.^2 ),mx*my,1);
     
@@ -44,6 +48,23 @@ set(gca,'ytick',-1:0.5:1);
 set(gca,'fontsize',16);
 t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
+
+[mx, my, meqn] = size(qsoln);
+
+% Slice of the density
+figure(2);
+clf;
+plot(xc(:,floor(my/2)),qsoln(:,floor(my/2),1), 'bo' );
+shading flat;
+yrbcolormap
+axis on; box on; grid off;
+axis([-1.05 1.05 0.0 7]);
+set(gca,'xtick',-1:0.25:1);
+set(gca,'ytick',-0:0.5:10);
+set(gca,'fontsize',16);
+t1 = title(['Density at t = ',num2str(time),', y = ', num2str(yc(1,floor(my/2))), '     [FINESS]']); 
+set(t1,'fontsize',16);
+
 
 % Print the pretty pictures!    
 if( exist( [outputdir,'/photos'], 'dir' ) )
