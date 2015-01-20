@@ -17,6 +17,7 @@ void AfterQinit( StateVars& Qnew )
     
     const int mx = global_ini_params.get_mx();
     const int my = global_ini_params.get_my();
+    const int mbc = global_ini_params.get_mbc();
     const double xlow = global_ini_params.get_xlow();
     //const double xhigh = global_ini_params.get_xhigh();
     const double ylow = global_ini_params.get_ylow();
@@ -25,8 +26,8 @@ void AfterQinit( StateVars& Qnew )
     const double dy = global_ini_params.get_dy();
     const double angle = global_ini_params.get_angle();
 
-    for(int i = 1; i <= mx; ++i){
-        for(int j = 1; j <= my; ++j){
+    for(int i = 1-mbc; i <= mx+mbc; ++i){
+        for(int j = 1-mbc; j <= my+mbc; ++j){
             double x = xlow + (i - 0.5) * dx;
             double y = ylow + (j - 0.5) * dy;
             double xi = x * cos(angle) + y * sin(angle);

@@ -44,7 +44,7 @@ void SetBndValues( StateVars& Q )
     // ***********************************************
     for(int i=0; i>=(1-mbc); i--)
     {
-        for(int j=1; j<=my; j++)
+        for(int j=1-mbc; j<=my+mbc; j++)
         {           
             // q values
             for(int m=1; m<=meqn; m++)
@@ -65,7 +65,7 @@ void SetBndValues( StateVars& Q )
     // ***********************************************
     for(int i=(mx+1); i<=(mx+mbc); i++)
     {
-        for(int j=1; j<=my; j++)
+        for(int j=1-mbc; j<=my+mbc; j++)
         {           
             // q values
             for(int m=1; m<=meqn; m++)
@@ -81,69 +81,69 @@ void SetBndValues( StateVars& Q )
     // ***********************************************
 
 
-    // ***********************************************
-    // BOTTOM LEFT CORNER
-    // ***********************************************
-    for(int i=1; i<=mbc; i++)
-        for(int j=1; j<=mbc; j++)
-        {
-            for(int m=1; m<=meqn; m++)
-            {     
-                q.set(1-i,1-j,m, q.get(1, 1, m) );
-            }
-            aux.set(1-i, 1-j, 1,
-                    2.0 * aux.get(1, 1-j+1, 1) - aux.get(1, 1-j+2, 1));
-        }
-    // ***********************************************
-
-
-    // ***********************************************
-    // BOTTOM RIGHT CORNER
-    // ***********************************************
-    for(int i=1; i<=mbc; i++)
-        for(int j=1; j<=mbc; j++)
-        {
-            for(int m=1; m<=meqn; m++)
-            {     
-                q.set(mx+i,1-j,m, q.get(mx, 1, m) );
-            }
-
-            aux.set(mx + i, 1-j, 1,
-                    2.0 * aux.get(mx, 1-j+1, 1) - aux.get(mx, 1-j+2, 1));
-        }
-    // ***********************************************
-
-
-    // ***********************************************
-    // TOP RIGHT CORNER
-    // ***********************************************
-    for(int i=1; i<=mbc; i++)
-        for(int j=1; j<=mbc; j++)
-        {
-            for(int m=1; m<=meqn; m++)
-            {     
-                q.set(mx+i,my+j,m, q.get(mx, my, m) );
-            }
-            aux.set(mx + i, my + j, 1,
-                    2.0 * aux.get(mx, mx + j - 1, 1) - aux.get(mx, mx + j - 2, 1));
-        }
-    // ***********************************************
-
-
-    // ***********************************************
-    // TOP LEFT CORNER
-    // ***********************************************
-    for(int i=1; i<=mbc; i++)
-        for(int j=1; j<=mbc; j++)
-        {
-            for(int m=1; m<=meqn; m++)
-            {     
-                q.set(1-i,my+j,m, q.get(1, my, m) );
-            }
-            aux.set(1 - i, my + j, 1,
-                    2.0 * aux.get(1, my + j - 1, 1) - aux.get(1, my + j - 2, 1));
-        }
-    // ***********************************************
+//    // ***********************************************
+//    // BOTTOM LEFT CORNER
+//    // ***********************************************
+//    for(int i=1; i<=mbc; i++)
+//        for(int j=1; j<=mbc; j++)
+//        {
+//            for(int m=1; m<=meqn; m++)
+//            {     
+//                q.set(1-i,1-j,m, q.get(1, 1, m) );
+//            }
+//            aux.set(1-i, 1-j, 1,
+//                    2.0 * aux.get(1, 1-j+1, 1) - aux.get(1, 1-j+2, 1));
+//        }
+//    // ***********************************************
+//
+//
+//    // ***********************************************
+//    // BOTTOM RIGHT CORNER
+//    // ***********************************************
+//    for(int i=1; i<=mbc; i++)
+//        for(int j=1; j<=mbc; j++)
+//        {
+//            for(int m=1; m<=meqn; m++)
+//            {     
+//                q.set(mx+i,1-j,m, q.get(mx, 1, m) );
+//            }
+//
+//            aux.set(mx + i, 1-j, 1,
+//                    2.0 * aux.get(mx, 1-j+1, 1) - aux.get(mx, 1-j+2, 1));
+//        }
+//    // ***********************************************
+//
+//
+//    // ***********************************************
+//    // TOP RIGHT CORNER
+//    // ***********************************************
+//    for(int i=1; i<=mbc; i++)
+//        for(int j=1; j<=mbc; j++)
+//        {
+//            for(int m=1; m<=meqn; m++)
+//            {     
+//                q.set(mx+i,my+j,m, q.get(mx, my, m) );
+//            }
+//            aux.set(mx + i, my + j, 1,
+//                    2.0 * aux.get(mx, my + j - 1, 1) - aux.get(mx, my + j - 2, 1));
+//        }
+//    // ***********************************************
+//
+//
+//    // ***********************************************
+//    // TOP LEFT CORNER
+//    // ***********************************************
+//    for(int i=1; i<=mbc; i++)
+//        for(int j=1; j<=mbc; j++)
+//        {
+//            for(int m=1; m<=meqn; m++)
+//            {     
+//                q.set(1-i,my+j,m, q.get(1, my, m) );
+//            }
+//            aux.set(1 - i, my + j, 1,
+//                    2.0 * aux.get(1, my + j - 1, 1) - aux.get(1, my + j - 2, 1));
+//        }
+//    // ***********************************************
 
 
 
@@ -157,11 +157,11 @@ void SetBndValues( StateVars& Q )
             // q values
             for(int m=1; m<=meqn; m++)
             {
-                double tmp = (1.0 - tan(angle)) * q.get(i, j + 1, m) + tan(angle) * q.get(i - 1, j + 1, m);
+                double tmp = q.get(i-1, j+2, m);
                 q.set(i,j,m, tmp );
             }               
             aux.set(i, j, 1,
-                    2.0 * aux.get(i, j + 1, 1) - aux.get(i, j + 2, 1));
+                    2.0 * aux.get(i-1, j + 2, 1) - aux.get(i-2, j + 4, 1));
         }
     }
     // ***********************************************
@@ -178,12 +178,12 @@ void SetBndValues( StateVars& Q )
             // q values
             for(int m=1; m<=meqn; m++)
             {
-                double tmp = (1.0 - tan(angle)) * q.get(i, j - 1, m) + tan(angle) * q.get(i + 1, j - 1, m);
+                double tmp = q.get(i+1, j - 2, m);
                 q.set(i,j,m, tmp );
             }
 
             aux.set(i, j, 1,
-                    2.0 * aux.get(i, j - 1, 1) - aux.get(i, j-2, 1));
+                    2.0 * aux.get(i+1, j-2, 1) - aux.get(i+2, j-4, 1));
         }
     }
     // ***********************************************
