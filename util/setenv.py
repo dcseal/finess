@@ -63,7 +63,6 @@ print ""
 plot1d_generic_command = "python $FINESS/viz/plot1d_generic.py"
 print "  plot1d_generic = %s" % plot1d_generic_command
 write_shortcut_alias(csh_file,bash_file,"plot1d_generic", plot1d_generic_command)
-print ""
 
 plot2d_generic_command = "python $FINESS/viz/plot2d_generic.py"
 print "  plot2d_generic = %s" % plot2d_generic_command
