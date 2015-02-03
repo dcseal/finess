@@ -1,4 +1,3 @@
-
 #----------------------------------------------------------
 def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     
@@ -23,7 +22,7 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.plot(xc,qsoln[:,m],'bo')
     plt.plot(xc,qex, '-r', linewidth=2.0)
     tmp1 = "".join(("q(t,x) at t = ",str(time)))
-    title = "".join((tmp1,"     [DoGPack]"))
+    title = "".join((tmp1,"     [FINESS]"))
     plt.title(title)
     plt.draw()
     
