@@ -58,45 +58,15 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2& auxstar = Qstar.ref_aux();
     Qstar.copyfrom( Qnew );
 
-    // Right hand side of ODE
+    // Intermediate storage (for three stage methods)
+    StateVars Q2star( t, mx, meqn, maux, mbc );
+    dTensorBC2& q2star   = Qstar.ref_q();
+    dTensorBC2& aux2star = Qstar.ref_aux();
+    Q2star.copyfrom( Qnew );
+
+    // Right hand side of ODE and time-averaged flux function
     dTensorBC2   Lstar(mx, meqn, mbc);
-
-    // Time-averaged flux function
     dTensorBC2   F(mx, meqn, mbc);
-
-    // Coefficients for the third-order method
-//  const double A21    = 6.666666666666666e-01;
-//  const double A31    = 0.0;
-//  const double A32    = 0.0;
-
-//  const double Ahat21 = 2.222222222222222e-01;
-//  const double Ahat31 = 0.0;
-//  const double Ahat32 = 0.0;
-
-//  const double b1     = 6.250000000000000e-01;
-//  const double b2     = 3.749999999999999e-01;
-//  const double b3     = 0.0;
-
-//  const double bhat1  = 1.250000000000000e-01;
-//  const double bhat2  = 1.250000000000000e-01;
-//  const double bhat3  = 0.0;
-
-    // Coefficients for the third-order method
-    const double A21    = 1.0;
-    const double A31    = 0.0;
-    const double A32    = 0.0;
-
-    const double Ahat21 = 0.5;
-    const double Ahat31 = 0.0;
-    const double Ahat32 = 0.0;
-
-    const double b1     = 2.0/3.0;
-    const double b2     = 1.0/3.0;
-    const double b3     = 0.0;
-
-    const double bhat1  = 1.0/6.0;
-    const double bhat2  = 0.0;
-    const double bhat3  = 0.0;
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -146,61 +116,9 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
             switch( global_ini_params.get_time_order() )
             {
 
-// EXPERIMENTAL CASE!
-                case 1:
-
-                // -- Stage 1 -- //
-
-                ConstructIntegratedF( dt, 
-                    A21, Ahat21, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
-                    smax, F);
-
-                // Update the solution:
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
-                }
-
-                // Perform any extra work required:
-                AfterStep(dt, Qstar );
-
-                SetBndValues(Qnew);
-                SetBndValues(Qstar);
-
-                // -- Stage 2 -- //
-
-                ConstructIntegratedF( dt, 
-                    b1, bhat1, aux, qnew, 
-                    b2, bhat2, auxstar, qstar,
-                    smax, F);
-
-                // Construct a new right hand side
-                ConstructLxWL( aux, qstar, F, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
-                    qnew.vset(k, tmp );
-                }
-
-                Qnew.set_t( Qnew.get_t() + dt );
-
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qnew );
-
-                break;
-
                 case 3:
 
+/*
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
@@ -254,7 +172,7 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 AfterStep(dt, Qnew );
 
                 break;
-
+*/
 
 /*
 
@@ -310,7 +228,6 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
 */
 
-/*
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
@@ -378,8 +295,6 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 break;
 
-*/
-
                 case 4:
 
                 // -- Stage 1 -- //
@@ -431,10 +346,88 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 case 5:
 
-// Coeffients chosen to optimize region of absolute stability along the
-// imaginary axis.
-//
-// rho = 8.209945182837015e-02 chosen to maximize range of abs. stab. region
+                // -- Stage 1 -- //
+                ConstructIntegratedF( dt, 
+                    1.0, 1.0/5.0,  Qnew,
+                    0.0, 0.0,      Qstar,
+                    0.0, 0.0,      Q2star,
+                    smax, F);
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qold.vget( k ) + (2.0/5.0)*dt*Lstar.vget(k);
+                    qstar.vset(k, tmp );
+                }
+                Qstar.set_t( Qnew.get_t() + (2.0/5.0)*dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qstar );
+
+                SetBndValues( Qnew   );
+                SetBndValues( Qstar  );
+                SetBndValues( Q2star );
+
+                // -- Stage 2 -- //
+                ConstructIntegratedF( dt, 
+                    1.0, -0.25, Qnew, 
+                    0.0,  0.75, Qstar,
+                    0.0,  0.00, Q2star,
+                    smax, F);
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
+                    q2star.vset(k, tmp );
+                }
+                Q2star.set_t( Qold.get_t() + dt );
+
+                SetBndValues( Qnew   );
+                SetBndValues( Qstar  );
+                SetBndValues( Q2star );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q2star );
+
+                // -- Stage 3 (final step) -- //
+                ConstructIntegratedF( dt, 
+                    1.0,  1.0/8.0,     Qnew, 
+                    0.0,  25./72.0,   Qstar,
+                    0.0,  1.0/36.0,  Q2star,
+                    smax, F);
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+                Qnew.set_t( Qold.get_t() + dt );
+
+                SetBndValues( Qnew   );
+                SetBndValues( Qstar  );
+                SetBndValues( Q2star );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+
+                /*
+                 * TODO - this section should be removed: it was the wrong
+                 * thing to try and optimize.  -DS
+                 */
+
+                /*
+                // Coeffients chosen to optimize region of absolute stability along the
+                // imaginary axis.
+                //
+                // rho = 8.209945182837015e-02 chosen to maximize range of abs. stab. region
 
                 // -- Stage 1 -- //
                 ConstructIntegratedF( 2.0/5.0*dt, 
@@ -480,6 +473,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 // Perform any extra work required:
                 AfterStep(dt, Qstar );
+
+                */
 
                 break;
 

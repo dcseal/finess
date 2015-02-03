@@ -25,5 +25,16 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     title = "".join((tmp1,"     [FINESS]"))
     plt.title(title)
     plt.draw()
+
+    plt.figure(2)
+    plt.clf()
+    plt.gca().set_aspect('auto')
+    plt.gca().set_xlim([xc[0],xc[mx-1]])
+    plt.gca().set_ylim([-0.003,0.003])
+    plt.plot(xc,qsoln[:,m]-qex,'bo')
+    tmp1 = "".join(("q(t,x) at t = ",str(time)))
+    title = "".join((tmp1,"     [FINESS]"))
+    plt.title(title)
+    plt.draw()
     
 #----------------------------------------------------------
