@@ -52,7 +52,7 @@ def main( ):
         minq = min( data[:,2] )
         maxq = max( data[:,3] )
         dtv  = max( tv[1:] - tv[0:len(tv)-1] )
-        print("%2.3f;    %2.5e;    %2.5e;    %2.5e" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) )
+        print("%2.15e;    %2.5e;    %2.5e;    %2.5e" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) )
         fids.write( "%2.3f    %2.15e    %2.5e    %2.5e\n" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) )
 
         tvd_vec[i] = dtv
