@@ -60,8 +60,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
     // Intermediate storage (for three stage methods)
     StateVars Q2star( t, mx, meqn, maux, mbc );
-    dTensorBC2& q2star   = Qstar.ref_q();
-    dTensorBC2& aux2star = Qstar.ref_aux();
+    dTensorBC2& q2star   = Q2star.ref_q();
+    dTensorBC2& aux2star = Q2star.ref_aux();
     Q2star.copyfrom( Qnew );
 
     // Right hand side of ODE and time-averaged flux function
@@ -346,6 +346,13 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 case 5:
 
+                // This is a three-stage, fifth-order non-SSP method.  It has 
+                // negative coefficients. Coefficients can be found
+                // in D.C. Seal, Y. Güçlü and A.J. Christlieb. "High-order
+                // multiderivative time integrators for hyperbolic
+                // conservation laws", J. Sci. Comp., Vol. 60, Issue 1, pp
+                // 101-140, 2014.
+
                 // -- Stage 1 -- //
                 ConstructIntegratedF( dt, 
                     1.0, 1.0/5.0,  Qnew,
@@ -401,6 +408,7 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                     0.0,  1.0/36.0,  Q2star,
                     smax, F);
                 ConstructLxWL( aux, qnew, F, Lstar, smax);
+
 
                 // Update the solution:
 #pragma omp parallel for
