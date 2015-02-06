@@ -118,12 +118,32 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 case 3:
 
-/*
-                // -- Stage 1 -- //
+                // In this section, we have two third-order methods with and
+                // without Shu-Osher decomposition:
+                //
+                // (1) (Without a “Shu-Osher” decomposition) 
+                //
+                // y* = y^n + 2/3*dt W( f^n + dt/3 \dot{f}^n )
+                // u^{n+1} = u^n + dt * W( 5/8 f^n + 3/8 f* + dt/8 *( \dof{f} + \dot{f*} ) )
+                //
+                // This First method exhibits an increase in total variation
+                // for any positive CFL number.
+                //
+                // (2) (With a “Shu-Osher” decomposition)
+                //
+                // y* = y^n + 2/3*dt W( f^n + dt/3 \dot{f}^n )
+                // u^{n+1} = 7/16 u^n + 9/16 y* + dt * W( 1/4 f^n + 3/8 f* + dt/8 \dof{f*} )
 
+
+                // ----------------------------- //
+                // No Shu-Osher decomposition
+                // ----------------------------- //
+
+                // -- Stage 1 -- //
+/*
                 ConstructIntegratedF( dt, 
-                    1.0, 0.5, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
+                    1.0, 1.0/3.0, aux,     qnew, 
+                    0.0, 0.0,     auxstar, qstar,
                     smax, F);
 
                 // Update the solution:
@@ -131,7 +151,7 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
-                    double tmp = qnew.vget( k ) + A21*dt*Lstar.vget(k);
+                    double tmp = qnew.vget( k ) + (2./3.)*dt*Lstar.vget(k);
                     qstar.vset(k, tmp );
                 }
 
@@ -144,25 +164,19 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // -- Stage 2 -- //
 
                 // Construct a new right hand side
-                ConstructL( Qnew, Lstar, smax);
-                // Update (part) of the solution:
+                ConstructIntegratedF( dt, 
+                    5.0/8.0, 1.0/8.0, aux,     qnew, 
+                    3.0/8.0, 1.0/8.0, auxstar, qstar,
+                    smax, F);
+                ConstructLxWL( auxstar, qstar, F, Lstar, smax);
+
+                // Update the solution:
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
                     double tmp = qold.vget( k ) + dt*Lstar.vget(k);
                     qnew.vset(k, tmp );
                 }
-
-                ConstructL( Qstar, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = (1./3.)*( qstar.vget( k ) + dt*Lstar.vget(k));
-                    qnew.vset(k, 2./3.*qnew.vget(k) + tmp );
-                }
-
                 Qnew.set_t( Qnew.get_t() + dt );
 
                 SetBndValues( Qnew  );
@@ -174,59 +188,9 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 break;
 */
 
-/*
-
-                // -- Stage 1 -- //
-
-                ConstructIntegratedF( dt, 
-                    A21, Ahat21, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
-                    smax, F);
-
-                // Update the solution:
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qnew.vget( k ) + A21*dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
-                }
-
-                // Perform any extra work required:
-                AfterStep(dt, Qstar );
-
-                SetBndValues(Qnew);
-                SetBndValues(Qstar);
-
-                // -- Stage 2 -- //
-
-                ConstructIntegratedF( dt, 
-                    b1, bhat1, aux, qnew, 
-                    b2, bhat2, auxstar, qstar,
-                    smax, F);
-
-                // Construct a new right hand side
-                ConstructLxWL( aux, qstar, F, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
-                    qnew.vset(k, tmp );
-                }
-
-                Qnew.set_t( Qnew.get_t() + dt );
-
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qnew );
-
-                break;
-
-*/
+                // ----------------------------- //
+                // With a Shu-Osher decomposition
+                // ----------------------------- //
 
                 // -- Stage 1 -- //
 
@@ -252,16 +216,34 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 // -- Stage 2 -- //
 
-//              ConstructIntegratedF( dt, 
-//                  4./7., 0., aux, qnew, 
-//                  0.0, 0.0, auxstar, qstar,
-//                  smax, F);
-                ConstructL( Qnew, Lstar, smax);
+                // Update the solution:
+                ConstructIntegratedF( dt, 
+                    0.25,      0.0, aux, qnew, 
+                    3.0/8.0, 1./8., auxstar, qstar,
+                    smax, F);
 
-                // Construct a new right hand side
-//              ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( auxstar, qstar, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (7.*qold.vget( k ) + 9.*qstar.vget(k))/16.;
+                    tmp += dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+                Qnew.set_t( Qnew.get_t() + dt );
+
+                SetBndValues( Qnew  );
+                SetBndValues( Qstar );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+
+                break;
+
+/*
 
                 // Update the solution:
+                ConstructL( Qnew, Lstar, smax);
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
@@ -294,6 +276,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 AfterStep(dt, Qnew );
 
                 break;
+*/
+
 
                 case 4:
 
