@@ -12,11 +12,10 @@ void ConstructL( const StateVars& Q, dTensorBC2& Lstar, dTensorBC1& smax);
 using namespace std;
 
 // -------------------------------------------------------------------------- //
-// Two-stage multiderivative time integration.  Currently, 
-// this routine supports a fourth and fifth-order method.
+// Two-stage multiderivative time integration.
 //
-// One needs to have a Jacobian defined in DFlux in order to be able to use 
-// this routine.
+// This is an experimental routine that uses a Shu-Osher decomposition of the
+// time stepping to update the solution.
 //
 // See also: FinSolveRK, FinSolveLxW, FinSolveSDC, and FinSolveUser other solvers.
 // -------------------------------------------------------------------------- //
@@ -51,10 +50,20 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2& auxold = Qold.ref_aux();
 
     // Intermediate storage
-    StateVars Qstar( t, mx, meqn, maux, mbc );
-    dTensorBC2& qstar   = Qstar.ref_q();
-    dTensorBC2& auxstar = Qstar.ref_aux();
-    Qstar.copyfrom( Qnew );
+    StateVars Q1( t, mx, meqn, maux, mbc );
+    dTensorBC2& q1 = Q1.ref_q();
+    dTensorBC2& a1 = Q1.ref_aux();
+    Q1.copyfrom( Qnew );
+
+    StateVars Q2( t, mx, meqn, maux, mbc );
+    dTensorBC2& q2 = Q2.ref_q();
+    dTensorBC2& a2 = Q2.ref_aux();
+    Q2.copyfrom( Qnew );
+
+    StateVars Q3( t, mx, meqn, maux, mbc );
+    dTensorBC2& q3 = Q3.ref_q();
+    dTensorBC2& a3 = Q3.ref_aux();
+    Q3.copyfrom( Qnew );
 
     // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
@@ -67,21 +76,13 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2  F2(mx, meqn, mbc);
 
     // Coefficients for the third-order method
-    const double A21    = 6.666666666666666e-01;
-    const double A31    = 0.0;
-    const double A32    = 0.0;
+    const double p21    = 0.618033988749895;
+    const double p31    = 0.271650617292849;
+    const double p32    = 0.318260723259995;
 
-    const double Ahat21 = 2.222222222222222e-01;
-    const double Ahat31 = 0.0;
-    const double Ahat32 = 0.0;
-
-    const double b1     = 6.250000000000000e-01;
-    const double b2     = 3.749999999999999e-01;
-    const double b3     = 0.0;
-
-    const double bhat1  = 1.250000000000000e-01;
-    const double bhat2  = 1.250000000000000e-01;
-    const double bhat3  = 0.0;
+    const double q21 = 0.381966011250105;
+    const double q31 = 0.000034591988708;
+    const double q32 = 0.410054067458449;
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -126,19 +127,26 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             BeforeFullTimeStep(dt, Qold, Qnew );
 
             SetBndValues( Qnew  );
-            SetBndValues( Qstar );
+            SetBndValues( Q1    );
+            SetBndValues( Q2    );
+            SetBndValues( Q3    );
 
+            double r = 0.;
+            double rsqd_div_ksqd = 0.;
             switch( global_ini_params.get_time_order() )
             {
 
-// EXPERIMENTAL CASE!
-                case 1:
+                case 3:
+
+                // Coefficient from optimal Shu-Osher representation
+                r = 1.04;
+                rsqd_div_ksqd = r*r / 0.5;
 
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
-                    A21, Ahat21, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
+                    p21/r, q21/rsqd_div_ksqd, aux, qnew, 
+                    0.0, 0.0,     a1, q1,
                     smax, F);
 
                 // Update the solution:
@@ -147,277 +155,20 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 for( int k=0; k < numel; k++ )
                 {
                     double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
+                    q1.vset(k, tmp );
                 }
+                Q1.set_t( Qnew.get_t() + dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, Qstar );
+                AfterStep(dt, Q1 );
 
                 SetBndValues(Qnew);
-                SetBndValues(Qstar);
-
-                // -- Stage 2 -- //
-
-                ConstructIntegratedF( dt, 
-                    b1, bhat1, aux, qnew, 
-                    b2, bhat2, auxstar, qstar,
-                    smax, F);
-
-                // Construct a new right hand side
-                ConstructLxWL( aux, qstar, F, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
-                    qnew.vset(k, tmp );
-                }
-
-                Qnew.set_t( Qnew.get_t() + dt );
-
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qnew );
-
-                break;
-
-/* Experimental case! */
-/*
-
-                case 3:
-
-                // -- Stage 1 -- //
-                ConstructIntegratedF( dt, 
-                    1.0, 1./3., aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
-                    smax, F);
-
-                // Update the solution:
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qnew.vget( k ) + (2.0*dt/3.0)*Lstar.vget(k);
-                    qstar.vset(k, tmp );
-                }
-
-                // Perform any extra work required:
-                AfterStep(dt, Qstar );
-
-                SetBndValues(Qnew);
-                SetBndValues(Qstar);
-
-                // Stage 2: option C (two WENO reconstructions)
-                ConstructIntegratedF( dt, 
-                    0.25,       0.,    aux, qnew, 
-                    3./8.,      (1./8.), auxstar, qstar,
-                    smax, F);
-
-                // Construct a new right hand side
-                ConstructLxWL( aux, qstar, F, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = (7./16.)*qold.vget( k ) + (9./16.)*qstar.vget(k) 
-                         + dt*( Lstar.vget(k) );
-                    qnew.vset(k, tmp );
-                }
-
-                Qnew.set_t( Qnew.get_t() + dt );
-
-                SetBndValues( Qnew  );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qnew );
-
-                break;
-*/
-
-/* A version of Option C that "works".
- */
-
-/*
-                case 3:
-
-                // -- Stage 1 -- //
-                ConstructIntegratedF( dt, 
-                    1.0, 1./3., aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
-                    smax, F);
-
-                // Update the solution:
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qnew.vget( k ) + (2.0*dt/3.0)*Lstar.vget(k);
-                    qstar.vset(k, tmp );
-                }
-
-                // Perform any extra work required:
-                AfterStep(dt, Qstar );
-
-                SetBndValues(Qnew);
-                SetBndValues(Qstar);
-
-                // Stage 2: option C (two WENO reconstructions)
-                ConstructL( Qnew, L1, smax);
-
-                ConstructIntegratedF( dt, 
-                    0.,       0.,    aux, qnew, 
-                    1.,    1./3., auxstar, qstar,
-                    smax, F2);
-
-                // Construct a new right hand side
-                ConstructLxWL( aux, qstar, F2, L2, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = (7./16.)*qold.vget( k ) + (9./16.)*qstar.vget(k) 
-                         + dt*( (1./4.)*L1.vget(k) + (3./8.)*L2.vget(k) );
-                    qnew.vset(k, tmp );
-                }
-
-                Qnew.set_t( Qnew.get_t() + dt );
-
-                SetBndValues( Qnew  );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qnew );
-
-                break;
-*/
-
-/* A version of Option C that "works".  This is through clever manipulation of
- * the various parts of dt that show up in each integral.
- */
-/*
-                case 3:
-
-                // -- Stage 1 -- //
-
-                ConstructIntegratedF( dt, 
-                    1.0, 1./3., aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
-                    smax, F);
-
-                // Update the solution:
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qnew.vget( k ) + (2.0*dt/3.0)*Lstar.vget(k);
-                    qstar.vset(k, tmp );
-                }
-
-                // Perform any extra work required:
-                AfterStep(dt, Qstar );
-
-                SetBndValues(Qnew);
-                SetBndValues(Qstar);
-
-                // -- Stage 2 -- //
-                ConstructL( Qnew, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qold.vget( k ) + (4./7.)*dt*Lstar.vget(k);
-                    qnew.vset(k, 7.*tmp/16. );
-                }
-
-                ConstructIntegratedF( dt, 
-                    0.0, 0.0, aux, qnew, 
-                    1., 1./3., auxstar, qstar,
-                    smax, F);
-
-                // Construct a new right hand side
-                ConstructLxWL( aux, qstar, F, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = ( qstar.vget( k ) + (2.*dt/3.)*Lstar.vget(k) )*9.0/16.0;
-                    qnew.vset(k, qnew.vget(k) + tmp );
-                }
-
-                Qnew.set_t( Qnew.get_t() + dt );
-
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qnew );
-
-                break;
-*/
-
-                case 3:
-
-                // -- Stage 1 -- //
-
-                ConstructIntegratedF( dt, 
-                    1.,  1./3., aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
-                    smax, F);
-
-                // Update the solution:
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qnew.vget( k ) + (2.*dt/3.)*Lstar.vget(k);
-                    qstar.vset(k, tmp );
-                }
-
-                // Perform any extra work required:
-                AfterStep(dt, Qstar );
-
-                SetBndValues(Qnew);
-                SetBndValues(Qstar);
+                SetBndValues(Q1);
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
-                    5./8.,  1./8., aux, qnew, 
-                    3./8.,  1./8., auxstar, qstar,
-                    smax, F);
-
-                // Construct a new right hand side
-                ConstructLxWL( aux, qstar, F, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
-                    qnew.vset(k, tmp );
-                }
-
-                Qnew.set_t( Qnew.get_t() + dt );
-
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qnew );
-
-                break;
-
-                case 4:
-
-                // -- Stage 1 -- //
-                ConstructIntegratedF( dt, 
-                    1.0, 0.25, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
+                    p31/r, q31/rsqd_div_ksqd, aux, qnew, 
+                    p32/r, q32/rsqd_div_ksqd, a1,    q1,
                     smax, F);
 
                 // Update the solution:
@@ -425,93 +176,15 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
-                    double tmp = qnew.vget( k ) + 0.5*dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
+                    double tmp = (p31+q31)*qnew.vget(k) + (p32+q32)*q1.vget(k) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
                 }
+                Qnew.set_t( Qnew.get_t() + dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, Qstar );
+                AfterStep(dt, Qnew );
 
                 SetBndValues(Qnew);
-                SetBndValues(Qstar);
-
-                // -- Stage 2 -- //
-                ConstructIntegratedF( dt, 
-                    1.0, (1.0/6.0), aux, qnew, 
-                    0.0, (1.0/3.0), auxstar, qstar,
-                    smax, F);
-
-                // Construct a new right hand side
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-
-                // Update the solution:
-  #pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
-                    qnew.vset(k, tmp );
-                }
-                Qnew.set_t( Qnew.get_t() + dt );
-
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qnew );
-
-                break;
-
-                case 5:
-
-// Coeffients chosen to optimize region of absolute stability along the
-// imaginary axis.
-//
-// rho = 8.209945182837015e-02 chosen to maximize range of abs. stab. region
-
-                // -- Stage 1 -- //
-                ConstructIntegratedF( 2.0/5.0*dt, 
-                    1.0, 0.5, 125./8.*8.209945182837015e-02, aux, qnew, 
-                    0.0, 0.0, 0.0,                           auxstar, qstar,
-                    smax, F);
-
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qnew.vget( k ) + (2.0/5.0*dt)*Lstar.vget(k);
-                    qstar.vset(k, tmp );
-                }
-                Qstar.set_t( Qnew.get_t() + (2.0/5.0)*dt );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qstar );
-
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
-                // -- Stage 2 -- //
-                ConstructIntegratedF( dt, 
-                    1.0, 0.5, (1.0/16.0),     aux, qnew, 
-                    0.0, 0.0, (5.0/48.0), auxstar, qstar,
-                    smax, F);
-                ConstructLxWL( auxstar, qstar, F, Lstar, smax);
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int k=0; k < numel; k++ )
-                {
-                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
-                    qnew.vset(k, tmp );
-                }
-                Qnew.set_t( Qold.get_t() + dt );
-
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
-                // Perform any extra work required:
-                AfterStep(dt, Qstar );
 
                 break;
 
