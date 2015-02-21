@@ -67,18 +67,14 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 
     // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
-    dTensorBC2   L1(mx, meqn, mbc);
-    dTensorBC2   L2(mx, meqn, mbc);
 
     // Time-averaged flux function
     dTensorBC2   F(mx, meqn, mbc);
-    dTensorBC2  F1(mx, meqn, mbc);
-    dTensorBC2  F2(mx, meqn, mbc);
 
     // Coefficients for the third-order method
-    const double p21    = 0.618033988749895;
-    const double p31    = 0.271650617292849;
-    const double p32    = 0.318260723259995;
+    const double p21 = 0.618033988749895;
+    const double p31 = 0.271650617292849;
+    const double p32 = 0.318260723259995;
 
     const double q21 = 0.381966011250105;
     const double q31 = 0.000034591988708;
