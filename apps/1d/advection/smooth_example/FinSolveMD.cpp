@@ -262,7 +262,6 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                     b3, bhat3, Q3,
                     smax, F);
 
-/*
                 // Construct a better "approximation" for what to plug into
                 // solver
 #pragma omp parallel for
@@ -289,7 +288,7 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 AfterStep(dt, Qnew );
 
                 SetBndValues(Qnew);
-*/
+
                 break;
 
                 default:
