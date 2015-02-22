@@ -67,18 +67,14 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 
     // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
-    dTensorBC2   L1(mx, meqn, mbc);
-    dTensorBC2   L2(mx, meqn, mbc);
 
     // Time-averaged flux function
     dTensorBC2   F(mx, meqn, mbc);
-    dTensorBC2  F1(mx, meqn, mbc);
-    dTensorBC2  F2(mx, meqn, mbc);
 
     // Coefficients for the third-order method
-    const double p21    = 0.618033988749895;
-    const double p31    = 0.271650617292849;
-    const double p32    = 0.318260723259995;
+    const double p21 = 0.618033988749895;
+    const double p31 = 0.271650617292849;
+    const double p32 = 0.318260723259995;
 
     const double q21 = 0.381966011250105;
     const double q31 = 0.000034591988708;
@@ -145,8 +141,8 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
-                    p21/r, q21/rsqd_div_ksqd, aux, qnew, 
-                    0.0, 0.0,     a1, q1,
+                    p21/r, q21/rsqd_div_ksqd, Qnew, 
+                    0.0, 0.0, Q1,
                     smax, F);
 
                 // Update the solution:
@@ -167,12 +163,12 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
-                    p31/r, q31/rsqd_div_ksqd, aux, qnew, 
-                    p32/r, q32/rsqd_div_ksqd, a1,    q1,
+                    p31/r, q31/rsqd_div_ksqd, Qnew, 
+                    p32/r, q32/rsqd_div_ksqd, Q1,
                     smax, F);
 
                 // Update the solution:
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( a1, q1, F, Lstar, smax);
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
@@ -185,6 +181,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 AfterStep(dt, Qnew );
 
                 SetBndValues(Qnew);
+                SetBndValues(Q1);
 
                 break;
 

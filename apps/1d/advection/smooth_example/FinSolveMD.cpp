@@ -51,10 +51,21 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2& auxold = Qold.ref_aux();
 
     // Intermediate storage
-    StateVars Qstar( t, mx, meqn, maux, mbc );
-    dTensorBC2& qstar   = Qstar.ref_q();
-    dTensorBC2& auxstar = Qstar.ref_aux();
-    Qstar.copyfrom( Qnew );
+    StateVars Q2( t, mx, meqn, maux, mbc );
+    dTensorBC2& q2      = Q2.ref_q();
+    dTensorBC2& aux2    = Q2.ref_aux();
+    Q2.copyfrom( Qnew );
+
+    StateVars Q3( t, mx, meqn, maux, mbc );
+    dTensorBC2& q3      = Q3.ref_q();
+    dTensorBC2& aux3    = Q3.ref_aux();
+    Q3.copyfrom( Qnew );
+
+    // Needed for rejecting a time step
+    StateVars Qtmp( t, mx, meqn, maux, mbc );
+    dTensorBC2& qtmp   = Qtmp.ref_q();
+    dTensorBC2& auxtmp = Qtmp.ref_aux();
+    Qtmp.copyfrom( Qnew );
 
     // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
@@ -63,14 +74,31 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2   F(mx, meqn, mbc);
 
     // Coefficients for the two-stage, third-order method
-    const double A21    = 0.594243660278112;
-    const double Ahat21 = 0.176562763890364;
+//  const double A21    = 0.594243660278112;
+//  const double Ahat21 = 0.176562763890364;
 
-    const double b1     = 0.693990265009012;
-    const double b2     = 0.306009734990988;
+//  const double b1     = 0.693990265009012;
+//  const double b2     = 0.306009734990988;
 
-    const double bhat1  = 0.128609262485451; 
-    const double bhat2  = 0.189546392512770;
+//  const double bhat1  = 0.128609262485451; 
+//  const double bhat2  = 0.189546392512770;
+
+    // Coefficients for the three-stage, fourth-order method
+    const double A21    = 0.443752012194422;
+    const double A31    = 0.543193299768317;
+    const double A32    = 0.149202742858795;
+
+    const double Ahat21 = 0.098457924163299;
+    const double Ahat31 = 0.062758211639901;
+    const double Ahat32 = 0.110738910914425;
+
+    const double b1     = 0.515040964378407;
+    const double b2     = 0.178821699719783;
+    const double b3     = 0.306137335901811;
+
+    const double bhat1  = 0.072864982225864;
+    const double bhat2  = 0.073840478463180;
+    const double bhat3  = 0.061973770357455;
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -115,7 +143,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
             BeforeFullTimeStep(dt, Qold, Qnew );
 
             SetBndValues( Qnew  );
-            SetBndValues( Qstar );
+            SetBndValues( Q2    );
+            SetBndValues( Q3    );
 
             switch( global_ini_params.get_time_order() )
             {
@@ -125,8 +154,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
-                    A21, Ahat21, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
+                    A21, Ahat21, Qnew, 
+                    0.0, 0.0,    Q2,
                     smax, F);
 
                 // Update the solution:
@@ -135,20 +164,20 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 for( int k=0; k < numel; k++ )
                 {
                     double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
+                    q2.vset(k, tmp );
                 }
-                Qstar.set_t( Qnew.get_t() + A21*dt );
+                Q2.set_t( Qnew.get_t() + A21*dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, Qstar );
+                AfterStep(dt, Q2 );
 
                 SetBndValues(Qnew);
-                SetBndValues(Qstar);
+                SetBndValues(Q2);
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
-                    b1, bhat1, aux,     qnew, 
-                    b2, bhat2, auxstar, qstar,
+                    b1, bhat1, Qnew, 
+                    b2, bhat2, Q2,
                     smax, F);
 
                 // Update the solution:
@@ -165,16 +194,17 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 AfterStep(dt, Qnew );
 
                 SetBndValues(Qnew);
-                SetBndValues(Qstar);
+                SetBndValues(Q2);
 
                 break;
 
                 case 4:
 
                 // -- Stage 1 -- //
+
                 ConstructIntegratedF( dt, 
-                    1.0, 0.25, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
+                    A21, Ahat21, Qnew, 
+                    0.0, 0.0,    Q2,
                     smax, F);
 
                 // Update the solution:
@@ -182,40 +212,84 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
-                    double tmp = qnew.vget( k ) + 0.5*dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q2.vset(k, tmp );
                 }
+                Q2.set_t( Qnew.get_t() + dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, Qstar );
+                AfterStep(dt, Q2 );
 
                 SetBndValues(Qnew);
-                SetBndValues(Qstar);
+                SetBndValues(Q2);
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
-                    1.0, (1.0/6.0), aux, qnew, 
-                    0.0, (1.0/3.0), auxstar, qstar,
+                    A31, Ahat31, Qnew, 
+                    A32, Ahat32, Q2,
                     smax, F);
 
-                // Construct a new right hand side
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-
                 // Update the solution:
-  #pragma omp parallel for
+#pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
-                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
+                    double tmp = A31*qnew.vget(k) + A32*q2.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+                Qtmp.set_t( Qnew.get_t() + dt );
+
+                // ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qtmp, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q3.vset(k, tmp );
+                }
+                Q3.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q3 );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+                SetBndValues(Q3);
+
+                // -- Stage 3 -- //
+                ConstructIntegratedF( dt, 
+                    b1, bhat1, Qnew, 
+                    b2, bhat2, Q2,
+                    b3, bhat3, Q3,
+                    smax, F);
+
+/*
+                // Construct a better "approximation" for what to plug into
+                // solver
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = b1*qnew.vget(k)+b2*q2.vget(k)+b3*q3.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+                Qtmp.set_t( Qnew.get_t() + dt );
+
+
+                // Update the solution:
+                // ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qtmp, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
                     qnew.vset(k, tmp );
                 }
                 Qnew.set_t( Qnew.get_t() + dt );
 
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
-
                 // Perform any extra work required:
                 AfterStep(dt, Qnew );
 
+                SetBndValues(Qnew);
+*/
                 break;
 
                 default:

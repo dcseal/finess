@@ -24,9 +24,7 @@ void AfterFullTimeStep(double dt,
 
 // ------------------------------------------------------------
 // LxW functions -- See LaxWendroff/
-void ConstructIntegratedF( double dt, 
-    dTensorBC2& aux, dTensorBC2& q,
-    dTensorBC1& smax, dTensorBC2& F);
+void ConstructIntegratedF( double dt, const StateVars& Q, dTensorBC1& smax, dTensorBC2& F);
 void ConstructLxWL(
         const dTensorBC2& aux,
         const dTensorBC2& q,

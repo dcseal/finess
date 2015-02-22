@@ -152,8 +152,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
-                    A21, Ahat21, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
+                    A21, Ahat21, Qnew, 
+                    0.0, 0.0,    Qstar,
                     smax, F);
 
                 // Update the solution:
@@ -174,8 +174,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // -- Stage 2 -- //
 
                 ConstructIntegratedF( dt, 
-                    b1, bhat1, aux, qnew, 
-                    b2, bhat2, auxstar, qstar,
+                    b1, bhat1, Qnew, 
+                    b2, bhat2, Qstar,
                     smax, F);
 
                 // Construct a new right hand side
@@ -204,8 +204,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
-                    1.0, 0.5, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
+                    1.0, 0.5, Qnew, 
+                    0.0, 0.0, Qstar,
                     smax, F);
 
                 // Update the solution:
@@ -384,8 +384,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 // -- Stage 1 -- //
                 ConstructIntegratedF( dt, 
-                    1.0, 0.25, aux,     qnew, 
-                    0.0, 0.0,  auxstar, qstar,
+                    1.0, 0.25, Qnew, 
+                    0.0, 0.0,  Qstar,
                     smax, F);
 
                 // Update the solution:
@@ -405,8 +405,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
-                    1.0, (1.0/6.0), aux, qnew, 
-                    0.0, (1.0/3.0), auxstar, qstar,
+                    1.0, (1.0/6.0), Qnew, 
+                    0.0, (1.0/3.0), Qstar,
                     smax, F);
 
                 // Construct a new right hand side
@@ -438,8 +438,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 // -- Stage 1 -- //
                 ConstructIntegratedF( 2.0/5.0*dt, 
-                    1.0, 0.5, 125./8.*8.209945182837015e-02, aux, qnew, 
-                    0.0, 0.0, 0.0,                           auxstar, qstar,
+                    1.0, 0.5, 125./8.*8.209945182837015e-02, Qnew, 
+                    0.0, 0.0, 0.0,                           Qstar,
                     smax, F);
 
                 ConstructLxWL( aux, qnew, F, Lstar, smax);
@@ -461,8 +461,8 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
-                    1.0, 0.5, (1.0/16.0),     aux, qnew, 
-                    0.0, 0.0, (5.0/48.0), auxstar, qstar,
+                    1.0, 0.5, (1.0/16.0), Qnew, 
+                    0.0, 0.0, (5.0/48.0), Qstar,
                     smax, F);
                 ConstructLxWL( auxstar, qstar, F, Lstar, smax);
 

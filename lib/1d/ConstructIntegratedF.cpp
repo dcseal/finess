@@ -51,10 +51,11 @@ void SampleFunction(
 //     q^{n+1} = q^n - \dt F_x.
 //
 // See also: DFluxFunc and D2FluxFunc.
-void ConstructIntegratedF( double dt, 
-    dTensorBC2& aux, dTensorBC2& q,
-    dTensorBC1& smax, dTensorBC2& F)
+void ConstructIntegratedF( double dt, const StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
 {
+
+    const dTensorBC2& q   = Q.const_ref_q();
+    const dTensorBC2& aux = Q.const_ref_aux();
 
     const int mx     = q.getsize(1);
     const int meqn   = q.getsize(2);
@@ -328,12 +329,16 @@ void LocalIntegrate(
 
 // Two stage, two-derivative method
 void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1,
-    dTensorBC2& aux1, dTensorBC2& q1,
-    double alpha2, double beta2,
-    dTensorBC2& aux2, dTensorBC2& q2,
+    double alpha1, double beta1, const StateVars& Q1,
+    double alpha2, double beta2, const StateVars& Q2,
     dTensorBC1& smax, dTensorBC2& F)
 {
+
+    const dTensorBC2& q1 = Q1.const_ref_q();
+    const dTensorBC2& q2 = Q2.const_ref_q();
+
+    const dTensorBC2& aux1 = Q1.const_ref_aux();
+    const dTensorBC2& aux2 = Q2.const_ref_aux();
 
     const int mx     = q1.getsize(1);
     const int meqn   = q1.getsize(2);
@@ -467,12 +472,16 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
 // Two-stage, three derivative method
 void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1, double charlie1,
-    dTensorBC2& aux1, dTensorBC2& q1,
-    double alpha2, double beta2, double charlie2,
-    dTensorBC2& aux2, dTensorBC2& q2,
+    double alpha1, double beta1, double charlie1, const StateVars& Q1,
+    double alpha2, double beta2, double charlie2, const StateVars& Q2,
     dTensorBC1& smax, dTensorBC2& F)
 {
+
+    const dTensorBC2& q1 = Q1.const_ref_q();
+    const dTensorBC2& q2 = Q2.const_ref_q();
+
+    const dTensorBC2& aux1 = Q1.const_ref_aux();
+    const dTensorBC2& aux2 = Q2.const_ref_aux();
 
     const int mx     = q1.getsize(1);
     const int meqn   = q1.getsize(2);

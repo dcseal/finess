@@ -107,7 +107,7 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             // Take a full time step of size dt
             BeforeStep(dt, Qnew );
             SetBndValues( Qnew  );
-            ConstructIntegratedF( dt, aux, qnew, smax, F);
+            ConstructIntegratedF( dt, Qnew, smax, F);
 
             if( global_ini_params.get_mpp_limiter() )
             {

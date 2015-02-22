@@ -27,9 +27,7 @@ void AfterFullTimeStep(double dt,
 
 // ------------------------------------------------------------
 // Taylor series integration
-void ConstructIntegratedF( double dt, 
-    dTensorBC2& aux, dTensorBC2& q,
-    dTensorBC1& smax, dTensorBC2& F);
+void ConstructIntegratedF( double dt, const StateVars& Q, dTensorBC1& smax, dTensorBC2& F);
 // ------------------------------------------------------------
 
 // ------------------------------------------------------------
@@ -38,18 +36,19 @@ void ConstructIntegratedF( double dt,
 // These functions are for the two-stage methods.  One contains
 // two-derivatives, and the second contains three derivatives.
 void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1,
-    dTensorBC2& aux1, dTensorBC2& q1,
-    double alpha2, double beta2,
-    dTensorBC2& aux2, dTensorBC2& q2,
+    double alpha1, double beta1, const StateVars& Q1,
+    double alpha2, double beta2, const StateVars& Q2,
     dTensorBC1& smax, dTensorBC2& F);
 
 void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1, double charlie1,
-    dTensorBC2& aux1, dTensorBC2& q1,
-    double alpha2, double beta2, double charlie2,
-    dTensorBC2& aux2, dTensorBC2& q2,
+    double alpha1, double beta1, double charlie1, const StateVars& Q1,
+    double alpha2, double beta2, double charlie2, const StateVars& Q2,
     dTensorBC1& smax, dTensorBC2& F);
-// ------------------------------------------------------------
+
+void ConstructIntegratedF( double dt, 
+    double alpha1, double beta1, const StateVars& Q1,
+    double alpha2, double beta2, const StateVars& Q2,
+    double alpha3, double beta3, const StateVars& Q3,
+    dTensorBC1& smax, dTensorBC2& F);
 
 #endif 

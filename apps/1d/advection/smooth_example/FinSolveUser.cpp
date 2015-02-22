@@ -141,8 +141,8 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
-                    p21/r, q21/rsqd_div_ksqd, aux, qnew, 
-                    0.0, 0.0,     a1, q1,
+                    p21/r, q21/rsqd_div_ksqd, Qnew, 
+                    0.0, 0.0,     Q1,
                     smax, F);
 
                 // Update the solution:
@@ -163,8 +163,8 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
-                    p31/r, q31/rsqd_div_ksqd, aux, qnew, 
-                    p32/r, q32/rsqd_div_ksqd, a1,    q1,
+                    p31/r, q31/rsqd_div_ksqd, Qnew, 
+                    p32/r, q32/rsqd_div_ksqd, Q1,
                     smax, F);
 
                 // Update the solution:
