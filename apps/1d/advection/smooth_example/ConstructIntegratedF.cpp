@@ -14,9 +14,9 @@
 
 // Central Finite difference approximations.  See lib/WenoReconstruct.cpp
 void Diff1      ( double dx, const dTensor2& f, dTensor1& fx );
-void Diff1NC    ( double dx, const dTensor2& f, dTensor1& fx );
-void Diff2      ( double dx, const dTensor2& f, dTensor1& fxx );   // <-- not used
-void Diff2NC    ( double dx, const dTensor2& f, dTensor1& fxx );   // <-- not used
+void Diff2      ( double dx, const dTensor2& f, dTensor1& fxx );
+//void Diff1NC    ( double dx, const dTensor2& f, dTensor1& fx );
+//void Diff2NC    ( double dx, const dTensor2& f, dTensor1& fxx );
 
 void FluxFunc  (const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
 void DFluxFunc(const dTensor1& xpts, const dTensor2& Q, const dTensor2& Aux,
@@ -110,7 +110,8 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
         // First derivative
         dTensor1 qx_val  ( meqn );
-        Diff1NC( dx, qvals, qx_val  );
+        // Diff1NC( dx, qvals, qx_val  );
+        Diff1( dx, qvals, qx_val  );
 
         // Compute the product: A f_x
         for( int m1=1; m1 <= meqn; m1++ )
@@ -145,7 +146,8 @@ const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 
         // Second derivative
         dTensor1 qxx_val  ( meqn );
-        Diff1NC( dx, qx_vals, qxx_val  );
+        // Diff1NC( dx, qx_vals, qxx_val  );
+        Diff1( dx, qx_vals, qxx_val  );
 
         for( int m=1; m<=meqn; m++ )
         {
@@ -187,9 +189,13 @@ void LocalIntegrate(
         dTensor1 fxx_val ( meqn );
 
         // Compute a FD approximation to the derivatives:
-        Diff1NC( dx, Fvals, fx_val  );
-        Diff1NC( dx, qvals, qx_val  );
-        Diff2NC( dx, Fvals, fxx_val );
+        Diff1( dx, Fvals, fx_val  );
+        Diff1( dx, qvals, qx_val  );
+        Diff2( dx, Fvals, fxx_val );
+
+//      Diff1NC( dx, Fvals, fx_val  );
+//      Diff1NC( dx, qvals, qx_val  );
+//      Diff2NC( dx, Fvals, fxx_val );
 
         // Construct the first product: A f_x:
         dTensor3 A( 1, meqn, meqn );

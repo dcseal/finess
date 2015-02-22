@@ -71,14 +71,30 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
     // Time-averaged flux function
     dTensorBC2   F(mx, meqn, mbc);
 
-    // Coefficients for the third-order method
+    // Shu-Osher coefficients for the third-order method
+//  const double p21 = 0.618033988749895;
+//  const double p31 = 0.271650617292849;
+//  const double p32 = 0.318260723259995;
+
+//  const double q21 = 0.381966011250105;
+//  const double q31 = 0.000034591988708;
+//  const double q32 = 0.410054067458449;
+
+    // Shu-Osher coefficients for the fourth-order method
     const double p21 = 0.618033988749895;
-    const double p31 = 0.271650617292849;
-    const double p32 = 0.318260723259995;
+    const double p31 = 0.362588515112176;
+    const double p32 = 0.207801573327953;
+    const double p41 = 0.144580879241747;
+    const double p42 = 0.110491604448675;
+    const double p43 = 0.426371652664792;
 
     const double q21 = 0.381966011250105;
-    const double q31 = 0.000034591988708;
-    const double q32 = 0.410054067458449;
+    const double q31 = 0.;
+    const double q32 = 0.429609911559871;
+    const double q41 = 0.078129569197367;
+    const double q42 = 0.;
+    const double q43 = 0.240426294447419;
+
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -184,6 +200,83 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 SetBndValues(Q1);
 
                 break;
+
+                case 4:
+
+                // Coefficient from optimal Shu-Osher representation
+                r = 1.392746335264198;
+                rsqd_div_ksqd = r*r / 0.5;
+
+                // -- Stage 1 -- //
+
+                ConstructIntegratedF( dt, 
+                    p21/r, q21/rsqd_div_ksqd, Qnew, 
+                    0.0, 0.0, Q2,
+                    smax, F);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q2.vset(k, tmp );
+                }
+                Q2.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q1 );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+
+                // -- Stage 2 -- //
+                ConstructIntegratedF( dt, 
+                    p31/r, q31/rsqd_div_ksqd, Qnew, 
+                    p32/r, q32/rsqd_div_ksqd, Q2,
+                    smax, F);
+
+                // Update the solution:  (// TODO - use combination of prev. values?)
+                ConstructLxWL( a1, q1, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (p31+q31)*qnew.vget(k) + (p32+q32)*q2.vget(k) + dt*Lstar.vget(k);
+                    q3.vset(k, tmp );
+                }
+                Q3.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+                SetBndValues(Q3);
+
+                // -- Stage 3 -- //
+                ConstructIntegratedF( dt, 
+                    p41/r, q41/rsqd_div_ksqd, Qnew, 
+                    p42/r, q42/rsqd_div_ksqd, Q2,
+                    p43/r, q43/rsqd_div_ksqd, Q3,
+                    smax, F);
+
+                // Update the solution:  (// TODO - use combination of prev. values?)
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (p41+q41)*qnew.vget(k) + 
+                        (p42+q42)*q2.vget(k) + (p43+q43)*q3.vget(k) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+                Qnew.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+                SetBndValues(Qnew);
+
+                break;
+
 
                 default:
                 printf("Error.  Time order %d not implemented for multiderivative\n", global_ini_params.get_time_order() );
