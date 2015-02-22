@@ -762,10 +762,17 @@ void Diff1NC( double dx, const dTensor2& g, dTensor1& fx )
         uip2 = g.get(m,5);
 
         // Compute smoothness indicators (identical for left/right values):
-        beta0 = pow(uim2-2.*uim1+ui,2);
-        beta1 = pow(uim1-2.*ui+uip1,2);
-        beta2 = pow(ui-2.*uip1+uip2,2);
 
+        // TODO - these weights do not give high-order accuracy!
+//      beta0 = pow(uim2-2.*uim1+ui,2);
+//      beta1 = pow(uim1-2.*ui+uip1,2);
+//      beta2 = pow(ui-2.*uip1+uip2,2);
+
+        // Compute smoothness indicators (identical for left/right values):
+        beta0 =(13./12.)*pow(uim2-2*uim1+ui,2)+0.25*pow(uim2-4*uim1+3*ui,2);
+        beta1 =(13./12.)*pow(uim1-2*ui+uip1,2)+0.25*pow(uim1-uip1,2);
+        beta2 =(13./12.)*pow(ui-2*uip1+uip2,2)+0.25*pow(3*ui-4*uip1+uip2,2);
+ 
         // 3rd-order reconstructions using small 3-point stencils
         u1 = ( 0.5  )*uim2 - (2.   )*uim1 + ( 1.5  )*ui;
         u2 = (-0.5  )*uim1 + (0.   )*ui   + ( 0.5  )*uip1;
@@ -838,10 +845,16 @@ void Diff2NC( double dx, const dTensor2& f, dTensor1& fxx )
         uip2 = f.get(m,5);
 
         // Compute smoothness indicators (identical for left/right values):
-        beta0 = pow(uim2-2.*uim1+ui,2);
-        beta1 = pow(uim1-2.*ui+uip1,2);
-        beta2 = pow(ui-2.*uip1+uip2,2);
+        // TODO - these weights do not give high-order accuracy!
+//      beta0 = pow(uim2-2.*uim1+ui,2);
+//      beta1 = pow(uim1-2.*ui+uip1,2);
+//      beta2 = pow(ui-2.*uip1+uip2,2);
 
+        // Compute smoothness indicators (identical for left/right values):
+        beta0 =(13./12.)*pow(uim2-2*uim1+ui,2)+0.25*pow(uim2-4*uim1+3*ui,2);
+        beta1 =(13./12.)*pow(uim1-2*ui+uip1,2)+0.25*pow(uim1-uip1,2);
+        beta2 =(13./12.)*pow(ui-2*uip1+uip2,2)+0.25*pow(3*ui-4*uip1+uip2,2);
+ 
         // 3rd-order reconstructions using small 3-point stencils
         u1 = ( 1.0  )*uim2 - (2.   )*uim1 + ( 1.0  )*ui;
         u2 = ( 1.0  )*uim1 - (2.   )*ui   + ( 1.0  )*uip1;
