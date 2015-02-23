@@ -65,13 +65,8 @@ def compute_h1_norm( u_stencil, indices ):
     # This fits the points, (x=1, p[0]), (x=2, p[1]), ...
     # p = compute_poly_fit( u_stencil, xi )
     p = sympy.poly( interpolate( u_stencil, xi ), xi )
-    print(p)
-
-#   dp  = sympy.diff(  p, xi )
-#   dpsqd = dp**2
-
-#   d2p = sympy.diff( dp, xi )
-#   d2psqd = d2p**2
+    p = p.diff( xi )
+    p = p.diff( xi )
 
 #   print( ' ' )
 #   print( u_stencil )
@@ -86,7 +81,7 @@ def compute_h1_norm( u_stencil, indices ):
 #   return tmp
     tmp = 0
     for mp in range( len( u_stencil ) ):
-        tmp = tmp + p.integrate( xi ).eval( xi, indices[1] ) - p.integrate( xi ).eval( xi, indices[0] )
+        tmp = tmp + (p**2).integrate( xi ).eval( xi, indices[1] ) - (p**2).integrate( xi ).eval( xi, indices[0] )
         p = p.diff( xi )
     return tmp
 
@@ -101,6 +96,27 @@ uip1 = sympy.symbols("uip1")
 uip2 = sympy.symbols("uip2")
 uip3 = sympy.symbols("uip3")
 
+# Three Lagrange polynomials and their derivatives:
+beta0 = compute_h1_norm( [uim2, uim1, ui], (Rational(5,2), Rational(7,2) ) ) 
+beta1 = compute_h1_norm( [uim1, ui, uip1], (Rational(3,2), Rational(5,2) ) ) 
+beta2 = compute_h1_norm( [ui, uip1, uip2], (Rational(1,2), Rational(3,2) ) ) 
+
+print('beta0 = ', beta0 )
+print('beta1 = ', beta1 )
+print('beta2 = ', beta2 )
+
+# Exact smoothness indicators:
+beta = [None]*3
+beta[0] = Rational(13,12)*(uim2-2*uim1+ui)**2 + Rational(1,4)*(uim2-4*uim1+3*ui)**2
+beta[1] = Rational(13,12)*(uim1-2*ui+uip1)**2 + Rational(1,4)*(uim1-uip1)**2
+beta[2] = Rational(13,12)*(ui-2*uip1+uip2)**2 + Rational(1,4)*(3*ui-4*uip1+uip2)**2
+
+print('exact beta[0] = ', beta[0])
+print('exact beta[1] = ', beta[1])
+print('exact beta[2] = ', beta[2])
+print( sympy.simplify( sympy.expand( beta[0] - beta0 ) ) )
+
+# Now, work out 2nd-derivative using larger stencil
 u_stencil = [ uim3, uim2, uim1, ui, uip1, uip2, uip3 ]
 
 # Compute derivative using the whole stencil:
@@ -113,19 +129,14 @@ u2 = [uim1, ui,   uip1, uip2]
 u3 = [ui,   uip1, uip2, uip3]
 u  = [u0, u1, u2, u3 ]
 
-# Three Lagrange polynomials and their derivatives:
-beta0 = compute_h1_norm( [uim2, uim1, ui], (Rational(5,2), Rational(7,2) ) ) 
-beta1 = compute_h1_norm( [uim1, ui, uip1], (Rational(3,2), Rational(5,2) ) ) 
-beta2 = compute_h1_norm( [ui, uip1, uip2], (Rational(1,2), Rational(3,2) ) ) 
+betax0 = compute_h1_norm( u0, (Rational(7,2), Rational(9,2) ) )
+betax1 = compute_h1_norm( u1, (Rational(5,2), Rational(7,2) ) )
+betax2 = compute_h1_norm( u2, (Rational(3,2), Rational(5,2) ) )
+betax3 = compute_h1_norm( u3, (Rational(1,2), Rational(3,2) ) )
 
-print('beta0 = ', beta0 )
-print('beta1 = ', beta1 )
-print('beta2 = ', beta2 )
-# Now, work out 2nd-derivative using larger stencil
+print('betax0 = ', betax0 )
+print('betax1 = ', betax1 )
+print('betax2 = ', betax2 )
+print('betax3 = ', betax3 )
 
-# Smoothness indicators
-#   eps  = sympy.symbols("epsilon")
-#   beta = [None]*3
-#   beta[0] = Rational(13,12)*(uim2-2*uim1+ui)**2 + Rational(1,4)*(uim2-4*uim1+3*ui)**2
-#   beta[1] = Rational(13,12)*(uim1-2*ui+uip1)**2 + Rational(1,4)*(uim1-uip1)**2
-#   beta[2] = Rational(13,12)*(ui-2*uip1+uip2)**2 + Rational(1,4)*(3*ui-4*uip1+uip2)**2
+
