@@ -51,10 +51,26 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2& auxold = Qold.ref_aux();
 
     // Intermediate storage
-    StateVars Qstar( t, mx, meqn, maux, mbc );
-    dTensorBC2& qstar   = Qstar.ref_q();
-    dTensorBC2& auxstar = Qstar.ref_aux();
-    Qstar.copyfrom( Qnew );
+    StateVars Q2( t, mx, meqn, maux, mbc );
+    dTensorBC2& q2      = Q2.ref_q();
+    dTensorBC2& aux2    = Q2.ref_aux();
+    Q2.copyfrom( Qnew );
+
+    StateVars Q3( t, mx, meqn, maux, mbc );
+    dTensorBC2& q3      = Q3.ref_q();
+    dTensorBC2& aux3    = Q3.ref_aux();
+    Q3.copyfrom( Qnew );
+
+    StateVars Q4( t, mx, meqn, maux, mbc );
+    dTensorBC2& q4      = Q4.ref_q();
+    dTensorBC2& aux4    = Q4.ref_aux();
+    Q4.copyfrom( Qnew );
+
+    // Needed for rejecting a time step
+    StateVars Qtmp( t, mx, meqn, maux, mbc );
+    dTensorBC2& qtmp   = Qtmp.ref_q();
+    dTensorBC2& auxtmp = Qtmp.ref_aux();
+    Qtmp.copyfrom( Qnew );
 
     // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
@@ -62,15 +78,10 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
     // Time-averaged flux function
     dTensorBC2   F(mx, meqn, mbc);
 
-    // Coefficients for the two-stage, third-order method
-    const double A21    = 0.594243660278112;
-    const double Ahat21 = 0.176562763890364;
-
-    const double b1     = 0.693990265009012;
-    const double b2     = 0.306009734990988;
-
-    const double bhat1  = 0.128609262485451; 
-    const double bhat2  = 0.189546392512770;
+    // Multiderivative Coefficients
+    double A21,A31,A32,A41,A42,A43;
+    double Ahat21,Ahat31,Ahat32,Ahat41,Ahat42,Ahat43;
+    double b1,b2,b3,b4,bhat1,bhat2,bhat3,bhat4;
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -115,18 +126,29 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
             BeforeFullTimeStep(dt, Qold, Qnew );
 
             SetBndValues( Qnew  );
-            SetBndValues( Qstar );
+            SetBndValues( Q2    );
+            SetBndValues( Q3    );
 
             switch( global_ini_params.get_time_order() )
             {
 
                 case 3:
 
+                // MD coefficients
+                A21    = 0.594243660278112;
+                Ahat21 = 0.176562763890364;
+
+                b1     = 0.693990265009012;
+                b2     = 0.306009734990988;
+
+                bhat1  = 0.128609262485451; 
+                bhat2  = 0.189546392512770;
+
                 // -- Stage 1 -- //
 
                 ConstructIntegratedF( dt, 
                     A21, Ahat21, Qnew, 
-                    0.0, 0.0,    Qstar,
+                    0.0, 0.0,    Q2,
                     smax, F);
 
                 // Update the solution:
@@ -135,20 +157,20 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 for( int k=0; k < numel; k++ )
                 {
                     double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
+                    q2.vset(k, tmp );
                 }
-                Qstar.set_t( Qnew.get_t() + A21*dt );
+                Q2.set_t( Qnew.get_t() + A21*dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, Qstar );
+                AfterStep(dt, Q2 );
 
                 SetBndValues(Qnew);
-                SetBndValues(Qstar);
+                SetBndValues(Q2);
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
                     b1, bhat1, Qnew, 
-                    b2, bhat2, Qstar,
+                    b2, bhat2, Q2,
                     smax, F);
 
                 // Update the solution:
@@ -165,16 +187,34 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 AfterStep(dt, Qnew );
 
                 SetBndValues(Qnew);
-                SetBndValues(Qstar);
+                SetBndValues(Q2);
 
                 break;
 
                 case 4:
 
+                // Coefficients for the three-stage, fourth-order method
+                A21    = 0.443752012194422;
+                A31    = 0.543193299768317;
+                A32    = 0.149202742858795;
+
+                Ahat21 = 0.098457924163299;
+                Ahat31 = 0.062758211639901;
+                Ahat32 = 0.110738910914425;
+
+                b1     = 0.515040964378407;
+                b2     = 0.178821699719783;
+                b3     = 0.306137335901811;
+
+                bhat1  = 0.072864982225864;
+                bhat2  = 0.073840478463180;
+                bhat3  = 0.061973770357455;
+
                 // -- Stage 1 -- //
+
                 ConstructIntegratedF( dt, 
-                    1.0, 0.25, Qnew, 
-                    0.0, 0.0,  Qstar,
+                    A21, Ahat21, Qnew, 
+                    0.0, 0.0,    Q2,
                     smax, F);
 
                 // Update the solution:
@@ -182,39 +222,217 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
-                    double tmp = qnew.vget( k ) + 0.5*dt*Lstar.vget(k);
-                    qstar.vset(k, tmp );
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q2.vset(k, tmp );
                 }
+                Q2.set_t( Qnew.get_t() + dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, Qstar );
+                AfterStep(dt, Q2 );
 
                 SetBndValues(Qnew);
-                SetBndValues(Qstar);
+                SetBndValues(Q2);
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
-                    1.0, (1.0/6.0), Qnew, 
-                    0.0, (1.0/3.0), Qstar,
+                    A31, Ahat31, Qnew, 
+                    A32, Ahat32, Q2,
                     smax, F);
 
-                // Construct a new right hand side
-                ConstructLxWL( aux, qnew, F, Lstar, smax);
-
                 // Update the solution:
-  #pragma omp parallel for
+#pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
-                    double tmp = qold.vget( k ) + dt*Lstar.vget(k);
+                    double tmp = A31*qnew.vget(k) + A32*q2.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+                Qtmp.set_t( Qnew.get_t() + dt );
+
+                // ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qtmp, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q3.vset(k, tmp );
+                }
+                Q3.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q3 );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+                SetBndValues(Q3);
+
+                // -- Stage 3 -- //
+                ConstructIntegratedF( dt, 
+                    b1, bhat1, Qnew, 
+                    b2, bhat2, Q2,
+                    b3, bhat3, Q3,
+                    smax, F);
+
+                // Construct a better "approximation" for what to plug into
+                // solver
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = b1*qnew.vget(k)+b2*q2.vget(k)+b3*q3.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+                Qtmp.set_t( Qnew.get_t() + dt );
+
+
+                // Update the solution:
+                // ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qtmp, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
                     qnew.vset(k, tmp );
                 }
                 Qnew.set_t( Qnew.get_t() + dt );
 
-                SetBndValues( Qnew  );
-                SetBndValues( Qstar );
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+
+                SetBndValues(Qnew);
+
+                break;
+
+                case 5:
+
+                // Coefficients for the three-stage, fourth-order method
+                A21    = 0.356316863593354;
+
+                A31    = 0.492266380771676;
+                A32    = 0.000000000000003;         // TODO - this one is dicey ...
+
+                A41    = 0.442638476851748;
+                A42    = 0.255239452348342;
+                A43    = 0.188588676801137;
+
+                Ahat21 = 0.063480853640503;
+
+                Ahat31 = 0.032332130488542;
+                Ahat32 = 0.088830964330480;
+
+                Ahat41 = 0.044377331448459;
+                Ahat42 = 0.057638945851241;
+                Ahat43 = 0.107113257968506;
+
+                b1     = 0.444990851402295;
+                b2     = 0.231370131991360;
+                b3     = 0.190870378571756;
+                b4     = 0.132768638034589;
+
+                bhat1  = 0.044923584548543;
+                bhat2  = 0.082476147903073;
+                bhat3  = 0.056553796789491;
+                bhat4  = 0.021951356600586;
+
+                // -- Stage 1 -- //
+
+                ConstructIntegratedF( dt, 
+                    A21, Ahat21, Qnew, 
+                    0.0, 0.0,    Q2,
+                    smax, F);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q2.vset(k, tmp );
+                }
+                Q2.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q2 );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+
+                // -- Stage 2 -- //
+                ConstructIntegratedF( dt, 
+                    A31, Ahat31, Qnew, 
+                    A32, Ahat32, Q2,
+                    smax, F);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = A31*qnew.vget(k) + A32*q2.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+                Qtmp.set_t( Qnew.get_t() + dt );
+
+                // ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qtmp, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q3.vset(k, tmp );
+                }
+                Q3.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q3 );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+                SetBndValues(Q3);
+
+                // -- Stage 3 -- //
+                ConstructIntegratedF( dt, 
+                    A41, Ahat41, Qnew, 
+                    A42, Ahat42, Q2,
+                    A43, Ahat43, Q3,
+                    smax, F);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+                // ConstructLxWL( aux3, q3, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q4.vset(k, tmp );
+                }
+                Q4.set_t( Qnew.get_t() + dt );
 
                 // Perform any extra work required:
                 AfterStep(dt, Qnew );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q4);
+
+                // -- Stage 4 -- //
+                ConstructIntegratedF( dt, 
+                    b1, bhat1, Qnew, 
+                    b2, bhat2, Q2,
+                    b3, bhat3, Q3,
+                    b4, bhat4, Q4,
+                    smax, F);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+                // ConstructLxWL( aux4, q4, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+                Qnew.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+                SetBndValues(Qnew);
 
                 break;
 

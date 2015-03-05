@@ -11,6 +11,34 @@ void ConstructL( const StateVars& Q, dTensorBC2& Lstar, dTensorBC1& smax);
 
 using namespace std;
 
+void CheckTotalVariation( const StateVars& Q )
+{
+
+    const dTensorBC2& qnew = Q.const_ref_q  ();
+    const dTensorBC2&  aux = Q.const_ref_aux();
+
+    // Grid information
+    const int mx     = qnew.getsize(1);
+    const int meqn   = qnew.getsize(2);
+    const int maux   = aux.getsize(2);
+    const int mbc    = qnew.getmbc();
+    const int numel  = qnew.numel();
+
+
+    // Total variation
+    dTensor1 tv(meqn);
+    for (int m=1; m<=meqn; m++)
+    {
+        tv.set(m, fabs(qnew.get(1,m) - qnew.get(mx,m) ) );
+        for (int i=2; i<=mx; i++)
+        {
+            tv.set(m, tv.get(m) + fabs( qnew.get(i,m) - qnew.get(i-1,m) ) );
+        }
+    }
+    printf("    Total variation = %2.5f\n", tv.get(1) );
+
+}
+
 // -------------------------------------------------------------------------- //
 // Two-stage multiderivative time integration.
 //
@@ -50,11 +78,6 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2& auxold = Qold.ref_aux();
 
     // Intermediate storage
-    StateVars Q1( t, mx, meqn, maux, mbc );
-    dTensorBC2& q1 = Q1.ref_q();
-    dTensorBC2& a1 = Q1.ref_aux();
-    Q1.copyfrom( Qnew );
-
     StateVars Q2( t, mx, meqn, maux, mbc );
     dTensorBC2& q2 = Q2.ref_q();
     dTensorBC2& a2 = Q2.ref_aux();
@@ -65,20 +88,20 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2& a3 = Q3.ref_aux();
     Q3.copyfrom( Qnew );
 
+    StateVars Q4( t, mx, meqn, maux, mbc );
+    dTensorBC2& q4 = Q4.ref_q();
+    dTensorBC2& a4 = Q4.ref_aux();
+    Q4.copyfrom( Qnew );
+
     // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
 
     // Time-averaged flux function
     dTensorBC2   F(mx, meqn, mbc);
 
-    // Coefficients for the third-order method
-    const double p21 = 0.618033988749895;
-    const double p31 = 0.271650617292849;
-    const double p32 = 0.318260723259995;
-
-    const double q21 = 0.381966011250105;
-    const double q31 = 0.000034591988708;
-    const double q32 = 0.410054067458449;
+    // Variables for the Shu-Osher decomposition
+    double p21, p31, p32, p41, p42, p43, p51, p52, p53, p54;
+    double q21, q31, q32, q41, q42, q43, q51, q52, q53, q54;
 
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
@@ -123,7 +146,6 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             BeforeFullTimeStep(dt, Qold, Qnew );
 
             SetBndValues( Qnew  );
-            SetBndValues( Q1    );
             SetBndValues( Q2    );
             SetBndValues( Q3    );
 
@@ -134,6 +156,15 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 
                 case 3:
 
+                // Shu-Osher coefficients for the third-order method
+                p21 = 0.618033988749895;
+                p31 = 0.271650617292849;
+                p32 = 0.318260723259995;
+                q21 = 0.381966011250105;
+                q31 = 0.000034591988708;
+                q32 = 0.410054067458449;
+
+
                 // Coefficient from optimal Shu-Osher representation
                 r = 1.04;
                 rsqd_div_ksqd = r*r / 0.5;
@@ -142,7 +173,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 
                 ConstructIntegratedF( dt, 
                     p21/r, q21/rsqd_div_ksqd, Qnew, 
-                    0.0, 0.0, Q1,
+                    0.0, 0.0,     Q2,
                     smax, F);
 
                 // Update the solution:
@@ -151,28 +182,28 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 for( int k=0; k < numel; k++ )
                 {
                     double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
-                    q1.vset(k, tmp );
+                    q2.vset(k, tmp );
                 }
-                Q1.set_t( Qnew.get_t() + dt );
+                Q2.set_t( Qnew.get_t() + dt );
 
                 // Perform any extra work required:
-                AfterStep(dt, Q1 );
+                AfterStep(dt, Q2 );
 
                 SetBndValues(Qnew);
-                SetBndValues(Q1);
+                SetBndValues(Q2);
 
                 // -- Stage 2 -- //
                 ConstructIntegratedF( dt, 
                     p31/r, q31/rsqd_div_ksqd, Qnew, 
-                    p32/r, q32/rsqd_div_ksqd, Q1,
+                    p32/r, q32/rsqd_div_ksqd, Q2,
                     smax, F);
 
                 // Update the solution:
-                ConstructLxWL( a1, q1, F, Lstar, smax);
+                ConstructLxWL( a2, q2, F, Lstar, smax);
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
-                    double tmp = (p31+q31)*qnew.vget(k) + (p32+q32)*q1.vget(k) + dt*Lstar.vget(k);
+                    double tmp = (p31+q31)*qnew.vget(k) + (p32+q32)*q2.vget(k) + dt*Lstar.vget(k);
                     qnew.vset(k, tmp );
                 }
                 Qnew.set_t( Qnew.get_t() + dt );
@@ -181,7 +212,248 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 AfterStep(dt, Qnew );
 
                 SetBndValues(Qnew);
-                SetBndValues(Q1);
+                SetBndValues(Q2);
+
+                break;
+
+                case 4:
+
+                // Shu-Osher coefficients for the fourth-order method
+                p21 = 0.618033988749895;
+                p31 = 0.362588515112176;
+                p32 = 0.207801573327953;
+                p41 = 0.144580879241747;
+                p42 = 0.110491604448675;
+                p43 = 0.426371652664792;
+
+                q21 = 0.381966011250105;
+                q31 = 0.;
+                q32 = 0.429609911559871;
+                q41 = 0.078129569197367;
+                q42 = 0.;
+                q43 = 0.240426294447419;
+
+
+                // Coefficient from optimal Shu-Osher representation
+                r = 1.392746335264198;
+                rsqd_div_ksqd = r*r / 0.5;
+
+                // -- Stage 1 -- //
+
+                ConstructIntegratedF( dt, 
+                    p21/r, q21/rsqd_div_ksqd, Qnew, 
+                    0.0, 0.0, Q2,
+                    smax, F);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q2.vset(k, tmp );
+                }
+                Q2.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q2 );
+
+//              printf("Checking Q2\n");
+//              CheckTotalVariation( Q2 );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+
+                // -- Stage 2 -- //
+                ConstructIntegratedF( dt, 
+                    p31/r, q31/rsqd_div_ksqd, Qnew, 
+                    p32/r, q32/rsqd_div_ksqd, Q2,
+                    smax, F);
+
+                // Update the solution:  (// TODO - use combination of prev. values?)
+                ConstructLxWL( a2, q2, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (p31+q31)*qnew.vget(k) + (p32+q32)*q2.vget(k) + dt*Lstar.vget(k);
+                    q3.vset(k, tmp );
+                }
+                Q3.set_t( Qnew.get_t() + dt );
+
+//              printf("Checking Q3\n");
+//              CheckTotalVariation( Q3 );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+                SetBndValues(Q3);
+
+                // -- Stage 3 -- //
+                ConstructIntegratedF( dt, 
+                    p41/r, q41/rsqd_div_ksqd, Qnew, 
+                    p42/r, q42/rsqd_div_ksqd, Q2,
+                    p43/r, q43/rsqd_div_ksqd, Q3,
+                    smax, F);
+
+                // Update the solution:  (// TODO - use combination of prev. values?)
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (p41+q41)*qnew.vget(k) + 
+                        (p42+q42)*q2.vget(k) + (p43+q43)*q3.vget(k) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+                Qnew.set_t( Qnew.get_t() + dt );
+
+//              printf("Checking Qnew\n");
+//              CheckTotalVariation( Qnew );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+                SetBndValues(Qnew);
+
+                break;
+
+                case 5:
+
+                // Shu-Osher coefficients for the fifth-order method
+                p21 = 0.382227371965317;
+
+                p31 = 0.721963249808286;
+                p32 = 0.000000000000003;
+
+                p41 = 0.341871786060732;
+                p42 = 0.000114276683919;
+                p43 = 0.437664800768606;
+
+                p51 = 0.164319289034039;
+                p52 = 0.370058148389367;
+                p53 = 0.217957260111678;
+                p54 = 0.102275238898122;
+
+                q21 = 0.032466169751003;
+
+                q31 = 0.019551293834640;
+                q32 = 0.106223365665042;
+
+                q41 = 0.042582228667687;
+                q42 = 0.000447552746414;
+                q43 = 0.036985888181111;
+
+                q51 = 0.003620789725979;
+                q52 = 0.057455846129694;
+                q53 = 0.050829595269525;
+                q54 = 0.033483832441596;
+
+                // Coefficient from optimal Shu-Osher representation
+                r = 1.354982421031730;
+                rsqd_div_ksqd = r*r / 0.5;
+
+                // -- Stage 1 -- //
+
+                ConstructIntegratedF( dt, 
+                    p21/r, q21/rsqd_div_ksqd, Qnew, 
+                    0.0, 0.0, Q2,
+                    smax, F);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    // double tmp = 0.585306458283680*qnew.vget( k ) + dt*Lstar.vget(k);
+                    // TODO - fix the notes here!
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q2.vset(k, tmp );
+                }
+                Q2.set_t( Qnew.get_t() + dt );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+
+                printf("Checking Q2\n");
+                CheckTotalVariation( Q2 );
+
+                // -- Stage 2 -- //
+                ConstructIntegratedF( dt, 
+                    p31/r, q31/rsqd_div_ksqd, Qnew, 
+                    p32/r, q32/rsqd_div_ksqd, Q2,
+                    smax, F);
+
+                // Update the solution:  (// TODO - use combination of prev. values?)
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (0.152262090692029 +p31+q31)*qnew.vget(k) + (p32+q32)*q2.vget(k) + dt*Lstar.vget(k);
+                    q3.vset(k, tmp );
+                }
+                Q3.set_t( Qnew.get_t() + dt );
+
+                printf("Checking Q3\n");
+                CheckTotalVariation( Q3 );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+                SetBndValues(Q3);
+
+                // -- Stage 3 -- //
+                ConstructIntegratedF( dt, 
+                    p41/r, q41/rsqd_div_ksqd, Qnew, 
+                    p42/r, q42/rsqd_div_ksqd, Q2,
+                    p43/r, q43/rsqd_div_ksqd, Q3,
+                    smax, F);
+
+                // Update the solution:  (// TODO - use combination of prev. values?)
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (0.140333466891531+p41+q41)*qnew.vget(k) + 
+                        (p42+q42)*q2.vget(k) + (p43+q43)*q3.vget(k) + dt*Lstar.vget(k);
+                    q4.vset(k, tmp );
+                }
+                Q4.set_t( Qnew.get_t() + dt );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+                SetBndValues(Q3);
+                SetBndValues(Q4);
+
+                printf("Checking Q4\n");
+                CheckTotalVariation( Q4 );
+
+                // -- Stage 4 -- //
+                ConstructIntegratedF( dt, 
+                    p51/r, q51/rsqd_div_ksqd, Qnew, 
+                    p52/r, q52/rsqd_div_ksqd, Q2,
+                    p53/r, q53/rsqd_div_ksqd, Q3,
+                    p54/r, q54/rsqd_div_ksqd, Q4,
+                    smax, F);
+
+                // Update the solution:  (// TODO - use combination of prev. values?)
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = (p51+q51)*qnew.vget(k) + 
+                        (p52+q52)*q2.vget(k) + (p53+q53)*q3.vget(k) + (p54+q54)*q4.vget(k) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+                Qnew.set_t( Qnew.get_t() + dt );
+
+                printf("Checking Qnew\n");
+                CheckTotalVariation( Qnew );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+                SetBndValues(Qnew);
 
                 break;
 

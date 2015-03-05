@@ -30,7 +30,7 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
         { qvals.set(i,1, 0.0e0 ); }
         else
         { qvals.set(i, 1,  pow(cos(pi*s/width),6) ); }
-
+//      qvals.set(i,1,sin(2.0*pi*x));
     }
   
 }
