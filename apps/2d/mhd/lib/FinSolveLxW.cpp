@@ -52,11 +52,6 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC3& auxold = Qold.ref_aux();
     Qold.copyfrom( Qnew );
 
-    // Intermediate stages
-    StateVars Qstar( t, mx, my, meqn, maux, mbc );
-    dTensorBC3&   qstar = Qstar.ref_q();
-    dTensorBC3& auxstar = Qstar.ref_aux();
-    Qstar.copyfrom( Qnew );
 
     // Allocate storage for this solver
     dTensorBC3       F(mx, my, meqn, mbc );  // time-integrated flux
