@@ -844,21 +844,52 @@ void Diff2NC( double dx, const dTensor2& f, dTensor1& fxx )
         uip1 = f.get(m,4);
         uip2 = f.get(m,5);
 
-        // Compute smoothness indicators (identical for left/right values):
-        // TODO - these weights do not give high-order accuracy!
-//      beta0 = pow(uim2-2.*uim1+ui,2);
-//      beta1 = pow(uim1-2.*ui+uip1,2);
-//      beta2 = pow(ui-2.*uip1+uip2,2);
+        // Start with "right" stencil: {uim1,ui,uip1,uip2}
 
         // Compute smoothness indicators (identical for left/right values):
-        beta0 =(13./12.)*pow(uim2-2*uim1+ui,2)+0.25*pow(uim2-4*uim1+3*ui,2);
-        beta1 =(13./12.)*pow(uim1-2*ui+uip1,2)+0.25*pow(uim1-uip1,2);
-        beta2 =(13./12.)*pow(ui-2*uip1+uip2,2)+0.25*pow(3*ui-4*uip1+uip2,2);
- 
+        // TODO - these weights do not give high-order accuracy!
+        beta0 = pow(ui-uim1,  2);
+        beta1 = pow(uip1-ui,  2);
+        beta2 = pow(uip2-uip1,2);
+
         // 3rd-order reconstructions using small 3-point stencils
-        u1 = ( 1.0  )*uim2 - (2.   )*uim1 + ( 1.0  )*ui;
-        u2 = ( 1.0  )*uim1 - (2.   )*ui   + ( 1.0  )*uip1;
-        u3 = ( 1.0  )*ui   - (2.   )*uip1 + ( 1.0  )*uip2;
+        u1 = ui   - uim1;
+        u2 = uip1 - ui  ;
+        u3 = uip2 - uip1;
+        
+        // Compute nonlinear weights and normalize their sum to 1
+        omt0 = g0*pow(eps+beta0,-power_param);
+        omt1 = g1*pow(eps+beta1,-power_param);
+        omt2 = g2*pow(eps+beta2,-power_param);
+        omts = omt0+omt1+omt2;
+//      omt0 = g0;
+//      omt1 = g1;
+//      omt2 = g2;
+//      omts = 1.0;
+
+        // # Return 5th-order approximation to derivative
+        fxx.set(m, ( (omt0*u1 + omt1*u2 + omt2*u3)/omts) );
+
+        // Now, add the "left" stencil: {uim2,uim1,ui,uip1}
+
+        // Compute smoothness indicators (identical for left/right values):
+        // TODO - these weights do not give high-order accuracy!
+//      beta0 = pow(uim1-uim2, 2);
+//      beta1 = pow(ui  -uim1, 2);
+//      beta2 = pow(uip1-ui  , 2);
+
+//      beta0 = fabs(uim1-uim2);
+//      beta1 = fabs(ui  -uim1);
+//      beta2 = fabs(uip1-ui  );
+
+        beta0 = fabs(uim1-uim2);
+        beta1 = fabs(ui  -uim1);
+        beta2 = fabs(uip1-ui  );
+
+        // 3rd-order reconstructions using small 3-point stencils
+        u1 = uim1 - uim2;
+        u2 = ui   - uim1;
+        u3 = uip1 - ui  ;
         
         // Compute nonlinear weights and normalize their sum to 1
         omt0 = g0*pow(eps+beta0,-power_param);
@@ -867,7 +898,8 @@ void Diff2NC( double dx, const dTensor2& f, dTensor1& fxx )
         omts = omt0+omt1+omt2;
 
         // # Return 5th-order approximation to derivative
-        fxx.set(m, ( (omt0*u1 + omt1*u2 + omt2*u3)/omts) / (dx*dx) );
+        fxx.set(m, (fxx.get(m) - ( (omt0*u1 + omt1*u2 + omt2*u3)/omts) ) / (dx*dx) );
+
 
     }
 
