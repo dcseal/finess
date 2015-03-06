@@ -54,7 +54,32 @@ def LinearReconstruct( u_stencil ):
 
     return uim2/30 - (13*uim1)/60 + 47*(ui/60) + 9*(uip1/20) - uip2/20
 
-def WENOReconstruct( u_stencil, eps, p ):
+def LinearReconstruct( u_stencil ):
+    """WENO reconstruction with linear weights.  This reconstructs u_{i+1/2}
+    given cell averages \\bar{u}_i at each neighboring location.
+    
+    See `High Order Weighted Essentially Nonoscillatory Schemes for
+    Convection Dominated Problems'. 
+
+    Input
+    -----
+
+        u_stencil : 
+            stencil describing current solution
+
+    Returns
+    -------
+
+        uiphf     :
+            u_{i+1/2} after performing the full reconstruction procedure.
+
+    See also: WENOReconstruct.
+    """
+
+    uim2, uim1, ui, uip1, uip2 = u_stencil
+    return uim2/30 - (13*uim1)/60 + 47*(ui/60) + 9*(uip1/20) - uip2/20
+
+def WENOReconstruct( u_stencil, eps=1.0e-29, p=2 ):
     """WENO reconstruction.  This reconstructs u_{i+1/2}
     given cell averages \\bar{u}_i at each neighboring location.
     
@@ -79,6 +104,79 @@ def WENOReconstruct( u_stencil, eps, p ):
 
     """
 
+    # lazy, but readable indexing into list that's being passed in:
     uim2, uim1, ui, uip1, uip2 = u_stencil
+    
+    # Compute smoothness indicators (identical for left/right values):
+    beta = [None]*3
+    beta[0]=(13./12.)*(uim2-2*uim1+ui)**2+0.25*(uim2-4*uim1+3*ui)**2
+    beta[1]=(13./12.)*(uim1-2*ui+uip1)**2+0.25*(uim1-uip1)**2
+    beta[2]=(13./12.)*(ui-2*uip1+uip2)**2+0.25*(3*ui-4*uip1+uip2)**2
+    
+    # 3rd-order reconstructions using small 3-point stencils
+    u1 = ( 1./3.)*uim2 - (7./6.)*uim1 + (11./6.)*ui
+    u2 = (-1./6.)*uim1 + (5./6.)*ui   + ( 1./3.)*uip1
+    u3 = ( 1./3.)*ui   + (5./6.)*uip1 - ( 1./6.)*uip2
+    
+    # Get linear weights and regularization parameter
+    gamma = [0.1, 0.6, 0.3]
+    
+    # Compute nonlinear weights and normalize their sum to 1
+    omt  = [ g/(eps+b)**2 for g,b in zip(gamma,beta) ]
+    omts = sum(omt)
+    om   = [ o / omts for o in omt ]
+    
+    # Return 5th-order conservative reconstruction
+    return om[0]*u1 + om[1]*u2 + om[2]*u3
+  
+def WENODiffX( u_stencil, eps=1.0e-29, p=2 ):
+    """Non-conservative WENO differentiation.  This defines u'_{i+1/2}
+    given cell averages \\bar{u}_i at each neighboring location.
+    
+    See `High Order Weighted Essentially Nonoscillatory Schemes for
+    Convection Dominated Problems'. 
 
-    return uim2/30 - (13*uim1)/60 + 47*(ui/60) + 9*(uip1/20) - uip2/20
+    Input
+    -----
+
+        u_stencil : 
+            stencil describing current solution
+        eps       : 
+            regularization parameter
+        p         :
+            power parameter
+
+    Returns
+    -------
+
+        uiphf     :
+            u_{i+1/2} after performing the full reconstruction procedure.
+
+    """
+
+    # lazy, but readable indexing into list that's being passed in:
+    uim2, uim1, ui, uip1, uip2 = u_stencil
+    
+    # Compute smoothness indicators (identical for left/right values):
+    beta = [None]*3
+    beta[0]=(13./12.)*(uim2-2*uim1+ui)**2+0.25*(uim2-4*uim1+3*ui)**2
+    beta[1]=(13./12.)*(uim1-2*ui+uip1)**2+0.25*(uim1-uip1)**2
+    beta[2]=(13./12.)*(ui-2*uip1+uip2)**2+0.25*(3*ui-4*uip1+uip2)**2
+    
+    # 3rd-order reconstructions using small 3-point stencils
+    u1 = ( 0.5  )*uim2 - (2.   )*uim1 + ( 1.5  )*ui;
+    u2 = (-0.5  )*uim1 + (0.   )*ui   + ( 0.5  )*uip1;
+    u3 = (-1.5  )*ui   + (2.   )*uip1 - ( 0.5  )*uip2;
+    
+    # Get linear weights and regularization parameter
+    gamma = [1./6., 2./3., 1./6.]
+    
+    # Compute nonlinear weights and normalize their sum to 1
+    omt  = [ g/(eps+b)**2 for g,b in zip(gamma,beta) ]
+    omts = sum(omt)
+    om   = [ o / omts for o in omt ]
+    
+    # Return 5th-order conservative reconstruction
+    return om[0]*u1 + om[1]*u2 + om[2]*u3
+  
+
