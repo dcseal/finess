@@ -93,6 +93,12 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
     dTensorBC2& a4 = Q4.ref_aux();
     Q4.copyfrom( Qnew );
 
+    StateVars Qtmp( t, mx, meqn, maux, mbc );
+    dTensorBC2& qtmp = Qtmp.ref_q();
+    dTensorBC2& atmp = Qtmp.ref_aux();
+    Qtmp.copyfrom( Qnew );
+
+
     // Right hand side of ODE
     dTensorBC2   Lstar(mx, meqn, mbc);
 
@@ -387,7 +393,18 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                     smax, F);
 
                 // Update the solution:  (// TODO - use combination of prev. values?)
-                ConstructLxWL( a2, q2, F, Lstar, smax);
+//              ConstructLxWL( a2, q2, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    // TODO - fix the notes here (?!)
+                    double tmp = (v[2]+p31+q31)*qnew.vget(k) + (p32+q32)*q2.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+
+                // Update the solution:
+                // ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( atmp, qtmp, F, Lstar, smax);
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
@@ -413,9 +430,17 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                     p43/r, q43/rsqd_div_ksqd, Q3,
                     smax, F);
 
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    // TODO - fix the notes here (?!)
+                    double tmp = (v[3]+p41+q41)*qnew.vget(k) + (p42+q42)*q2.vget(k) + (p43+q43)*q3.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+
                 // Update the solution:  (// TODO - use combination of prev. values?)
-                // ConstructLxWL( aux, qnew, F, Lstar, smax);
-                ConstructLxWL( a3, q3, F, Lstar, smax);
+                // ConstructLxWL( a3, q3, F, Lstar, smax);
+                ConstructLxWL( atmp, qtmp, F, Lstar, smax);
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
@@ -441,9 +466,17 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                     p54/r, q54/rsqd_div_ksqd, Q4,
                     smax, F);
 
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    // TODO - fix the notes here (?!)
+                    double tmp = (v[4]+p51+q51)*qnew.vget(k) + (p52+q52)*q2.vget(k) + (p53+q53)*q3.vget(k) + (p54+q54)*q4.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+
                 // Update the solution:  (// TODO - use combination of prev. values?)
-                // ConstructLxWL( aux, qnew, F, Lstar, smax);
-                ConstructLxWL( a4, q4, F, Lstar, smax);
+                // ConstructLxWL( a4, q4, F, Lstar, smax);
+                ConstructLxWL( atmp, qtmp, F, Lstar, smax);
 #pragma omp parallel for
                 for( int k=0; k < numel; k++ )
                 {
