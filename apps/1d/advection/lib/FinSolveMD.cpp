@@ -303,6 +303,116 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
 
                 case 5:
 
+                // Coefficients for the three-stage, fifth-order method
+                A21    =  0.550000000000000;
+                A31    = -0.499999999999999;
+                A32    = 0.0;
+
+                Ahat21 =  0.151250000000000;
+                Ahat31 =  1.079545454545450;
+                Ahat32 = -0.954545454545451;
+
+                b1     = 1.0;
+                b2     = 0.0;
+                b3     = 0.0;
+
+                bhat1 =  0.227272727272727;
+                bhat2 =  0.288600288600289;
+                bhat3 = -0.015873015873016;
+
+                // -- Stage 1 -- //
+
+                ConstructIntegratedF( dt, 
+                    A21, Ahat21, Qnew, 
+                    0.0, 0.0,    Q2,
+                    smax, F);
+
+                // Update the solution:
+                ConstructLxWL( aux, qnew, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q2.vset(k, tmp );
+                }
+                Q2.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q2 );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+
+                // -- Stage 2 -- //
+                ConstructIntegratedF( dt, 
+                    A31, Ahat31, Qnew, 
+                    A32, Ahat32, Q2,
+                    smax, F);
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = A31*qnew.vget(k) + A32*q2.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+                Qtmp.set_t( Qnew.get_t() + dt );
+
+                // ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qtmp, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    q3.vset(k, tmp );
+                }
+                Q3.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Q3 );
+
+                SetBndValues(Qnew);
+                SetBndValues(Q2);
+                SetBndValues(Q3);
+
+                // -- Stage 3 -- //
+                ConstructIntegratedF( dt, 
+                    b1, bhat1, Qnew, 
+                    b2, bhat2, Q2,
+                    b3, bhat3, Q3,
+                    smax, F);
+
+                // Construct a better "approximation" for what to plug into
+                // solver
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = b1*qnew.vget(k)+b2*q2.vget(k)+b3*q3.vget(k);
+                    qtmp.vset(k, tmp );
+                }
+                Qtmp.set_t( Qnew.get_t() + dt );
+
+
+                // Update the solution:
+                // ConstructLxWL( aux, qnew, F, Lstar, smax);
+                ConstructLxWL( aux, qtmp, F, Lstar, smax);
+#pragma omp parallel for
+                for( int k=0; k < numel; k++ )
+                {
+                    double tmp = qnew.vget( k ) + dt*Lstar.vget(k);
+                    qnew.vset(k, tmp );
+                }
+                Qnew.set_t( Qnew.get_t() + dt );
+
+                // Perform any extra work required:
+                AfterStep(dt, Qnew );
+
+                SetBndValues(Qnew);
+
+                break;
+
+/* This is the old 4s5p method 
+
                 // Coefficients for the three-stage, fourth-order method
                 A21    = 0.356316863593354;
 
@@ -435,6 +545,10 @@ void FinSolveMD( StateVars& Qnew, double tend, double dtv[] )
                 SetBndValues(Qnew);
 
                 break;
+
+End of the old 4s5p method
+
+*/
 
                 default:
                 printf("Error.  Time order %d not implemented for multiderivative\n", global_ini_params.get_time_order() );

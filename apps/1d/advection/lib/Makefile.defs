@@ -35,6 +35,10 @@ AuxFunc     = $(APP_LIB)/AuxFunc
 
 # place to add objects and sources
 #
+ConstructLxWL   = $(APP_LIB)/ConstructLxWL
+FinSolveUser    = $(APP_LIB)/FinSolveUser
+FinSolveMD      = $(APP_LIB)/FinSolveMD
+
 APP_LIB_OBJECTS = \
 #  $(SL_TOPLIB_OBJECTS) \
 #  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.o \
