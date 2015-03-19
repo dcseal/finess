@@ -144,10 +144,6 @@ void ConstructHJ_L_Order3(const StateVars& Q, dTensorBC3& Lauxstar, double dt)
     assert(Lauxstar.getsize(2) == my);
     assert(Lauxstar.getsize(3) == maux);
 
-    dTensorBC2 A3x(mx, my, mbc);
-    dTensorBC2 A3y(mx, my, mbc);
-    dTensorBC2 A3t(mx, my, mbc);
-    dTensorBC2 A3tt(mx, my, mbc);
 
 
     const pair<double, double> max_speed_x_y = max_speed_in_x_y_directions(Q);
@@ -155,13 +151,13 @@ void ConstructHJ_L_Order3(const StateVars& Q, dTensorBC3& Lauxstar, double dt)
     const double max_speed_y = max_speed_x_y.second;
 
     assert(maux == 1);
-    assert(mbc >= 7);
+    assert(mbc >= 5);
     Lauxstar.setall(0.0);
 #pragma omp parallel for
-    for(int i = 1 - 4 ; i <= mx + 4 ; ++i){
+    for(int i = 1 - 2 ; i <= mx + 2 ; ++i){
         dTensor2 weno_input(maux, ws);
         dTensor2 weno_result(maux, 1);
-        for(int j = 1 - 4 ; j <= my + 4; ++j){
+        for(int j = 1 - 2 ; j <= my + 2; ++j){
 
             // A^{3}_{,x}^{-}
             double A3xm;
@@ -378,7 +374,7 @@ void ConstructHJ_L_Order3(const StateVars& Q, dTensorBC3& Lauxstar, double dt)
             rhou3XpYm = qq.get(1 + i, -1 + j, 4);
             rhou3XpYp = qq.get(1 + i, 1 + j, 4);
 
-            double a3t0x0y1z0Val = (-a3X0Ym + a3X0Yp)/(2.*dy);
+            double a3t0x0y1z0Val =  (-a3X0Ym + a3X0Yp)/(2.*dy); //0.5 * (A3yp + A3ym);
             double B1t0x0y1z0Val = (-B1X0Ym + B1X0Yp)/(2.*dy);
             double B2t0x0y1z0Val = (-B2X0Ym + B2X0Yp)/(2.*dy);
             double B3t0x0y1z0Val = (-B3X0Ym + B3X0Yp)/(2.*dy);
@@ -388,7 +384,7 @@ void ConstructHJ_L_Order3(const StateVars& Q, dTensorBC3& Lauxstar, double dt)
             double rhou2t0x0y1z0Val = (-rhou2X0Ym + rhou2X0Yp)/(2.*dy);
             double rhou3t0x0y1z0Val = (-rhou3X0Ym + rhou3X0Yp)/(2.*dy);
             double a3t0x0y2z0Val = (-2*a3X0Y0 + a3X0Ym + a3X0Yp)/Power(dy,2);
-            double a3t0x1y0z0Val = (-a3XmY0 + a3XpY0)/(2.*dx);
+            double a3t0x1y0z0Val = (-a3XmY0 + a3XpY0)/(2.*dx);  //0.5 * (A3xp + A3xm);
             double B1t0x1y0z0Val = (-B1XmY0 + B1XpY0)/(2.*dx);
             double B2t0x1y0z0Val = (-B2XmY0 + B2XpY0)/(2.*dx);
             double B3t0x1y0z0Val = (-B3XmY0 + B3XpY0)/(2.*dx);

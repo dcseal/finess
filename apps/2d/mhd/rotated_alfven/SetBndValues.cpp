@@ -119,7 +119,7 @@ void SetBndValues( StateVars& Q )
     // ***********************************************
     for(int j=0; j>=(1-mbc); j--)
     {
-        for(int i=1; i<=mx; i++)
+        for(int i=1-mbc; i<=mx+mbc; i++)
         {           
             // q values
             for(int m=1; m<=meqn; m++)
@@ -141,7 +141,7 @@ void SetBndValues( StateVars& Q )
     // ***********************************************
     for(int j=(my+1); j<=(my+mbc); j++)
     {
-        for(int i=1; i<=mx; i++)
+        for(int i=1-mbc; i<=mx+mbc; i++)
         {           
             // q values
             for(int m=1; m<=meqn; m++)
@@ -157,78 +157,6 @@ void SetBndValues( StateVars& Q )
     }
     // ***********************************************
 
-
-    // ***********************************************
-    // BOTTOM LEFT CORNER
-    // ***********************************************
-    for(int i=1; i<=mbc; i++)
-        for(int j=1; j<=mbc; j++)
-        {
-            for(int m=1; m<=meqn; m++)
-            {     
-                q.set(1-i,1-j,m, q.get(mx + 1 - i, my + 1 - j,m) );
-            }
-            aux.set(1-i, 1-j, 1,
-                    A3_periodic_to_original(1-i, 1-j, 
-                        A3_original_to_periodic(mx + 1 - i, my + 1 - j, 
-                            aux.get(mx + 1 - i, my + 1 - j, 1))));
-        }
-    // ***********************************************
-
-
-    // ***********************************************
-    // BOTTOM RIGHT CORNER
-    // ***********************************************
-    for(int i=1; i<=mbc; i++)
-        for(int j=1; j<=mbc; j++)
-        {
-            for(int m=1; m<=meqn; m++)
-            {     
-                q.set(mx+i,1-j,m, q.get(i, my + 1 - j, m) );
-            }
-
-            aux.set(mx + i, 1-j, 1,
-                    A3_periodic_to_original(mx + i, 1-j, 
-                        A3_original_to_periodic(i, my + 1 - j, 
-                            aux.get(i, my + 1 - j, 1))));
-        }
-    // ***********************************************
-
-
-    // ***********************************************
-    // TOP RIGHT CORNER
-    // ***********************************************
-    for(int i=1; i<=mbc; i++)
-        for(int j=1; j<=mbc; j++)
-        {
-            for(int m=1; m<=meqn; m++)
-            {     
-                q.set(mx+i,my+j,m, q.get(i, j, m) );
-            }
-            aux.set(mx + i, my + j, 1,
-                    A3_periodic_to_original(mx + i, my + j, 
-                        A3_original_to_periodic(i, j, 
-                            aux.get(i, j, 1))));
-        }
-    // ***********************************************
-
-
-    // ***********************************************
-    // TOP LEFT CORNER
-    // ***********************************************
-    for(int i=1; i<=mbc; i++)
-        for(int j=1; j<=mbc; j++)
-        {
-            for(int m=1; m<=meqn; m++)
-            {     
-                q.set(1-i,my+j,m, q.get(mx + 1 - i, j, m) );
-            }
-            aux.set(1 - i, my + j, 1,
-                    A3_periodic_to_original(1 - i, my + j, 
-                        A3_original_to_periodic(mx + 1 - i, j, 
-                            aux.get(mx + 1 - i, j, 1))));
-        }
-    // ***********************************************
 
 
 }

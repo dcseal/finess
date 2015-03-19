@@ -8,7 +8,6 @@ include $(FINESS)/apps/2d/mhd/lib/Makefile.defs
 
 # overridden library objects
 AfterQinit = AfterQinit
-AfterStep = AfterStep
 # Hamilton-Jacobi rhs for magnetic potential
 
 ALL_OBJECTS = $(COMMON_OBJECTS) 
