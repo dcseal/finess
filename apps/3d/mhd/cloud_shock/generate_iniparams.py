@@ -1,9 +1,9 @@
 from finess.params import append_pac_from_module, write_to_header_cpp
-import finess.params.dim3_rotated_1d
+import finess.params.dim3
 import finess.params.mhd
 import finess.params.artificial_viscosity
 
-pac = finess.params.dim3_rotated_1d.starter_pac()
+pac = finess.params.dim3.starter_pac()
 
 #section [mhd]
 append_pac_from_module(pac, finess.params.mhd)

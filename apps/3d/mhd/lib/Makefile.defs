@@ -35,3 +35,30 @@ APP_LIB_OBJECTS = \
 APP_LIB_SOURCES = \
 
 #
+
+# Constrained Transport
+#FinSolveRK = $(APP_LIB)/FinSolveRK
+FinSolveLxW = $(APP_LIB)/FinSolveLxW
+#UpdateSoln = $(APP_LIB)/UpdateSoln
+AfterStep = $(APP_LIB)/AfterStep
+ConstructHJ_L = $(APP_LIB)/ConstructHJ_L
+
+# A more conservative way of computing CFL number
+#GetCFL = $(APP_LIB)/GetCFL
+
+# Positivity-preserving limiter
+#ApplyMPPLimiter2D   = $(APP_LIB)/ApplyMPPLimiter2D
+
+
+# place to add objects and sources
+#
+COMMON_OBJECTS += \
+$(ConstructHJ_L).o
+
+#
+COMMON_SOURCES += \
+$(ConstructHJ_L).cpp \
+$(ConstructHJ_L).h
+
+
+#

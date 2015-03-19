@@ -35,7 +35,7 @@ def _read_qa_ascii(params, i_output):
     q = empty([mx, my, mz, meqn])
     q_file = open(q_filename, 'r')
     t_q = float(q_file.readline())
-    for m in range(maux):
+    for m in range(meqn):
       for k in range(mz):
         for j in range(my):
           for i in range(mx):
