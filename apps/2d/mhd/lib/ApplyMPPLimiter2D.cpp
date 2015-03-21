@@ -47,8 +47,15 @@ void ApplyMPPLimiter2D(
     const double gm1 = gamma - 1.0;
 
     // Storage
-    double gmin[mx][my],amin[mx][my][4],thex[mx+1][my],they[mx][my+1],ff[4],aa[4];
-    double qh[meqn],qtmp[meqn],qtmp2[meqn],qtmp3[meqn],qlf[meqn],fhat_local[4][meqn],flf_local[4][meqn];
+    dTensor2 gmin(mx, my);
+    dTensor3 amin(mx, my, 4);
+    dTensor2 thex(mx+1, my);
+    dTensor2 they(mx, my+1);
+    double ff[4];
+    double aa[4];
+    //double qh[meqn],qtmp[meqn],qtmp2[meqn],qtmp3[meqn],qlf[meqn],fhat_local[4][meqn],flf_local[4][meqn];
+    dTensor1 qh(meqn), qtmp(meqn), qtmp2(meqn), qtmp3(meqn), qlf(meqn);
+    dTensor2 fhat_local(4, meqn), flf_local(4, meqn);
     double rho,u1,u2,u3,energy, B1, B2, B3, plow,phigh,ffsum,ftmp,phigh2;
     double ac,bc,cc,delta,root1,root2,rate;
     int isgn[4];
@@ -58,9 +65,9 @@ void ApplyMPPLimiter2D(
     /////////////////////////////////////////
     for (int i=1; i<=mx; i++)
     for (int j=1; j<=my; j++)
-        gmin[i-1][j-1] = rho_min - ( q.get(i,j,1) 
+        gmin.set(i, j, rho_min - ( q.get(i,j,1) 
                        + dtx*( fLF.get(i,j,1) - fLF.get(i+1,j,1))
-                       + dty*( gLF.get(i,j,1) - gLF.get(i,j+1,1)));
+                       + dty*( gLF.get(i,j,1) - gLF.get(i,j+1,1))));
  
     for (int i=1; i<=mx; i++)
     for (int j=1; j<=my; j++)
@@ -86,9 +93,9 @@ void ApplyMPPLimiter2D(
         for (int k=0; k<4; k++)
         {
             if (isgn[k]==1)
-                amin[i-1][j-1][k] = Min(gmin[i-1][j-1]/(ffsum-eps),1.e0);
+                amin.set(i, j, k+1, Min(gmin.get(i, j)/(ffsum-eps),1.e0));
             else
-                amin[i-1][j-1][k] = 1.e0;
+                amin.set(i, j, k+1, 1.e0);
         }
     }
 
@@ -101,17 +108,17 @@ void ApplyMPPLimiter2D(
 
         // Write the update for a LF solve
         for( int m=1; m <= meqn; m++ )  
-            qlf[m-1]=q.get(i,j,m) + dtx*(fLF.get(i,j,m)-fLF.get(i+1,j,m))
-                                  + dty*(gLF.get(i,j,m)-gLF.get(i,j+1,m));
+            qlf.set(m, q.get(i,j,m) + dtx*(fLF.get(i,j,m)-fLF.get(i+1,j,m))
+                                  + dty*(gLF.get(i,j,m)-gLF.get(i,j+1,m)));
 
-        rho    = qlf[0];
-        u1     = qlf[1]/rho;
-        u2     = qlf[2]/rho;
-        u3     = qlf[3]/rho;
-        energy = qlf[4];
-        B1     = qlf[5];
-        B2     = qlf[6];
-        B3     = qlf[7];
+        rho    = qlf.get(1);
+        u1     = qlf.get(2)/rho;
+        u2     = qlf.get(3)/rho;
+        u3     = qlf.get(4)/rho;
+        energy = qlf.get(5);
+        B1     = qlf.get(6);
+        B2     = qlf.get(7);
+        B3     = qlf.get(8);
         plow   = gm1*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3) - 0.5*(B1*B1 + B2*B2 + B3*B3));
 
         // Quick error check
@@ -120,15 +127,15 @@ void ApplyMPPLimiter2D(
 
         for( int m=1; m <= meqn; m++ )
         {
-            fhat_local[0][m-1] = fHat.get(i,j,m);
-            fhat_local[1][m-1] = fHat.get(i+1,j,m);
-            fhat_local[2][m-1] = gHat.get(i,j,m);
-            fhat_local[3][m-1] = gHat.get(i,j+1,m);
-            flf_local[0][m-1]  =  fLF.get(i,j,m);
-            flf_local[1][m-1]  =  fLF.get(i+1,j,m);
-            flf_local[2][m-1]  =  gLF.get(i,j,m);
-            flf_local[3][m-1]  =  gLF.get(i,j+1,m);
-            qtmp[m-1] = q.get(i,j,m);
+            fhat_local.set(1, m, fHat.get(i,j,m));
+            fhat_local.set(2, m, fHat.get(i+1,j,m));
+            fhat_local.set(3, m, gHat.get(i,j,m));
+            fhat_local.set(4, m, gHat.get(i,j+1,m));
+            flf_local.set(1, m,  fLF.get(i,j,m));
+            flf_local.set(2, m,  fLF.get(i+1,j,m));
+            flf_local.set(3, m,  gLF.get(i,j,m));
+            flf_local.set(4, m,  gLF.get(i,j+1,m));
+            qtmp.set(m, q.get(i,j,m));
         }
         // plow = min(eps,plow);
 
@@ -144,28 +151,28 @@ void ApplyMPPLimiter2D(
         for(int i3=0; i3<2; i3++)
         for(int i4=0; i4<2; i4++)
         {
-            aa[0] = double(i1)*amin[i-1][j-1][0];
-            aa[1] = double(i2)*amin[i-1][j-1][1];
-            aa[2] = double(i3)*amin[i-1][j-1][2];
-            aa[3] = double(i4)*amin[i-1][j-1][3];
+            aa[0] = double(i1)*amin.get(i, j, 1);
+            aa[1] = double(i2)*amin.get(i, j, 2);
+            aa[2] = double(i3)*amin.get(i, j, 3);
+            aa[3] = double(i4)*amin.get(i, j, 4);
 
             for( int m=1; m <= meqn; m++ )
             {
-                ff[0] = aa[0]*fhat_local[0][m-1]+(1.0-aa[0])*flf_local[0][m-1];
-                ff[1] = aa[1]*fhat_local[1][m-1]+(1.0-aa[1])*flf_local[1][m-1];
-                ff[2] = aa[2]*fhat_local[2][m-1]+(1.0-aa[2])*flf_local[2][m-1];
-                ff[3] = aa[3]*fhat_local[3][m-1]+(1.0-aa[3])*flf_local[3][m-1];
-                qh[m-1] = qtmp[m-1] + dtx*(ff[0]-ff[1]) + dty*(ff[2]-ff[3]);
+                ff[0] = aa[0]*fhat_local.get(1, m)+(1.0-aa[0])*flf_local.get(1, m);
+                ff[1] = aa[1]*fhat_local.get(2, m)+(1.0-aa[1])*flf_local.get(2, m);
+                ff[2] = aa[2]*fhat_local.get(3, m)+(1.0-aa[2])*flf_local.get(3, m);
+                ff[3] = aa[3]*fhat_local.get(4, m)+(1.0-aa[3])*flf_local.get(4, m);
+                qh.set(m, qtmp.get(m) + dtx*(ff[0]-ff[1]) + dty*(ff[2]-ff[3]));
             }
 
-            rho    = qh[0];
-            u1     = qh[1]/rho;
-            u2     = qh[2]/rho;
-            u3     = qh[3]/rho;
-            energy = qh[4];
-            B1     = qh[5];
-            B2     = qh[6];
-            B3     = qh[7];
+            rho    = qh.get(1);
+            u1     = qh.get(2)/rho;
+            u2     = qh.get(3)/rho;
+            u3     = qh.get(4)/rho;
+            energy = qh.get(5);
+            B1     = qh.get(6);
+            B2     = qh.get(7);
+            B3     = qh.get(8);
             phigh  = gm1*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3) - 0.5*(B1*B1 + B2*B2 + B3*B3));
 
             if (phigh < 0.0)
@@ -174,7 +181,7 @@ void ApplyMPPLimiter2D(
                 root2 = 1.0;
 
                 for( int m=1; m <= meqn; m++ )
-                    qtmp2[m-1] = 0.0;
+                    qtmp2.set(m, 0.0);
 
                 // bisection
                 for(int nn = 1; nn<10; nn++)
@@ -182,16 +189,16 @@ void ApplyMPPLimiter2D(
                     rate = (root1+root2)/2.0;
                     for( int m=1; m <= meqn; m++ )
                     {
-                        qtmp2[m-1] = rate*qh[m-1]+(1.0-rate)*qlf[m-1];
+                        qtmp2.set(m,  rate*qh.get(m)+(1.0-rate)*qlf.get(m));
                     }
-                    rho    = qtmp2[0];
-                    u1     = qtmp2[1]/rho;
-                    u2     = qtmp2[2]/rho;
-                    u3     = qtmp2[3]/rho;
-                    energy = qtmp2[4];
-                    B1     = qtmp2[5];
-                    B2     = qtmp2[6];
-                    B3     = qtmp2[7];
+                    rho    = qtmp2.get(1);
+                    u1     = qtmp2.get(2)/rho;
+                    u2     = qtmp2.get(3)/rho;
+                    u3     = qtmp2.get(4)/rho;
+                    energy = qtmp2.get(5);
+                    B1     = qtmp2.get(6);
+                    B2     = qtmp2.get(7);
+                    B3     = qtmp2.get(8);
                     phigh  = gm1*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3) - 0.5*(B1*B1 + B2*B2 + B3*B3));
                     if (phigh < 0.0)
                         root2 = rate;
@@ -221,7 +228,7 @@ void ApplyMPPLimiter2D(
         }
             
         for(int i1=0; i1<4; i1++)
-            amin[i-1][j-1][i1] = rescale2[i1]*amin[i-1][j-1][i1];
+            amin.set(i, j, i1+1, rescale2[i1]*amin.get(i, j, i1+1));
     }
 
 
@@ -233,20 +240,20 @@ void ApplyMPPLimiter2D(
     {
         for (int i=1; i<=mx-1; i++)
         {
-            thex[i][j-1] = Min(amin[i][j-1][0],amin[i-1][j-1][1]);
+            thex.set(i+1, j, Min(amin.get(i+1, j, 1), amin.get(i, j, 2)));
         }
-        thex[0][j-1] = amin[0][j-1][0];
-        thex[mx][j-1]= amin[mx-1][j-1][1];
+        thex.set(1, j, amin.get(1, j, 1));
+        thex.set(mx+1, j, amin.get(mx, j, 2));
     }
 
     for (int i=1; i<=mx; i++)
     {
         for (int j=1; j<=my-1; j++)
         {
-            they[i-1][j] = Min(amin[i-1][j][2],amin[i-1][j-1][3]);
+            they.set(i, j+1, Min(amin.get(i, j+1, 3), amin.get(i, j, 4)));
         }
-        they[i-1][0] = amin[i-1][0][2];
-        they[i-1][my]= amin[i-1][my-1][3];
+        they.set(i, 1, amin.get(i, 1, 3));
+        they.set(i, my+1, amin.get(i, my, 4));
     }
 
     ///////////////////////////////////////////
@@ -257,7 +264,7 @@ void ApplyMPPLimiter2D(
     {
         for( int m=1; m <= meqn; m++ )
         {
-            ftmp = thex[i-1][j-1]*(fHat.get(i,j,m)-fLF.get(i,j,m))+fLF.get(i,j,m);
+            ftmp = thex.get(i, j) * (fHat.get(i,j,m)-fLF.get(i,j,m))+fLF.get(i,j,m);
             fHat.set(i,j,m,ftmp);
         }
     }
@@ -267,7 +274,7 @@ void ApplyMPPLimiter2D(
     { 
         for( int m=1; m <= meqn; m++ )
         {
-            ftmp = they[i-1][j-1]*(gHat.get(i,j,m)-gLF.get(i,j,m))+gLF.get(i,j,m);
+            ftmp = they.get(i, j)*(gHat.get(i,j,m)-gLF.get(i,j,m))+gLF.get(i,j,m);
             gHat.set(i,j,m,ftmp);
         }
     }
