@@ -44,7 +44,7 @@ def compute_poly_fit( u_stencil, x ):
     from sympy.polys.polyfuncs import interpolate
     return sympy.poly( interpolate( u_stencil, x ) )
 
-def compute_h1_norm( u_stencil, indices ):
+def compute_h1_norm( u_stencil, indices, starting_deriv=1 ):
     """Compute the H1-norm of a given stencil.  This routine computes the
     integral
 
@@ -65,20 +65,23 @@ def compute_h1_norm( u_stencil, indices ):
     # This fits the points, (x=1, p[0]), (x=2, p[1]), ...
     # p = compute_poly_fit( u_stencil, xi )
     p = sympy.poly( interpolate( u_stencil, xi ), xi )
-    p = p.diff( xi )
-    p = p.diff( xi )
-
-#   print( ' ' )
-#   print( u_stencil )
+    print( ' ' )
+    print( u_stencil )
+    for n in range( len(u_stencil) ):
+        print( p.subs( xi, n+1 ) )
 #   print( p.subs( xi, 1 ), p.subs( xi, 2 ), p.subs( xi, 3 ) )
 #   print('p   = ', p   )
 #   print('dp  = ', dp  )
 #   print('d2p = ', d2p )
-#   print(' ')
+    print(' ')
 
 #   tmp = dpsqd.integrate( (xi, indices[0], indices[1] ) )
 #   tmp = tmp + d2psqd.integrate( (xi, indices[0], indices[1] ) )
 #   return tmp
+
+    for n in range( starting_deriv ):
+        p = p.diff( xi )
+
     tmp = 0
     for mp in range( len( u_stencil ) ):
         tmp = tmp + (p**2).integrate( xi ).eval( xi, indices[1] ) - (p**2).integrate( xi ).eval( xi, indices[0] )
@@ -101,9 +104,10 @@ beta0 = compute_h1_norm( [uim2, uim1, ui], (Rational(5,2), Rational(7,2) ) )
 beta1 = compute_h1_norm( [uim1, ui, uip1], (Rational(3,2), Rational(5,2) ) ) 
 beta2 = compute_h1_norm( [ui, uip1, uip2], (Rational(1,2), Rational(3,2) ) ) 
 
-print('beta0 = ', beta0 )
-print('beta1 = ', beta1 )
-print('beta2 = ', beta2 )
+print('*** Classical WENO (5 point stencil): we predict these weights')
+print('  beta0 = ', beta0 )
+print('  beta1 = ', beta1 )
+print('  beta2 = ', beta2 )
 
 # Exact smoothness indicators:
 beta = [None]*3
@@ -111,32 +115,92 @@ beta[0] = Rational(13,12)*(uim2-2*uim1+ui)**2 + Rational(1,4)*(uim2-4*uim1+3*ui)
 beta[1] = Rational(13,12)*(uim1-2*ui+uip1)**2 + Rational(1,4)*(uim1-uip1)**2
 beta[2] = Rational(13,12)*(ui-2*uip1+uip2)**2 + Rational(1,4)*(3*ui-4*uip1+uip2)**2
 
-print('exact beta[0] = ', beta[0])
-print('exact beta[1] = ', beta[1])
-print('exact beta[2] = ', beta[2])
-print( sympy.simplify( sympy.expand( beta[0] - beta0 ) ) )
+print('  exact beta[0] = ', beta[0])
+print('  exact beta[1] = ', beta[1])
+print('  exact beta[2] = ', beta[2])
+print('  Errors: ', sympy.simplify( sympy.expand( beta[0] - beta0 ) ) )
+print('  Errors: ', sympy.simplify( sympy.expand( beta[1] - beta1 ) ) )
+print('  Errors: ', sympy.simplify( sympy.expand( beta[2] - beta2 ) ) )
 
 # Now, work out 2nd-derivative using larger stencil
 u_stencil = [ uim3, uim2, uim1, ui, uip1, uip2, uip3 ]
 
 # Compute derivative using the whole stencil:
-gamma = compute_derivs( u_stencil, 2, dx )
+gamma = compute_derivs( u_stencil, 3, dx )
 
 # Four sub-stencils (of length four)
 u0 = [uim3, uim2, uim1, ui  ]
-u1 = [uim2, uim1,   ui, uip1]
-u2 = [uim1, ui,   uip1, uip2]
-u3 = [ui,   uip1, uip2, uip3]
-u  = [u0, u1, u2, u3 ]
+#u1 = [uim2, uim1,   ui, uip1]
+#u2 = [uim1, ui,   uip1, uip2]
+u1 = [uim2, uim1, ui,   uip1, uip2]
+u2 = [ui,   uip1, uip2, uip3]
+#u3 = [ui,   uip1, uip2, uip3]
 
-betax0 = compute_h1_norm( u0, (Rational(7,2), Rational(9,2) ) )
-betax1 = compute_h1_norm( u1, (Rational(5,2), Rational(7,2) ) )
-betax2 = compute_h1_norm( u2, (Rational(3,2), Rational(5,2) ) )
-betax3 = compute_h1_norm( u3, (Rational(1,2), Rational(3,2) ) )
+#u  = [u0, u1, u2, u3]
+u  = [u0, u1, u2]
 
-print('betax0 = ', betax0 )
-print('betax1 = ', betax1 )
-print('betax2 = ', betax2 )
-print('betax3 = ', betax3 )
+# Three Lagrange polynomials and their derivatives:
+#   p0 = compute_derivs( u[0], 3, dx )
+#   p1 = compute_derivs( u[1], 2, dx )
+#   p2 = compute_derivs( u[2], 1, dx )
+#   p3 = compute_derivs( u[3], 0, dx )
+#   p  = [p0, p1, p2, p3 ]
+
+p0 = compute_derivs( u[0], 3, dx )
+p1 = compute_derivs( u[1], 2, dx )
+p2 = compute_derivs( u[2], 0, dx )
+p  = [p0, p1, p2 ]
+
+#interps = [0,0,0,0]
+#for j in range(len(p)):
+#    interps[j] = u[j][0]*(p[j][2,0]*dx**2) +  u[j][1]*(p[j][2,1]*dx**2) + u[j][2]*(p[j][2,2]*dx**2) + u[j][3]*(p[j][2,3]*dx**2)
+
+interps = [0,0,0]
+for j in range(len(p)):
+    for s in range( len( p[j][0,:] ) ):
+        interps[j] = interps[j] + u[j][s]*(p[j][2,s]*dx**2)
+
+# Goal: find unknowns (g0, g1, g2) such that
+#       g0 * u0 + g1 * u1 + g2 * u2 = gamma[1,:]*u_stencil
+#g0 = Rational(1,6)
+#g1 = Rational(2,3)
+#g2 = Rational(1,6)
+#g3 = Rational(1,6)
+
+g0 = sympy.symbols("g0")
+g1 = sympy.symbols("g1")
+g2 = sympy.symbols("g2")
+#g3 = sympy.symbols("g3")
+
+#g0 = Rational(1,90)
+#g1 = Rational(2,3)
+#g2 = Rational(1,6)
+#g3 = Rational(1,90)
+
+g0 = Rational(-1,90)
+g1 = Rational(19,15)
+g2 = Rational(-1,90)
+
+#sub_sten_val = g0*interps[0] + g1*interps[1] + g2*interps[2] + g3*interps[3]
+sub_sten_val = g0*interps[0] + g1*interps[1] + g2*interps[2]
+linear_val   = sum( dx**2*u*g for (u,g) in zip( u_stencil, gamma[2,:] ) )
+
+print("\n   **** Linear combination of smaller stencils   **** ")
+error = sympy.simplify( sympy.expand( sub_sten_val - linear_val ) )
+print( error )
+
+
+print('*** Smoothness indicators for (6 point stencil) ***')
+# Smoothness indicators (based upon an integral, starting with second
+# derivative only)
+betax0 = compute_h1_norm( u0, (Rational(7,2), Rational(9,2) ), 2 )
+betax1 = compute_h1_norm( u1, (Rational(5,2), Rational(7,2) ), 2 )
+betax2 = compute_h1_norm( u2, (Rational(3,2), Rational(5,2) ), 2 )
+#betax3 = compute_h1_norm( u3, (Rational(1,2), Rational(3,2) ), 2 )
+
+print('  betax0 = ', betax0 )
+print('  betax1 = ', betax1 )
+print('  betax2 = ', betax2 )
+#print('  betax3 = ', betax3 )
 
 
