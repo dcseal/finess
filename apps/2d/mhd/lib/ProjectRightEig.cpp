@@ -51,11 +51,11 @@ void ProjectRightEig(int ixy,
   
   const double gm1 = gamma-1.0;
   
-  const double a2 = fabs(gamma*press/rho);
+  const double a2 = gamma*press/rho;
   const double a = sqrt(a2);
   const double d = a2 + (B1*B1 + B2*B2 + B3*B3)/rho;
   
-  const double ca = sqrt(fabs(B1*B1/rho));
+  const double ca = sqrt(B1*B1/rho);
   const double cf = sqrt(0.5*( d + sqrt(d*d - 4.0*a2*B1*B1/rho)));
   const double cs = sqrt(0.5*( d - sqrt(d*d - 4.0*a2*B1*B1/rho)));
   

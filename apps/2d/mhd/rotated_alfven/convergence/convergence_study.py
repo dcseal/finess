@@ -41,6 +41,8 @@ import finess.viz.dim2
 
 def L1_error_list(output_dir_list):
     
+    global debug_B1_abs_error
+    global debug_B2_abs_error
     global debug_B_perp, debug_B3, debug_u_perp, debug_u3
     global debug_B_perp_rel_error, debug_B_perp_abs_error, debug_B_perp_exact
     global debug_u_perp_rel_error, debug_u_perp_abs_error, debug_u_perp_exact
@@ -80,6 +82,13 @@ def L1_error_list(output_dir_list):
         B3_exact = u3_exact
         u_perp_exact = 0.1 * sin(2*pi * (X * cos(angle) + Y * sin(angle) + tfinal) )
         B_perp_exact = u_perp_exact
+        
+        rho_exact = 1.0
+        u1_exact = -u_perp_exact * sin(angle)
+        u2_exact = u_perp_exact * cos(angle)
+        B1_exact = 1.0 * cos(angle) - B_perp_exact * sin(angle)
+        B2_exact = 1.0 * sin(angle) + B_perp_exact * cos(angle)
+        rho = q[:, :, 1 - 1]        
         u1 = q[:, :, 2 - 1] / q[:, :, 1 - 1]
         u2 = q[:, :, 3 - 1] / q[:, :, 1 - 1]
         u3 = q[:, :, 4 - 1] / q[:, :, 1 - 1]
@@ -94,6 +103,12 @@ def L1_error_list(output_dir_list):
         L1_u_perp_exact = sum(abs(u_perp_exact))
         
 #        print "u_perp error: ", L1_error_u_perp / L1_u_perp_exact
+
+        L1_error_u1 = sum(abs(u1 - u1_exact))
+        L1_u1_exact = sum(abs(u1_exact))
+        L1_error_u2 = sum(abs(u2 - u2_exact))
+        L1_u2_exact = sum(abs(u2_exact))
+
         
         L1_error_u3 = sum(abs(u3 - u3_exact))
         L1_u3_exact = sum(abs(u3_exact))
@@ -104,6 +119,9 @@ def L1_error_list(output_dir_list):
         L1_B_perp_exact = sum(abs(B_perp_exact))
 #        print "B_perp error: ", L1_error_B_perp / L1_B_perp_exact
 
+        debug_B1_abs_error = abs(B1 - B1_exact)
+        debug_B2_abs_error = abs(B2 - B2_exact)
+        
         debug_B_perp_exact = B_perp_exact
         debug_B_perp_abs_error = abs(B_perp - B_perp_exact)
         debug_B_perp_rel_error = debug_B_perp_abs_error / abs(B_perp_exact)
@@ -135,7 +153,15 @@ def L1_error_list(output_dir_list):
 #        delta = 0.25 * (L1_error_u_perp / L1_u_perp_exact + L1_error_u3 / L1_u3_exact + L1_error_B_perp / L1_B_perp_exact + L1_error_B3 / L1_B3_exact)
 #        delta = 0.5 * (L1_error_B_perp / L1_B_perp_exact + L1_error_B3 / L1_B3_exact)
 #        delta = 0.5 * (L1_error_u_perp / L1_u_perp_exact + L1_error_u3 / L1_u3_exact)
-        delta = max(abs(B_perp - B_perp_exact))
+        #delta = max(abs(u3 - u3_exact))
+        #delta = max(abs(u1 - u1_exact))
+        #delta = max(abs(u2 - u2_exact))
+        #delta = max(abs(u3 - u3_exact))
+        #delta = max(abs(B1 - B1_exact))
+        #delta = max(abs(B2 - B2_exact))
+        #delta = max(abs(B3 - B3_exact))
+        delta = max(abs(rho - rho_exact))
+        #delta = L1_error_u1 / L1_u1_exact
         error_list.append(delta)
     return error_list
 
@@ -148,6 +174,7 @@ def log2_adjacent_ratio(error_list):
     return order_list
 
 def L1_A_error_list(output_dir_list):
+    from numpy import max
     global debug_A_abs_error    
     
     import finess.viz.dim2
@@ -180,7 +207,8 @@ def L1_A_error_list(output_dir_list):
         debug_A_abs_error = abs(A - A_exact)
         L1_A_exact = sum(abs(A_exact))
         L1_A_error = sum(abs(A - A_exact))
-        delta = L1_A_error / L1_A_exact
+        #delta = L1_A_error / L1_A_exact
+        delta = max(abs(A - A_exact))
         error_list.append(delta)
     return error_list
 
@@ -201,10 +229,10 @@ def L1_A_error_list(output_dir_list):
 #
 ## In[140]:
 
-output_dir_list = ['output_30deg_%(i)02d' % {'i': i} for i in [0, 1, 2, 3]]
+output_dir_list = ['output_30deg_%(i)02d' % {'i': i} for i in [0, 1, 2, 3, 4]]
 error_list = L1_error_list(output_dir_list)
 order_list = log2_adjacent_ratio(error_list)
-print 'u, B:'
+print 'rho'
 print order_list
 print error_list
 

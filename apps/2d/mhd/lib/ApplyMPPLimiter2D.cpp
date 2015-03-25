@@ -122,8 +122,11 @@ void ApplyMPPLimiter2D(
         plow   = gm1*(energy-0.5*rho*(u1*u1+u2*u2+u3*u3) - 0.5*(B1*B1 + B2*B2 + B3*B3));
 
         // Quick error check
-        if (plow < 0.0)
-            cout << "Negative solution in Lax-Friedrich's flux" << endl;
+        if (plow < 0.0){
+	    cerr << "(" << i << ", " << j << ")  ";
+	    cerr << "plow=" << plow << "  ";
+          cerr << "Negative solution in Lax-Friedrich's flux" << endl;
+	}
 
         for( int m=1; m <= meqn; m++ )
         {
