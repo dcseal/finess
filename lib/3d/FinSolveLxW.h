@@ -29,9 +29,23 @@ void AfterStep(double dt, StateVars& Q);
 // before each stage in an RK method)
 void BeforeFullTimeStep(double dt, StateVars& Qold, StateVars& Q );
 void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Qnew );
+void ConstructLFL( const double dt, const StateVars& Qnew, 
+    dTensorBC4& fLF, dTensorBC4& gLF, dTensorBC4& hLF, dTensorBC4& Lstar, dTensorBC4& smax );
+void ApplyMPPLimiter3D( 
+        const double dt, const dTensorBC4& q, 
+        const dTensorBC4& fLF, const dTensorBC4& gLF, const dTensorBC4& hLF,
+        dTensorBC4& fHat, dTensorBC4& gHat, dTensorBC4& hHat);
 
 void ConstructLxWL( const StateVars& Q,
         const dTensorBC4& F, const dTensorBC4& G, const dTensorBC4& H,
         dTensorBC4& Lstar, dTensorBC4& smax);
+
+void ConstructLxWL( const StateVars& Q,
+        const dTensorBC4& F,         // <--- new term: integrated flux, f
+        const dTensorBC4& G,         // <--- new term: integrated flux, g
+        const dTensorBC4& H,
+	dTensorBC4* pFhat, dTensorBC4* pGhat, dTensorBC4* pHhat,
+        dTensorBC4& Lstar,
+        dTensorBC4& smax);
 
 #endif

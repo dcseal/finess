@@ -104,6 +104,10 @@ D2FluxFunc           = $(LIB3D)/LaxWendroff/D2FluxFunc
 #LaxWendroffTD        = $(LIB3D)/LaxWendroff/LaxWendroffTD
 #RiemannSolveLxW      = $(LIB3D)/LaxWendroff/RiemannSolveLxW_LLF
 
+
+ApplyMPPLimiter3D    = $(LIB3D)/ApplyMPPLimiter3D
+ConstructLFL         = $(LIB3D)/ConstructLFL
+
 LIB3D_OBJECTS = \
   $(TOPLIB_OBJECTS) \
   $(RunFinpack).o \
@@ -128,6 +132,8 @@ LIB3D_OBJECTS = \
   $(LIB3D)/UpdateSoln.o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
+  $(ApplyMPPLimiter3D).o \
+  $(ConstructLFL).o
 
 LIB3D_SOURCES = \
   $(LIB3D)/*.h \
@@ -154,4 +160,6 @@ LIB3D_SOURCES = \
   $(LIB3D)/UpdateSoln.cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \
+  $(ApplyMPPLimiter3D).cpp \
+  $(ConstructLFL).cpp
 

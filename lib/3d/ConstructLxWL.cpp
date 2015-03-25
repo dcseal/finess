@@ -34,11 +34,29 @@ void SampleFunctionTypeA(
         const dTensorBC4& auxin,  
         dTensorBC4& Fout,
         void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
+void ConstructLxWL( const StateVars& Q,
+        const dTensorBC4& F,         // <--- new term: integrated flux, f
+        const dTensorBC4& G,         // <--- new term: integrated flux, g
+        const dTensorBC4& H,
+	dTensorBC4* pFhat, dTensorBC4* pGhat, dTensorBC4* pHhat,
+        dTensorBC4& Lstar,
+        dTensorBC4& smax);
 
 void ConstructLxWL( const StateVars& Q,
         const dTensorBC4& F,         // <--- new term: integrated flux, f
         const dTensorBC4& G,         // <--- new term: integrated flux, g
         const dTensorBC4& H,
+        dTensorBC4& Lstar,
+        dTensorBC4& smax){
+    ConstructLxWL(Q, F, G, H, NULL, NULL, NULL, Lstar, smax);
+}
+
+
+void ConstructLxWL( const StateVars& Q,
+        const dTensorBC4& F,         // <--- new term: integrated flux, f
+        const dTensorBC4& G,         // <--- new term: integrated flux, g
+        const dTensorBC4& H,
+	dTensorBC4* pFhat, dTensorBC4* pGhat, dTensorBC4* pHhat,
         dTensorBC4& Lstar,
         dTensorBC4& smax)
 {
@@ -62,14 +80,38 @@ void ConstructLxWL( const StateVars& Q,
     const int     mz = global_ini_params.get_mz();
     const int    mbc = global_ini_params.get_mbc();
 
+    struct ptr_dTensorBC4{
+        dTensorBC4 *p;
+        ptr_dTensorBC4(dTensorBC4 *p_in){
+            this->p = p_in;
+        }
+        ~ptr_dTensorBC4(){
+            if(this->p != NULL)
+                delete p;       
+        }
+    };
+    ptr_dTensorBC4 local_pFhat(NULL), local_pGhat(NULL), local_pHhat(NULL);
+    if(pFhat == NULL){
+        local_pFhat.p = new dTensorBC4(mx+1, my, mz, meqn, mbc);
+        pFhat = local_pFhat.p;
+    }
+    if(pGhat == NULL){
+        local_pGhat.p = new dTensorBC4(mx, my+1, mz, meqn, mbc);
+        pGhat = local_pGhat.p;
+    }
+    if(pHhat == NULL){
+        local_pHhat.p = new dTensorBC4(mx, my, mz+1, meqn, mbc);
+        pHhat = local_pHhat.p;
+    }
+    dTensorBC4& Fhat = *pFhat;
+    dTensorBC4& Ghat = *pGhat;
+    dTensorBC4& Hhat = *pHhat;
+
     // Size of the WENO stencil
     const int ws = global_ini_params.get_space_order();
     const int r = (ws + 1) / 2;
     assert_ge( mbc, r );
 
-    dTensorBC4  Fhat(mx+1, my,   mz,   meqn, mbc );
-    dTensorBC4  Ghat(mx,   my+1, mz,   meqn, mbc );
-    dTensorBC4  Hhat(mx,   my,   mz+1, meqn, mbc );
     // Grid spacing -- node( 1:(mx+1), 1 ) = cell edges
     const double     dx = global_ini_params.get_dx();
     const double     dy = global_ini_params.get_dy();

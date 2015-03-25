@@ -76,10 +76,10 @@ void AfterStep(double dt, StateVars& Q )
                     q.set(i, j, k, 6, B1);
                     q.set(i, j, k, 7, B2);
                     q.set(i, j, k, 8, B3);
+                    if(global_ini_params.get_mpp_limiter())
+                        q.set(i, j, k, 5, old_E + 0.5*((B1*B1+B2*B2+B3*B3) - (old_B1*old_B1+old_B2*old_B2+old_B3*old_B3)));
                 }
 
-                //                if(global_ini_params.get_mpp_limiter())
-                //                    q.set(i, j, 5, old_E + 0.5*((B1*B1+B2*B2+B3*B3) - (old_B1*old_B1+old_B2*old_B2+old_B3*old_B3)));
             }
         }
     }

@@ -47,7 +47,7 @@ ConstructHJ_L = $(APP_LIB)/ConstructHJ_L
 #GetCFL = $(APP_LIB)/GetCFL
 
 # Positivity-preserving limiter
-#ApplyMPPLimiter2D   = $(APP_LIB)/ApplyMPPLimiter2D
+ApplyMPPLimiter3D   = $(APP_LIB)/ApplyMPPLimiter3D
 
 
 # place to add objects and sources
