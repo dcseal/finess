@@ -1,7 +1,7 @@
 #include "dogdefs.h"
 #include "dog_math.h"
 #include "IniParams.h"
-
+#include <iostream>
 // This is a user-supplied routine that projects
 // Qvals onto the left eigenvectors ofthe flux 
 // Jacobian; the result is stored in Wvals
@@ -17,7 +17,7 @@ void ProjectLeftEig(int ixy,
 
     // Average states
     double const gamma  = global_ini_params.get_gamma();
-    double rho    = fabs(Q_ave.get(1));
+    double rho    = Q_ave.get(1);
     double u1     = Q_ave.get(2)/rho;
     double u2     = Q_ave.get(3)/rho;
     double u3     = Q_ave.get(4)/rho;
@@ -27,8 +27,9 @@ void ProjectLeftEig(int ixy,
     double B3     = Q_ave.get(8);
     double um2    = 0.5*(u1*u1 + u2*u2 + u3*u3);
     double Bm2    = 0.5*(B1*B1 + B2*B2 + B3*B3);
-    double p      = fabs((gamma-1.0)*(energy - rho*um2 - Bm2));
-
+    double p      = (gamma-1.0)*(energy - rho*um2 - Bm2);
+    
+    
 
     dTensor1 nv(3), tv(3);
     {
@@ -99,7 +100,7 @@ void ProjectLeftEig(int ixy,
 
     double rhosq = sqrt(rho);
     double   gm1 = gamma-1.0;
-    double    a2 = (gamma*p/rho);
+    double    a2 = gamma*p/rho;
     double     a = sqrt(a2);
     double   b1s = B1/rhosq;
     double   b2s = B2/rhosq;
@@ -111,8 +112,8 @@ void ProjectLeftEig(int ixy,
 
     double   d = a2 + (b1s*b1s + b2s*b2s + b3s*b3s);
     double  d2 = pow(d,2);
-    double  cf = sqrt(0.5*fabs(d+sqrt(d2-4.0*a2*BNs2)));
-    double  cs = sqrt(0.5*fabs(d-sqrt(d2-4.0*a2*BNs2)));
+    double  cf = sqrt(0.5*(d+sqrt(d2-4.0*a2*BNs2)));
+    double  cs = sqrt(0.5*(d-sqrt(d2-4.0*a2*BNs2)));
     double cf2 = pow(cf,2);
     double cs2 = pow(cs,2);
 

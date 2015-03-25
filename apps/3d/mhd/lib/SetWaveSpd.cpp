@@ -18,7 +18,7 @@ void SetWaveSpd(const dTensor1& nvec,
     double const gamma   = global_ini_params.get_gamma();
 
     // Left states
-    const double  rhol   = fabs(Ql.get(1));
+    const double  rhol   = Ql.get(1);
     const double u1l     = Ql.get(2)/rhol;
     const double u2l     = Ql.get(3)/rhol;
     const double u3l     = Ql.get(4)/rhol;
@@ -28,10 +28,10 @@ void SetWaveSpd(const dTensor1& nvec,
     const double B3l     = Ql.get(8);
     const double Bm2l    = B1l*B1l + B2l*B2l + B3l*B3l;
     const double um2l    = u1l*u1l + u2l*u2l + u3l*u3l;
-    const double pressl  = fabs(((gamma-1.0e0)*(energyl - 0.5*rhol*um2l - 0.5*Bm2l)));
+    const double pressl  = ((gamma-1.0e0)*(energyl - 0.5*rhol*um2l - 0.5*Bm2l));
 
     // Right states
-    const double rhor    = fabs(Qr.get(1));
+    const double rhor    = Qr.get(1);
     const double u1r     = Qr.get(2)/rhor;
     const double u2r     = Qr.get(3)/rhor;
     const double u3r     = Qr.get(4)/rhor;
@@ -41,7 +41,7 @@ void SetWaveSpd(const dTensor1& nvec,
     const double B3r     = Qr.get(8);
     const double Bm2r    = B1r*B1r + B2r*B2r + B3r*B3r;
     const double um2r    = u1r*u1r + u2r*u2r + u3r*u3r;
-    const double pressr  = fabs(((gamma-1.0e0)*(energyr - 0.5*rhor*um2r - 0.5*Bm2r)));
+    const double pressr  = ((gamma-1.0e0)*(energyr - 0.5*rhor*um2r - 0.5*Bm2r));
 
     // Average states
     const double rho    = 0.5e0*(rhol+rhor);
@@ -55,9 +55,9 @@ void SetWaveSpd(const dTensor1& nvec,
     const double Bm2    = B1*B1 + B2*B2 + B3*B3;
 
     // Sound speed squared
-    const double a2l = fabs(gamma*pressl/rhol);
-    const double a2r = fabs(gamma*pressr/rhor);
-    const double a2  = fabs(gamma*press/rho);
+    const double a2l = gamma*pressl/rhol;
+    const double a2r = gamma*pressr/rhor;
+    const double a2  = gamma*press/rho;
 
     const double unl = nvec.get(1)*u1l + nvec.get(2)*u2l + nvec.get(3)*u3l;
     const double unr = nvec.get(1)*u1r + nvec.get(2)*u2r + nvec.get(3)*u3r;
