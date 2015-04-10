@@ -11,23 +11,35 @@
 #include "IniParams.h"
 #include "StateVars.h"
 #include "util.h"
-#include "silo_wrapper.h"
 
+#ifdef USE_SILO
+#include "silo_wrapper.h"
+#endif
 
 namespace {
     void OutputASCII( const StateVars& Q, int nframe );
+#ifdef USE_SILO
     void OutputSilo( const StateVars& Q, int nframe );
+#endif
 }
 
 using namespace std;
+#ifdef USE_SILO
 using namespace finess;
+#endif
 
 void Output(const StateVars& Q, int nframe){
     IniParams::DataFormat::enum_type datafmt = global_ini_params.get_datafmt();
     if(datafmt == IniParams::DataFormat::ASCII)
         OutputASCII(Q, nframe);
-    else if(datafmt == IniParams::DataFormat::Silo)
+    else if(datafmt == IniParams::DataFormat::Silo){
+#ifdef USE_SILO        
         OutputSilo(Q, nframe);
+#else
+        cerr << "Silo format is not supported.  Using ASCII instead." << endl;
+        OutputASCII(Q, nframe);
+#endif
+    }
 }
 
 
@@ -101,7 +113,7 @@ namespace {
         //  Output_Extra(node,aux,q,t,nframe,outputdir);
 
     }
-
+#ifdef USE_SILO
     void OutputSilo( const StateVars& Q, int nframe )
     {
         const dTensorBC4& q   = Q.const_ref_q  ();
@@ -211,5 +223,5 @@ namespace {
                             + ", t = " + anyToString(t));
         }
     }
-
+#endif
 }

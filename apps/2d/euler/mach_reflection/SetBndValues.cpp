@@ -18,7 +18,7 @@ void SetBndValues( StateVars& Q )
     dTensorBC3& aux  = Q.ref_aux();
     const double t   = Q.get_t();
 
-    void SampleFunction( 
+    void SampleFunctionTypeA( 
         int istart, int iend,
         int jstart, int jend,
         const dTensorBC3& qin, 
@@ -51,7 +51,7 @@ void SetBndValues( StateVars& Q )
     void LeftFunc(const dTensor2& xpts,
         const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
         dTensor2& qvals);
-    SampleFunction( 1-mbc, 0, 1-mbc, my+mbc, q, aux, q, &LeftFunc );
+    SampleFunctionTypeA( 1-mbc, 0, 1-mbc, my+mbc, q, aux, q, &LeftFunc );
     // ********************************************************************* //
 
 
@@ -74,7 +74,7 @@ void SetBndValues( StateVars& Q )
     void BotFunc(const dTensor2& xpts,
         const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
             dTensor2& qvals);
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, 0, q, aux, q, &BotFunc );
+    SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, 0, q, aux, q, &BotFunc );
 
     // Make q an even function to the right of x0 along the bottom boundary
     for (int i=1; i<=mx; i++)
@@ -107,7 +107,7 @@ void SetBndValues( StateVars& Q )
 //  void TopFunc(const dTensor2& xpts,
 //      const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
 //          dTensor2& qvals);
-//  SampleFunction( 1-mbc, mx+mbc, my+1, my+mbc, q, aux, q, &TopFunc );
+//  SampleFunctionTypeA( 1-mbc, mx+mbc, my+1, my+mbc, q, aux, q, &TopFunc );
     for(int i=1-mbc; i<=mx+mbc; i++)
     for(int j=my+1;  j<=my+mbc; j++)
     {

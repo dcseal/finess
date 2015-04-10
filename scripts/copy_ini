@@ -1,0 +1,3 @@
+#!/bin/sh
+DEST=$1
+rsync -R `find -name '*.ini'` ${DEST}

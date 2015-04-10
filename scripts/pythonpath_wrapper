@@ -1,0 +1,6 @@
+#!/bin/sh
+PYTHONPATH=$1:${PYTHONPATH}
+PYTHON=$2
+shift
+shift
+PYTHONPATH=${PYTHONPATH} ${PYTHON} "$@"

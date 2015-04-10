@@ -1,0 +1,5 @@
+macro(check_unix)
+    if(NOT ${UNIX})
+        message(FATAL_ERROR "This program makes use of Unix-only scripts.  It is possible to adapt the code to non-Unix platforms, but such effort has not been made.")
+    endif()
+endmacro()

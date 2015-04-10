@@ -11,7 +11,7 @@ void SetBndValues( StateVars& Q )
     dTensorBC3&   q = Q.ref_q();
     dTensorBC3& aux = Q.ref_aux();
 
-    void SampleFunction( 
+    void SampleFunctionTypeA( 
         int istart, int iend,
         int jstart, int jend,
         const dTensorBC3& qin, 
@@ -47,7 +47,7 @@ void SetBndValues( StateVars& Q )
     void QinitFunc(const dTensor2& xpts,
         const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
         dTensor2& qvals);
-    SampleFunction( mx+1, mx+mbc, 1-mbc, my+mbc, q, aux, q, &QinitFunc );
+    SampleFunctionTypeA( mx+1, mx+mbc, 1-mbc, my+mbc, q, aux, q, &QinitFunc );
     // ********************************************************************* //
 
     // ********************************************************************* //
@@ -136,7 +136,7 @@ void SetBndValues( StateVars& Q )
     //     We consider the section x=0, 6 < y < 11 here.
     //     the other part of the "left" boundary has already been dealt with.
     // ********************************************************************* //
-    SampleFunction( 1-mbc, 0, jstep, my+mbc, q, aux, q, &QinitFunc );
+    SampleFunctionTypeA( 1-mbc, 0, jstep, my+mbc, q, aux, q, &QinitFunc );
 
 }      
 
@@ -146,7 +146,7 @@ void SetBndValuesX( StateVars& Q )
     dTensorBC3&   q = Q.ref_q();
     dTensorBC3& aux = Q.ref_aux();
 
-    void SampleFunction( 
+    void SampleFunctionTypeA( 
         int istart, int iend,
         int jstart, int jend,
         const dTensorBC3& qin, 
@@ -182,7 +182,7 @@ void SetBndValuesX( StateVars& Q )
     void QinitFunc(const dTensor2& xpts,
         const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
         dTensor2& qvals);
-    SampleFunction( mx+1, mx+mbc, 1-mbc, my+mbc, q, aux, q, &QinitFunc );
+    SampleFunctionTypeA( mx+1, mx+mbc, 1-mbc, my+mbc, q, aux, q, &QinitFunc );
     // ********************************************************************* //
 
     // Compute index where the step is located.  
@@ -224,7 +224,7 @@ void SetBndValuesX( StateVars& Q )
     //     We consider the section x=0, 6 < y < 11 here.
     //     the other part of the "left" boundary has already been dealt with.
     // ********************************************************************* //
-    SampleFunction( 1-mbc, 0, jstep, my+mbc, q, aux, q, &QinitFunc );
+    SampleFunctionTypeA( 1-mbc, 0, jstep, my+mbc, q, aux, q, &QinitFunc );
 
 }
 
@@ -234,7 +234,7 @@ void SetBndValuesY( StateVars& Q )
     dTensorBC3&   q = Q.ref_q();
     dTensorBC3& aux = Q.ref_aux();
 
-    void SampleFunction( 
+    void SampleFunctionTypeA( 
         int istart, int iend,
         int jstart, int jend,
         const dTensorBC3& qin, 

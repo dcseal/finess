@@ -3,7 +3,7 @@
 #include "IniParams.h"
 #include "StateVars.h"
 
-void SampleFunction( 
+void SampleFunctionTypeA( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
@@ -47,7 +47,7 @@ void SetBndValues( StateVars& Q )
     void QinitFunc(const dTensor2& xpts,
         const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
         dTensor2& qvals);
-    SampleFunction( 1-mbc, 0, 1-mbc, my+mbc, q, aux, q, &QinitFunc );
+    SampleFunctionTypeA( 1-mbc, 0, 1-mbc, my+mbc, q, aux, q, &QinitFunc );
     // ********************************************************************* //
 
     // ********************************************************************* //
@@ -184,7 +184,7 @@ void SetBndValuesX( StateVars& Q )
     void QinitFunc(const dTensor2& xpts,
         const dTensor2& NOT_USED1, const dTensor2& NOT_USED2,
         dTensor2& qvals);
-    SampleFunction( 1-mbc, 0, 1, my, q, aux, q, &QinitFunc );
+    SampleFunctionTypeA( 1-mbc, 0, 1, my, q, aux, q, &QinitFunc );
     // ********************************************************************* //
 
     // ********************************************************************* //
