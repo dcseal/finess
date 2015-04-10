@@ -11,7 +11,7 @@
 #include "IniParams.h"
 #include "StateVars.h"
 #include "util.h"
-
+#include "config.h"
 #ifdef USE_SILO
 #include "silo_wrapper.h"
 #endif

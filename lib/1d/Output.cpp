@@ -8,7 +8,7 @@
 #include "dogdefs.h"
 #include "IniParams.h"
 #include "StateVars.h"
-
+#include "config.h"
 #ifdef USE_SILO
 #include "silo_wrapper.h"
 #endif
