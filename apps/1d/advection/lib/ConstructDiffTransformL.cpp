@@ -55,7 +55,7 @@ const int mbc_small      = 3;
 const int      mpts_sten = 5;
 const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 const int MAX_DERIVS     = 5;
-const int MAX_FLUX_DERIVS = 5;
+const int MAX_FLUX_DERIVS = 4;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
