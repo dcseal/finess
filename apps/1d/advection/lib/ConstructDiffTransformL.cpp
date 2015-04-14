@@ -92,7 +92,9 @@ const int MAX_FLUX_DERIVS = 4;
         for( int me =1; me <= meqn; me++ )
         {
             for( int h=1; h <= MAX_DERIVS; h++ )
-            { Q_mixed_derivs.set( meqn, h, 1, qderivs.get(meqn, h) ); }
+            { 
+                Q_mixed_derivs.set( meqn, h, 1, qderivs.get(meqn, h)/factorial[h-1] ); 
+            }
         }
 
 // assert_le( fabs( Q_mixed_derivs.get( 1, 1, 1 ) - q.get(i,1) ), 1e-13 );
@@ -124,6 +126,7 @@ const int MAX_FLUX_DERIVS = 4;
             for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             {
                 tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, k+1 );
+//              tmp += (dt / 2.0) * Q_mixed_derivs.get( m, 1, k+1 );
             }
             F.set( i, m, tmp );
         }
