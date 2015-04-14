@@ -1,4 +1,4 @@
-function plotfin1(parameters_ini_filename_in)
+function plotfin1( parameters_ini_filename_in )
 %PLOTFIN1    Generic 1D plotting routine for FINESS.
 %
 % PLOTFIN1( outputdir_in ) is the main MATLAB plotting routine used in FINESS
