@@ -698,6 +698,69 @@ void WenoReconstructLLF( const dTensor2& g, dTensor2& g_reconst )
 // SECTION: Central Finite difference approximations //
 // ------------------------------------------------- // 
 
+// Compute all derivatives that come from a 5 point stencil
+//
+// Input:
+//
+//      dx                 - cell width
+//
+//      f( 1:mcomps, 1:ws ) - list of meqn functions to be differentiated. ws =
+//                          size of stencil under consideration.  ws = 5 for
+//                          now.
+//
+// Output:
+//
+//      fderivs( 1:mcomps, 1:ws ) - The differentiated function.
+//
+//                                  fderivs(:,1) = f,
+//                                  fderivs(:,2) = fx,
+//                                  fderivs(:,3) = fxx,
+//                                  fderivs(:,4) = fxxx,
+//                                  fderivs(:,5) = fxxxx.
+//
+void CentralDifferences( double dx, const dTensor2& f, dTensor2& fderivs )
+{
+
+    const int mcomps = f.getsize( 1 );  // Usually "meqn"
+    const int STENCIL_SIZE = 5;
+
+//  double[] gamma1 = {1./12., −2./3., 0, 2./3. −1./12.};
+//  double[] gamma2 = { −1./12., 4./3., −5./2., 4./3., −1./12.}; 
+//  double[] gamma3 = {-0.5, 1.0, 0.0, -1.0, 0.5};
+//  double[] gamma4 = {  1., −4.,  6., -4.0, 1.0};
+
+    double deriv_matrix[4][5] = {
+        1./12., -2./3.,  0,     2./3.  -1./12.,   // first-deriv
+       -1./12.,  4./3., -5./2., 4./3., -1./12.,   // second-deriv
+       -0.5,     1.0,    0.0,  -1.0,    0.5,      // third-deriv
+        1.0,    -4.0,    6.0,  -4.0,    1.0       // fourth-deriv
+    };
+
+    // TODO - include options for larger stencils:
+    assert_eq( f.getsize( 2 ), 5 );
+    for( int m=1; m <= mcomps; m++ )
+    {
+
+        // Zeroth derivative
+        fderivs.set(m,1, f.get(m,3) );
+
+        // First and higher-derivatives
+        for( int nderiv=1; nderiv <= 4; nderiv++ )
+        {
+            double tmp = 0.;
+            for( int i=1; i <= STENCIL_SIZE; i++ )
+            {
+                tmp += f.get( m, i ) * deriv_matrix[nderiv-1][i-1];
+            }
+
+            fderivs.set( m, nderiv+1, tmp*pow(dx,-nderiv) );
+        }
+    }
+
+}
+
+
+
 // First-derivative ( using a 5 point central stencil -> fourth-order )
 void Diff1( double dx, const dTensor2& f, dTensor1& fx )
 {
@@ -859,3 +922,5 @@ void Diff2NC( double dx, const dTensor2& f, dTensor1& fxx )
     }
 
 }
+
+

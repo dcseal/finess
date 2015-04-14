@@ -6,7 +6,6 @@
 # LIBRARY for 1D ADVECTION
 #
 
-#SL_LIB   = $(SL_TOPLIB) -I$(DOGPACK)/apps/semi_lagrangian/lib/1d/
 APP_NAME  = advection
 APP_LIB   = $(FINESS)/apps/1d/$(APP_NAME)/lib
 
@@ -36,12 +35,12 @@ AuxFunc     = $(APP_LIB)/AuxFunc
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
+   $(FINESS)/apps/1d/advection/lib/ConstructDiffTransformL.o \
 #  $(SL_TOPLIB_OBJECTS) \
-#  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.o \
 
 #
 APP_LIB_SOURCES = \
+   $(FINESS)/apps/1d/advection/lib/ConstructDiffTransformL.cpp \
 #  $(SL_TOPLIB_SOURCES) \
-#  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.cpp \
 
 #
