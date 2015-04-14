@@ -121,8 +121,7 @@ const int MAX_FLUX_DERIVS = 4;
         for( int m=1; m<=meqn; m++ )
         {
             double tmp = Q_mixed_derivs.get(m,1,1);
-            // for( int k=1; k < MAX_FLUX_DERIVS; k++ )
-            for( int k=1; k < 2; k++ )
+            for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             {
                 tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, k+1 );
             }

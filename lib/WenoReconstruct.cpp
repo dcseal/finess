@@ -729,12 +729,13 @@ void CentralDifferences( double dx, const dTensor2& f, dTensor2& fderivs )
 //  double[] gamma3 = {-0.5, 1.0, 0.0, -1.0, 0.5};
 //  double[] gamma4 = {  1., −4.,  6., -4.0, 1.0};
 
-    double deriv_matrix[4][5] = {
-        1./12., -2./3.,  0,     2./3.  -1./12.,   // first-deriv
-       -1./12.,  4./3., -5./2., 4./3., -1./12.,   // second-deriv
-       -0.5,     1.0,    0.0,  -1.0,    0.5,      // third-deriv
-        1.0,    -4.0,    6.0,  -4.0,    1.0       // fourth-deriv
+    const double deriv_matrix[4][5] = {
+       { 8.333333333333333e-02, -6.666666666666666e-01,  0, 6.666666666666666e-01,  -8.333333333333333e-02 },   // first-deriv
+       {-8.333333333333333e-02,  1.3333333333333333, -2.5, 1.3333333333333333, -8.333333333333333e-02},  // second-deriv
+       {-0.5,     1.0,    0.0,  -1.0,    0.5},     // third-deriv
+       {1.0,    -4.0,    6.0,  -4.0,    1.0}       // fourth-deriv
     };
+
 
     // TODO - include options for larger stencils:
     assert_eq( f.getsize( 2 ), 5 );

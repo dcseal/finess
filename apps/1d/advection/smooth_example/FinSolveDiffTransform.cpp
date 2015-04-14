@@ -32,10 +32,6 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew );
 void AfterFullTimeStep (double dt, const StateVars& Qold, StateVars& Qnew );
 // ------------------------------------------------------------
 
-
-// New routine used here
-void CentralDifferences( double dx, const dTensor2& f, dTensor2& fderivs );
-
 // ------------------------------------------------------------
 // Example function that describes how the main time stepping loop works.
 // 
