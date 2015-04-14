@@ -12,12 +12,12 @@ include $(FINESS)/apps/1d/advection/lib/Makefile.defs
 #
 #FinSolveUser           = $(FINESS)/lib/1d/FinSolveRK_PIF
 #ConstructIntegratedF    = ConstructIntegratedF
-FinSolveUser            = FinSolveUser
+FinSolveUser            = FinSolveDiffTransform
 
 # place to add object modules
 #
-ALL_OBJECTS = $(COMMON_OBJECTS) $(SL_LIB_OBJECTS)
-ALL_SOURCES = $(COMMON_SOURCES) $(SL_LIB_SOURCES)
+ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
+ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES)
 
 ### targets ###
 
