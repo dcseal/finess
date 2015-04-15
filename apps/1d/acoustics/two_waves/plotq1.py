@@ -18,12 +18,12 @@ def plotq1(m, meth1, meqn, mx, time, xc, qsoln, auxsoln):
         qeps  = 0.1*(qhigh-qlow)
     else:
         qeps = 0.1            
-
     plt.figure(1)
     plt.clf()
     plt.gca().set_aspect('auto')
-    plt.gca().set_xlim([xc[0],xc[mx-1]])
-    plt.gca().set_ylim([qlow-qeps,qhigh+qeps])
+    plt.gca().set_xlim([-1.05,1.05])
+    #plt.gca().set_ylim([qlow-qeps,qhigh+qeps])
+    plt.gca().set_ylim([-0.05,1.05])
     plt.plot(xc,qsoln[:,m],'b-')
     tmp1 = "".join(("q(",str(m+1),") at t = "))
     tmp2 = "".join((tmp1,str(time)))
