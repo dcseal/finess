@@ -6,14 +6,14 @@
 // There's no need to call these directly.  In place of extra overhead for
 // checking which method to use inside a for loop, instead use
 // GetCentralDifferences one time.
-void CentralDifferences5( const dTensor2& g, dTensor2& g_reconst );
-void CentralDifferences7( const dTensor2& g, dTensor2& g_reconst );
-void CentralDifferences9( const dTensor2& g, dTensor2& g_reconst );
+void CentralDifferences5( double dx, const dTensor2& f, dTensor2& fderivs   );
+void CentralDifferences7( double dx, const dTensor2& f, dTensor2& fderivs   );
+void CentralDifferences9( double dx, const dTensor2& f, dTensor2& fderivs   );
 
 // Wrapper function that provides access to each of the above through looking
 // at the global variable wenoParams.
 //void (*GetWenoReconstruct())(const dTensor2& g, dTensor2& g_reconst);
-typedef void (*central_differences_t)(const dTensor2&, dTensor2&);
+typedef void (*central_differences_t)(double, const dTensor2&, dTensor2&);
 central_differences_t GetCentralDifferences();
 
 // Matrices used for computing derivatives.  

@@ -9,10 +9,12 @@ central_differences_t GetCentralDifferences()
 {
 
     // TODO - implement WENO3 and WENO-Z version
-    if(global_ini_params.get_weno_version() == IniParams::WenoVersion::JS && global_ini_params.get_space_order() == 5)
-        return &WenoReconstruct_JS5;
-//  else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::JS && global_ini_params.get_space_order() == 7)
-//      return &WenoReconstruct_JS7;
+    if( global_ini_params.get_space_order() == 5)
+        return &CentralDifferences5;
+    else if( global_ini_params.get_space_order() == 7)
+        return &CentralDifferences7;
+    else if( global_ini_params.get_space_order() == 9)
+        return &CentralDifferences9;
 //  else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 9)
 //  {
 //      printf("Warning: we're not sure these are the correct coefficients for WENOZ-9!\n");
