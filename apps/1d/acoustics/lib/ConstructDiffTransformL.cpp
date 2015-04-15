@@ -5,26 +5,6 @@
 #include "StateVars.h"
 #include "assert.h"
 
-// Central Finite difference approximations.  See lib/WenoReconstruct.cpp
-void Diff1( double dx, const dTensor2& f, dTensor1& fx );
-void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
-
-void FluxFunc  (const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-void DFluxFunc(const dTensor1& xpts, const dTensor2& Q, const dTensor2& Aux,
-    dTensor3& Dflux);
-void D2FluxFunc(const dTensor1& xpts, const dTensor2& Q, const dTensor2& Aux,
-    dTensor4& D2flux);
-
-// Used for construcing the flux function
-void SampleFunction( 
-    int istart, int iend,
-    const dTensorBC2& qin, 
-    const dTensorBC2& auxin,  
-    dTensorBC2& Fout,
-    void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
-
-
-
 // Time expanded state variable, q using discrete transform.
 //
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
@@ -42,13 +22,6 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     // Needed to define derivatives
     const double dx    = global_ini_params.get_dx();
     const double xlow  = global_ini_params.get_xlow();
-
-    // Sample the flux function on the entire domain:
-    //
-    // If "1st-order" (Euler step), then this completes this function call.
-    //
-    dTensorBC2 f( mx, meqn, mbc );  // place-holder
-    SampleFunction( 1-mbc, mx+mbc, q, aux, f, &FluxFunc );
 
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
@@ -97,27 +70,25 @@ const int MAX_FLUX_DERIVS = 4;
             }
         }
 
-// assert_le( fabs( Q_mixed_derivs.get( 1, 1, 1 ) - q.get(i,1) ), 1e-13 );
+//assert_le( fabs( Q_mixed_derivs.get( 1, 1, 1 ) - q.get(i,1) ), 1e-13 );
+//assert_le( fabs( Q_mixed_derivs.get( 2, 1, 1 ) - q.get(i,2) ), 1e-13 );
 
+        // Easy index for the two-variable system.
         int b4[2]={2,1};
-        // Recursive relationship goes here! //
-            // TODO - THIS IS HARD CODED in two places: 
-            //
-            //    i) spatial (and hence temporal) order
-            //   ii) velocity is set equal to one
-            //
-            for( int k=0; k < MAX_FLUX_DERIVS;   k++ )      
-            {
-               for( int me = 1; me <= meqn; me++ )
-               {
 
-                   for( int h=0; h < MAX_FLUX_DERIVS-k; h++ )
-                   {
-                      double tmp = -(h+1.0)/(k+1.0) * Q_mixed_derivs.get( b4[me-1], h+2, k+1 );
-                      Q_mixed_derivs.set( me, h+1, k+2, tmp );
-                   }
+        // Recursive relationship goes here! //
+        for( int k=0; k < MAX_FLUX_DERIVS;   k++ )      
+        {
+           for( int me = 1; me <= meqn; me++ )
+           {
+
+               for( int h=0; h < MAX_FLUX_DERIVS-k; h++ )
+               {
+                  double tmp = -(h+1.0)/(k+1.0) * Q_mixed_derivs.get( b4[me-1], h+2, k+1 );
+                  Q_mixed_derivs.set( me, h+1, k+2, tmp );
                }
-             }
+           }
+         }
 
         // Now, construct time-averaged flux.  Note that Q_mixed_derivs
         // already contains a factorial in its definition.  In order to
@@ -131,7 +102,13 @@ const int MAX_FLUX_DERIVS = 4;
                 tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, k+1 );
 //              tmp += (dt / 2.0) * Q_mixed_derivs.get( m, 1, k+1 );
             }
-            F.set( i, m, tmp );
+
+            // Because we are taking Taylor expansions of the *fluxes*, and
+            // not the conserved variables, we need to "swap" these two one
+            // more time.  That is, f^n = ( q2, q1 ), not (q1, q2 ).
+//          F.set( i, m, tmp );
+            F.set( i, b4[m-1], tmp );
+
         }
 
     }
