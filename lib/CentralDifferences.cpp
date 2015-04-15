@@ -22,17 +22,6 @@ central_differences_t GetCentralDifferences()
         throw(std::logic_error("Requested Central Difference Operator is not implemented."));
 }
 
-const double deriv_matrix5[4][5] = {
-   { 8.333333333333333e-02, -6.666666666666666e-01,  0, 6.666666666666666e-01,  -8.333333333333333e-02 },   // first-deriv
-   {-8.333333333333333e-02,  1.3333333333333333, -2.5, 1.3333333333333333, -8.333333333333333e-02},  // second-deriv
-   {-0.5,     1.0,    0.0,  -1.0,    0.5},     // third-deriv
-   {1.0,    -4.0,    6.0,  -4.0,    1.0}       // fourth-deriv
-};
-
-// TODO - write down derivative matrix for the 7 and 9-point stencil.  This
-// should probably be scripted so we don't make any copying mistakes into
-// making these
-
 // ------------------------------------------------- // 
 // SECTION: Central Finite difference approximations //
 // ------------------------------------------------- // 
@@ -106,6 +95,35 @@ void CentralDifferences7( double dx, const dTensor2& f, dTensor2& fderivs )
             for( int i=1; i <= STENCIL_SIZE; i++ )
             {
                 tmp += f.get( m, i ) * deriv_matrix7[nderiv-1][i-1];
+            }
+
+            fderivs.set( m, nderiv+1, tmp*pow(dx,-nderiv) );
+        }
+    }
+
+}
+
+// Differences with a 9-point stencil
+void CentralDifferences9( double dx, const dTensor2& f, dTensor2& fderivs )
+{
+
+    const int mcomps = f.getsize( 1 );  // Usually "meqn" but doesn't have to be
+    const int STENCIL_SIZE = 9;
+
+    assert_eq( f.getsize( 2 ), STENCIL_SIZE );
+    for( int m=1; m <= mcomps; m++ )
+    {
+
+        // Zeroth derivative
+        fderivs.set(m,1, f.get(m, (STENCIL_SIZE/2)+1 ) );
+
+        // First and higher-derivatives
+        for( int nderiv=1; nderiv <= STENCIL_SIZE-1; nderiv++ )
+        {
+            double tmp = 0.;
+            for( int i=1; i <= STENCIL_SIZE; i++ )
+            {
+                tmp += f.get( m, i ) * deriv_matrix9[nderiv-1][i-1];
             }
 
             fderivs.set( m, nderiv+1, tmp*pow(dx,-nderiv) );
