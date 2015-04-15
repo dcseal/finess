@@ -41,5 +41,6 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     title = "".join((tmp2,"     [FINESS]"))
     plt.title(title)
     plt.draw()
+    plt.pause(0.1)
     
 #----------------------------------------------------------
