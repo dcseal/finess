@@ -20,10 +20,11 @@ LFLAGS = $(HDF5_LIBRARIES)
 TOPLIB_INCLUDE = -I$(TOPLIB) $(LIB_SYS_INCLUDE)
 #
 
-MAIN_GLOBAL     = $(TOPLIB)/main_global
-RunStartScript  = $(TOPLIB)/RunStartScript
-WenoReconstruct = $(TOPLIB)/WenoReconstruct
-Quadrature      = $(TOPLIB)/Quadrature
+MAIN_GLOBAL         = $(TOPLIB)/main_global
+RunStartScript      = $(TOPLIB)/RunStartScript
+WenoReconstruct     = $(TOPLIB)/WenoReconstruct
+CentralDifferences  = $(TOPLIB)/CentralDifferences
+Quadrature          = $(TOPLIB)/Quadrature
 
 TOPLIB_OBJECTS = \
   $(LIB_SYS_OBJECTS) \
@@ -34,6 +35,7 @@ TOPLIB_OBJECTS = \
   $(TOPLIB)/dog_str.o \
   $(TOPLIB)/dog_io.o \
   $(WenoReconstruct).o \
+  $(CentralDifferences).o \
   $(Quadrature).o \
   $(RunStartScript).o \
 #
@@ -48,6 +50,7 @@ TOPLIB_SOURCES = \
   $(TOPLIB)/dog_str.cpp \
   $(TOPLIB)/dog_io.cpp \
   $(WenoReconstruct).cpp \
+  $(CentralDifferences).cpp \
   $(Quadrature).cpp \
   $(RunStartScript).cpp \
 

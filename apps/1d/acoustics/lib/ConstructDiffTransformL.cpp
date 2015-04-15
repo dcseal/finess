@@ -4,6 +4,7 @@
 #include "IniParams.h"
 #include "StateVars.h"
 #include "assert.h"
+#include "CentralDifferences.h"
 
 // Time expanded state variable, q using discrete transform.
 //
@@ -23,12 +24,17 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     const double dx    = global_ini_params.get_dx();
     const double xlow  = global_ini_params.get_xlow();
 
-// TODO  - allow for different sized stencils for different orders (-DS)
-const int mbc_small      = 3;
-const int      mpts_sten = 5;
-const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
-const int MAX_DERIVS     = 5;
-const int MAX_FLUX_DERIVS = 4;
+    const int mpts_sten       = global_ini_params.get_space_order(); assert_eq( mpts_sten%2, 1 );
+
+    const int mbc_small       = (mbc+1)/2;
+    const int half_mpts_sten  = (mpts_sten+1)/2;          // assert_eq( half_mpts_sten, 3 );
+    const int MAX_DERIVS      = mpts_sten;
+    const int MAX_FLUX_DERIVS = mpts_sten-1;
+
+printf("MAX_FLUX_DERIVS = %d, MAX_FLUX_DERIVS = %d\n", MAX_DERIVS, MAX_FLUX_DERIVS );
+
+    // Central difference routine (depends on spatial order!)
+    void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
 
     // Compute finite difference approximations on all of the conserved
     // variables:
@@ -57,7 +63,6 @@ const int MAX_FLUX_DERIVS = 4;
         dTensor2 qderivs ( meqn, MAX_DERIVS );
 
         // Compute a FD approximation to the derivatives:
-        void CentralDifferences( double dx, const dTensor2& f, dTensor2& fderivs);
         CentralDifferences( dx, qvals, qderivs );
 
         // Save all of the "zeroth" time derivatives.
@@ -69,9 +74,6 @@ const int MAX_FLUX_DERIVS = 4;
                 Q_mixed_derivs.set( me, h, 1, qderivs.get(me, h)/factorial[h-1] ); 
             }
         }
-
-//assert_le( fabs( Q_mixed_derivs.get( 1, 1, 1 ) - q.get(i,1) ), 1e-13 );
-//assert_le( fabs( Q_mixed_derivs.get( 2, 1, 1 ) - q.get(i,2) ), 1e-13 );
 
         // Easy index for the two-variable system.
         int b4[2]={2,1};
@@ -100,13 +102,11 @@ const int MAX_FLUX_DERIVS = 4;
             for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             {
                 tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, k+1 );
-//              tmp += (dt / 2.0) * Q_mixed_derivs.get( m, 1, k+1 );
             }
 
             // Because we are taking Taylor expansions of the *fluxes*, and
             // not the conserved variables, we need to "swap" these two one
             // more time.  That is, f^n = ( q2, q1 ), not (q1, q2 ).
-//          F.set( i, m, tmp );
             F.set( i, b4[m-1], tmp );
 
         }
