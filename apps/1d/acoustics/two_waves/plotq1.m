@@ -31,7 +31,25 @@ set(pz,'markersize',8)
 set(pz,'linewidth',1);
 hold off;
 axis on; box on; grid off;
-axis([0 1 -0.1 1.1]);
+axis([-1 1 -0.1 1.1]);
+set(gca,'plotboxaspectratio',[2 1 1]);
+set(gca,'xtick',-2:0.25:2);
+set(gca,'ytick',-2:0.5:2);
+set(gca,'fontsize',16);
+t1 = title(['q(x,t) at t = ',num2str(time),'     [FINESS]']); 
+set(t1,'fontsize',16);
+
+figure(2);
+clf;
+pt=plot(xc,qex(:,2),'r-');
+set(pt,'linewidth',1.5);
+hold on;
+pz=plot(xc,qsoln(:,2),'bo');
+set(pz,'markersize',8)
+set(pz,'linewidth',1);
+hold off;
+axis on; box on; grid off;
+axis([-1 1 -0.1 1.1]);
 set(gca,'plotboxaspectratio',[2 1 1]);
 set(gca,'xtick',-2:0.25:2);
 set(gca,'ytick',-2:0.5:2);
