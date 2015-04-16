@@ -4,6 +4,7 @@
 #include "IniParams.h"
 #include "StateVars.h"
 #include "assert.h"
+#include "CentralDifferences.h"
 
 // Time expanded state variable, q using discrete transform.
 //
@@ -12,6 +13,9 @@
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
 void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
 {
+
+    // Central difference routine (depends on spatial order!)
+    void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
 
     dTensorBC2& q   = Q.ref_q();
     dTensorBC2& aux = Q.ref_aux();
@@ -25,12 +29,21 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     const double dx    = global_ini_params.get_dx();
     const double xlow  = global_ini_params.get_xlow();
 
+    const int mpts_sten       = global_ini_params.get_space_order(); assert_eq( mpts_sten%2, 1 );
+
+    const int mbc_small       = (mbc+1)/2;
+    const int half_mpts_sten  = (mpts_sten+1)/2;          // assert_eq( half_mpts_sten, 3 );
+    const int MAX_DERIVS      = mpts_sten;
+    const int MAX_FLUX_DERIVS = mpts_sten-1;
+
+/*
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
 const int      mpts_sten = 5;
 const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
 const int MAX_DERIVS     = 5;
 const int MAX_FLUX_DERIVS = 4;
+*/
 
     // Quadrature rules for numerically evaluating the integral of the flux
     dTensor1 w1d( MAX_DERIVS );
@@ -62,7 +75,6 @@ const int MAX_FLUX_DERIVS = 4;
         dTensor2 qderivs ( meqn, MAX_DERIVS );
 
         // Compute a FD approximation to the derivatives:
-        void CentralDifferences( double dx, const dTensor2& f, dTensor2& fderivs);
         CentralDifferences( dx, qvals, qderivs );
 
         // Save all of the "zeroth" time derivatives.
