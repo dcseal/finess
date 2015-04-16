@@ -3,32 +3,26 @@ from __future__ import with_statement
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 
-dogpack_data_template = '''
-; Parameters common to dogpack applications
-[dogParams]
-defaults_file = "$FINESS/config/dogParams_defaults.ini"
-ndims       = 1             ; 1 or 2
-mesh_type   = Cartesian     ; (either Cartesian or Unstructured) 
+finess_data_template = '''
+; Parameters common to FINESS applications
+[finess]
+ndims       = 1             ; 1, 2, or 3
 nout        = 1             ; number of output times to print results
 tfinal      = 1.591549430918953e-01 ; final time 
-dtv(1)      = 1.00          ; initial dt
-dtv(2)      = 1e10          ; max allowable dt 
-cflv(1)     = 1.40          ; max allowable Courant number
-cflv(2)     = %(cfl)g       ; desired Courant number
+initial_dt  = 1.00          ; initial dt
+max_dt      = 1e10          ; max allowable dt 
+max_cfl     = 1.40          ; max allowable Courant number
+desired_cfl = %(cfl)g       ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
-limiter_method = moment ; (e.g., moment, viscosity)
 space_order = %(s_order)i   ; =method(1)= order of accuracy in space
 time_order  = %(t_order)i   ; =method(2)= order of accuracy in time
-use_limiter = 0   ; =method(3)= use limiter (1-yes, 0-no)
+meqn        = 1   ; number of equations
 verbosity   = 1   ; =method(4)= verbosity of output
 mcapa       = 0   ; =method(5)= mcapa (capacity function index in aux arrays)
-maux        = 1   ; =method(6)= maux (number of aux arrays, maux >= mcapa)
-source_term = 0   ; =method(7)= source term (1-yes, 0-no)
-meqn        = 1   ; number of equations
-mrestart    = 0   ; restart from old data (1-yes, 0-no)
-nstart      = 0   ; if mrestart==1: from file q(nstart)_restart.dat
-datafmt     = 1   ; 1 for ascii, 5 for hdf5.
+maux        = 0   ; =method(6)= maux (number of aux arrays, maux >= mcapa)
+source_term = false ; =method(7)= source term (1-yes, 0-no)
+output_dir  = %(output)s ; location of the output directory
 
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
@@ -55,13 +49,13 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
     for i in range(iterations):
         mx_now = mx_start * ratio**i
         # we want to do:
-        #   data = open('dogpack.data','w')
-        #   print >> data, dogpack_data_template % { 'mx': mx_now, 'ts_method': ts_method} 
+        #   data = open('finess.data','w')
+        #   print >> data, finess_data_template % { 'mx': mx_now, 'ts_method': ts_method} 
         #   data.close()
         # and we avoid the .close() (even in case of exception) with 'with':
         with closing(open(data_file,'w')) as data:
 
-            # print >> data, dogpack_data_template % locals() 
+            # print >> data, finess_data_template % locals() 
             ## if we had used same names for everything
 
             my_dictionary = {'s_order' : space_order, 't_order' : time_order, 
@@ -69,12 +63,13 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
                     'mx' : mx_now,
                     "i_now": (i+n_start),
                     'ts_method_str' : ts_method_str }
-            print >> data, dogpack_data_template % my_dictionary
+            my_dictionary['output'] = 'output_%(i_now)04i' % my_dictionary
+            print >> data, finess_data_template % my_dictionary
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
-        #%cmd = './dog.exe -o outputSL%(s_order)i_%(t_order)i_%(i_now)03i' % my_dictionary
-        cmd = './dog.exe -o output00%(i_now)i' % my_dictionary
+        #%cmd = './finess.exe -o outputSL%(s_order)i_%(t_order)i_%(i_now)03i' % my_dictionary
+        cmd = './finess.exe'
         print cmd
         call(cmd, shell=True)
         print ''' 
@@ -143,9 +138,9 @@ if __name__ == '__main__':
     print(args)
     print('')
 
-    print('TODO: this template needs to be rewritten in order to run!  The
-    parameters file is no longer compatible with the code.')
-    return
+#   print('TODO: this template needs to be rewritten in order to run!  The
+#   parameters file is no longer compatible with the code.')
+#   return
 
-#   main( args.CFL, args.t_stepper, 
-#       args.order[0], args.order[1], args.frames[1], args.frames[0], 0 )
+    main( args.CFL, args.t_stepper, 
+        args.order[0], args.order[1], args.frames[1], args.frames[0], 0 )
