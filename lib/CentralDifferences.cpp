@@ -15,6 +15,8 @@ central_differences_t GetCentralDifferences()
         return &CentralDifferences7;
     else if( global_ini_params.get_space_order() == 9)
         return &CentralDifferences9;
+    else if( global_ini_params.get_space_order() == 11)
+        return &CentralDifferences11;
 //  else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 9)
 //  {
 //      printf("Warning: we're not sure these are the correct coefficients for WENOZ-9!\n");
@@ -126,6 +128,35 @@ void CentralDifferences9( double dx, const dTensor2& f, dTensor2& fderivs )
             for( int i=1; i <= STENCIL_SIZE; i++ )
             {
                 tmp += f.get( m, i ) * deriv_matrix9[nderiv-1][i-1];
+            }
+
+            fderivs.set( m, nderiv+1, tmp*pow(dx,-nderiv) );
+        }
+    }
+
+}
+
+// Differences with an 11-point stencil
+void CentralDifferences11( double dx, const dTensor2& f, dTensor2& fderivs )
+{
+
+    const int mcomps = f.getsize( 1 );  // Usually "meqn" but doesn't have to be
+    const int STENCIL_SIZE = 11;
+
+    assert_eq( f.getsize( 2 ), STENCIL_SIZE );
+    for( int m=1; m <= mcomps; m++ )
+    {
+
+        // Zeroth derivative
+        fderivs.set(m,1, f.get(m, (STENCIL_SIZE/2)+1 ) );
+
+        // First and higher-derivatives
+        for( int nderiv=1; nderiv <= STENCIL_SIZE-1; nderiv++ )
+        {
+            double tmp = 0.;
+            for( int i=1; i <= STENCIL_SIZE; i++ )
+            {
+                tmp += f.get( m, i ) * deriv_matrix11[nderiv-1][i-1];
             }
 
             fderivs.set( m, nderiv+1, tmp*pow(dx,-nderiv) );
