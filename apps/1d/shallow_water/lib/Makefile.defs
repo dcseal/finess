@@ -31,11 +31,13 @@ AuxFunc     = $(APP_LIB)/AuxFunc
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
+   $(APP_LIB)/ConstructDiffTransformL.o \
 #  $(SL_TOPLIB_OBJECTS) \
 #  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.o \
 
 #
 APP_LIB_SOURCES = \
+   $(APP_LIB)/ConstructDiffTransformL.cpp \
 #  $(SL_TOPLIB_SOURCES) \
 #  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.cpp \
 

@@ -9,6 +9,7 @@ include $(FINESS)/apps/1d/shallow_water/lib/Makefile.defs
 
 # overridden library objects
 #
+FinSolveUser           = $(APP_LIB)/FinSolveDiffTransform
 
 # Experimental new method that uses WENO *differentiation* on the interior of
 # the time-integrated flux function.
@@ -18,6 +19,9 @@ include $(FINESS)/apps/1d/shallow_water/lib/Makefile.defs
 #
 #ALL_OBJECTS = $(COMMON_OBJECTS) ...
 #ALL_SOURCES = $(COMMON_SOURCES) ...
+
+ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
+ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES)
 
 ### targets ###
 
