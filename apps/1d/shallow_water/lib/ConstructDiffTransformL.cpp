@@ -4,6 +4,7 @@
 #include "IniParams.h"
 #include "StateVars.h"
 #include "assert.h"
+#include "CentralDifferences.h"
 
 // Time expanded state variable, q using discrete transform.
 // See: Multi-moment ADER-Taylor methods for systems of conservation laws
@@ -66,7 +67,9 @@ const int MAX_FLUX_DERIVS = 4;
         dTensor2 qderivs ( meqn, MAX_DERIVS );
 
         // Compute a FD approximation to the derivatives:
-        void CentralDifferences( double dx, const dTensor2& f, dTensor2& fderivs);
+        // Central difference routine (depends on spatial order!)
+        void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
+
         CentralDifferences( dx, qvals, qderivs );
 
         // Save all of the "zeroth" time derivatives.
