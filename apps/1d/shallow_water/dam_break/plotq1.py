@@ -46,8 +46,8 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
 #   print(data)
 #   with open( 'dg_picture.dat', 'wb' ) as f:
 #     print( '%.15e' % time, file=f )         # time instant on first row
-#     np.savetxt( 'dg_picture.dat', np.transpose( data ) )
-    np.savetxt( 'dg_picture.dat', np.transpose( data ) )
+#     np.savetxt( 'weno_picture.dat', np.transpose( data ) )
+#   np.savetxt( 'weno_picture.dat', np.transpose( data ) )
  
 
 #----------------------------------------------------------
