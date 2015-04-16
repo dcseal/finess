@@ -35,6 +35,7 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     title = "".join((tmp1,"     [DoGPack]"))
     plt.title(title)
     plt.draw()
+    plt.pause(0.1)
     
     data = np.array( [xc, qsoln[:,0], qsoln[:,1] ] )
 # For some reason, these calls have a bug in them:
