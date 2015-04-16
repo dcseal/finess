@@ -36,8 +36,8 @@ def compute_derivs( u_stencil, index, dx ):
 dx = sympy.symbols("dx")
 
 gamma5 = compute_derivs( np.arange(5), 2, dx )
-gamma7 = compute_derivs( np.arange(7), 2, dx )
-gamma9 = compute_derivs( np.arange(9), 2, dx )
+gamma7 = compute_derivs( np.arange(7), 3, dx )
+gamma9 = compute_derivs( np.arange(9), 4, dx )
 
 #sub_sten_val = g0*interps2[0] + g1*interps2[1] + g2*interps2[2]
 #linear_val   = sum( (dx**2)*u*g for (u,g) in zip( u_stencil, gamma[2,:] ) )
