@@ -49,7 +49,7 @@ set(pz,'markersize',8)
 set(pz,'linewidth',1);
 hold off;
 axis on; box on; grid off;
-axis([-1 1 -0.1 1.1]);
+axis([-1 1 -1.1 1.1]);
 set(gca,'plotboxaspectratio',[2 1 1]);
 set(gca,'xtick',-2:0.25:2);
 set(gca,'ytick',-2:0.5:2);
