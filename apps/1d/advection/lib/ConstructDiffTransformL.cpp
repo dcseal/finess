@@ -4,32 +4,21 @@
 #include "IniParams.h"
 #include "StateVars.h"
 #include "assert.h"
-
-// Central Finite difference approximations.  See lib/WenoReconstruct.cpp
-void Diff1( double dx, const dTensor2& f, dTensor1& fx );
-void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
-
-void FluxFunc  (const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
-void DFluxFunc(const dTensor1& xpts, const dTensor2& Q, const dTensor2& Aux,
-    dTensor3& Dflux);
-void D2FluxFunc(const dTensor1& xpts, const dTensor2& Q, const dTensor2& Aux,
-    dTensor4& D2flux);
-
-// Used for construcing the flux function
-void SampleFunction( 
-    int istart, int iend,
-    const dTensorBC2& qin, 
-    const dTensorBC2& auxin,  
-    dTensorBC2& Fout,
-    void (*Func)(const dTensor1&, const dTensor2&, const dTensor2&, dTensor2&));
-
-
+#include "CentralDifferences.h"
 
 // Time expanded state variable, q using discrete transform.
+//
+// Advection equation, q_t + ( a q )_x = 0.
+//
+// This routine only solves the constant coefficient case, and it assumes that
+// the advection velocity is stored in aux(1,1,1).
 //
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
 void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
 {
+
+    // Central difference routine (depends on spatial order!)
+    void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
 
     dTensorBC2& q   = Q.ref_q();
     dTensorBC2& aux = Q.ref_aux();
@@ -43,19 +32,12 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     const double dx    = global_ini_params.get_dx();
     const double xlow  = global_ini_params.get_xlow();
 
-    // Sample the flux function on the entire domain:
-    //
-    // If "1st-order" (Euler step), then this completes this function call.
-    //
-    dTensorBC2 f( mx, meqn, mbc );  // place-holder
-    SampleFunction( 1-mbc, mx+mbc, q, aux, f, &FluxFunc );
+    const int mpts_sten       = global_ini_params.get_space_order(); assert_eq( mpts_sten%2, 1 );
 
-// TODO  - allow for different sized stencils for different orders (-DS)
-const int mbc_small      = 3;
-const int      mpts_sten = 5;
-const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
-const int MAX_DERIVS     = 5;
-const int MAX_FLUX_DERIVS = 4;
+    const int mbc_small       = (mbc+1)/2;
+    const int half_mpts_sten  = (mpts_sten+1)/2;          // assert_eq( half_mpts_sten, 3 );
+    const int MAX_DERIVS      = mpts_sten;
+    const int MAX_FLUX_DERIVS = mpts_sten-1;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
@@ -84,7 +66,6 @@ const int MAX_FLUX_DERIVS = 4;
         dTensor2 qderivs ( meqn, MAX_DERIVS );
 
         // Compute a FD approximation to the derivatives:
-        void CentralDifferences( double dx, const dTensor2& f, dTensor2& fderivs);
         CentralDifferences( dx, qvals, qderivs );
 
         // Save all of the "zeroth" time derivatives.
