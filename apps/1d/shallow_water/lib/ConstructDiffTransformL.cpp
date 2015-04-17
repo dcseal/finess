@@ -98,7 +98,8 @@ const int MAX_FLUX_DERIVS = 4;
                 G1.set( 1, h+1, 1, tmp );
         }
         //Populate "zeroth" time derivatives of 1/u...
-        for( int h=0; h < MAX_DERIVS; h++ )
+        G1.set(2,1,1,1.0/(Q_mixed_derivs.get(1,1,1)));
+        for( int h=1; h < MAX_DERIVS; h++ )
         {
                 int k=0;
                 double tmp = 0.0;
@@ -111,6 +112,7 @@ const int MAX_FLUX_DERIVS = 4;
                 tmp *=-1.0/(Q_mixed_derivs.get(1,1,1));
                 G1.set( 2, h+1, 1, tmp );
         }
+       
 
         //compute (phi*u)^2/u and u^2
         for( int h=0; h < MAX_DERIVS; h++ )
