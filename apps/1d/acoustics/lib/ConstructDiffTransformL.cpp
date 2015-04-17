@@ -12,6 +12,9 @@
 void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
 {
 
+    // Central difference routine (depends on spatial order!)
+    void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
+
     dTensorBC2& q   = Q.ref_q();
     dTensorBC2& aux = Q.ref_aux();
 
@@ -31,10 +34,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     const int MAX_DERIVS      = mpts_sten;
     const int MAX_FLUX_DERIVS = mpts_sten-1;
 
-printf("MAX_FLUX_DERIVS = %d, MAX_FLUX_DERIVS = %d\n", MAX_DERIVS, MAX_FLUX_DERIVS );
-
-    // Central difference routine (depends on spatial order!)
-    void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
+// printf("MAX_FLUX_DERIVS = %d, MAX_FLUX_DERIVS = %d\n", MAX_DERIVS, MAX_FLUX_DERIVS );
 
     // Compute finite difference approximations on all of the conserved
     // variables:

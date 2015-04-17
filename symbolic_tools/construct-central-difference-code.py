@@ -35,9 +35,11 @@ def compute_derivs( u_stencil, index, dx ):
 # (uniform) grid spacing
 dx = sympy.symbols("dx")
 
-gamma5 = compute_derivs( np.arange(5), 2, dx )
-gamma7 = compute_derivs( np.arange(7), 2, dx )
-gamma9 = compute_derivs( np.arange(9), 2, dx )
+gamma5  = compute_derivs( np.arange(5 ), 2, dx )
+gamma7  = compute_derivs( np.arange(7 ), 3, dx )
+gamma9  = compute_derivs( np.arange(9 ), 4, dx )
+gamma11 = compute_derivs( np.arange(11), 5, dx )
+#gamma13 = compute_derivs( np.arange(13), 6, dx )
 
 #sub_sten_val = g0*interps2[0] + g1*interps2[1] + g2*interps2[2]
 #linear_val   = sum( (dx**2)*u*g for (u,g) in zip( u_stencil, gamma[2,:] ) )
@@ -69,6 +71,16 @@ for i in range(1,stencil_size):
     for j in range(stencil_size-1):
         print( '%2.25e, ' % float( gamma9[i,j]*dx**i ) )
     print( '%2.25e ' % float( gamma9[i,stencil_size-1]*dx**i ) )
+    print('},')
+print("};")
+
+stencil_size = 11
+print("const double deriv_matrix%d[%d][%d] = {" % (stencil_size,stencil_size-1,stencil_size) )
+for i in range(1,stencil_size):
+    print("{ ")
+    for j in range(stencil_size-1):
+        print( '%2.25e, ' % float( gamma11[i,j]*dx**i ) )
+    print( '%2.25e ' % float( gamma11[i,stencil_size-1]*dx**i ) )
     print('},')
 print("};")
 
