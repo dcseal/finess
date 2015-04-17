@@ -12,7 +12,7 @@ include $(FINESS)/apps/1d/acoustics/lib/Makefile.defs
 #
 #FinSolveUser           = $(FINESS)/lib/1d/FinSolveRK_PIF
 #ConstructIntegratedF    = ConstructIntegratedF
-FinSolveUser            = $(APP_LIB)/FinSolveDiffTransform
+FinSolveUser            = $(FINESS)/lib/1d/FinSolveDiffTransform
 
 # place to add object modules
 #
