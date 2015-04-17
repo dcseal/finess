@@ -1,7 +1,6 @@
 #include <cmath>
 #include "assert.h"            // for assert_eq.  Can be removed in future
 #include "IniParams.h"
-#include "IniParams.h"
 #include "tensors.h"
 #include "dog_math.h"
 
