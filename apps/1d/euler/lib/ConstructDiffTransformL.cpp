@@ -10,7 +10,7 @@
 // See: Multi-moment ADER-Taylor methods for systems of conservation laws
 // with source terms in one dimension 
 //
-// Shallow water equations.
+// Euler equations.
 //
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
 void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
@@ -88,7 +88,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         dTensor3 Ge( 1, MAX_DERIVS, MAX_DERIVS );
         dTensor3 P( 1, MAX_DERIVS, MAX_DERIVS );
 
-
+        //Initialize all arrays to zero(maybe done already...i should check the constructor
         for( int h=1; h <= MAX_DERIVS; h++ )
         for( int k=1; k <= MAX_DERIVS; k++ )
         {
@@ -119,7 +119,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         {
 
 
-          //Populate time time derivatives of (rho u)^2...
+          //Populate time derivatives of (rho u)^2...
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp = 0.0;
@@ -132,7 +132,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
           }
 
           R.set( 1, 1, 1, 1.0/(Q_mixed_derivs.get(1,1,1)) );
-          //Populate time time derivatives of 1/rho...
+          //Populate time derivatives of 1/rho...
           for( int h=1; h < MAX_DERIVS; h++ )
           {
                 double tmp = 0.0;
@@ -145,7 +145,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 tmp *=-1.0/(Q_mixed_derivs.get(1,1,1));
                 R.set( 1, h+1, k+1, tmp );
           }
-
+          //populate the time derivatives of (rho u)^2/rho and u
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp = 0.0;
@@ -159,7 +159,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 Gr.set( 1, h+1, k+1, tmp );
                 Gr.set( 2, h+1, k+1, tmp1 );
           }  
-
+          //Populate time derivatives of pressure
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp = 0.0;
@@ -167,7 +167,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 P.set( 1, h+1, k+1, tmp );
           }
        
-
+          //populate time derivatives of energy equation flux...
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp1 = 0.0;
@@ -196,7 +196,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         // Recursive relationship goes here! Compute higher order derivatives //
         for( int k=1; k < MAX_FLUX_DERIVS;   k++ )      
         {
-        //Populate time time derivatives of (rho u)^2...
+        //Populate time derivatives of (rho u)^2...
         for( int h=0; h < MAX_DERIVS; h++ )
         {
                 double tmp = 0.0;
@@ -207,7 +207,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 }
                 Gs.set( 1, h+1, k+1, tmp );
         }
-        //Populate time time derivatives of 1/rho...
+        //Populate time derivatives of 1/rho...
         for( int h=0; h < MAX_DERIVS; h++ )
         {
                 double tmp = 0.0;
@@ -221,6 +221,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 R.set( 1, h+1, k+1, tmp );
         }
 
+        //populate time derivatives of (rho u)^2/rho and u
         for( int h=0; h < MAX_DERIVS; h++ )
         {
                 double tmp = 0.0;
@@ -234,15 +235,14 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 Gr.set( 1, h+1, k+1, tmp );
                 Gr.set( 2, h+1, k+1, tmp1 );
         }
-
+        //populate time derivatives of P
         for( int h=0; h < MAX_DERIVS; h++ )
         {
                 double tmp = 0.0;
                 tmp = 0.4*(Q_mixed_derivs.get( 5, h+1, k+1)-0.5*Gr.get(1,h+1,k+1));
                 P.set( 1, h+1, k+1, tmp );
         }
-       
-
+        //populate time derivatives of energy equation flux
         for( int h=0; h < MAX_DERIVS; h++ )
         {
                 double tmp1 = 0.0;
@@ -271,7 +271,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         {
 
 
-          //Populate time time derivatives of (rho u)^2...
+          //Populate time derivatives of (rho u)^2...
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp = 0.0;
@@ -282,7 +282,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 }
                 Gs.set( 1, h+1, k+1, tmp );
           }
-          //Populate time time derivatives of 1/rho...
+          //Populate time derivatives of 1/rho...
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp = 0.0;
@@ -295,7 +295,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 tmp *=-1.0/(Q_mixed_derivs.get(1,1,1));
                 R.set( 1, h+1, k+1, tmp );
           }
-
+          //populate time derivatives of (rho u)^2/rho and u
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp = 0.0;
@@ -309,7 +309,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 Gr.set( 1, h+1, k+1, tmp );
                 Gr.set( 2, h+1, k+1, tmp1 );
           }  
-
+          //populate time derivatives of pressure
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp = 0.0;
@@ -317,7 +317,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 P.set( 1, h+1, k+1, tmp );
           }
        
-
+          //populate time derivatives of energy equation flux function
           for( int h=0; h < MAX_DERIVS; h++ )
           {
                 double tmp1 = 0.0;
@@ -355,13 +355,10 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 //the function that gives the flux for the energy equation
                 Ge1 += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Ge.get( 1, 1, k+1 ); 
             }
-            // 0.5 * wgt * fluxfunc( q(t(xi)) ).
             rho_ta_flux += (0.5*w1d.get( mq )) * ( ru1 );
             u1_ta_flux += (0.5*w1d.get( mq )) * ( ru1*ru1/rho+P1);
-            //E_ta_flux += (0.5*w1d.get( mq )) * ( E+P1)*ru1/rho;
             E_ta_flux += (0.5*w1d.get( mq )) * Ge1;
         }
-        //printf("%le %le %le \n",rho_ta_flux,u1_ta_flux,E_ta_flux);
         F.set( i, 1, rho_ta_flux );
         F.set( i, 2, u1_ta_flux );
         F.set( i, 3, 0.0 );
