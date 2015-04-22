@@ -1,11 +1,10 @@
 append_current_app_name()
 
-override(SOURCES AfterQinit.cpp)
+override(SOURCES AfterQinit.cpp SourceTermFunc.cpp)
 list(APPEND SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/QinitFunc.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/SetBndValues.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/SourceTermFunc.cpp
 	)
 
 add_generate_sources(MAIN_PYTHON_SCRIPT generate_iniparams.py

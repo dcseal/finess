@@ -1,13 +1,11 @@
 append_current_app_name()
 
-override(SOURCES FinSolveLxW.cpp AfterStep.cpp)
+override(SOURCES FinSolveLxW.cpp AfterStep.cpp 
+		 AuxFunc.cpp D2FluxFunc.cpp DFluxFunc.cpp)
 
 list(APPEND SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ApplyMPPLimiter3D.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/AuxFunc.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ConstructHJ_L.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/D2FluxFunc.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/DFluxFunc.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/FluxFunc.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ProjectLeftEig.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ProjectRightEig.cpp

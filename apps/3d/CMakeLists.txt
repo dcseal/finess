@@ -1,5 +1,9 @@
 set(TARGET_NAME_PREFIX "apps_3d")
 list(APPEND SOURCES
+	${PROJECT_SOURCE_DIR}/lib/3d/blanks/AuxFunc.cpp
+	${PROJECT_SOURCE_DIR}/lib/3d/blanks/SourceTermFunc.cpp
+	${PROJECT_SOURCE_DIR}/lib/3d/LaxWendroff/DFluxFunc.cpp
+	${PROJECT_SOURCE_DIR}/lib/3d/LaxWendroff/D2FluxFunc.cpp
 	${PROJECT_SOURCE_DIR}/lib/3d/AfterFullTimeStep.cpp
 	${PROJECT_SOURCE_DIR}/lib/3d/AfterQinit.cpp
 	${PROJECT_SOURCE_DIR}/lib/3d/AfterStep.cpp
