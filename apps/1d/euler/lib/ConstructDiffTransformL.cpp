@@ -80,29 +80,36 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
         CentralDifferences( dx, qvals, qderivs );
 
-        // Save all of the "zeroth" time derivatives.
-        dTensor3 Q_mixed_derivs( meqn, MAX_DERIVS, MAX_DERIVS );
         dTensor3 Gs( 1, MAX_DERIVS, MAX_DERIVS );
         dTensor3 R( 1, MAX_DERIVS, MAX_DERIVS );
         dTensor3 Gr( 2, MAX_DERIVS, MAX_DERIVS );
         dTensor3 Ge( 1, MAX_DERIVS, MAX_DERIVS );
         dTensor3 P( 1, MAX_DERIVS, MAX_DERIVS );
 
-        //Initialize all arrays to zero(maybe done already...i should check the constructor
-        for( int h=1; h <= MAX_DERIVS; h++ )
-        for( int k=1; k <= MAX_DERIVS; k++ )
-        {
-            for( int me =1; me <= meqn; me++ )
-            {
-                Q_mixed_derivs.set( me, h, k, 0.0 );
-            }
-            Gs.set(1,h,k,0.0);
-            R.set(1,h,k,0.0);
-            Gr.set(1,h,k,0.0);
-            Gr.set(2,h,k,0.0);
-            Ge.set(1,h,k,0.0);
-            P.set(1,h,k,0.0);
-        }
+        // Initialize all arrays to zero (maybe done already...i should check the constructor)
+        Gs.setall( 0. );
+        R.setall ( 0. );
+        Gr.setall( 0. );
+        Ge.setall( 0. );
+        P.setall ( 0. );
+
+//      for( int h=1; h <= MAX_DERIVS; h++ )
+//      for( int k=1; k <= MAX_DERIVS; k++ )
+//      {
+//          for( int me =1; me <= meqn; me++ )
+//          {
+//              Q_mixed_derivs.set( me, h, k, 0.0 );
+//          }
+//          Gs.set(1,h,k,0.0);
+//          R.set(1,h,k,0.0);
+//          Gr.set(1,h,k,0.0);
+//          Gr.set(2,h,k,0.0);
+//          Ge.set(1,h,k,0.0);
+//          P.set(1,h,k,0.0);
+//      }
+
+        // Save all of the "zeroth" time derivatives.
+        dTensor3 Q_mixed_derivs( meqn, MAX_DERIVS, MAX_DERIVS );
         for( int me =1; me <= meqn; me++ )
         {
             for( int h=1; h <= MAX_DERIVS; h++ )
@@ -111,13 +118,9 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
             }
         }
 
-//assert_le( fabs( Q_mixed_derivs.get( 1, 1, 1 ) - q.get(i,1) ), 1e-13 );
-//assert_le( fabs( Q_mixed_derivs.get( 2, 1, 1 ) - q.get(i,2) ), 1e-13 );
-
         //Need to deal with k=0 specially because of the 1/rho term...
         for(int k=0;k<1;k++)
         {
-
 
           //Populate time derivatives of (rho u)^2...
           for( int h=0; h < MAX_DERIVS; h++ )
@@ -132,6 +135,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
           }
 
           R.set( 1, 1, 1, 1.0/(Q_mixed_derivs.get(1,1,1)) );
+
           //Populate time derivatives of 1/rho...
           for( int h=1; h < MAX_DERIVS; h++ )
           {
@@ -145,6 +149,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 tmp *=-1.0/(Q_mixed_derivs.get(1,1,1));
                 R.set( 1, h+1, k+1, tmp );
           }
+
           //populate the time derivatives of (rho u)^2/rho and u
           for( int h=0; h < MAX_DERIVS; h++ )
           {
@@ -266,10 +271,10 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
            Q_mixed_derivs.set(5,h+1,k+2,-((double)h+1.0)/(k+1)*Ge.get(1,h+2,k+1));
            }
          }
+
         //Compute the highest time-order terms of the auxillary quantities because we will need these for the Euler fluxes 
         for(int k=MAX_FLUX_DERIVS-1;k<MAX_DERIVS;k++)
         {
-
 
           //Populate time derivatives of (rho u)^2...
           for( int h=0; h < MAX_DERIVS; h++ )
@@ -282,6 +287,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 }
                 Gs.set( 1, h+1, k+1, tmp );
           }
+
           //Populate time derivatives of 1/rho...
           for( int h=0; h < MAX_DERIVS; h++ )
           {
@@ -295,6 +301,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 tmp *=-1.0/(Q_mixed_derivs.get(1,1,1));
                 R.set( 1, h+1, k+1, tmp );
           }
+
           //populate time derivatives of (rho u)^2/rho and u
           for( int h=0; h < MAX_DERIVS; h++ )
           {
@@ -309,6 +316,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 Gr.set( 1, h+1, k+1, tmp );
                 Gr.set( 2, h+1, k+1, tmp1 );
           }  
+
           //populate time derivatives of pressure
           for( int h=0; h < MAX_DERIVS; h++ )
           {
@@ -332,38 +340,40 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
 
        }
 
-
         // Construct the time-averaged flux.
-        double rho_ta_flux = 0.;
-        double u1_ta_flux = 0.;
-        double E_ta_flux = 0.;
+        double rho_ta_flux  = 0.;
+        double u1_ta_flux   = 0.;
+        double E_ta_flux    = 0.;
         for( int mq=1; mq <= NumQuad; mq++ )
         {
             // Evaluate q at this quadrature point
-            double rho= Q_mixed_derivs.get(1,1,1);
-            double ru1 = Q_mixed_derivs.get(2,1,1);
-            double E = Q_mixed_derivs.get(5,1,1);
-            double P1 = P.get(1,1,1);
-            double Ge1 = Ge.get(1,1,1);
+            double rho  = Q_mixed_derivs.get(1,1,1);
+            double ru1  = Q_mixed_derivs.get(2,1,1);
+            double E    = Q_mixed_derivs.get(5,1,1);
+            double P1   = P.get(1,1,1);
+            double Ge1  = Ge.get(1,1,1);
             for( int k=1; k < MAX_DERIVS; k++ )
             { 
                 rho += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 1, 1, k+1 ); 
                 ru1 += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 2, 1, k+1 ); 
-                E += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 5, 1, k+1 );
+                E   += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 5, 1, k+1 );
+
                 //the pressure function 
                 P1 += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*P.get( 1, 1, k+1 ); 
+
                 //the function that gives the flux for the energy equation
                 Ge1 += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Ge.get( 1, 1, k+1 ); 
             }
             rho_ta_flux += (0.5*w1d.get( mq )) * ( ru1 );
-            u1_ta_flux += (0.5*w1d.get( mq )) * ( ru1*ru1/rho+P1);
-            E_ta_flux += (0.5*w1d.get( mq )) * Ge1;
+            u1_ta_flux  += (0.5*w1d.get( mq )) * ( ru1*ru1/rho+P1);
+            E_ta_flux   += (0.5*w1d.get( mq )) * Ge1;
         }
-        F.set( i, 1, rho_ta_flux );
-        F.set( i, 2, u1_ta_flux );
-        F.set( i, 3, 0.0 );
-        F.set( i, 4, 0.0 );
-        F.set( i, 5, E_ta_flux );
+
+        F.set( i, 1, rho_ta_flux ); // flux for density
+        F.set( i, 2, u1_ta_flux );  // flux for 1-component of momentum
+        F.set( i, 3, 0.0 );         // not used in 1D (flux for 2-component of momentum)
+        F.set( i, 4, 0.0 );         // not used in 1D (flux for 3-component of momentum)
+        F.set( i, 5, E_ta_flux );   // flux for energy
 
     }
 
