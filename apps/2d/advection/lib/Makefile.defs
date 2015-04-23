@@ -33,8 +33,9 @@ SetWaveSpd       = $(APP_LIB)/SetWaveSpd
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
+   $(FINESS)/apps/2d/advection/lib/ConstructDiffTransformL.o \
 
 #
 APP_LIB_SOURCES = \
-
+   $(FINESS)/apps/2d/advection/lib/ConstructDiffTransformL.cpp \
 #
