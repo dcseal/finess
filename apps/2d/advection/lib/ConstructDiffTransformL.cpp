@@ -6,6 +6,7 @@
 #include "StateVars.h"
 #include "CentralDifferences2D.h"
 
+
 void ConstructDiffTransformL( double dt, StateVars& Q,
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
 {
@@ -41,6 +42,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
 
 
 
+
 const int ndim = 2;
 
     // Compute finite difference approximations on all of the conserved
@@ -57,6 +59,7 @@ const int ndim = 2;
 
         // Save the flux function:
         dTensor3 qvals ( meqn, mpts_sten, mpts_sten );
+        qvals.setall(0.0);
         //dTensor2 qvalsx ( meqn, mpts_sten );
         //dTensor2 qvalsy ( meqn, mpts_sten );
 
@@ -79,22 +82,34 @@ const int ndim = 2;
 
         // Storage for local derivatives:
         dTensor3 qderivs ( meqn, MAX_DERIVS, MAX_DERIVS );
-
+        qderivs.setall(0.0);
         // Compute a FD approximation to the derivatives:
         // Central difference routine (depends on spatial order!)
         void (*CentralDifferences2D)( double dx, double dy, const dTensor3& f, dTensor3& fderivs) = GetCentralDifferences2D();
         CentralDifferences2D( dx, dy, qvals, qderivs );
         // Save all of the "zeroth" time derivatives.
         dTensor4 Q_mixed_derivs( meqn, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
+        Q_mixed_derivs.setall(0.);
         for( int me =1; me <= meqn; me++ )
         {
             for( int hx=1; hx <= MAX_DERIVS; hx++ )
             for( int hy=1; hy <= MAX_DERIVS; hy++ )
             {   double x1=xpts.get(1,1);double y1=xpts.get(1,1);double deriv1=1.0;
-                Q_mixed_derivs.set( meqn, hx,hy, 1, qderivs.get(meqn, hx,hy)/(factorial[hx-1]*factorial[hy-1]) );
+                //Q_mixed_derivs.set( me, hx,hy, 1,qderivs.get(me, hx,hy)/(factorial[hx-1]*factorial[hy-1]) );
+                //No need to do anything here because we have pulled division by the factorial into the central differences code.
+                Q_mixed_derivs.set( me, hx,hy, 1,qderivs.get(me, hx,hy) );
             }
         }
-
+        
+        /*if(i>30 && j>30)
+        {            
+            for( int hx=1; hx <= MAX_DERIVS; hx++ )
+            for( int hy=1; hy <= MAX_DERIVS; hy++ )
+            {   double x1=xpts.get(1,1);double y1=xpts.get(1,1);double deriv1=1.0;
+                printf("hx= %d, hy= %d, value= %le, deriv=%f \n",hx-1,hy-1,factorial[hx-1]*factorial[hy-1], qderivs.get(1, hx,hy));//Q_mixed_derivs.get( 1, hx,hy, 1));
+            }
+         exit(1);
+         }*/
 
         // Recursive relationship goes here! //
         for( int me = 1; me <= meqn; me++ )
@@ -106,10 +121,18 @@ const int ndim = 2;
             //   ii) velocity is set equal to one
             //
             for( int k=0; k < MAX_FLUX_DERIVS;   k++ )
-            for( int hx=0; hx < MAX_FLUX_DERIVS-k; hx++ )
-            for( int hy=0; hy < MAX_FLUX_DERIVS-k; hy++ )
+            for( int hx=0; hx < MAX_FLUX_DERIVS; hx++ )
+            for( int hy=0; hy < MAX_FLUX_DERIVS; hy++ )
             {
-                double tmp = -(hx+1.0)/(k+1.0) * Q_mixed_derivs.get( me, hx+2, hy+1, k+1 ) -(hy+1.0)/(k+1.0) * Q_mixed_derivs.get( me, hx+1, hy+2, k+1 );
+                //double tmp = -((double)hx+1.0)/((double)k+1.0) * Q_mixed_derivs.get( me, hx+2, hy+1, k+1 ) - ((double)hy+1.0)/((double)k+1.0) * Q_mixed_derivs.get( me, hx+1, hy+2, k+1 );
+                //Our series are now in terms of non-dimensionalized variables xi and eta. Writing our PDE in that form will result in something like
+            /*
+             dq/dtau=-dt(F_{xi}/dx+F_{eta}/dy)
+            */
+                double tmp = -dt/dx*((double)hx+1.0)/((double)k+1.0) * Q_mixed_derivs.get( me, hx+2, hy+1, k+1 ) - dt/dy*((double)hy+1.0)/((double)k+1.0) * Q_mixed_derivs.get( me, hx+1, hy+2, k+1 );
+
+               
+
                 Q_mixed_derivs.set( me, hx+1, hy+1, k+2, tmp );
             }
         }
@@ -124,7 +147,9 @@ const int ndim = 2;
             double tmp = Q_mixed_derivs.get(m,1,1,1);
             for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             {
-                tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, 1, k+1 );
+                //tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, 1, k+1 );
+                //our series is now in terms of dtau which ranges from 0 to 1 always, so dt is no longer needed here.
+                tmp += ( 1.0 / (1.0+k) )*Q_mixed_derivs.get( m, 1, 1, k+1 );
 //              tmp += (dt / 2.0) * Q_mixed_derivs.get( m, 1, k+1 );
             }
             F.set( i, j, m, tmp );
@@ -139,7 +164,9 @@ const int ndim = 2;
             double tmp = Q_mixed_derivs.get(m,1,1,1);
             for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             {
-                tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, 1, k+1 );
+                //tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, 1, k+1 );
+                //our series is now in terms of dtau which ranges from 0 to 1 always, so dt is no longer needed here.
+                tmp += ( 1.0 / (1.0+k) )*Q_mixed_derivs.get( m, 1, 1, k+1 );
 //              tmp += (dt / 2.0) * Q_mixed_derivs.get( m, 1, k+1 );
             }
             G.set( i, j, m, tmp );
