@@ -1,3 +1,6 @@
+#ifndef _CENTRAL_DIFFERENCES_H2D_H__
+#define _CENTRAL_DIFFERENCES_H2D_H__
+
 #include "diffMatrix5.h"
 #include "diffMatrix7.h"
 #include "diffMatrix9.h"
@@ -10,10 +13,6 @@
 #include "Iy7.h"
 #include "Iy9.h"
 #include "Iy11.h"
-
-
-#ifndef _CENTRAL_DIFFERENCES_H2d_
-#define _CENTRAL_DIFFERENCES_H2d_
 
 // -- Reconstructions based on linear weights -- //
 //
