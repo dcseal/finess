@@ -1,7 +1,7 @@
 #ifndef _IX1_H__
 #define _IX1_H__
 
-const double Ix1[121]={
+const double Ix11[121]={
 0.0,
 1.000000000000000000e+00,
 2.000000000000000000e+00,

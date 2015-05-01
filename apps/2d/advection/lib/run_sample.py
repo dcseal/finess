@@ -64,7 +64,7 @@ def parse_input( help_message ):
     parser.add_argument('-s','--time_integrator',
                       type    = int,
                       choices = range(4),
-                      default =  0,
+                      default =  4,
                       dest    = 't_stepper',
                       metavar = 'X',
                       help    = 
@@ -79,7 +79,7 @@ def parse_input( help_message ):
     parser.add_argument('-f','--frames',
                       type    = int,
                       nargs   = 2,
-                      default = [50, 7],
+                      default = [50, 4],
                       metavar = ('MX_START', 'N_FRAMES'),
                       help    = 
 ''' Refinment parameters:
@@ -90,7 +90,7 @@ MX_START grid points.
     parser.add_argument('-t', '--order',
                       type = int,
                       nargs   = 2,
-                      default = [5, 3],
+                      default = [5, 5],
                       metavar = ('S_ORDER', 'T_ORDER'),
                       help = 
 '''Order of accuracy in space S_ORDER, and time T_ORDER.

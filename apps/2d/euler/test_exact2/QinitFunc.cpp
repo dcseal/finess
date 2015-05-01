@@ -13,7 +13,8 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
 
     // Gas consant
     const double gamma = global_ini_params.get_gamma();
-    const double epsilon = 10.0828;
+    //const double epsilon = 10.0828;
+    const double epsilon = 5.0;
     const double t0 = 0.0;
 
     // Loop over grid points
