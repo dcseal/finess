@@ -11,7 +11,7 @@ finess_data_template = '''
 [finess]
 ndims       = 2          ; 1, 2, or 3
 nout        = 1          ; number of output times to print results
-tfinal      = 1.0        ; final time
+tfinal      = 2.0        ; final time
 initial_dt  = 1.0        ; initial dt
 max_dt      = 1.0e10     ; max allowable dt 
 max_cfl     = 1.00       ; max allowable Courant number
@@ -33,7 +33,7 @@ output_dir  = %(output)s ; location of the output directory
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
 my    =  %(my)i  ; number of grid elements in y-direction
-mbc   =   5      ; number of ghost cells on each boundary
+mbc   =   11      ; number of ghost cells on each boundary
 xlow  =   0.0e0  ; left end point
 xhigh =   1.0e0  ; right end point
 ylow  =   0.0e0  ; lower end point
@@ -45,5 +45,5 @@ yhigh =   1.0e0  ; upper end point
 [weno]
 weno_version  = JS     ; type of WENO reconstruction (e.g. JS, FD, Z)
 epsilon       = 1e-29  ; regulization parameter  ( epsilon > 0.0        )
-alpha_scaling = 1.1    ; scaling parameter       ( alpha_scaling >= 1.0 )
+alpha_scaling = 1.0    ; scaling parameter       ( alpha_scaling >= 1.0 )
 '''

@@ -38,7 +38,7 @@ const double oneninth   = 1.1111111111111111111e-01;
 const double EPSILON = 0.5e-15;
 
 // Faster lookup for small factorials.  See also: dog_math.h
-const double  factorial[11] = { 1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0, 362880.0, 3628800.0 };
+const double  factorial[14] = { 1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0, 362880.0, 3628800.0,39916800.0,479001600.0,6.2270e+09 };
 const int    ifactorial[11] = { 1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800 };
 
 #endif

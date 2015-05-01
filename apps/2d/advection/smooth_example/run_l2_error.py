@@ -150,7 +150,7 @@ Please Wait for simulation to finish running.''')
         
         if( old_err > 0 and new_err > 0 ):
             result = r1 + '   log2(ratio) = %(rat).3f' % \
-                {'rat' : log( (old_err/new_err), 2) } 
+                {'rat' : log( (old_err/new_err), 1.5) } 
         else:
             result = r1 + '   log2(ratio) = %(rat).3f' % \
                 {'old' : old_err, 'new' : new_err, 'rat' : (old_err/new_err) } 
