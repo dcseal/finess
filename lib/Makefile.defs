@@ -24,6 +24,7 @@ MAIN_GLOBAL         = $(TOPLIB)/main_global
 RunStartScript      = $(TOPLIB)/RunStartScript
 WenoReconstruct     = $(TOPLIB)/WenoReconstruct
 CentralDifferences  = $(TOPLIB)/CentralDifferences
+CentralDifferences2D  = $(TOPLIB)/CentralDifferences2D
 Quadrature          = $(TOPLIB)/Quadrature
 
 TOPLIB_OBJECTS = \
@@ -36,6 +37,7 @@ TOPLIB_OBJECTS = \
   $(TOPLIB)/dog_io.o \
   $(WenoReconstruct).o \
   $(CentralDifferences).o \
+  $(CentralDifferences2D).o \
   $(Quadrature).o \
   $(RunStartScript).o \
 #
@@ -51,6 +53,7 @@ TOPLIB_SOURCES = \
   $(TOPLIB)/dog_io.cpp \
   $(WenoReconstruct).cpp \
   $(CentralDifferences).cpp \
+  $(CentralDifferences2D).cpp \
   $(Quadrature).cpp \
   $(RunStartScript).cpp \
 

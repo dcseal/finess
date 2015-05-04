@@ -16,12 +16,14 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
 
         const double r2 = pow(x-0.40,2)+pow(y-0.50,2);
         const double r  = sqrt(r2);
-        if (r<0.3)
+        //qvals.set(i,1,sin(8.0*pi*x)*sin(8.0*pi*y));
+        qvals.set(i,1,sin(2.0*pi*x)*sin(2.0*pi*y));
+        /*if (r<0.3)
         {  
             qvals.set(i,1, pow( cos(5.0/3.0*pi*r) ,6) );  
         }
         else
         {  qvals.set(i,1, 0.0 ); }
-
+        */
     }
 }

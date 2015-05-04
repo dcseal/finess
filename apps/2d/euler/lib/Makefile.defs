@@ -37,8 +37,10 @@ ApplyMPPLimiter2D   = $(APP_LIB)/ApplyMPPLimiter2D
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
+   $(APP_LIB)/ConstructDiffTransformL.o \
 
 #
 APP_LIB_SOURCES = \
+   $(APP_LIB)/ConstructDiffTransformL.cpp \
 
 #

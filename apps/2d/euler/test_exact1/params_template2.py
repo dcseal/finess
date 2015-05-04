@@ -1,22 +1,29 @@
+# parameters template. 
+#
+# This should agree with the current params.ini with the exception of the
+# fields we wish to modify.
+#
+# This template is called by run_sample.py for producing many outputs that are
+# needed to run a convergence study.
+#
 
+dogpack_data_template = '''
 ; Parameters common to dogpack applications
-[finess]
+[dogParams]
 defaults_file = "$FINESS/config/dogParams_defaults.ini"
 ndims       = 2          ; 1 or 2
 mesh_type   = Cartesian  ; (either Cartesian or Unstructured) 
-nout        = 10          ; number of output times to print results
-initial_dt  = 1.0        ; initial dt
-max_dt      = 1.0e10     ; max allowable dt
-tfinal      = 0.1       ; final time
-dtv(1)      = 0.01       ; initial dt
+nout        = 1          ; number of output times to print results
+tfinal      = 2.0        ; final time
+dtv(1)      = 1.0e0     ; initial dt
 dtv(2)      = 1.1e0      ; max allowable dt 
-max_cfl     = 1.00       ; max allowable Courant number
-desired_cfl = 0.200000    ; desired Courant number
+cflv(1)     = 1.00       ; max allowable Courant number
+cflv(2)     = %(cfl)f       ; desired Courant number
 nv          = 500000     ; max number of time steps per call to DogSolve
-time_stepping_method = Runge-Kutta ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
+time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
 limiter_method = moment ; (e.g., moment, viscosity)
-space_order = 5   ; =method(1)= order of accuracy in space
-time_order  = 3   ; =method(2)= order of accuracy in time
+space_order = %(s_order)i   ; =method(1)= order of accuracy in space
+time_order  = %(t_order)i   ; =method(2)= order of accuracy in time
 use_limiter = 0   ; =method(3)= use limiter (1-yes, 0-no)
 verbosity   = 1   ; =method(4)= verbosity of output
 mcapa       = 0   ; =method(5)= mcapa (capacity function index in aux arrays)
@@ -31,17 +38,18 @@ ic_quad_order = 20  ; order of quadrature for L2-projection of initial condition
 ;   Cartesian grid data (ignored if Unstructured)
 ; -------------------------------------------------
 [grid]
-mx    =  100  ; number of grid elements in x-direction
-my    =  100  ; number of grid elements in y-direction
+mx    =  %(mx)i  ; number of grid elements in x-direction
+my    =  %(my)i  ; number of grid elements in y-direction
 mbc   =   5      ; number of ghost cells on each boundary
-xlow  =  -2.0e0  ; left end point
+xlow  =   0.0e0  ; left end point
 xhigh =   2.0e0  ; right end point
-ylow  =  -2.0e0  ; lower end point
+ylow  =   0.0e0  ; lower end point
 yhigh =   2.0e0  ; upper end point
 
 [weno]
 weno_version  = JS     ; type of WENO reconstruction (e.g. JS, FD, Z)
 epsilon       = 1e-29  ; regulization parameter  ( epsilon > 0.0        )
 alpha_scaling = 1.0    ; scaling parameter       ( alpha_scaling >= 1.0 )
+'''
 
 

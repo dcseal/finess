@@ -20,9 +20,9 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
         double x = xpts.get(i,1);
         double y = xpts.get(i,2);
 
-        double rho   =  1.0+0.2*sin(pi*(x+y));
-        double u1    =  0.7;
-        double u2    =  0.3;
+        double rho   =  1.0+0.2*sin(2.0*pi*x);
+        double u1    =  1.0;
+        double u2    =  0.0;
         double u3    =  0.0;
         double press =  1.0;
 
