@@ -16,6 +16,10 @@
 void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
 {
 
+    // Central difference routine (depends on spatial order!)
+    // (One check to avoid if clause overhead)
+    void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
+
     dTensorBC2& q   = Q.ref_q();
     dTensorBC2& aux = Q.ref_aux();
 
@@ -74,8 +78,6 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         dTensor2 qderivs ( meqn, MAX_DERIVS );
 
         // Compute a FD approximation to the derivatives:
-        // Central difference routine (depends on spatial order!)
-        void (*CentralDifferences)( double dx, const dTensor2& f, dTensor2& fderivs) = GetCentralDifferences();
         CentralDifferences( dx, qvals, qderivs );
 
         // Save all of the "zeroth" time derivatives.

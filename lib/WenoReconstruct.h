@@ -15,9 +15,10 @@ void WenoReconstruct_Z9( const dTensor2& g, dTensor2& g_reconst );
 // -- Reconstructions based on linear weights -- //
 // These are useful for running convergence studies, and should not be used
 // for problems with discontinuities.
-void WenoReconstruct_FD5( const dTensor2& g, dTensor2& g_reconst );
-void WenoReconstruct_FD7( const dTensor2& g, dTensor2& g_reconst );
-void WenoReconstruct_FD9( const dTensor2& g, dTensor2& g_reconst );
+void WenoReconstruct_FD5 ( const dTensor2& g, dTensor2& g_reconst );
+void WenoReconstruct_FD7 ( const dTensor2& g, dTensor2& g_reconst );
+void WenoReconstruct_FD9 ( const dTensor2& g, dTensor2& g_reconst );
+void WenoReconstruct_FD11( const dTensor2& g, dTensor2& g_reconst );
 
 // -- Lax-Friedrichs solver -- //
 // Although this is not a "WENO" reconstruction, we include this here so that
