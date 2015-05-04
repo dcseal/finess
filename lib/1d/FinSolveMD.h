@@ -58,4 +58,11 @@ void ConstructIntegratedF( double dt,
     double alpha4, double beta4, const StateVars& Q4,
     dTensorBC1& smax, dTensorBC2& F);
 
+// Three stage, two-derivative methods
+void ConstructIntegratedF( double dt, 
+    double alpha1, double beta1, const StateVars& Q1,
+    double alpha2, double beta2, const StateVars& Q2,
+    double alpha3, double beta3, const StateVars& Q3,
+    dTensorBC1& smax, dTensorBC2& F);
+
 #endif 
