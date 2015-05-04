@@ -1,90 +1,63 @@
-# This file is included from include/Makefile.defs
+# This file is used for system specific configurations.  The most common use
+# of this file is to a) select your compiler, and b) decide optimization flags
+# and whether or not to turn on OpenMP threads.
+#
+# Each application has its own personal "Makefile", that points to common
+# objects found in the main library.  Common items are first defined in the
+# following Makefiles:
+#
+#       $FINESS/lib/Makefile.defs
+#       $FINESS/lib/Makefile.targets
+#       $FINESS/lib/[1-3]d/Makefile.defs        # For 1,2 and 3D code
+#       $FINESS/lib/[1-3]d/Makefile.targets     # For 1,2 and 3D code
+#
+# An individual Makefile can relink these subroutines as necessary.
 
-# Put things here which the user will likely reconfigure
-# based on system resources
+# Choose your compiler here. (On Macs, I use g++-4.9, installed via homebrew -DS)
+#CXX = g++-4.9
+CXX = g++
 
-ifndef COMPILE_WITH_UNST
-COMPILE_WITH_UNST = 0
-endif
-COMPILE_WITH_HDF5 = 0
-USE_H5CPP = 0
+# -E: show preprocessor output
+#
+# The most commonly used flags are:
+#
+#   -pg                 : instrument for profiling (see gprof)
+#   -ggdb               : produce debugging information (see gdb)
+#   -fopenmp            : take #pragma loops
+#   -O4                 : use level-4 optimization
+#   -DCHECK_BOUNDS      : use bounds-checking in tensor class (expensive)
+#   -DMAX_DEBUG_LEVEL=3 : allow level-3 debug
+#   $(FAST_MATH)        : sacrifice IEEE compliance for speed
 
+# A few examples of alternative flags that can be used are
+#
 #  -ffast-math : sacrifice IEEE compliance for speed
 #    (sets -fno-math-errno, -funsafe-math-optimizations,
 #    -fno-trapping-math, -ffinite-math-only, -fno-rounding-math,
 #    -fno-signaling-nans and fcx-limited-range.)
+#
 #  -fno-finite-math-only : so we can still test for NAN
+#
 #  -funsafe-math-optimizations : using this flag (instead of --ffast-math)
 #     seems to give most of the benefit of -ffast-math
 #     (e.g. "/" = "*reciprocal")
+#
 #FAST_MATH = -ffast-math -fno-finite-math-only
 
-# -E: show preprocessor output
-# useful compiler flags:
-#   -pg : instrument for profiling (see gprof)
-#   -ggdb : produce debugging information (see gdb)
-#   -fopenmp : take #pragma omp parallel for
-#   $(FAST_MATH) : sacrifice IEEE compliance for speed
-#   -O4 : use level-4 optimization
-#   -DCHECK_BOUNDS : use bounds-checking in tensor class (expensive)
-#   -DMAX_DEBUG_LEVEL=3 : allow level-3 debug
-#   -pthread : posix threads -- needed for apps/semi_lagrangian/*/StepAdvec.cpp
-#            : you do not need to include this flag when compiling on mac os x
-
 # serial code with optimizer turned on:
-# LINK = time g++ -O4
+# FFLAGS = -O4
 
-# serial code with debugging options (this runs slow!)
-# LINK = time g++ -ggdb -DCHECK_BOUNDS
+# threaded code with the optimizer turned on:
+FFLAGS = -O4 -fopenmp
 
-#LINK = time g++ -std=c++11 -O4
-#LINK = time g++ -O4 -fopenmp -lgomp
+COMPILE = time $(CXX) $(FFLAGS) -c $(INCLUDE_LIBS)
 
-#LINK = time g++-4.7 -fopenmp -O4
-#LINK = time clang++ -O4 -std=c++11 -stdlib=libc++
-LINK = time clang++ -O4 -std=gnu++11 -stdlib=libc++ -fopenmp -lgomp
-
-# the following symbol is deprecated
-FFLAGS =  -c $(INCLUDE_LIBS)
-# in favor of
-COMPILE = $(LINK) $(FFLAGS) #$(COMPILE_FLAGS)
-
-# do not define COMPILE_FLAGS here;
-# applications and libraries will override it
-# COMPILE_FLAGS =
-
+# Can be used to generate ctags files for navigating code.
+# See (http://ctags.sourceforge.net) for more details
 CTAGS = ctags --extra=+q
-#
-# instead of using g++ and explicitly including HDF5 libraries
-# one can instead use the h5c++ script:
+
 ## 
+# I don't know where these commands get used ... -DS
+#
 # -show: display g++ commands that would be executed
 # -echo: show *all* commands and execute them
-
-ifeq ($(COMPILE_WITH_HDF5),1)
-    ifeq ($(USE_H5CPP),1)
-        # override compiler with h5c++ script
-        LINK    = /usr/local/hdf5/bin/h5c++
-    else
-        # The user might have installed these libraries elsewhere
-        HDF5_INCLUDES = \
-            -I/usr/local/hdf5/include \
-            -I/usr/local/szip/include \
-            -I/usr/local/zlib/include
-        # Do we really need all these libraries?
-        HDF5_LIBRARIES = \
-            -L/usr/local/zlib/lib \
-            -L/usr/local/szip/lib \
-            -L/usr/local/hdf5/lib \
-            /usr/local/hdf5/lib/libhdf5_hl_cpp.a \
-            /usr/local/hdf5/lib/libhdf5_cpp.a \
-            /usr/local/hdf5/lib/libhdf5_hl.a \
-            /usr/local/hdf5/lib/libhdf5.a \
-            -lsz \
-            -lz \
-            -lm
-    endif
-else
-HDF5_INCLUDES = 
-HDF5_LIBRARIES = 
-endif
