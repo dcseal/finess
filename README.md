@@ -140,4 +140,20 @@ directory.  The basic format requires the user to call the main plotting
 routines from an application directory.  Local options, such as grid labels,
 axis options etc. are supplied by a single script defined by each application.
 
+## Compiling all applications in a single directory
 
+The script $FINESS/python/finess/util.py has been supplied in an effort to
+test that all applications in a given directory can compile after making edits
+to the code.  For example, after editing something in the library for a
+particular application, this script can be used to at least test that
+everythign compiles.
+
+To check that all the 2D advection routines compile, run the following from an
+iPython session:
+
+    $ from finess.util import check_all_apps_in_a_dir_compile
+    $ check_all_apps_in_a_dir_compile("$FINESS/apps/1d")
+
+Note that you need to make sure that the PYTHONPATH includes $FINESS/python/
+in order for this command to work.  See $FINESS/util/setenv.py to see how to
+do this for your system.
