@@ -92,6 +92,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 " Exceeded allowed # of time steps " << endl;
             cout << "    n_step = " << n_step << endl;
             cout << "        nv = " << nv << endl;
+            printf("Terminating program.\n"             );
             cout << endl;
             exit(1);
         }        
@@ -138,7 +139,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
-                cout << "DogSolve1D ... Step" << setw(5) << n_step;
+                cout << "FinSolve1D ... Step" << setw(5) << n_step;
                 cout << "   CFL =" << setw(6) << fixed << cfl;
                 cout << "   dt =" << setw(11) << scientific << dt;
                 cout << "   t =" << setw(11) << scientific << t <<endl;
