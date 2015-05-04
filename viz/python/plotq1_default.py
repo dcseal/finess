@@ -1,11 +1,16 @@
-
 #----------------------------------------------------------
-def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
+def plotq1(m, meth1, meqn, mx, time, xc, qsoln, auxsoln):
+    """Default plotting file.
+
+    This routine provides a handle that a user can swap out in a single
+    application.  Here, we provide a minimal working example that allows one
+    to plot results.  For most problems, a user will likely want to swap this
+    out for a tailored plotting script.
+    """
     
     import matplotlib.pyplot as plt
     import numpy as np
     from math import fabs
-
 
     qlow  = min(qsoln[:,m])
     qhigh = max(qsoln[:,m])
@@ -22,7 +27,7 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.plot(xc,qsoln[:,m],'b-')
     tmp1 = "".join(("q(",str(m+1),") at t = "))
     tmp2 = "".join((tmp1,str(time)))
-    title = "".join((tmp2,"     [DoGPack]"))
+    title = "".join((tmp2,"     [FINESS]"))
     plt.title(title)
     plt.draw()
     

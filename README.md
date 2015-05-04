@@ -23,7 +23,7 @@ The installation procedure is essentially idential to that of
 replace each occurance of $DOGPACK with $FINESS.  The public source code can
 be pull by calling
 
-    $ git clone https://bitbucket.org/dseal/dogpack
+    $ git clone https://bitbucket.org/dseal/finess-release
 
 from the command line.
 
@@ -104,16 +104,21 @@ example and compiling the code by typing:
 
 Once compiled, execute the code by typing:
 
-    $ dog.exe
+    $ finess.exe
 
 You should see a bunch output printed to the screen, followed by a new folder
 called 'output' that the code should have created to store data for the
-simulation.  To redirect output to a different folder, you pass the different
-directory in as an argument.  For example, type
+simulation.  To redirect output to a different folder, you can replace the
+"output_folder" argument inside the parameters.ini file.  For example, if you
+insert the line
 
-    $ dog.exe -o some_other_folder
+    output_dir  = output ; location of the output directory
 
-will create 
+with 
+
+    output_dir  = some_other_folder ; location of the output directory
+
+then the code will create
 
     $FINESS/apps/1d/advection/smooth_example/some_other_folder
 

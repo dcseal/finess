@@ -16,6 +16,7 @@ void SetWaveSpd(const dTensor1& nvec,
         const dTensor1& Auxr,
         double& s1,double& s2)
 {
+
     // Gas constant
     const double gamma = global_ini_params.get_gamma();
 
@@ -44,9 +45,16 @@ void SetWaveSpd(const dTensor1& nvec,
 
     // Sound speeds
     const double nmag = sqrt(pow(nvec.get(1),2) + pow(nvec.get(2),2));
-    const double cl = nmag*sqrt(fabs(gamma*pressl/rhol));
-    const double cr = nmag*sqrt(fabs(gamma*pressr/rhor));
-    const double c  = nmag*sqrt(fabs(gamma*press/rho));
+    const double cl = nmag*sqrt( fabs(gamma*pressl/rhol ) );
+    const double cr = nmag*sqrt( fabs(gamma*pressr/rhor ) );
+    const double c  = nmag*sqrt( fabs(gamma*press/rho   ) );
+
+    if( press < 0 || rho < 0 )
+    {
+        printf("negative pressure or density\n");
+        printf(" press = %f, rho = %f\n", press, rho );
+//      exit(1);
+    }
 
     // normal velocities
     const double un  = nvec.get(1)*u1  + nvec.get(2)*u2;

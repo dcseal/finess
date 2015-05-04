@@ -85,9 +85,9 @@ AfterQinit           = $(LIB1D)/AfterQinit
 AfterStep            = $(LIB1D)/AfterStep
 BeforeStep           = $(LIB1D)/BeforeStep
 AfterUpdateSoln      = $(LIB1D)/AfterUpdateSoln
-ApplyLimiter         = $(LIB1D)/ApplyLimiter
-ApplyPosLimiter      = $(LIB1D)/ApplyPosLimiter
+ApplyMPPLimiter1D    = $(LIB1D)/ApplyMPPLimiter1D
 ConstructL           = $(LIB1D)/ConstructL
+ConstructLFL         = $(LIB1D)/ConstructLFL
 ConstructLxWL        = $(LIB1D)/ConstructLxWL
 BeforeFullTimeStep   = $(LIB1D)/BeforeFullTimeStep
 AfterFullTimeStep    = $(LIB1D)/AfterFullTimeStep
@@ -139,11 +139,11 @@ LIB1D_OBJECTS = \
   $(BeforeFullTimeStep).o \
   $(AfterFullTimeStep).o \
   $(AfterUpdateSoln).o \
-  $(ApplyLimiter).o \
-  $(ApplyPosLimiter).o \
+  $(ApplyMPPLimiter1D).o \
   $(LIB1D)/ConvertQtoW.o \
   $(LIB1D)/ConvertWtoQ.o \
   $(ConstructL).o \
+  $(ConstructLFL).o \
   $(ConstructLxWL).o \
   $(LIB1D)/UpdateSoln.o \
   $(LIB1D)/GetCFL.o \
@@ -177,11 +177,11 @@ LIB1D_SOURCES = \
   $(BeforeFullTimeStep).cpp \
   $(AfterFullTimeStep).cpp \
   $(AfterUpdateSoln).cpp \
-  $(ApplyLimiter).cpp \
-  $(ApplyPosLimiter).cpp \
+  $(ApplyMPPLimiter1D).cpp \
   $(LIB1D)/ConvertQtoW.cpp \
   $(LIB1D)/ConvertWtoQ.cpp \
   $(ConstructL).cpp \
+  $(ConstructLFL).cpp \
   $(ConstructLxWL).cpp \
   $(LIB1D)/UpdateSoln.cpp \
   $(LIB1D)/GetCFL.cpp \

@@ -157,7 +157,9 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 
                 case 3:  // Third order in time  (low-storage SSP method)
 
-//     qnew = alpha1 * qstar + alpha2 * qnew + beta * dt * L( qstar )
+                    // Each update looks like:
+                    //
+                    // qnew = alpha1 * qstar + alpha2 * qnew + beta * dt * L( qstar )
 
 
                     // ---------------------------------------------------------

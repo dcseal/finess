@@ -433,7 +433,7 @@ void ConstructL(
     if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
-        GlobalWaveSpd( q, aux, alpha1, alpha2);
+        GlobalWaveSpd( Q, alpha1, alpha2);
     }
 
     // Normal vector.  This is a carry-over from the DG code.
@@ -844,7 +844,7 @@ void ConstructL_NOC( StateVars& Q,
     if( global_ini_params.get_global_alpha() )
     {
         // Global wave speed
-        GlobalWaveSpd( q, aux, alpha1, alpha2);
+        GlobalWaveSpd( Q, alpha1, alpha2);
     }
 
     // Normal vector.  This is a carry-over from the DG code.
@@ -903,7 +903,7 @@ void ConstructL_NOC( StateVars& Q,
         for( int s=1; s <= ws+1; s++ )
         {
             f.set(me, s, fvals_t.get( s, me, 1 ) );  // 1st-component - f
-            g.set(me, s, fvals_t.get( s, me, 2 ) );  // 2nd-component - g
+//          g.set(me, s, fvals_t.get( s, me, 2 ) );  // 2nd-component - g
         }
 
         dTensor2 gp( meqn, ws ), gm( meqn, ws );
@@ -981,7 +981,7 @@ void ConstructL_NOC( StateVars& Q,
         for( int me=1; me <= meqn; me++ )
         for( int s=1; s <= ws+1; s++ )
         {
-            f.set(me, s, fvals_t.get( s, me, 1 ) );
+//          f.set(me, s, fvals_t.get( s, me, 1 ) );
             g.set(me, s, fvals_t.get( s, me, 2 ) );
         }
 
