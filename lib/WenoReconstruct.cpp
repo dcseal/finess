@@ -55,6 +55,8 @@ reconstruct_t GetWenoReconstruct()
         return &WenoReconstruct_FD7;
     else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::FD && global_ini_params.get_space_order() == 9)
         return &WenoReconstruct_FD9;
+    else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::FD && global_ini_params.get_space_order() == 11)
+        return &WenoReconstruct_FD11;
     else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 5)
         return &WenoReconstruct_Z5;
     else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 7)
@@ -63,7 +65,7 @@ reconstruct_t GetWenoReconstruct()
         return &WenoReconstructLLF;
     else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 9)
     {
-        printf("Warning: we're not sure these are the correct coefficients for WENOZ-9!\n");
+//      printf("Warning: we're not sure these are the correct coefficients for WENOZ-9!\n");
         return &WenoReconstruct_Z9;
     }
     else
@@ -682,6 +684,52 @@ void WenoReconstruct_FD9( const dTensor2& g, dTensor2& g_reconst )
         g_reconst.set(m, 1, (g0*u1 + g1*u2 + g2*u3 + g3*u4 + g4*u5) );
     }
 }
+
+// 11th-order WENO reconstruction (Jiang and Shu weights)
+void WenoReconstruct_FD11( const dTensor2& g, dTensor2& g_reconst )
+{
+
+    assert_eq(g.getsize(2), 11);
+    double uim5, uim4, uim3, uim2, uim1, ui, uip1, uip2, uip3, uip4, uip5;
+    double u1, u2, u3, u4, u5, u6;
+    
+    double beta0, beta1, beta2, beta3, beta4, beta5, beta6;
+    double omt0, omt1, omt2, omt3, omt4, omt5, omt6, omts;
+
+    const double g0=1.0/462., g1=5./77, g2=25./77., g3=100./231., g4=25./154., g5=1./77.;
+
+    const int meqn = g.getsize(1);
+    
+    const double eps         = global_ini_params.get_epsilon();       
+    const double power_param = global_ini_params.get_power_param();   // Default: p=2
+
+    for(int m = 1; m <= meqn; m++)
+    {
+
+        uim5 = g.get(m, 1);
+        uim4 = g.get(m, 2);
+        uim3 = g.get(m, 3);
+        uim2 = g.get(m, 4);
+        uim1 = g.get(m, 5);
+        ui   = g.get(m, 6);
+        uip1 = g.get(m, 7);
+        uip2 = g.get(m, 8);
+        uip3 = g.get(m, 9);
+        uip4 = g.get(m,10);
+        uip5 = g.get(m,11);
+
+        u1 = (-1./6.)*uim5 + (31./30.)*uim4 + (-163./60.)*uim3 + (79./20.)*uim2 + (-71./20.)*uim1 + (49./20.)*ui;  
+        u2 = (1./30.)*uim4 + (-13./60.)*uim3 + (37./60.)*uim2 + (-21./20.)*uim1 + (29./20.)*ui + (1./6.)*uip1;  
+        u3 = (-1./60.)*uim3 + (7./60.)*uim2 + (-23./60.)*uim1 + (19./20.)*ui + (11./30.)*uip1 + (-1./30.)*uip2;  
+        u4 = (1./60.)*uim2 + (-2./15.)*uim1 + (37./60.)*ui   + (37./60.)*uip1 + (-2./15.)*uip2 + (1./60.)*uip3;  
+        u5 = (-1./30.)*uim1 + (11./30.)*ui  + (19./20.)*uip1 + (-23./60.)*uip2 + (7./60.)*uip3 + (-1./60.)*uip4;  
+        u6 = (1./6.)*ui   + (29./20.)*uip1 + (-21./20.)*uip2 + (37./60.)*uip3 + (-13./60.)*uip4 + (1./30.)*uip5;  
+
+        g_reconst.set(m, 1, (g0*u1 + g1*u2 + g2*u3 + g3*u4 + g4*u5 + g5*u6 ) );
+    }
+
+}
+
 
 void WenoReconstructLLF( const dTensor2& g, dTensor2& g_reconst )
 {
