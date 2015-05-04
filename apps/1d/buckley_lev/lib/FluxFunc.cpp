@@ -6,11 +6,9 @@
 //
 //     Buckley-Leveret Equation
 //
-//
-void FluxFunc(const dTensor1& xpts, 
-	      const dTensor2& Q,
-	      const dTensor2& Aux, 
-	      dTensor2& flux)
+// See: ``High-order multiderivative time integrators for hyperbolic
+// conservation laws,'' J. Sci. Comp., Vol. 60, Issue 1, pp 101-140, 2014.
+void FluxFunc(const dTensor1& xpts, const dTensor2& Q, const dTensor2& Aux, dTensor2& flux)
 {    
 
     const int numpts=xpts.getsize();

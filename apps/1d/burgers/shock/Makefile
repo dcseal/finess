@@ -8,6 +8,8 @@ include $(FINESS)/apps/1d/burgers/lib/Makefile.defs
 
 # overridden library objects
 #
+#FinSolveUser = $(FINESS)/lib/1d/FinSolveRK_PIF
+FinSolveUser  = $(FINESS)/lib/1d/FinSolveDiffTransform
 
 # place to add object modules
 #
