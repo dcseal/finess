@@ -12,6 +12,7 @@ include $(FINESS)/apps/2d/advection/lib/Makefile.defs
 # overridden library objects
 #
 AuxFunc         = AuxFunc
+FinSolveUser    = $(APP_LIB)/FinSolveDiffTransform
 ## ------------------------------------------------------------------------- ##
 
 ALL_OBJECTS = \

@@ -51,19 +51,18 @@ write_environment_variable(csh_file,bash_file,"PYTHONPATH",python_path)
 print "  MATLABPATH = %s" % matlab_path
 write_environment_variable(csh_file,bash_file,"MATLABPATH",matlab_path)
 
-pdog1_command = "python $FINESS/python/finess/viz/plotdog1.py"
-print "  plotdog1 = %s" %pdog1_command
-write_shortcut_alias(csh_file,bash_file,"plotdog1",pdog1_command)
+pfin1_command = "python $FINESS/python/finess/viz/plotfin1.py"
+print "  plotfin1 = %s" %pfin1_command
+write_shortcut_alias(csh_file,bash_file,"plotfin1",pfin1_command)
 
-pdog2_command = "python $FINESS/viz/python/plotdog2.py"
-print "  plotdog2 = %s" %pdog2_command
-write_shortcut_alias(csh_file,bash_file,"plotdog2",pdog2_command)
+pfin2_command = "python $FINESS/viz/python/plotfin2.py"
+print "  plotfin2 = %s" %pfin2_command
+write_shortcut_alias(csh_file,bash_file,"plotfin2",pfin2_command)
 print ""
 
 plot1d_generic_command = "python $FINESS/viz/plot1d_generic.py"
 print "  plot1d_generic = %s" % plot1d_generic_command
 write_shortcut_alias(csh_file,bash_file,"plot1d_generic", plot1d_generic_command)
-print ""
 
 plot2d_generic_command = "python $FINESS/viz/plot2d_generic.py"
 print "  plot2d_generic = %s" % plot2d_generic_command
