@@ -1,7 +1,7 @@
 License for FINESS
 =====================
 
-Clawpack is distributed under the terms of the Berkeley Software Distribution
+FINESS is distributed under the terms of the Berkeley Software Distribution
 (BSD) license.
 
 See (http://www.opensource.org/licenses/bsd-license.php) for more details.
