@@ -9,8 +9,9 @@
 #include "StateVars.h"
 
 /*
- * Top level function to RunFinpack.  Briefly, this function calls the
- * following functions in the following order:
+ * Top level function to run FINESS.
+ *
+ * See also: $FINESS/lib/main_global.cpp, $FINESS/lib/[1-3]d/RunFinpack.cpp.
  *
  */
 int RunFinpack( )
