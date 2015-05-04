@@ -1,8 +1,3 @@
-/*
- * Top level function to Run FINESS.  Each application has its own main, which
- * calls this function.
- */
-
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -13,7 +8,16 @@
 #include "RunFinpack.h"           // Function declarations
 #include "StateVars.h"
 
-int RunFinpack(std::string parameters_ini_filename)
+
+/*
+ * Top level function to Run FINESS.  Each application has its own main, which
+ * calls this function.
+ *
+ * See also: $FINESS/lib/main_global.cpp, $FINESS/lib/[1-3]d/RunFinpack.cpp.
+ *
+ */
+
+int RunFinpack( )
 {
 
     using std::cout;
@@ -22,7 +26,6 @@ int RunFinpack(std::string parameters_ini_filename)
     using std::scientific;
     using std::setw;
     using std::setprecision;
-
 
     // Output title information
     cout << endl;
@@ -38,14 +41,7 @@ int RunFinpack(std::string parameters_ini_filename)
 
     // Get parameters and print to screen
     cout << global_ini_params.ini_doc_as_string() << endl;
-    // Also dump that to the output directory
-    {
-        using std::ofstream;
-        ofstream ofs((global_ini_params.get_output_dir() + "/" + parameters_ini_filename + ".dump").c_str());
-        ofs << global_ini_params.ini_doc_as_string() << endl;
-        ofs.close();
-    }
- const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
+    const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
 	  global_ini_params.get_time_stepping_method();
 
     // Print information about the parameters to file.  In order to use the

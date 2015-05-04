@@ -9,7 +9,6 @@ include $(FINESS)/apps/1d/buckley_lev/lib/Makefile.defs
 # overridden library objects
 #
 ConSoln                     = ConSoln
-ConstructIntegratedF        = ConstructIntegratedF
 
 # place to add object modules
 #
