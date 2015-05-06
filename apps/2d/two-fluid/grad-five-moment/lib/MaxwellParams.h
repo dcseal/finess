@@ -5,17 +5,22 @@
 // will set this up in the code!!! -DS
 
 struct MaxwellParams{
+
  private:
+
    // light speed
    double cs_light;
    double cs_light_squared;
+
    // correction potential speed
    double cp_speed;
    double cp_speed_squared;
+
    // correction potential decay rates
    double eps_Ecp; // decay rate of electric field correction potential
    double eps_Bcp; // decay rate of magnetic field correction potential
    int clean_E_field;
+
  public:
    const double get_cs_light()const{return cs_light;}
    const double get_cs_light_squared()const{return cs_light_squared;}
@@ -27,6 +32,7 @@ struct MaxwellParams{
    const double get_eps_Bcp()const{return eps_Bcp; }
    const int get_clean_E_field()const{
      return clean_E_field; }
+
  public:
    MaxwellParams():
       cs_light(0),
@@ -45,6 +51,7 @@ struct MaxwellParams{
    void set_eps_Ecp(double in){eps_Ecp = in;}
    void set_eps_Bcp(double in){eps_Bcp = in;}
    void set_clean_E_field(int in){clean_E_field = in;}
+
 };
 extern MaxwellParams maxwellParams;
 

@@ -1,14 +1,18 @@
 from finess.params import append_pac_from_module, write_to_header_cpp
 import finess.params.dim2
 import finess.params.mhd
+import finess.params.maxwell
 import this_app_params
 
 pac = finess.params.dim2.starter_pac()
 
-#section [mhd]
-append_pac_from_module(pac, finess.params.mhd)
+# section [mhd]
+append_pac_from_module(pac, finess.params.mhd     )
 
-#parameters specific to current app
+# section [maxwell]
+append_pac_from_module(pac, finess.params.maxwell )
+
+# parameters specific to current app
 append_pac_from_module(pac, this_app_params)
 
 parameter_list, accessor_list, check_list = pac
