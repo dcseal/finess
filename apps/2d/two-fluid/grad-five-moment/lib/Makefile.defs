@@ -1,0 +1,40 @@
+# The purpose of this library is to consolidate common functions used in each
+# "application".  For example, the flux function for each "advection"
+# application remains the same, the usual thing one wishes to modify are the
+# initial conditions.
+#
+# LIBRARY for 2D five-moment two-fluid equations
+#
+
+APP_NAME  = two-fluid/grad-five-moment
+APP_LIB   = $(FINESS)/apps/2d/$(APP_NAME)/lib
+
+# Flux function, and its derivatives
+FluxFunc            = $(APP_LIB)/FluxFunc
+
+# Eigen decomposition of the Flux function
+ProjectLeftEig      = $(APP_LIB)/ProjectLeftEig
+ProjectRightEig     = $(APP_LIB)/ProjectRightEig
+
+# Wave speed functions
+SetWaveSpd          = $(APP_LIB)/SetWaveSpd
+
+# Auxilary function
+AuxFunc             = $(APP_LIB)/AuxFunc
+
+# Extra stuff!
+AfterQinit          = $(APP_LIB)/AfterQinit
+
+# place to add objects and sources
+#
+APP_LIB_OBJECTS = \
+  $(APP_LIB)/FiveMoment.o \
+  $(APP_LIB)/Maxwell.o \
+
+#
+APP_LIB_SOURCES = \
+  $(APP_LIB)/*.h \
+  $(APP_LIB)/FiveMoment.cpp \
+  $(APP_LIB)/Maxwell.cpp \
+
+#
