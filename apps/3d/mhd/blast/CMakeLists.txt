@@ -1,6 +1,7 @@
 append_current_app_name()
 
 override(SOURCES AfterQinit.cpp SourceTermFunc.cpp)
+override(SOURCES ConSoln.cpp)
 
 list(APPEND SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
