@@ -1,6 +1,6 @@
 
-finess.exe: $(ALL_OBJECTS) $(ALL_SOURCES)
-	$(CXX) $(FFLAGS) $(ALL_OBJECTS) -o $(EXECUTABLE)
+finess.exe: $(ALL_OBJECTS) $(ALL_SOURCES) $(APP_LIB_OBJECTS)
+	$(CXX) $(FFLAGS) $(ALL_OBJECTS) $(APP_LIB_OBJECTS) -o $(EXECUTABLE)
 
 # does anyone use this any more?
 # you can also do this using: make -s ls | xargs cat > dog2program.cpp

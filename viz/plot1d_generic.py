@@ -17,4 +17,13 @@ See also:
 from finess.viz.dim1 \
   import ask_which_component_and_which_frame_and_plot_red_dots
 
-ask_which_component_and_which_frame_and_plot_red_dots()
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("parameters_ini_filename",
+                    nargs = '?',
+                    default = 'output/parameters.ini.dump',
+                    type = str,
+                    help = "default: %(default)s")
+args = parser.parse_args()
+
+ask_which_component_and_which_frame_and_plot_red_dots(args.parameters_ini_filename)

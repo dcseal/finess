@@ -20,7 +20,9 @@ def read_params(parameter_filename, parameters_list):
     params = dict(sum([[((s, opt), config.get(s, opt)) for opt in config.options(s)] for s in config.sections()], []))
 
     for p in parameters_list:
-        if isinstance(p, DerivedParameter) or not (p.section, p.name) in params:
+        if isinstance(p, DerivedParameter) and p.dump_to_section == None:
+            continue
+        if not isinstance(p, DerivedParameter) and not (p.section, p.name) in params:
             continue
         if p.type_.type_string == 'int':
             params[p.section, p.name] = int(params[p.section, p.name])
@@ -29,14 +31,6 @@ def read_params(parameter_filename, parameters_list):
         if p.type_.type_string == 'double':
             params[p.section, p.name] = float(params[p.section, p.name])
 
-    if ("finess", "output_dir") in params and \
-        params["finess", "output_dir"] != "":
-        output_dir = params["finess", "output_dir"]
-    else:
-        output_dir = "output"
-    params["finess", "output_dir"] = output_dir
-
-   
     return params
 
     

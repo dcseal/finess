@@ -6,6 +6,9 @@
 #include "dimdefs.h"
 #include "IniParams.h"
 
+
+#include <fenv.h>
+
 /*
  * Common main function that's called by every application.
  *
@@ -20,6 +23,14 @@
  */
 int main_global(int argc, char* argv[])
 {
+     feenableexcept(FE_INVALID  |
+                  FE_DIVBYZERO |
+                  FE_OVERFLOW  );
+//     feenableexcept(FE_INVALID  |
+//                  FE_DIVBYZERO |
+//                  FE_OVERFLOW  |
+//                  FE_UNDERFLOW);
+    
     using std::string;
     using std::cout;
     using std::setprecision;
@@ -43,13 +54,13 @@ int main_global(int argc, char* argv[])
 
     // Call startscript (Default: scripts/startscript, otherwise it checks for
     // a local file called 'startscript' from the application's directory)
-    void RunStartScript(string parameters_ini_filename);
-    RunStartScript(parameters_ini_filename);
+    void RunStartScript(string parameters_ini_filename, string finess_exe_path);
+    RunStartScript(parameters_ini_filename, argv[0]);
 
     // Call the ``RunFinpack'' routine, which executes the code
     // Each dimension has its own version of this routine.
-    int RunFinpack( );
-    int m = RunFinpack( );
+    int RunFinpack(string parameters_ini_filename );
+    int m = RunFinpack(parameters_ini_filename);
 
     // Get current time
     double time2 = time(NULL);

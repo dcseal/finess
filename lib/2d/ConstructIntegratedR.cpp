@@ -20,7 +20,7 @@ void D2FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux,
     dTensor5& D2flux);
 
 // Used for construcing the flux function
-void SampleFunction( 
+void SampleFunctionTypeB( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
@@ -81,12 +81,13 @@ void ConstructIntegratedR( double dt, const StateVars& Q,
     // If "1st-order" (Euler step), then this completes this function call.
     //
     dTensorBC4 R( mx, my, meqn, 2, mbc );  // place-holder for the flux function
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
+    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
 const int      mpts_sten = 5;
-const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
+//const int half_mpts_sten = (mbc+1)/2;    assert_eq( half_mpts_sten, 3 );
+const int half_mpts_sten = 3;
 
 const int ndim = 2;
 
@@ -294,7 +295,7 @@ const int ndim = 2;
 
 }
 
-void LocalIntegrate( 
+static void LocalIntegrate( 
     int nterms, double dx, double dy, double xc, double yc,
     int meqn, int maux, int mpts_sten, int half_mpts_sten,
     const int i, const int j, const dTensorBC3& q, const dTensorBC3& aux, 
@@ -555,8 +556,8 @@ void ConstructIntegratedR( double dt,
     //
     dTensorBC4 R1( mx, my, meqn, 2, mbc );  // place-holder for the flux function
     dTensorBC4 R2( mx, my, meqn, 2, mbc );  // place-holder for the flux function
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
+    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
+    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
 
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
@@ -638,8 +639,8 @@ void ConstructIntegratedR( double dt,
     //
     dTensorBC4 R1( mx, my, meqn, 2, mbc );  // place-holder for the flux function
     dTensorBC4 R2( mx, my, meqn, 2, mbc );  // place-holder for the flux function
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
+    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
+    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
 
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;

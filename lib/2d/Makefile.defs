@@ -97,6 +97,9 @@ FinSolveUser         = $(LIB2D)/FinSolveUser
 GridSetup            = $(LIB2D)/GridSetup
 SampleFunction       = $(LIB2D)/SampleFunction
 GlobalWaveSpd        = $(LIB2D)/GlobalWaveSpd
+GetCFL				 = $(LIB2D)/GetCFL
+UpdateSoln			 = $(LIB2D)/UpdateSoln
+
 
 # Routines needed for Lax-Wendroff (and multiderivative) time stepping:
 DFluxFunc            = $(LIB2D)/LaxWendroff/DFluxFunc
@@ -118,7 +121,7 @@ LIB2D_OBJECTS = \
   $(FinSolveLxW).o \
   $(FinSolveMD).o \
   $(LIB2D)/SetRKinfo.o \
-  $(LIB2D)/GetCFL.o \
+  $(GetCFL).o \
   $(GlobalWaveSpd).o \
   $(AfterQinit).o \
   $(FinSolveUser).o \
@@ -130,7 +133,7 @@ LIB2D_OBJECTS = \
   $(ConstructLxWL).o \
   $(ConstructIntegratedR).o \
   $(AfterFullTimeStep).o \
-  $(LIB2D)/UpdateSoln.o \
+  $(UpdateSoln).o \
   $(DFluxFunc).o \
   $(D2FluxFunc).o \
   $(ApplyMPPLimiter2D).o \
@@ -148,7 +151,7 @@ LIB2D_SOURCES = \
   $(FinSolveLxW).cpp \
   $(FinSolveMD).cpp \
   $(LIB2D)/SetRKinfo.cpp \
-  $(LIB2D)/GetCFL.cpp \
+  $(GetCFL).cpp \
   $(GlobalWaveSpd).cpp \
   $(AfterQinit).cpp \
   $(FinSolveUser).cpp \
@@ -160,7 +163,7 @@ LIB2D_SOURCES = \
   $(ConstructLxWL).cpp \
   $(ConstructIntegratedR).cpp \
   $(AfterFullTimeStep).cpp \
-  $(LIB2D)/UpdateSoln.cpp \
+  $(UpdateSoln).cpp \
   $(DFluxFunc).cpp \
   $(D2FluxFunc).cpp \
   $(ApplyMPPLimiter2D).cpp \

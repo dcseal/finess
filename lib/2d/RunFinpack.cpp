@@ -1,3 +1,4 @@
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -9,12 +10,11 @@
 #include "StateVars.h"
 
 /*
- * Top level function to run FINESS.
- *
- * See also: $FINESS/lib/main_global.cpp, $FINESS/lib/[1-3]d/RunFinpack.cpp.
+ * Top level function to RunFinpack.  Briefly, this function calls the
+ * following functions in the following order:
  *
  */
-int RunFinpack( )
+int RunFinpack(std::string parameters_ini_filename)
 {
 
     using std::cout;
@@ -37,8 +37,17 @@ int RunFinpack( )
     cout << endl;
 
 
-    // Get parameters and print to screen
+    // Get parameters and print to screen.
+    // Note: now default and derived values are also present
     cout << global_ini_params.ini_doc_as_string() << endl;
+    // Also dump that to the output directory
+    {
+        using std::ofstream;
+        ofstream ofs((global_ini_params.get_output_dir() + "/" + parameters_ini_filename + ".dump").c_str());
+        ofs << global_ini_params.ini_doc_as_string() << endl;
+        ofs.close();
+    }
+    
     const IniParams::TimeSteppingMethod::enum_type time_stepping_method = 
 	  global_ini_params.get_time_stepping_method();
 
@@ -65,10 +74,10 @@ int RunFinpack( )
 
     // Set any auxiliary variables on computational grid
     if( maux > 0 )
-    {  SampleFunction(1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, aux, &AuxFunc);  }
+    {  SampleFunctionTypeA(1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, aux, &AuxFunc);  }
 
     // Set initial data on computational grid
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
+    SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, qnew, aux, qnew, &QinitFunc);
 
     // Run AfterQinit to set any necessary variables
     AfterQinit( Qnew );

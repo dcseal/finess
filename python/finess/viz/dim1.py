@@ -14,7 +14,7 @@ def meshgrid(params):
     X = linspace(xlow + 0.5*dx, xhigh - 0.5*dx, mx)
     return X
 
-def ask_which_component_and_which_frame_and_plot_red_dots():
+def ask_which_component_and_which_frame_and_plot_red_dots(parameters_ini_filename):
     """Call this and you get an interactive plot program as the
     function name suggests."""
     from finess.params.util import read_params
@@ -22,7 +22,7 @@ def ask_which_component_and_which_frame_and_plot_red_dots():
     from finess.viz import ask_which_component, interactive_plot
     
    
-    params = read_params("parameters.ini", parameter_list)
+    params = read_params(parameters_ini_filename, parameter_list)
    
     component = ask_which_component(params)
     def draw_ith_frame(fig, i):

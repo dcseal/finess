@@ -2,6 +2,7 @@
 
 outputdir="$1";
 parameters_ini_filename="$2";
+finess_exe_dir=$(dirname $3);
 
 # create output directory if it does not exist
 # TODO - this script isn't incredibly robust.  If two (or more) folders need to
@@ -34,4 +35,10 @@ echo $parameters_ini_filename > $outputdir/parameters_ini_filename
 # copy information sufficient to reconstruct the
 # code used to generate the data
 git rev-parse HEAD > $outputdir/git_head
-make -s diff > $outputdir/git_diff
+
+
+OLDPWD=$PWD
+echo $finess_exe_dir>abc
+cd $finess_exe_dir
+make -s diff > $OLDPWD/$outputdir/git_diff
+cd -

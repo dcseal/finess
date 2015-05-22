@@ -162,6 +162,17 @@ def _parameters_accessors_checks():
     parameters.append(meqn)
     checks.append(CheckGreaterEqual(meqn, 1))
 
+    # Used in RunFinpack
+    datafmt = Parameter(variable_name = "datafmt",
+                        section = "finess",
+                        name = "datafmt",
+                        type_ = EnumParameterType(enum_scope_name = "DataFormat",
+                                                  string_enumerator_dict = \
+                                                  {"ASCII": "ASCII",
+                                                   "Silo": "Silo" }),
+                        default_value = "ASCII")
+    parameters.append(datafmt)
+
     return parameters, map(Accessor, parameters), checks
     
 parameter_list, accessor_list, check_list = \

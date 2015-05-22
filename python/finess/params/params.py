@@ -242,8 +242,11 @@ class Parameter:
 
 
 class DerivedParameter(Parameter):
-    def __init__(self, variable_name, type_, defining_expression_in_cpp):
+    def __init__(self, variable_name, type_, defining_expression_in_cpp,
+                 dump_to_section = None, dump_to_name = None):
         assert type(variable_name) == str
+        assert dump_to_section == None and dump_to_name == None or \
+               type(dump_to_section) == str and type(dump_to_name) == str
                
         if type(type_) == str:
             self.type_= ParameterType(type_)
@@ -257,9 +260,23 @@ class DerivedParameter(Parameter):
         self.variable_name = variable_name
         self.defining_expression_in_cpp = defining_expression_in_cpp
         
+        self.dump_to_section = dump_to_section
+        self.dump_to_name = dump_to_name
+        self.section = self.dump_to_section
+        self.name = self.dump_to_name
+
     def get_defining_code(self):
-        return "    this->%(variable_name)s = %(defining_expression)s;"  %                {"variable_name": self.variable_name,
-                "defining_expression": self.defining_expression_in_cpp}
+        dump_code = "" if self.dump_to_section == None else \
+                    """    	this->ini_doc["%(section)s"]["%(name)s"] = anyToString(%(value)s)  + "    ; Derived Parameter"; """ % \
+                    {'section': self.dump_to_section,                
+                     'name': self.dump_to_name,
+                     'value': self.defining_expression_in_cpp}
+
+        return """    this->%(variable_name)s = %(defining_expression)s;
+    %(dump_code)s"""  % \
+                {"variable_name": self.variable_name,
+                 "defining_expression": self.defining_expression_in_cpp,
+                 "dump_code": dump_code}  
 
         
 class Accessor:
@@ -376,6 +393,7 @@ def generate_header_cpp(parameters, accessors, checks):
 #define %(header_guard_macro_name)s
 %(header_comments_file)s
 
+#include <cmath>
 #include <string>
 #include "util.h"
 #include "IniParser.h"
@@ -409,7 +427,7 @@ extern %(class_name)s %(global_variable_name)s;
     class_declaration = """
 class %(class_name)s{
 public:
-    void init(const std::string& inputFilename);
+    void init(std::string inputFilename);
 private:
     IniParser::ini_doc_type ini_doc;
 public:
@@ -441,7 +459,7 @@ public:
     cpp_init_method_contents = "// Defining code for member variables\n\n" +                                "\n".join([p.get_defining_code() for p in parameters]) +                                "\n// Checks\n\n" +                                "\n".join([c.get_cpp_code() for c in checks])
             
     cpp_init_method = """
-void %(class_name)s::init(const std::string& inputFilename){
+void %(class_name)s::init(std::string inputFilename){
     using std::string;
     
     IniParser parser;

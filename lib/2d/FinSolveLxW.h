@@ -29,19 +29,19 @@ void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Qnew );
 // ------------------------------------------------------------
 
 void ConstructLxWL( const StateVars& Q,
-        dTensorBC3& F, dTensorBC3& G,
+        const dTensorBC3& F, const dTensorBC3& G,
         dTensorBC3& Lstar, dTensorBC3& smax);
 
 void ConstructLxWL( const StateVars& Q,
-        dTensorBC3& F, dTensorBC3& G,
-        dTensorBC3& Fhat, dTensorBC3& Ghat,
+        const dTensorBC3& F, const dTensorBC3& G,
+        dTensorBC3* pFhat, dTensorBC3* pGhat,
         dTensorBC3& Lstar, dTensorBC3& smax);
 
 void ConstructIntegratedR( double dt, const StateVars& Q, 
     dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
 // Construct a Lax-Friedrich's flux
-void ConstructLFL( const double dt, StateVars& Q,
+void ConstructLFL( const double dt, const StateVars& Q,
     dTensorBC3& Fhat, dTensorBC3& Ghat,
     dTensorBC3& Lstar, dTensorBC3& smax);
 

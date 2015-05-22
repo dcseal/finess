@@ -13,7 +13,7 @@ using namespace std;
 void FluxFunc(const dTensor2&,const dTensor2&,const dTensor2&,dTensor3&);
 
 // Used for construcing the flux function
-void SampleFunction( 
+void SampleFunctionTypeB( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
@@ -22,15 +22,15 @@ void SampleFunction(
     void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor3&));
 
 // Same as above, but this one only returns flux values, and not just the RHS.
-void ConstructLFL( const double dt, StateVars& Qnew, 
+void ConstructLFL( const double dt, const StateVars& Qnew, 
     dTensorBC3& fLF, dTensorBC3& gLF, dTensorBC3& Lstar, dTensorBC3& smax )
 {
 
-    dTensorBC3&    q = Qnew.ref_q  ();
-    dTensorBC3&  aux = Qnew.ref_aux();
+    const dTensorBC3&    q = Qnew.const_ref_q  ();
+    const dTensorBC3&  aux = Qnew.const_ref_aux();
 
-    void SetBndValues(StateVars& Qnew); 
-    SetBndValues( Qnew );
+//    void SetBndValues(StateVars& Qnew); 
+//    SetBndValues( Qnew );
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();
@@ -54,7 +54,7 @@ void ConstructLFL( const double dt, StateVars& Qnew,
 
     // Compute finite difference approximations on all of the conserved
     // variables:
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
+    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     // Find a global wave speed
     void GlobalWaveSpd( const StateVars& Q, double& alpha1, double& alpha2);
@@ -190,7 +190,7 @@ void ConstructLFL_BCx2( const double dt, StateVars& Qnew,
     // Compute finite difference approximations on all of the conserved
     // variables:
     SetBndValuesX(Qnew);
-    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
+    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     // Find a global wave speed
     void GlobalWaveSpd( const StateVars& Q, double& alpha1, double& alpha2);

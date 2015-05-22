@@ -14,8 +14,8 @@ FluxFunc            = $(APP_LIB)/FluxFunc
 
 # These time derivatives are required for the Lax-Wendroff (and
 # two-derivative) code:
-#DFluxFunc           = $(APP_LIB)/DFluxFunc
-#D2FluxFunc          = $(APP_LIB)/D2FluxFunc
+DFluxFunc           = $(APP_LIB)/DFluxFunc
+D2FluxFunc          = $(APP_LIB)/D2FluxFunc
 
 # Eigen decomposition of the Flux function
 ProjectLeftEig      = $(APP_LIB)/ProjectLeftEig
@@ -33,10 +33,20 @@ MHDParams           = $(APP_LIB)/MHDParams
 AfterQinit          = $(APP_LIB)/AfterQinit
 #ConstructLF         = $(APP_LIB)/ConstructLF
 
+AfterStep = $(APP_LIB)/AfterStep
+FinSolveLxW = $(APP_LIB)/FinSolveLxW
+FinSolveRK = $(APP_LIB)/FinSolveRK
+GetCFL = $(APP_LIB)/GetCFL
+UpdateSoln = $(APP_LIB)/UpdateSoln
+
+ApplyMPPLimiter2D = $(APP_LIB)/ApplyMPPLimiter2D
+
+ConstructHJ_L = $(APP_LIB)/ConstructHJ_L
+
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
-$(ConstructLF).o \
+$(ConstructHJ_L).o
 
 #
 APP_LIB_SOURCES = \

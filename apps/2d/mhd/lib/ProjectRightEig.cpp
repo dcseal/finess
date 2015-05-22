@@ -34,12 +34,12 @@ void ProjectRightEig(int ixy,
   // Average states
   const double gamma  = global_ini_params.get_gamma();
   const double rho    = Q_ave.get(1);
-  const double u1     = Q_ave.get(2)/rho;
-  const double u2     = Q_ave.get(3)/rho;
+  const double u1     = Q_ave.get(mu1)/rho;
+  const double u2     = Q_ave.get(mu2)/rho;
   const double u3     = Q_ave.get(4)/rho;
   const double energy = Q_ave.get(5);
-  const double B1     = Q_ave.get(6);
-  const double B2     = Q_ave.get(7);
+  const double B1     = Q_ave.get(mb1);
+  const double B2     = Q_ave.get(mb2);
   const double B3     = Q_ave.get(8);
   const double um2    = 0.5*(u1*u1 + u2*u2 + u3*u3);
   const double Bm2    = 0.5*(B1*B1 + B2*B2 + B3*B3);
@@ -51,11 +51,11 @@ void ProjectRightEig(int ixy,
   
   const double gm1 = gamma-1.0;
   
-  const double a2 = fabs(gamma*press/rho);
+  const double a2 = gamma*press/rho;
   const double a = sqrt(a2);
   const double d = a2 + (B1*B1 + B2*B2 + B3*B3)/rho;
   
-  const double ca = sqrt(fabs(B1*B1/rho));
+  const double ca = sqrt(B1*B1/rho);
   const double cf = sqrt(0.5*( d + sqrt(d*d - 4.0*a2*B1*B1/rho)));
   const double cs = sqrt(0.5*( d - sqrt(d*d - 4.0*a2*B1*B1/rho)));
   
