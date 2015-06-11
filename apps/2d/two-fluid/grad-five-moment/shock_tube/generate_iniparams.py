@@ -2,6 +2,7 @@ from finess.params import append_pac_from_module, write_to_header_cpp
 import finess.params.dim2
 import finess.params.mhd
 import finess.params.maxwell
+import finess.params.plasma
 import this_app_params
 
 pac = finess.params.dim2.starter_pac()
@@ -11,6 +12,9 @@ append_pac_from_module(pac, finess.params.mhd     )
 
 # section [maxwell]
 append_pac_from_module(pac, finess.params.maxwell )
+
+# section [maxwell]
+append_pac_from_module(pac, finess.params.plasma  )
 
 # parameters specific to current app
 append_pac_from_module(pac, this_app_params)
