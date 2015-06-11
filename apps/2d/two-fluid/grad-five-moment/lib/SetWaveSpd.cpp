@@ -8,12 +8,12 @@
 // HLLE wave speeds for use in "RiemannSolve"
 //
 // Ideal MHD equations
-void SetWaveSpd(const dTensor1& nvec, 
-		const dTensor1& xedge,
-		const dTensor1& Ql, 
-		const dTensor1& Qr,
-		const dTensor1& Auxl, 
-		const dTensor1& Auxr,
+//
+// TODO - this needs to be completely replaced for two-fluid! -DS
+//
+void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
+		const dTensor1& Ql, const dTensor1& Qr,
+		const dTensor1& Auxl, const dTensor1& Auxr,
 		double& s1,double& s2)
 {
 
@@ -75,8 +75,6 @@ void SetWaveSpd(const dTensor1& nvec,
 		   sqrt(fabs(pow(a2r+Bm2r/rhor,2) - 4.0*a2r*B1r*B1r/rhor))));
   const double cf   = nmag*sqrt(0.5*(a2 + Bm2/rho + 
 		   sqrt(fabs(pow(a2+Bm2/rho,2) - 4.0*a2*B1*B1/rho))));
-  
-
   
   // normal velocities
   const double un  = nvec.get(1)*u1  + nvec.get(2)*u2;
