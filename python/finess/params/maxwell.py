@@ -4,7 +4,8 @@ Currently, only speed of light: maxwell.cs_light.
 
 This value can be set in an [maxwell] section of your parameters.ini code.
 
-Sorry Maxwell, we did not capitalize your name!
+Sorry Maxwell, we did not capitalize your name!  Please accept this
+forgiveness.
 
 Derived parameters:
 
@@ -22,7 +23,7 @@ def _parameters_accessors_checks():
     parameters = []
     checks = []
     cs_light = Parameter(variable_name = "cs_light",
-                      section       = "Maxwell",
+                      section       = "maxwell",
                       name          = "cs_light",
                       type_         = "double",
                       default_value = 1.0
@@ -33,7 +34,7 @@ def _parameters_accessors_checks():
     # Derived parameters (performed here to cut back on FLOPs)
     cs_light_squared = DerivedParameter(variable_name = "cs_light_squared",
                           type_         = "double",
-        defining_expression_in_cpp = """(this->cs_light*this->cs_light""")
+        defining_expression_in_cpp = """this->cs_light*this->cs_light""")
     parameters.append(cs_light_squared)
 
     return parameters, map(Accessor, parameters), checks

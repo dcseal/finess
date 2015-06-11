@@ -1,15 +1,6 @@
-#ifndef _COMPONENTS_H_
 #define _COMPONENTS_H_
 
-// Easier to read indices into components of two-fluid plasma.
-// In the future, if we change the order, then presumably we only need to
-// change this file. (This includes adding more species, or other physical
-// quantities).
-//
-// Each of these should be described in any parameters.ini file as well.
-
-enum ComponentID
-{
+enum ComponentID{
     _rho_i=1,  // rho (ion)
     _M1_i =2,  // 1-momentum (ion)
     _M2_i =3,  // 2-momentum (ion)
@@ -32,4 +23,3 @@ enum ComponentID
     _entropy_e = 20, // entropy tracking
 };
 
-#endif
