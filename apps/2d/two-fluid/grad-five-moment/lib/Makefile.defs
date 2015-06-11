@@ -30,11 +30,13 @@ AfterQinit          = $(APP_LIB)/AfterQinit
 APP_LIB_OBJECTS = \
   $(APP_LIB)/FiveMoment.o \
   $(APP_LIB)/Maxwell.o \
+  $(APP_LIB)/gas05.o \
 
 #
 APP_LIB_SOURCES = \
   $(APP_LIB)/*.h \
   $(APP_LIB)/FiveMoment.cpp \
   $(APP_LIB)/Maxwell.cpp \
+  $(APP_LIB)/gas05.cpp \
 
 #
