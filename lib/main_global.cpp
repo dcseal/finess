@@ -23,9 +23,9 @@
  */
 int main_global(int argc, char* argv[])
 {
-     feenableexcept(FE_INVALID  |
-                  FE_DIVBYZERO |
-                  FE_OVERFLOW  );
+//   feenableexcept(FE_INVALID  |
+//                FE_DIVBYZERO |
+//                FE_OVERFLOW  );
 //     feenableexcept(FE_INVALID  |
 //                  FE_DIVBYZERO |
 //                  FE_OVERFLOW  |
