@@ -22,6 +22,9 @@ SetWaveSpd          = $(APP_LIB)/SetWaveSpd
 # Auxilary function
 AuxFunc             = $(APP_LIB)/AuxFunc
 
+# Source term function is same for all two-fluid routines
+SourceTermFunc      = $(APP_LIB)/SourceTermFunc
+
 # Extra stuff!
 AfterQinit          = $(APP_LIB)/AfterQinit
 

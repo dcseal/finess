@@ -2,7 +2,6 @@
 #define _MAXWELL_H_
 #include "math.h"
 #include "debug.h"
-#include "MaxwellParams.h"
 
 enum MaxwellComponentID{
     M_B1   = 1, // 1-magnetic field
@@ -44,6 +43,10 @@ enum SymMaxwellEigID {
     SM_p_B1_psi = 4,
 };
 
+/*
+ * The routines below here were pulled from DoGPack.  I am not sure what they
+ * were used for. -DS 7/9/2015
+
 // This function oscillates between 0 and 1 with
 // a period of 4.  The definition is:
 //
@@ -77,12 +80,16 @@ inline double modulate_source(double t, double eps)
       invalid_value_error(theta);
   }
 }
+
 inline double eps_Bcp_func(double psi, double time)
 {
   return psi*modulate_source(time,maxwellParams.get_eps_Bcp());
 }
+
 inline double eps_Ecp_func(double phi, double time)
 {
   return phi*modulate_source(time,maxwellParams.get_eps_Ecp());
 }
+*/
+
 #endif

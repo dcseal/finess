@@ -1,16 +1,12 @@
 #include "dogdefs.h"
 #include "Maxwell.h"
-#include "MaxwellParams.h"
+#include "IniParams.h"
 
-MaxwellParams maxwellParams;
-
-void MaxwellFluxFunc(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor3& flux)
+void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor3& flux)
 {
+
     // Parameters
-    double cs_light_squared = maxwellParams.get_cs_light_squared();
+    double cs_light_squared = global_ini_params.get_cs_light_squared();
 
     const int n_B1  = n_offset + M_B1 ;
     const int n_B2  = n_offset + M_B2 ;
@@ -45,36 +41,43 @@ void MaxwellFluxFunc(
         flux.set(j,n_E1 ,2, -cs_light_squared*B3 );
         flux.set(j,n_E3 ,2,  cs_light_squared*B1 );
 
-        // fluxes for hyperbolic divergence cleaning
-        //
-        const double cp_speed_squared = maxwellParams.get_cp_speed_squared();
+        // Fluxes for hyperbolic divergence cleaning
+
+        // Magnetic divergence cleaning
+        const double cp_speed_squared = cs_light_squared*global_ini_params.get_cc_sqd();
         if(n_psi<=Q.getsize(2))
         {
           const double& psi   = Q.get(j,n_psi);
           // components of 1-component of flux function involving psi
           flux.set(j,n_B1 ,1,  psi );
           flux.set(j,n_psi,1,  cp_speed_squared*B1 );
+
           // components of 2-component of flux function involving psi
           flux.set(j,n_B2 ,2,  psi );
           flux.set(j,n_psi,2,  cp_speed_squared*B2 );
+
         }
         else
         {
           flux.set(j,n_B1 ,1,  0. );
           flux.set(j,n_B2 ,2,  0. );
         }
-        //
+
+        // Electric field cleaning
         if(n_phi<=Q.getsize(2))
         {
-          if(maxwellParams.get_clean_E_field())
+          if( global_ini_params.get_clean_E_field() )
           {
+
               const double& phi   = Q.get(j,n_phi);
               // components of 1-component of flux function involving phi
               flux.set(j,n_E1 ,1,  phi );
               flux.set(j,n_phi,1,  cp_speed_squared*E1);
+
               // components of 2-component of flux function involving phi
               flux.set(j,n_E2 ,2,  phi );
               flux.set(j,n_phi,2,  cp_speed_squared*E2);
+
           }
           else
           {
@@ -92,13 +95,11 @@ void MaxwellFluxFunc(
     }
 }
 
-void MaxwellFluxFunc1(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor2& flux)
+// Same as MaxwellFluxFunc, but only sample first component
+void MaxwellFluxFunc1( int n_offset, const dTensor2& Q, dTensor2& flux)
 {
     // Parameters
-    double cs_light_squared = maxwellParams.get_cs_light_squared();
+    double cs_light_squared = global_ini_params.get_cs_light_squared();
 
     const int n_B1  = n_offset + M_B1 ;
     const int n_B2  = n_offset + M_B2 ;
@@ -128,7 +129,7 @@ void MaxwellFluxFunc1(
     
         // fluxes for hyperbolic divergence cleaning
         //
-        const double cp_speed_squared = maxwellParams.get_cp_speed_squared();
+        const double cp_speed_squared = cs_light_squared*global_ini_params.get_cc_sqd();
         if(n_psi<=Q.getsize(2))
         {
           const double& psi   = Q.get(j,n_psi);
@@ -143,7 +144,7 @@ void MaxwellFluxFunc1(
         //
         if(n_phi<=Q.getsize(2))
         {
-          if(maxwellParams.get_clean_E_field())
+          if( global_ini_params.get_clean_E_field() )
           {
               const double& phi   = Q.get(j,n_phi);
               // components of 1-component of flux function involving phi
@@ -163,13 +164,11 @@ void MaxwellFluxFunc1(
     }
 }
 
-void MaxwellFluxFunc2(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor2& flux)
+// Same as MaxwellFluxFunc, but only sample first component
+void MaxwellFluxFunc2( int n_offset, const dTensor2& Q, dTensor2& flux)
 {
     // Parameters
-    double cs_light_squared = maxwellParams.get_cs_light_squared();
+    double cs_light_squared = global_ini_params.get_cs_light_squared();
 
     const int n_B1  = n_offset + M_B1 ;
     const int n_B2  = n_offset + M_B2 ;
@@ -199,7 +198,7 @@ void MaxwellFluxFunc2(
 
         // fluxes for hyperbolic divergence cleaning
         //
-        const double cp_speed_squared = maxwellParams.get_cp_speed_squared();
+        const double cp_speed_squared = cs_light_squared*global_ini_params.get_cc_sqd();
         if(n_psi<=Q.getsize(2))
         {
           const double& psi   = Q.get(j,n_psi);
@@ -214,7 +213,7 @@ void MaxwellFluxFunc2(
         //
         if(n_phi<=Q.getsize(2))
         {
-          if(maxwellParams.get_clean_E_field())
+          if( global_ini_params.get_clean_E_field() )
           {
               const double& phi   = Q.get(j,n_phi);
               // components of 2-component of flux function involving phi
@@ -237,10 +236,12 @@ void MaxwellFluxFunc2(
 void ProjectLeftEig_Maxwell(int ixy, int n_offset,
     const dTensor1& Q_ave, const dTensor2& Q, dTensor2& W)
 {
+
     const int n_B3   = n_offset + M_B3 ;
     const int n_E3   = n_offset + M_E3 ;
     const int n_psi  = n_offset + M_psi;
     const int n_phi  = n_offset + M_phi;
+
     //
     int n_B1;
     int n_B2;
@@ -274,8 +275,8 @@ void ProjectLeftEig_Maxwell(int ixy, int n_offset,
     const int m_E1_phi = n_offset + M_m_E1_phi;
     const int p_E1_phi = n_offset + M_p_E1_phi;
 
-    const double cs_light = maxwellParams.get_cs_light();
-    const double cp_speed = maxwellParams.get_cp_speed();
+    const double cs_light = global_ini_params.get_cs_light();
+    const double cp_speed = global_ini_params.get_cc_factor()*cs_light;
     const double cs2_inv = 1./(2.*cs_light);
     const double cp2_inv = 1./(2.*cp_speed);
     for (int k=1; k<=W.getsize(2); k++)
@@ -315,6 +316,7 @@ void ProjectLeftEig_Maxwell(int ixy, int n_offset,
 void ProjectRightEig_Maxwell(int ixy, int n_offset,
     const dTensor1& Q_ave, const dTensor2& W, dTensor2& Q)
 {
+
     const int n_B3   = n_offset + M_B3 ;
     const int n_E3   = n_offset + M_E3 ;
     const int n_psi  = n_offset + M_psi;
@@ -352,8 +354,8 @@ void ProjectRightEig_Maxwell(int ixy, int n_offset,
     const int m_E1_phi = n_offset + M_m_E1_phi;
     const int p_E1_phi = n_offset + M_p_E1_phi;
 
-    const double cs_light = maxwellParams.get_cs_light();
-    const double cp_speed = maxwellParams.get_cp_speed();
+    const double cs_light = global_ini_params.get_cs_light();
+    const double cp_speed = global_ini_params.get_cc_factor()*cs_light;
     for (int k=1; k<=Q.getsize(2); k++)
     {
         Q.set(n_B2 ,k,            W.get(m_B2_E3 ,k) + W.get(p_B2_E3, k) );
@@ -388,10 +390,11 @@ void ProjectRightEig_Maxwell(int ixy, int n_offset,
     }
 }
 
-void SymPair_MaxwellFluxFunc(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor3& flux)
+/*
+//
+// TODO - this routine is used in the p05 and p10 versions of DoGPack
+//
+void SymPair_MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor3& flux)
 {
     // Parameters
     const double cs_light_squared = maxwellParams.get_cs_light_squared();
@@ -439,10 +442,7 @@ void SymPair_MaxwellFluxFunc(
     }
 }
 
-void SymPair_MaxwellFluxFunc1(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor2& flux)
+void SymPair_MaxwellFluxFunc1( int n_offset, const dTensor2& Q, dTensor2& flux)
 {
     // Parameters
     const double cs_light_squared = maxwellParams.get_cs_light_squared();
@@ -481,10 +481,7 @@ void SymPair_MaxwellFluxFunc1(
     }
 }
 
-void SymPair_MaxwellFluxFunc2(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor2& flux)
+void SymPair_MaxwellFluxFunc2( int n_offset, const dTensor2& Q, dTensor2& flux)
 {
     // Parameters
     const double cs_light_squared = maxwellParams.get_cs_light_squared();
@@ -550,7 +547,7 @@ void SymPair_ProjectLeftEig_Maxwell(int ixy, int n_offset,
     const int p_B1_psi = n_offset + SM_p_B1_psi;
 
     const double cs_light = maxwellParams.get_cs_light();
-    const double cp_speed = maxwellParams.get_cp_speed();
+    const double cp_speed = global_ini_params.get_cc_factor()*cs_light;
     const double cs2_inv = 1./(2.*cs_light);
     const double cp2_inv = 1./(2.*cp_speed);
     for (int k=1; k<=W.getsize(2); k++)
@@ -598,7 +595,7 @@ void SymPair_ProjectRightEig_Maxwell(int ixy, int n_offset,
     const int p_B1_psi = n_offset + SM_p_B1_psi;
 
     const double cs_light = maxwellParams.get_cs_light();
-    const double cp_speed = maxwellParams.get_cp_speed();
+    const double cp_speed = global_ini_params.get_cc_factor()*cs_light;
     for (int k=1; k<=Q.getsize(2); k++)
     {
         Q.set(n_B2 ,k,            W.get(m_B2_E3 ,k) + W.get(p_B2_E3, k) );
@@ -616,3 +613,5 @@ void SymPair_ProjectRightEig_Maxwell(int ixy, int n_offset,
         }
     }
 }
+
+*/

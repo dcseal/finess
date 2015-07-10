@@ -22,10 +22,10 @@ struct MaxwellParams{
    int clean_E_field;
 
  public:
+
    const double get_cs_light()const{return cs_light;}
    const double get_cs_light_squared()const{return cs_light_squared;}
    const double get_one_over_epsilon()const{return cs_light_squared;}
-   //const double get_sqrt_eps_inv()const{return cs_light;}
    const double get_cp_speed()const{return cp_speed;}
    const double get_cp_speed_squared()const{return cp_speed_squared;}
    const double get_eps_Ecp()const{return eps_Ecp; }
