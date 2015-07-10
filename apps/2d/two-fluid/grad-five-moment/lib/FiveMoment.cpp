@@ -6,11 +6,14 @@
 FiveMomentParams fiveMomentParams;
 using namespace FiveMomentComponentID;
 
-void FiveMomentFluxFunc(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor3& flux)
+// Projection for "Euler" type systems
+//
+// The parameter "n_offset" is used to break the system up into blocks.  For
+// five-moment two-fluid, there are a total of two Euler type systems here.
+//
+void FiveMomentFluxFunc( int n_offset, const dTensor2& Q, dTensor3& flux)
 {
+
     // Parameters
     double gamma = fiveMomentParams.get_gamma();
 
@@ -53,10 +56,11 @@ void FiveMomentFluxFunc(
     }
 }
 
-void FiveMomentFluxFunc1(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor2& flux)
+// Same as FiveMomentFluxFunc, but only project onto 1st-component of flux
+// function.
+//
+// Note that "flux" that passed in here has one fewer coordinate to deal with.
+void FiveMomentFluxFunc1( int n_offset, const dTensor2& Q, dTensor2& flux)
 {
     // Parameters
     double gamma = fiveMomentParams.get_gamma();
@@ -93,11 +97,13 @@ void FiveMomentFluxFunc1(
     }
 }
 
-void FiveMomentFluxFunc2(
-    int n_offset,
-    const dTensor2& Q,
-    dTensor2& flux)
+// Same as FiveMomentFluxFunc, but only project onto 2nd-component of flux
+// function
+//
+// Note that "flux" that passed in here has one fewer coordinate to deal with.
+void FiveMomentFluxFunc2( int n_offset, const dTensor2& Q, dTensor2& flux)
 {
+
     // Parameters
     double gamma = fiveMomentParams.get_gamma();
 
@@ -136,21 +142,22 @@ void FiveMomentFluxFunc2(
 void ProjectLeftEig_FiveMoment( int ixy, int n_offset,
     const dTensor1& Q_ave, const dTensor2& Q, dTensor2& W)
 {
+
     int mu,mv,mw;
 
     // Directional information
     if (ixy==1)
     {
-	mu = 2;
-	mv = 3;
-	mw = 4;
+        mu = 2;
+        mv = 3;
+        mw = 4;
     }
     else
     {
         assert(ixy==2);
-	mu = 3;
-	mv = 2;
-	mw = 4;
+        mu = 3;
+        mv = 2;
+        mw = 4;
     }
 
     const int n_rho = n_offset + _rho;
@@ -202,16 +209,16 @@ void ProjectRightEig_FiveMoment(int ixy, int n_offset,
     // Directional information
     if (ixy==1)
     {
-	mu = 2;
-	mv = 3;
-	mw = 4;
+        mu = 2;
+        mv = 3;
+        mw = 4;
     }
     else
     {
         assert(ixy==2);
-	mu = 3;
-	mv = 2;
-	mw = 4;
+        mu = 3;
+        mv = 2;
+        mw = 4;
     }
 
     const int n_rho = n_offset + _rho;
@@ -250,5 +257,5 @@ void ProjectRightEig_FiveMoment(int ixy, int n_offset,
                   + u2*W.get(nv,k) + u3*W.get(nw,k) 
                   + (H+u1*c)*W.get(n_N,k) );
     }
-}
 
+}

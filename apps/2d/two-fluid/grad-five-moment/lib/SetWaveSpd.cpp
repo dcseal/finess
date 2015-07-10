@@ -1,15 +1,12 @@
 #include <cmath>
 #include "dog_math.h"
 #include "tensors.h"
-
 #include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // HLLE wave speeds for use in "RiemannSolve"
 //
-// Ideal MHD equations
-//
-// TODO - this needs to be completely replaced for two-fluid! -DS
+// Two-fluid plasma
 //
 void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
 		const dTensor1& Ql, const dTensor1& Qr,
@@ -17,6 +14,10 @@ void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
 		double& s1,double& s2)
 {
 
+    // TODO - this is a complete hack!  7/9/2015 -DS
+    s1 = -global_ini_params.get_cs_light()*global_ini_params.get_cc_factor();
+    s2 = -s1;
+/*
   // Gas constant
   const double gamma = global_ini_params.get_gamma();
     
@@ -86,4 +87,6 @@ void SetWaveSpd(const dTensor1& nvec, const dTensor1& xedge,
   
   // Maximum speed
   s2 = Max(unr+cf_r, un+cf);
+
+*/
 }

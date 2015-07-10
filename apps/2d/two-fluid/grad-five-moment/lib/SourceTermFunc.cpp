@@ -1,36 +1,34 @@
 #include "tensors.h"
-#include "PlasmaParams.h"
 #include "Maxwell.h"
-#include "MaxwellParams.h"
 #include "Components.h"
-#include "DogState.h"
-#include "DogSolver.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the source term
 void SourceTermFunc( const dTensor2& xpts, const dTensor2& qvals,
      const dTensor2& auxvals, dTensor2& source)
 {
-    if(plasmaParams.get_source_type_Emom() != SourceType::SIMPLE)
-    {
-      eprintf("You need to set source_term = 0 in parameters.ini");
-    }
 
     // Parameters
-    double ion_mass = plasmaParams.get_ion_mass();
-    double elc_mass = plasmaParams.get_elc_mass();
-    const double one_over_epsilon = maxwellParams.get_cs_light_squared();
-    const double cp_speed_squared = maxwellParams.get_cp_speed_squared();
+    double ion_mass = global_ini_params.get_ion_mass();
+    double elc_mass = global_ini_params.get_elc_mass();
+
+    const double cs_light_squared = global_ini_params.get_cs_light_squared();
+    const double cp_speed_squared = cs_light_squared*global_ini_params.get_cc_sqd();
+    const double one_over_epsilon = cs_light_squared;
+
     double charge_density_coef = cp_speed_squared*one_over_epsilon;
-    if(!maxwellParams.get_clean_E_field()) charge_density_coef = 0.;
+    if( !global_ini_params.get_clean_E_field() ) charge_density_coef = 0.;
+   
+    // TODO - fix this so the correct time gets passed in!  -DS
+    // const double time = DogSolver::get_time_hack();
     
-    const double time = DogSolver::get_time_hack();
-    
-    int numpts=xpts.getsize(1);
     // Loop over each point
+    int numpts = xpts.getsize(1);
     for (int i=1; i<=numpts; i++)
     {
+
         double x = xpts.get(i,1);
-	double y = xpts.get(i,2);
+        double y = xpts.get(i,2);
 
         // Variables
         const double& rho_i    = qvals.get(i,_rho_i);
@@ -50,18 +48,18 @@ void SourceTermFunc( const dTensor2& xpts, const dTensor2& qvals,
         const double& E2       = qvals.get(i,_E2   );
         const double& E3       = qvals.get(i,_E3   );
 
-        const double ion_charge_dens = rho_i/ion_mass;
+        const double ion_charge_dens =  rho_i/ion_mass;
         const double elc_charge_dens = -rho_e/elc_mass;
-        const double charge_density = ion_charge_dens + elc_charge_dens;
-        const double J1_i = M1_i/ion_mass;
-        const double J2_i = M2_i/ion_mass;
-        const double J3_i = M3_i/ion_mass;
+        const double charge_density  = ion_charge_dens + elc_charge_dens;
+        const double J1_i =  M1_i/ion_mass;
+        const double J2_i =  M2_i/ion_mass;
+        const double J3_i =  M3_i/ion_mass;
         const double J1_e = -M1_e/elc_mass;
         const double J2_e = -M2_e/elc_mass;
         const double J3_e = -M3_e/elc_mass;
-        const double J1 = J1_i + J1_e;
-        const double J2 = J2_i + J2_e;
-        const double J3 = J3_i + J3_e;
+        const double J1   = J1_i + J1_e;
+        const double J2   = J2_i + J2_e;
+        const double J3   = J3_i + J3_e;
         
         // Source term
         source.set(i,_rho_i,   0.0 );
@@ -69,34 +67,43 @@ void SourceTermFunc( const dTensor2& xpts, const dTensor2& qvals,
         source.set(i,_M2_i ,   ion_charge_dens*E2 + (J3_i*B1 - J1_i*B3));
         source.set(i,_M3_i ,   ion_charge_dens*E3 + (J1_i*B2 - J2_i*B1));
         source.set(i,_N_i  ,   J1_i*E1 + J2_i*E2 + J3_i*E3);
+
         source.set(i,_rho_e,   0.0 );
         source.set(i,_M1_e ,   elc_charge_dens*E1 + (J2_e*B3 - J3_e*B2));
         source.set(i,_M2_e ,   elc_charge_dens*E2 + (J3_e*B1 - J1_e*B3));
         source.set(i,_M3_e ,   elc_charge_dens*E3 + (J1_e*B2 - J2_e*B1));
         source.set(i,_N_e  ,   (J1_e*E1 + J2_e*E2 + J3_e*E3));
+
         source.set(i,_B1   ,   0.0 );
         source.set(i,_B2   ,   0.0 );
         source.set(i,_B3   ,   0.0 );
         source.set(i,_E1   ,   -J1*one_over_epsilon);
         source.set(i,_E2   ,   -J2*one_over_epsilon);
         source.set(i,_E3   ,   -J3*one_over_epsilon);
+
+/*
+ * TODO - reinclude this section! -DS 7/9/2015
+
+        // Check for hyperbolic cleaning corrections
         const int& meqn = source.getsize(2);
         if(_psi > meqn) continue;
-        const double psi = qvals.get(i,_psi);
-        source.set(i,_psi,  -eps_Bcp_func(psi,time));
+        source.set(i, _psi,  0. );
+
         if(_phi > meqn) continue;
-        if(charge_density_coef)
+        if( charge_density_coef )
         {
           const double phi = qvals.get(i,_phi);
-          source.set(i,_phi, charge_density_coef*charge_density
-                             -eps_Ecp_func(phi,time));
+          source.set(i,_phi, charge_density_coef*charge_density - eps_Ecp_func(phi,time) );
         }
         else
-        {
-          source.set(i,_phi, 0.0);
-        }
-        if(_entropy_i > meqn) continue;
-        source.set(i,_entropy_i, 0.0);
-        source.set(i,_entropy_e, 0.0);
+        { source.set(i,_phi, 0.0); }
+
+*/
+
+// Extra entropy equations?
+//      if(_entropy_i > meqn) continue;
+//      source.set(i,_entropy_i, 0.0);
+//      source.set(i,_entropy_e, 0.0);
+
     }
 }

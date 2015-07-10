@@ -8,13 +8,13 @@ import this_app_params
 pac = finess.params.dim2.starter_pac()
 
 # section [mhd]
-append_pac_from_module(pac, finess.params.mhd     )
+append_pac_from_module(pac, finess.params.mhd     )     # defines gamma
 
 # section [maxwell]
-append_pac_from_module(pac, finess.params.maxwell )
+append_pac_from_module(pac, finess.params.maxwell )     # defines speed of light
 
-# section [maxwell]
-append_pac_from_module(pac, finess.params.plasma  )
+# section [plasma]
+append_pac_from_module(pac, finess.params.plasma  )     # defines ion-mass ratio, and PHM modifiers
 
 # parameters specific to current app (TODO - include the left/right values)
 # append_pac_from_module(pac, this_app_params)
