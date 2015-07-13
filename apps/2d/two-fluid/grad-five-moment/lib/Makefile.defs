@@ -26,7 +26,7 @@ AuxFunc             = $(APP_LIB)/AuxFunc
 SourceTermFunc      = $(APP_LIB)/SourceTermFunc
 
 # Extra stuff!
-AfterQinit          = $(APP_LIB)/AfterQinit
+# AfterQinit          = $(APP_LIB)/AfterQinit
 
 # place to add objects and sources
 #

@@ -1,10 +1,10 @@
 #include <cmath>
 #include "dogdefs.h"
 #include "gas05.h"
-#include "FiveMomentParams.h"
+#include "IniParams.h"
 
-FiveMomentParams fiveMomentParams;
-using namespace FiveMomentComponentID;
+//FiveMomentParams fiveMomentParams;        // Deprecated in favor of global_ini_params
+using namespace FiveMomentComponentID;      // see gas05.h (used for defining block indexes into two "Euler" systems and Maxwell
 
 // Projection for "Euler" type systems
 //
@@ -15,7 +15,7 @@ void FiveMomentFluxFunc( int n_offset, const dTensor2& Q, dTensor3& flux)
 {
 
     // Parameters
-    double gamma = fiveMomentParams.get_gamma();
+    double gamma = global_ini_params.get_gamma();
 
     const int n_rho = n_offset + _rho;
     const int n_M1  = n_offset + _M1 ;
@@ -63,7 +63,7 @@ void FiveMomentFluxFunc( int n_offset, const dTensor2& Q, dTensor3& flux)
 void FiveMomentFluxFunc1( int n_offset, const dTensor2& Q, dTensor2& flux)
 {
     // Parameters
-    double gamma = fiveMomentParams.get_gamma();
+    double gamma = global_ini_params.get_gamma();
 
     const int n_rho = n_offset + _rho;
     const int n_M1  = n_offset + _M1 ;
@@ -105,7 +105,7 @@ void FiveMomentFluxFunc2( int n_offset, const dTensor2& Q, dTensor2& flux)
 {
 
     // Parameters
-    double gamma = fiveMomentParams.get_gamma();
+    double gamma = global_ini_params.get_gamma();
 
     const int n_rho = n_offset + _rho;
     const int n_M1  = n_offset + _M1 ;
@@ -167,7 +167,7 @@ void ProjectLeftEig_FiveMoment( int ixy, int n_offset,
     const int n_N   = n_offset + _N;
 
     // Average states
-    const double& gamma  = fiveMomentParams.get_gamma();
+    const double& gamma  = global_ini_params.get_gamma();
     const double& rho    = Q_ave.get(n_rho);
     const double  u1     = Q_ave.get(nu)/rho;
     const double  u2     = Q_ave.get(nv)/rho;
@@ -228,7 +228,7 @@ void ProjectRightEig_FiveMoment(int ixy, int n_offset,
     const int n_N   = n_offset + _N;
 
     // Average states
-    const double& gamma  = fiveMomentParams.get_gamma();
+    const double& gamma  = global_ini_params.get_gamma();
     const double& rho    = Q_ave.get(n_rho);
     const double  u1     = Q_ave.get(nu)/rho;
     const double  u2     = Q_ave.get(nv)/rho;
