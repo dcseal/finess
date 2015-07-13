@@ -1,3 +1,4 @@
+#ifndef _COMPONENTS_H_
 #define _COMPONENTS_H_
 
 enum ComponentID{
@@ -23,3 +24,4 @@ enum ComponentID{
     _entropy_e = 20, // entropy tracking
 };
 
+#endif

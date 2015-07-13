@@ -6,9 +6,30 @@
 #include "IniParams.h"
 #include "gas05.h"          // for common 5 moment operations
 
-// This is a user-supplied routine that sets the
-// initial conditions at all the points "xpts"
+// This is a user-required routine that defines the initial conditions for the
+// problem.
 //
+// Each application is REQUIRED to define one of these.
+//
+// Input:
+//
+//    xpts( 1:numpts, 1:2 )      - The x, and y-coordinates for a list of points
+//
+// Output:
+//
+//    qvals( 1:numpts, 1:meqn )  - The vector of conserved variables, q at
+//                                 each point.
+//
+// See also: AuxFunc.
+//
+// Brio-Wu shock test case.
+//
+// See "An upwind differencing scheme for the
+// equations of ideal magnetohydrodynamics", Brio & Wu, JCP (1988) for the
+// original article, or "Approximate Riemann solver for the two-fluid plasma
+// model", U. Shumlak and J. Loverich, JCP (2003) for a later article.
+//
+// for a description of the problem.
 void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
 {
 
@@ -47,10 +68,10 @@ void QinitShock(const dTensor2& xpts, dTensor2& qvals)
     const int meqn      = qvals.getsize(2);
     const double& gamma = global_ini_params.get_gamma();
 
-    const int x_cycles = 1;
-    const int y_cycles = 1;
-    const double x_wave_num = 2.*pi*x_cycles/(global_ini_params.get_dx());
-    const double y_wave_num = 2.*pi*y_cycles/(global_ini_params.get_dy());
+//  const int x_cycles = 1;
+//  const int y_cycles = 1;
+//  const double x_wave_num = 2.*pi*x_cycles/(global_ini_params.get_dx());
+//  const double y_wave_num = 2.*pi*y_cycles/(global_ini_params.get_dy());
 
 //  const double rhol = global_ini_params.get_rhol();
 //  const double u1l  = global_ini_params.get_unl();
@@ -72,20 +93,22 @@ void QinitShock(const dTensor2& xpts, dTensor2& qvals)
 
     // Brio-Wu parameters
     //
-//  const double& ion_mass = global_ini_params.get_ion_mass();
-//  const double& elc_mass = global_ini_params.get_elc_mass();
+    // See Eqns. (45)-(46) in
+    // "Approximate Riemann solver for the two-fluid plasma model"
+    // for a description of what these parameters are.
+    // Note that we have a minor rescaling of the problem here!
+    const double& ion_mass = global_ini_params.get_ion_mass();
+    const double& elc_mass = global_ini_params.get_elc_mass();
 
     // left values
     //
-//  double const& left_rho_i   = 1.0*ion_mass;
-    double const& left_rho_i   = 1.0;
+    double const& left_rho_i   = 1.0*ion_mass;
     double const& left_u1_i    = 0.0;
     double const& left_u2_i    = 0.0;
     double const& left_u3_i    = 0.0;
     double const& left_press_i = 0.5;
 
-//  double const& left_rho_e   = 1.0*elc_mass;
-    double const& left_rho_e   = 1.0;
+    double const& left_rho_e   = 1.0*elc_mass;
     double const& left_u1_e    = 0.0;
     double const& left_u2_e    = 0.0;
     double const& left_u3_e    = 0.0;
@@ -100,15 +123,13 @@ void QinitShock(const dTensor2& xpts, dTensor2& qvals)
 
     // right values
     //
-//  double const& rght_rho_i   = 0.125*ion_mass;
-    double const& rght_rho_i   = 0.125;
+    double const& rght_rho_i   = 0.125*ion_mass;
     double const& rght_u1_i    = 0.0;
     double const& rght_u2_i    = 0.0;
     double const& rght_u3_i    = 0.0;
     double const& rght_press_i = 0.05;
 
-//  double const& rght_rho_e   = 0.125*elc_mass;
-    double const& rght_rho_e   = 0.125;
+    double const& rght_rho_e   = 0.125*elc_mass;
     double const& rght_u1_e    = 0.0;
     double const& rght_u2_e    = 0.0;
     double const& rght_u3_e    = 0.0;
