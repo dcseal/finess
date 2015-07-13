@@ -29,5 +29,5 @@ axis on; box on; grid off;
 axis([xlow xhigh qlow-qeps qhigh+qeps]);
 set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'fontsize',16);
-t1 = title(['q(',num2str(1),') at t = ',num2str(time),'     [DoGPack]']); 
+t1 = title(['q(',num2str(1),') at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
