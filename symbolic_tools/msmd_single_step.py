@@ -60,8 +60,8 @@ def WENO( Un, eps ):
     mbc   = 3
 
     # Flux function, with extra padding added in (zeroth-order extrapolation)
-    F_Vec = np.concatenate( (np.array([0,0,0]), Un    ) )
-    F_Vec = np.concatenate( (F_Vec, np.array([1,1,1]) ) )
+    F_Vec = np.concatenate( (np.array([Un[0],Un[0],Un[0]]), Un       ) )
+    F_Vec = np.concatenate( (F_Vec, np.array([Un[-1],Un[-1],Un[-1]]) ) )
 
     # Flux function.  Fp[0] = left-most flux value.  Fp[mx] = right-most value
     Fp = np.zeros( mx+1, dtype=object )
