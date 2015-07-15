@@ -19,6 +19,7 @@ void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor2& flux)
 
     for(int j=1;j<=Q.getsize(1);j++)
     {
+
         // Variables
         const double& B1    = Q.get(j,n_B1 );
         const double& B2    = Q.get(j,n_B2 );
@@ -29,8 +30,11 @@ void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor2& flux)
     
         // 1-component of flux function
         //
+        flux.set(j,n_B1 ,  0. );
         flux.set(j,n_B2 , -E3 );
         flux.set(j,n_B3 ,  E2 );
+
+        flux.set(j,n_E1 ,  0. );
         flux.set(j,n_E2 ,  cs_light_squared*B3 );
         flux.set(j,n_E3 , -cs_light_squared*B2 );
     
@@ -45,7 +49,7 @@ void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor2& flux)
 
         // Magnetic divergence cleaning
         const double cp_speed_squared = cs_light_squared*global_ini_params.get_cc_sqd();
-        if(n_psi<=Q.getsize(2))
+        if( n_psi<=Q.getsize(2))
         {
           const double& psi   = Q.get(j,n_psi);
 
@@ -100,163 +104,56 @@ void ProjectLeftEig_Maxwell(int n_offset,
     const dTensor1& Q_ave, const dTensor2& Q, dTensor2& W)
 {
 
-    const int n_B3   = n_offset + M_B3 ;
-    const int n_E3   = n_offset + M_E3 ;
-    const int n_psi  = n_offset + M_psi;
-    const int n_phi  = n_offset + M_phi;
-
-    // (pulled from 2D code)
-    const int ixy = 1;
-
-    //
-    int n_B1;
-    int n_B2;
-    int n_E1;
-    int n_E2;
-    //if(ixy==1)
-    if(1)
-    {
-        n_B1  = n_offset + M_B1;
-        n_B2  = n_offset + M_B2;
-        n_E1  = n_offset + M_E1;
-        n_E2  = n_offset + M_E2;
-    }
-//  else
-//  {
-//      assert(ixy==2);
-//      n_B1  = n_offset + M_B2 ;
-//      n_B2  = n_offset + M_B1 ;
-//      n_E1  = n_offset + M_E2 ;
-//      n_E2  = n_offset + M_E1 ;
-//  }
-
-    const int m_B2_E3  = n_offset + M_m_B2_E3 ;
-    const int m_B3_E2  = n_offset + M_m_B3_E2 ;
-    //
-    const int p_B3_E2  = n_offset + M_p_B3_E2 ;
-    const int p_B2_E3  = n_offset + M_p_B2_E3 ;
-    //
-    const int m_B1_psi = n_offset + M_m_B1_psi;
-    const int p_B1_psi = n_offset + M_p_B1_psi;
-    //
-    const int m_E1_phi = n_offset + M_m_E1_phi;
-    const int p_E1_phi = n_offset + M_p_E1_phi;
-
     const double cs_light = global_ini_params.get_cs_light();
-    const double cp_speed = global_ini_params.get_cc_factor()*cs_light;
-    const double cs2_inv = 1./(2.*cs_light);
-    const double cp2_inv = 1./(2.*cp_speed);
+
+//  const int n_E1   = n_offset + M_E1 ;
+//  const int n_E2   = n_offset + M_E2 ;
+//  const int n_E3   = n_offset + M_E3 ;
+
+//  const int n_B1   = n_offset + M_B1 ;
+//  const int n_B2   = n_offset + M_B2 ;
+//  const int n_B3   = n_offset + M_B3 ;
+
+//  const int n_psi  = n_offset + M_psi;
+//  const int n_phi  = n_offset + M_phi;
+
     for (int k=1; k<=W.getsize(2); k++)
     {
-        W.set(m_B2_E3 ,k, (cs_light*Q.get(n_B2 ,k) - Q.get(n_E3 ,k))*cs2_inv ); // eig -c
-        W.set(p_B2_E3 ,k, (cs_light*Q.get(n_B2 ,k) + Q.get(n_E3 ,k))*cs2_inv ); // eig +c
-        //
-        W.set(m_B3_E2 ,k, (cs_light*Q.get(n_B3 ,k) - Q.get(n_E2 ,k))*cs2_inv ); // eig -c
-        W.set(p_B3_E2 ,k, (cs_light*Q.get(n_B3 ,k) + Q.get(n_E2 ,k))*cs2_inv ); // eig +c
-        //
-        if(n_psi<=Q.getsize(1))
-        {
-          W.set(m_B1_psi,k, (cp_speed*Q.get(n_B1 ,k) - Q.get(n_psi,k))*cp2_inv ); // eig -cp_speed
-          W.set(p_B1_psi,k, (cp_speed*Q.get(n_B1 ,k) + Q.get(n_psi,k))*cp2_inv ); // eig +cp_speed
-        }
-        else
-        {
-          // we are not using psi so we are not using phi either, so we just copy the data
-          W.set(m_B1_psi,k, Q.get(n_B1,k));
-          W.set(p_B1_psi,k, Q.get(n_E1,k));
-          return;
-        }
-        //
-        if(n_phi<=Q.getsize(1))
-        {
-          W.set(m_E1_phi,k, (cp_speed*Q.get(n_phi,k) - Q.get(n_E1 ,k))*cp2_inv ); // eig -cp_speed
-          W.set(p_E1_phi,k, (cp_speed*Q.get(n_phi,k) + Q.get(n_E1 ,k))*cp2_inv ); // eig +cp_speed
-        }
-        else
-        {
-          // not using phi so just copy the data
-          W.set(m_E1_phi,k, Q.get(n_E1,k));
-        }
+
+        W.set(11,k, (cs_light*Q.get(12,k) + Q.get(16,k))/(2.0*cs_light) );
+        W.set(12,k, (cs_light*Q.get(13,k) - Q.get(15,k))/(2.0*cs_light) );
+        W.set(13,k, Q.get(11,k) );
+
+        W.set(14,k, Q.get(14,k) );
+        W.set(15,k, (cs_light*Q.get(12,k) - Q.get(16,k))/(2.0*cs_light) );
+        W.set(16,k, (cs_light*Q.get(13,k) + Q.get(15,k))/(2.0*cs_light) );
+
     }
+
 }
 
 void ProjectRightEig_Maxwell(int n_offset,
     const dTensor1& Q_ave, const dTensor2& W, dTensor2& Q)
 {
 
-    const int n_B3   = n_offset + M_B3 ;
-    const int n_E3   = n_offset + M_E3 ;
-    const int n_psi  = n_offset + M_psi;
-    const int n_phi  = n_offset + M_phi;
-
-    const int ixy = 1;
-
-    //
-    int n_B1;
-    int n_B2;
-    int n_E1;
-    int n_E2;
-//  if (ixy==1)
-//  {
-        n_B1  = n_offset + M_B1;
-        n_B2  = n_offset + M_B2;
-        n_E1  = n_offset + M_E1;
-        n_E2  = n_offset + M_E2;
-//  }
-//  else
-//  {
-//      assert(ixy==2);
-//      n_B1  = n_offset + M_B2 ;
-//      n_B2  = n_offset + M_B1 ;
-//      n_E1  = n_offset + M_E2 ;
-//      n_E2  = n_offset + M_E1 ;
-//  }
-
-    const int m_B2_E3  = n_offset + M_m_B2_E3 ;
-    const int p_B2_E3  = n_offset + M_p_B2_E3 ;
-    //
-    const int m_B3_E2  = n_offset + M_m_B3_E2 ;
-    const int p_B3_E2  = n_offset + M_p_B3_E2 ;
-    //
-    const int m_B1_psi = n_offset + M_m_B1_psi;
-    const int p_B1_psi = n_offset + M_p_B1_psi;
-    //
-    const int m_E1_phi = n_offset + M_m_E1_phi;
-    const int p_E1_phi = n_offset + M_p_E1_phi;
+//  const int n_B3   = n_offset + M_B3 ;
+//  const int n_E3   = n_offset + M_E3 ;
+//  const int n_psi  = n_offset + M_psi;
+//  const int n_phi  = n_offset + M_phi;
 
     const double cs_light = global_ini_params.get_cs_light();
     const double cp_speed = global_ini_params.get_cc_factor()*cs_light;
     for (int k=1; k<=Q.getsize(2); k++)
     {
-        Q.set(n_B2 ,k,            W.get(m_B2_E3 ,k) + W.get(p_B2_E3, k) );
-        Q.set(n_E3 ,k, cs_light*( W.get(p_B2_E3 ,k) - W.get(m_B2_E3, k)) );
-        //
-        Q.set(n_B3 ,k,            W.get(p_B3_E2 ,k) + W.get(m_B3_E2, k) );
-        Q.set(n_E2 ,k, cs_light*( W.get(p_B3_E2 ,k) - W.get(m_B3_E2, k)) );
-        //
-        if(n_psi<=Q.getsize(1))
-        {
-          Q.set(n_B1 ,k,            W.get(p_B1_psi,k) + W.get(m_B1_psi,k) );
-          Q.set(n_psi,k, cp_speed*( W.get(p_B1_psi,k) - W.get(m_B1_psi,k)) );
-        }
-        else
-        {
-          // not using psi or phi. copy the data back.
-          Q.set(n_B1,k, W.get(m_B1_psi,k));
-          Q.set(n_E1,k, W.get(p_B1_psi,k));
-          return;
-        }
-        //
-        if(n_phi<=Q.getsize(1))
-        {
-          Q.set(n_E1 ,k, cp_speed*( W.get(p_E1_phi,k) - W.get(m_E1_phi,k)) );
-          Q.set(n_phi,k,            W.get(p_E1_phi,k) + W.get(m_E1_phi,k));
-        }
-        else
-        {
-          // not using phi so copy the data back
-          Q.set(n_E1,k, W.get(m_E1_phi,k));
-        }
+
+        Q.set(11,k, W.get(13,k) );
+        Q.set(12,k, W.get(11,k) + W.get(15,k) );
+        Q.set(13,k, W.get(12,k) + W.get(16,k) );
+
+        Q.set(14,k, W.get(14,k) );
+        Q.set(15,k, cs_light*( W.get(16,k) - W.get(12,k) ) );
+        Q.set(16,k, cs_light*( W.get(11,k) - W.get(15,k) ) );
+
     }
 }
 
