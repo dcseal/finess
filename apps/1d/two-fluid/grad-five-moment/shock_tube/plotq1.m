@@ -28,12 +28,40 @@ cs_light   = sscanf(INI.maxwell.cs_light, '%e');
 
 fprintf(1,'    mass ratio = %f  ; speed of light = %f \n', mass_ratio, cs_light );
 
+% Indices for components
+ind_rho_i     = 1;  %  rho (ion)
+ind_M1_i      = 2;  %  1-momentum (ion)
+ind_M2_i      = 3;  %  2-momentum (ion)
+ind_M3_i      = 4;  %  3-momentum (ion)
+ind_N_i       = 5;  %  energy (ion)
+ind_rho_e     = 6;  %  rho (elc)
+ind_M1_e      = 7;  %  1-momentum (elc)
+ind_M2_e      = 8;  %  2-momentum (elc)
+ind_M3_e      = 9;  %  3-momentum (elc)
+ind_N_e       = 10; %  energy (elc)
+ind_B1        = 11; %  1-magnetic field
+ind_B2        = 12; %  2-magnetic field
+ind_B3        = 13; %  3-magnetic field
+ind_E1        = 14; %  1-electric field
+ind_E2        = 15; %  2-electric field
+ind_E3        = 16; %  3-electric field
+ind_psi       = 17; %  B-field cleaning
+ind_phi       = 18; %  E-field cleaning
+ind_entropy_i = 19; %  entropy tracking
+ind_entropy_e = 20; %  entropy tracking
+
+J1_i =  qsoln(:,ind_M1_i) / ion_mass;
+J1_e = -qsoln(:,ind_M1_e) / elc_mass;
+J1  = J1_i + J1_e;
+
+%   u1_i = qsoln(:,5) / q(:,1);
+%   u1_i = qsoln(:,2) / ion_mass;
 
 figure(1);
 clf;
-pz=plot(xc,qsoln(:,1),'bo');
+pz=plot(xc,qsoln(:,ind_rho_i),'bo');
 hold on;
-plot(xc,qsoln(:,6),'rx');
+plot(xc,qsoln(:,ind_rho_e),'rx');
 hold off;
 set(pz,'linewidth',1);
 set(pz,'markersize',8);
@@ -47,6 +75,47 @@ set(gca,'fontsize',16);
 t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 legend('ion density', 'electron density');
+
+figure(2);
+clf;
+pz=plot(xc,qsoln(:,ind_E1),'bo');
+%hold on;
+%plot(xc,qsoln(:,6),'rx');
+%hold off;
+%   set(pz,'linewidth',1);
+%   set(pz,'markersize',8);
+%   hold off;
+axis on; box on; grid off;
+axis auto;
+%axis([-0.1 13 0 1.1]);
+%   set(gca,'plotboxaspectratio',[1.5 1 1]);
+%   set(gca,'xtick',0:1:15);
+%   set(gca,'ytick',0:.1:2);
+%   set(gca,'fontsize',16);
+%   t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
+%   set(t1,'fontsize',16);
+%   legend('ion density', 'electron density');
+
+figure(3);
+clf;
+pz=plot(xc, J1, 'bo');
+set(pz,'linewidth',1);
+hold on;
+set(pz,'markersize',8);
+plot(xc, J1_i, 'rx' );
+hold on;
+plot(xc, J1_e, 'go' );
+hold off;
+axis on; box on; grid off;
+%axis([-0.1 13 0 1.1]);
+axis auto;
+%set(gca,'plotboxaspectratio',[1.5 1 1]);
+%set(gca,'xtick',0:1:15);
+%set(gca,'ytick',0:.1:2);
+set(gca,'fontsize',16);
+t1 = title(['Current at t = ',num2str(time),'     [FINESS]']); 
+set(t1,'fontsize',16);
+
 
 %   figure(2);
 %   clf;
