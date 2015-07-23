@@ -1,0 +1,40 @@
+# The purpose of this library is to consolidate common functions used in each
+# "application".  For example, the flux function for each "advection"
+# application remains the same, the usual thing one wishes to modify are the
+# initial conditions.
+#
+# LIBRARY for 1D WAVE
+#
+
+#SL_LIB   = $(SL_TOPLIB) -I$(DOGPACK)/apps/semi_lagrangian/lib/1d/
+APP_NAME  = wave
+APP_LIB   = $(FINESS)/apps/1d/$(APP_NAME)/lib
+
+# Auxilary function
+AuxFunc     = $(APP_LIB)/AuxFunc
+
+# Flux function, and its derivatives
+FluxFunc            = $(APP_LIB)/FluxFunc
+
+# Eigen decomposition of the Flux function
+ProjectLeftEig      = $(APP_LIB)/ProjectLeftEig
+ProjectRightEig     = $(APP_LIB)/ProjectRightEig
+
+# Source term function
+SourceTermFunc      = $(APP_LIB)/SourceTermFunc
+
+# Wave speed functions
+SetWaveSpd          = $(APP_LIB)/SetWaveSpd
+
+# place to add objects and sources
+#
+APP_LIB_OBJECTS = \
+#  $(SL_TOPLIB_OBJECTS) \
+#  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.o \
+
+#
+APP_LIB_SOURCES = \
+#  $(SL_TOPLIB_SOURCES) \
+#  $(DOGPACK)/apps/semi_lagrangian/lib/1d/StepAdvec.cpp \
+
+#
