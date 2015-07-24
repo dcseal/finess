@@ -95,12 +95,16 @@ void SourceTermFunc(const dTensor1& xpts,
         source.set(i,_M3_e ,   elc_charge_dens*E3 + (J1_e*B2 - J2_e*B1));
         source.set(i,_N_e  ,   (J1_e*E1 + J2_e*E2 + J3_e*E3));
 
+        // Source terms for Maxwell are handled by the implicit solver
         source.set(i,_B1   ,   0.0 );
         source.set(i,_B2   ,   0.0 );
         source.set(i,_B3   ,   0.0 );
-        source.set(i,_E1   ,   -J1*one_over_epsilon);
-        source.set(i,_E2   ,   -J2*one_over_epsilon);
-        source.set(i,_E3   ,   -J3*one_over_epsilon);
+        //source.set(i,_E1   ,   -J1*one_over_epsilon);
+        //source.set(i,_E2   ,   -J2*one_over_epsilon);
+        //source.set(i,_E3   ,   -J3*one_over_epsilon);
+        source.set(i,_E1   ,   0.0 );
+        source.set(i,_E2   ,   0.0 );
+        source.set(i,_E3   ,   0.0 );
 
 /*
  * TODO - reinclude this section! -DS 7/9/2015
