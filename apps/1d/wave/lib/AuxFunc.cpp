@@ -60,8 +60,8 @@ void AuxFunc(const dTensor1& xpts, dTensor2& auxvals)
         // Initialize u^{n-1}
         // To avoid taking a single step using an explicit method, we will 
         // set u(x, -dt)
-        auxvals.set(i, 2,     exp( -25.0*pow(x+0.25-c*dt, 2.0) ) + 
-                exp( -25.0*pow(x-0.25+c*dt, 2.0) )       );
+        auxvals.set(i, 2,     exp( -25.0*pow(x+0.25+c*dt, 2.0) ) + 
+                exp( -25.0*pow(x-0.25-c*dt, 2.0) )       );
 
         // We will also create an auxiliary work array for evaluating 
         // successive convoutions efficiently
@@ -73,5 +73,14 @@ void AuxFunc(const dTensor1& xpts, dTensor2& auxvals)
         // in applying boundary conditions
         auxvals.set(i, 4, x);
     }
+
+
+    // For appliying outflow boundary conditions, we need a time 
+    // history of two boundary constants
+    // We will store these in the aux vars.
+    // In particular, A_n = I[0] and B_n = I[n+2]
+    auxvals.set(0, 3, 0.0);
+    auxvals.set(numpts+1, 3, 0.0);
+
 
 }

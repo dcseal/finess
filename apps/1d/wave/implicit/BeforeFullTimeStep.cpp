@@ -9,7 +9,7 @@ using namespace std;
 
 // Function prototypes
 void applyBoundaryCondition( 
-        dTensorBC2& aux, 
+        const dTensorBC2& aux, 
         double alpha,   double beta, 
         double& A_n,    double& B_n );
 
@@ -55,18 +55,6 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
     double h    = global_ini_params.get_dx();       // Grid size
 
 
-    // Poor man's debugging
-    // Print out grid
-    if( Qold.get_t() == 0.0 )   
-    {
-        cout << "n=" << n << "; xa=" << xa << "; xb=" << xb << 
-            "; c=" << c << "; h=" << h << endl;
-
-        for( int ia = 1; ia<=aux.getsize(1); ia++ )
-            cout << "x[i] for i=" << ia << " is " << 
-                aux.get(ia, 4) << endl;
-    }
-
 
     // Some method-specific parameters (see [1] for details)
     // TODO: Move these to IniParams since they are used in several
@@ -78,8 +66,9 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
     // Some temporary storage
     int     ia      = 0;    // Loop inex
     double  u_nxt   = 0.0;  // Used to store solution at t^{n+1}
-    double  A_n     = 0.0;  // For applying boundary conditions
-    double  B_n     = 0.0;    
+    // For applying boundary conditions
+    double  A_n     = aux.get(0, 3);
+    double  B_n     = aux.get(n+2, 3);
 
 
     // Implicit wave solver implementation
@@ -92,8 +81,10 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
     // Step 2: 
     // Apply boundary conitions
     // Note: only outflow boundary conditions available currently
-    A_n = 0.0; B_n = 0.0;
     applyBoundaryCondition( aux, alpha, beta, A_n, B_n );
+    // Store boundary constants for use at next time step
+    aux.set(0, 3, A_n);
+    aux.set(n+2, 3, B_n);
 
 
     // Step 3:
@@ -111,6 +102,11 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
     }
 
 
+    // Copy solution to the state variables
+    for( ia=1; ia<=n+1; ia++ )
+        qvals.set( ia, 1, aux.get(ia, 1) );
+
+
     // Print out error in computed solution
     // Note: This is possible since we are simulating a manufactured
     // solution
@@ -121,7 +117,7 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
     double  t           =   Qnew.get_t() + dt;  // current time
     for( ia=1; ia<=n+1; ia++ )  {
         error = abs( 
-                aux.get(ia, 1) - 
+                qvals.get(ia, 1) - 
                 (   exp( -25.0*pow(aux.get(ia,4)+0.25-c*t, 2.0) ) + 
                     exp( -25.0*pow(aux.get(ia,4)-0.25+c*t, 2.0) )   )
                 );
@@ -141,7 +137,7 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
 // See [1] for details. This implements second order accurate outflow
 // boundary conditions
 void applyBoundaryCondition( 
-        dTensorBC2& aux, 
+        const dTensorBC2& aux, 
         const double alpha,   const double beta, 
         double& A_n,    double& B_n )   
 {
@@ -189,7 +185,6 @@ void applyBoundaryCondition(
                     ( pow(1.0-Gamma_0,2.0) - pow(mu*Gamma_0,2.0) );
     B_n     =       ( (1.0-Gamma_0)*w_b + mu*Gamma_0*w_a ) / 
                     ( pow(1.0-Gamma_0,2.0) - pow(mu*Gamma_0,2.0) );                                
-
 
 }
 
