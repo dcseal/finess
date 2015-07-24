@@ -88,9 +88,6 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         // Apply boundary conitions
         // Note: only outflow boundary conditions available currently
         applyBoundaryCondition( aux, alpha, beta, A_n, B_n );
-        // Store boundary constants for use at next time step
-        aux.set(0, 3, A_n);
-        aux.set(n+2, 3, B_n);
     
     
         // Step 3:
@@ -112,6 +109,9 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         for( ia=1; ia<=n+1; ia++ )
             qvals.set( ia, 1, aux.get(ia, 1) );
     
+        // Store boundary constants for use at next time step
+        aux.set(0, 3, A_n);
+        aux.set(n+2, 3, B_n);
     
         // Print out error in computed solution
         // Note: This is possible since we are simulating a manufactured
@@ -180,6 +180,7 @@ void applyBoundaryCondition(
     // The boundary conditions are applied by solving a 2x2 system
     // These are the constants which define the right-hand side of the
     // system
+    
     w_a     =   exp(-beta)*A_n + 
                 Gamma_0*aux.get(1,3) +  // Gamma_0 * I[0]
                 Gamma_1*aux.get(1,1) +  // Gamma_1 * u[0]
@@ -450,7 +451,7 @@ void fastConvolve(
 
 
     // Copy computed I back to aux. variable structure
-    for( k=0; k<N; k++ )
+    for( k=0; k<=N; k++ )
         aux.set( k+1, 3, I[k] );
 
 
