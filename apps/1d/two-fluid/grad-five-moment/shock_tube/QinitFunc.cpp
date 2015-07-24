@@ -51,7 +51,7 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     double const& left_u3_e    = 0.0;
     double const& left_press_e = 0.5;
 
-    double const& left_B1      = 0.75;
+    double const& left_B1      = 0.0;
     double const& left_B2      = 1.0;
     double const& left_B3      = 0.0;
     double const& left_E1      = 0.0;
@@ -72,7 +72,7 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     double const& rght_u3_e    = 0.0;
     double const& rght_press_e = 0.05;
 
-    double const& rght_B1      = 0.75;
+    double const& rght_B1      = 0.0;
     double const& rght_B2      =-1.0;
     double const& rght_B3      = 0.0;
     double const& rght_E1      = 0.0;
