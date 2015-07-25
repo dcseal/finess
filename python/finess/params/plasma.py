@@ -1,4 +1,7 @@
 """Export parameter_list, accessor_list, check_list for two-fluid plasma equations.
+
+These (free) parameters are the same identified as in ``Approximate Riemann
+solver for the two-fluid plasma model'', U. Shumlak, J. Loverich, JCP 2003.
 """
 
 from __future__ import absolute_import
@@ -20,14 +23,14 @@ def _parameters_accessors_checks():
     parameters.append(model_name)		       
 
     # User supplied parameters that define electron-ion masses
-    ion_mass = Parameter(variable_name = "ion_mass",
-                      section = "plasma",
-                      name = "ion_mass",
-                      type_ = "double",
-                      default_value = 1.0
-                      )
-    parameters.append(ion_mass)
-    checks.append(CheckGreaterThan(ion_mass, 0.0))
+#   ion_mass = Parameter(variable_name = "ion_mass",
+#                     section = "plasma",
+#                     name = "ion_mass",
+#                     type_ = "double",
+#                     default_value = 1.0
+#                     )
+#   parameters.append(ion_mass)
+#   checks.append(CheckGreaterThan(ion_mass, 0.0))
 
     mass_ratio = Parameter(variable_name = "mass_ratio",
                       section = "plasma",
@@ -39,10 +42,30 @@ def _parameters_accessors_checks():
     checks.append( CheckGreaterThan(mass_ratio, 1.0) )
 
     # Derived parameter: electron mass
-    electron_mass = DerivedParameter(variable_name = "elc_mass",
-                          type_    = "double",
-        defining_expression_in_cpp = """this->ion_mass/this->mass_ratio""")
-    parameters.append(electron_mass)
+#   electron_mass = DerivedParameter(variable_name = "elc_mass",
+#                         type_    = "double",
+#       defining_expression_in_cpp = """this->ion_mass/this->mass_ratio""")
+#   parameters.append(electron_mass)
+
+
+    debye_length = Parameter( variable_name = "debye_length",
+                      section = "plasma",
+                      name = "debye_length",
+                      type_ = "double",
+                      default_value = 1.0
+                      )
+    parameters.append(debye_length)
+    checks.append( CheckGreaterThan(debye_length, 0.0) )
+
+    larmor_radius = Parameter( variable_name = "larmor_radius",
+                      section = "plasma",
+                      name = "larmor_radius",
+                      type_ = "double",
+                      default_value = 1.0
+                      )
+    parameters.append(larmor_radius)
+    checks.append( CheckGreaterThan(larmor_radius, 0.0) )
+
 
     # Parameters used for Perfectly Hyperbolic Maxwell (PHM)
     cc_factor = Parameter(variable_name = "cc_factor",
