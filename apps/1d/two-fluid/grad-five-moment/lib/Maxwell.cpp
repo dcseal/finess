@@ -28,21 +28,15 @@ void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor2& flux)
         const double& E2    = Q.get(j,n_E2 );
         const double& E3    = Q.get(j,n_E3 );
     
-        // Note: We will set the flux to zero since we are going to be
-        // solving the Maxwell equations implicitly
         // 1-component of flux function
         //
         flux.set(j,n_B1 ,  0. );
-        //flux.set(j,n_B2 , -E3 );
-        flux.set(j,n_B2 ,  0. );
-        //flux.set(j,n_B3 ,  E2 );
-        flux.set(j,n_B3 ,  0. );
+        flux.set(j,n_B2 , -E3 );
+        flux.set(j,n_B3 ,  E2 );
 
         flux.set(j,n_E1 ,  0. );
-        //flux.set(j,n_E2 ,  cs_light_squared*B3 );
-        flux.set(j,n_E2 ,  0. );
-        //flux.set(j,n_E3 , -cs_light_squared*B2 );
-        flux.set(j,n_E3 ,  0. );
+        flux.set(j,n_E2 ,  cs_light_squared*B3 );
+        flux.set(j,n_E3 , -cs_light_squared*B2 );
     
         // 2-component of flux function
         //
@@ -59,10 +53,9 @@ void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor2& flux)
         {
           const double& psi   = Q.get(j,n_psi);
 
-          // TODO: No flux cleaning for now
           // components of 1-component of flux function involving psi
-          //flux.set(j,n_B1 ,  psi );
-          //flux.set(j,n_psi,  cp_speed_squared*B1 );
+          flux.set(j,n_B1 ,  psi );
+          flux.set(j,n_psi,  cp_speed_squared*B1 );
 
           // components of 2-component of flux function involving psi
 //        flux.set(j,n_B2 ,2,  psi );
@@ -71,8 +64,7 @@ void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor2& flux)
         }
         else
         {
-          // TODO: No flux cleaning for now
-          //flux.set(j,n_B1 ,  0. );
+          flux.set(j,n_B1 ,  0. );
 //        flux.set(j,n_B2 ,2,  0. );
         }
 
@@ -84,9 +76,8 @@ void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor2& flux)
 
               const double& phi   = Q.get(j,n_phi);
               // components of 1-component of flux function involving phi
-              // TODO: No flux cleaning for now
-              //flux.set(j,n_E1 ,  phi );
-              //flux.set(j,n_phi,  cp_speed_squared*E1);
+              flux.set(j,n_E1 ,  phi );
+              flux.set(j,n_phi,  cp_speed_squared*E1);
 
               // components of 2-component of flux function involving phi
 //            flux.set(j,n_E2 ,2,  phi );
@@ -95,17 +86,15 @@ void MaxwellFluxFunc( int n_offset, const dTensor2& Q, dTensor2& flux)
           }
           else
           {
-              // TODO: No flux cleaning for now
-              //flux.set(j,n_E1 , 0.);
-              //flux.set(j,n_phi, 0.);
+              flux.set(j,n_E1 , 0.);
+              flux.set(j,n_phi, 0.);
 //            flux.set(j,n_E2 ,2, 0.);
 //            flux.set(j,n_phi,2, 0.);
           }
         }
         else
         {
-              // TODO: No flux cleaning for now
-              //flux.set(j,n_E1 , 0.);
+              flux.set(j,n_E1 , 0.);
 //            flux.set(j,n_E2 ,2, 0.);
         }
     }
