@@ -8,6 +8,7 @@ include $(FINESS)/apps/1d/two-fluid/grad-five-moment/lib/Makefile.defs
 
 # overridden library objects
 #
+BeforeFullTimeStep    = BeforeFullTimeStep
 
 # place to add object modules
 #
@@ -19,7 +20,7 @@ TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/1d/two-fluid/grad-five-moment/lib/
 
 ### targets ###
 
-include $(FINESS)/lib/2d/Makefile.targets
+include $(FINESS)/lib/1d/Makefile.targets
 
 ### DO NOT remove this line - make depends on it ###
 
