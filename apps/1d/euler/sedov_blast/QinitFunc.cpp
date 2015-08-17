@@ -33,13 +33,14 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
         double rho,press,u1,u2,u3,energy;
 
         // Delta function at x=0.
-        if( fabs(x) < 1e-12 )
+        if( x < global_ini_params.get_dx() && x >=0. )
         {
             rho   = 1.0;
             u1    = 0.0;
             u2    = 0.0;
             u3    = 0.0;
             energy = 3200000.0/global_ini_params.get_dx();
+            std::cout<<"the energy in the center = "<<energy<<" x = "<<x<<"\n";
         }
         else
         {
