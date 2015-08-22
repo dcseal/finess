@@ -2,6 +2,7 @@
 #include "StateVars.h"
 #include <iostream>
 #include <cmath>
+#include <string>
 #include "IniParams.h"
 #include "Components.h"
 
@@ -307,58 +308,24 @@ void getSourceTerm(
 }
 
 
-// Function to impose (outflow) boundary conditions
+// Function to impose homogeneous Neumann boundary conditions
 // TODO: Other boundary conditions
 // See [1] for details. This implements second order accurate outflow
 // boundary conditions
 void applyBdryCdn( 
         const int n, 
         const double I[], 
-        const double u[], const double u_prev[], 
-        const double alpha,     const double beta, 
-        double& A_n, double& B_n, 
-        const double xa, const double xb )
+        const double alpha, const double mu, 
+        double& A_n, double& B_n )
 {
 
-
     // Temporary variables
-    // For definitions of these, see [1]
-    double  mu  = exp( -alpha*(xb-xa) );
-    double  w_a = 0.0; 
-    double  w_b = 0.0;
-    double  gamma_0 =   ( 1.0 - exp(-beta) )/( pow(beta,2.0) ) - 
-                        ( 1.0 + exp(-beta) )/( 2.0*beta );
-    double  gamma_1 =   -2.0*( 1.0 - exp(-beta) )/( pow(beta,2.0) )
-                            + (2.0/beta)*exp(-beta) + 1.0;
-    double  gamma_2 =   ( 1.0 - exp(-beta) )/( pow(beta,2.0) ) + 
-                        ( 1.0 - 3.0*exp(-beta) )/(2.0*beta) - 
-                        exp(-beta);
-    
-    double  Gamma_0 =   0.5*gamma_0*pow(beta,2.0);
-    double  Gamma_1 =   gamma_1 - gamma_0*( pow(beta,2.0) - 2.0 );
-    double  Gamma_2 =   gamma_2 - gamma_0;
+    // See [1] for their definitions
+    double w_a = I[0] + 2.0/alpha;
+    double w_b = I[n] + 2.0/alpha;
 
-
-
-    // The boundary conditions are applied by solving a 2x2 system
-    // These are the constants which define the right-hand side of the
-    // system
-    
-    w_a     =   exp(-beta)*A_n + 
-                Gamma_0*I[0] +      // Gamma_0 * I[0]
-                Gamma_1*u[0] +      // Gamma_1 * u[0]
-                Gamma_2*u_prev[0];  // Gamma_2 * u_prev[0]
-
-    w_b     =   exp(-beta)*B_n + 
-                Gamma_0*I[n] +      // Gamma_0 * I[n]     
-                Gamma_1*u[n] +      // Gamma_1 * u[n]     
-                Gamma_2*u_prev[n];  // Gamma_2 * u_prev[n]
-                                        
-    // This is where we solve the system
-    A_n     =       ( (1.0-Gamma_0)*w_a + mu*Gamma_0*w_b ) / 
-                    ( pow(1.0-Gamma_0,2.0) - pow(mu*Gamma_0,2.0) );
-    B_n     =       ( (1.0-Gamma_0)*w_b + mu*Gamma_0*w_a ) / 
-                    ( pow(1.0-Gamma_0,2.0) - pow(mu*Gamma_0,2.0) );                                
+    A_n     = (w_a + mu*w_b) / (1 - pow(mu, 2.0));
+    B_n     = (w_b + mu*w_a) / (1 - pow(mu, 2.0));
 
 
 }
@@ -415,6 +382,7 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         double beta     = 2.0;
         double nu       = beta*h/(c*dt);
         double alpha    = beta/(c*dt);
+        double mu       = exp( -alpha*(xb-xa) );
     
         // Some temporary storage
         int     ia      = 0;    // Loop inex
@@ -427,9 +395,10 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
 
         // Some more temporary storage
         // TODO: Use auxiliary storage instead
-        double I[n+1], u[n+1], u_prev[n+1];
+        double I[n+1], u[n+1], u_prev[n+1], u_star[n+1];
         for (ia=0; ia<=n; ia++) {
             I[ia] = 0.0; u[ia] = 0.0; u_prev[ia] = 0.0;
+            u_star[ia] = 0.0;
         }
 
         // We will implement out Maxwell solver here
@@ -451,12 +420,9 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
 
         // Step 2: 
         // Apply boundary conitions
-        // Note: only outflow boundary conditions available currently
+        // Note: only homogeneous Neumann boundary conditions available currently
         // TODO: Use auxiliary storage for efficiency
-        A_n = aux.get(1, 14);        // Boundary constants
-        B_n = aux.get(2, 14);
-        applyBdryCdn( n, I, u, u_prev, 
-                alpha, beta, A_n, B_n, xa, xb );
+        applyBdryCdn( n, I, alpha, mu, A_n, B_n );
 
 
         // Step 3:
@@ -472,9 +438,6 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         aux.set(ia+1, 2, aux.get(ia+1, 1) );
         aux.set(ia+1, 1, u_nxt);
 
-        // Save boundary constants
-        aux.set(1, 14, A_n); 
-        aux.set(2, 14, B_n);
     }
 
 
@@ -492,41 +455,31 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
             u[ia] = aux.get(ia+1, 3);
             u_prev[ia] = aux.get(ia+1, 4);
             I[ia] = 0.0;
+            u_star[ia] = u[ia] + aux.get(ia+1, 15)/(alpha*alpha);
         }
         // Implicit wave solver implementation
         // Step 1: 
         // Apply Green's function of modified Helmholtz operator 
         // (this is implemented in [1] as a fast convolution)
         // TODO: Use auxiliary storage for efficiency
-        fastConvolve(I, u, n, nu);
+        fastConvolve(I, u_star, n, nu);
 
 
         // Step 2: 
         // Apply boundary conitions
-        // Note: only outflow boundary conditions available currently
+        // Note: only homogeneous Neumann boundary conditions available currently
         // TODO: Use auxiliary storage for efficiency
-        A_n = aux.get(3, 14);        // Boundary constants
-        B_n = aux.get(4, 14);
-        applyBdryCdn( n, I, u, u_prev, 
-                alpha, beta, A_n, B_n, xa, xb );
+        applyBdryCdn( n, I, alpha, mu, A_n, B_n );
 
 
         // Step 3:
-        // Compute solution for \phi at time t^{n+1}
+        // Compute solution for A_x at time t^{n+1}
         for (ia=0; ia<=n; ia++)  {
-
-        // Source contribution
-        srcContribution = 0.0;
-        for (ib=1; ib<=n+1; ib++)
-            srcContribution = srcContribution + 
-                aux.get(ib, 15) * exp( -alpha*abs( 
-                        aux.get(ia+1,13)-aux.get(ib,13) ) );
 
         // Solution at t^{n+1}
         u_nxt = -( pow(beta,2.0) - 2.0 )*u[ia] - 
                     u_prev[ia] + 
                     ( pow(beta,2.0)/2.0 )*( I[ia] + 
-                        (c*dt/beta)*srcContribution + 
                         A_n*exp( -alpha*(aux.get(ia+1,13)-xa) ) + 
                         B_n*exp( -alpha*(xb-aux.get(ia+1,13)) ) );
         // Update solution at t^{n-1}
@@ -534,9 +487,6 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         aux.set(ia+1, 4, aux.get(ia+1, 3) );
         aux.set(ia+1, 3, u_nxt);
 
-        // Save boundary constants
-        aux.set(3, 14, A_n); 
-        aux.set(4, 14, B_n);
     }
 
 
@@ -548,42 +498,31 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
             u[ia] = aux.get(ia+1, 6);
             u_prev[ia] = aux.get(ia+1, 7);
             I[ia] = 0.0;
+            u_star[ia] = u[ia] + aux.get(ia+1, 16)/(alpha*alpha);
         }
         // Implicit wave solver implementation
         // Step 1: 
         // Apply Green's function of modified Helmholtz operator 
         // (this is implemented in [1] as a fast convolution)
         // TODO: Use auxiliary storage for efficiency
-        fastConvolve(I, u, n, nu);
+        fastConvolve(I, u_star, n, nu);
 
 
         // Step 2: 
         // Apply boundary conitions
-        // Note: only outflow boundary conditions available currently
+        // Note: only homogeneous Neumann boundary conditions available currently
         // TODO: Use auxiliary storage for efficiency
-        A_n = aux.get(5, 14);        // Boundary constants
-        B_n = aux.get(6, 14);
-        applyBdryCdn( n, I, u, u_prev, 
-                alpha, beta, A_n, B_n, xa, xb );
+        applyBdryCdn( n, I, alpha, mu, A_n, B_n );
 
 
         // Step 3:
-        // Compute solution for \phi at time t^{n+1}
+        // Compute solution for A_y at time t^{n+1}
         for (ia=0; ia<=n; ia++)  {
-
-        // Source contribution
-        srcContribution = 0.0;
-        for (ib=1; ib<=n+1; ib++)
-            srcContribution = srcContribution + 
-                aux.get(ib, 16) * exp( -alpha*abs( 
-                        aux.get(ia+1,13)-aux.get(ib,13) ) );
-
 
         // Solution at t^{n+1}
         u_nxt = -( pow(beta,2.0) - 2.0 )*u[ia] - 
                     u_prev[ia] + 
                     ( pow(beta,2.0)/2.0 )*( I[ia] + 
-                        (c*dt/beta)*srcContribution + 
                         A_n*exp( -alpha*(aux.get(ia+1,13)-xa) ) + 
                         B_n*exp( -alpha*(xb-aux.get(ia+1,13)) ) );
         // Update solution at t^{n-1}
@@ -591,9 +530,6 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         aux.set(ia+1, 7, aux.get(ia+1, 6) );
         aux.set(ia+1, 6, u_nxt);
 
-        // Save boundary constants
-        aux.set(5, 14, A_n); 
-        aux.set(6, 14, B_n);
     }
 
 
@@ -607,41 +543,31 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
             u[ia] = aux.get(ia+1, 9);
             u_prev[ia] = aux.get(ia+1, 10);
             I[ia] = 0.0;
+            u_star[ia] = u[ia] + aux.get(ia+1, 16)/(alpha*alpha);
         }
         // Implicit wave solver implementation
         // Step 1: 
         // Apply Green's function of modified Helmholtz operator 
         // (this is implemented in [1] as a fast convolution)
         // TODO: Use auxiliary storage for efficiency
-        fastConvolve(I, u, n, nu);
+        fastConvolve(I, u_star, n, nu);
 
 
         // Step 2: 
         // Apply boundary conitions
-        // Note: only outflow boundary conditions available currently
+        // Note: only homogeneous Neumann boundary conditions available currently
         // TODO: Use auxiliary storage for efficiency
-        A_n = aux.get(7, 14);        // Boundary constants
-        B_n = aux.get(8, 14);
-        applyBdryCdn( n, I, u, u_prev, 
-                alpha, beta, A_n, B_n, xa, xb );
+        applyBdryCdn( n, I, alpha, mu, A_n, B_n );
 
 
         // Step 3:
         // Compute solution for \phi at time t^{n+1}
         for (ia=0; ia<=n; ia++)  {
 
-        // Source contribution
-        srcContribution = 0.0;
-        for (ib=1; ib<=n+1; ib++)
-            srcContribution = srcContribution + 
-                aux.get(ib, 16) * exp( -alpha*abs( 
-                        aux.get(ia+1,13)-aux.get(ib,13) ) );
-
         // Solution at t^{n+1}
         u_nxt = -( pow(beta,2.0) - 2.0 )*u[ia] - 
                     u_prev[ia] + 
                     ( pow(beta,2.0)/2.0 )*( I[ia] + 
-                        (c*dt/beta)*srcContribution + 
                         A_n*exp( -alpha*(aux.get(ia+1,13)-xa) ) + 
                         B_n*exp( -alpha*(xb-aux.get(ia+1,13)) ) );
         // Update solution at t^{n-1}
@@ -649,9 +575,6 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         aux.set(ia+1, 10, aux.get(ia+1, 9) );
         aux.set(ia+1, 9, u_nxt);
 
-        // Save boundary constants
-        aux.set(7, 14, A_n); 
-        aux.set(8, 14, B_n);
     }
 
 
@@ -692,7 +615,7 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
 
     // Now, we set the magnetic fields
     // For the 1D problem, the B_x field is unaltered
-
+    // qvals.set(ia, _B1, 0.0 );
     // B_y = -partial_x A_z
     // B_z =  partial_x A_y
         if( ia>1 && ia<n+1 )    {
@@ -703,19 +626,16 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         }
         else if( ia == 1 )      {
             qvals.set(ia, _B2, 
-                   -( -1.5*aux.get(ia, 9) + 2.0*aux.get(ia+1, 9) - 
-                      0.5*aux.get(ia+2, 9) )/h );
+                   -( aux.get(2, 9) - aux.get(1, 9) )/h );
             qvals.set(ia, _B3, 
-                    ( -1.5*aux.get(ia, 6) + 2.0*aux.get(ia+1, 6) - 
-                      0.5*aux.get(ia+2, 6) )/h );
+                    ( aux.get(2, 6) - aux.get(1, 6) )/h );
+ 
         }
         else if( ia == n+1 )    {
             qvals.set(ia, _B2, 
-                   -( 1.5*aux.get(ia, 9) - 2.0*aux.get(ia-1, 9) + 
-                      0.5*aux.get(ia-2, 9) )/h );
+                   -( aux.get(n+1, 9) - aux.get(n, 9) )/h );
             qvals.set(ia, _B3, 
-                    ( 1.5*aux.get(ia, 6) - 2.0*aux.get(ia-1, 6) + 
-                      0.5*aux.get(ia-2, 6) )/h );
+                    ( aux.get(n+1, 6) - aux.get(n, 6) )/h );
         }
 
 

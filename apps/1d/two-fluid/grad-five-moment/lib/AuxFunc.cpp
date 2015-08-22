@@ -1,5 +1,6 @@
 #include "tensors.h"
 #include <iostream>
+#include <cmath>
 
 
 using namespace std; 
@@ -77,15 +78,15 @@ void AuxFunc(const dTensor1& xpts, dTensor2& auxvals)
         // For the vector potential, A_z
         if( x < 6.283185307179586 ) {
             // Left half of domain
-            auxvals.set(i, 9, -x);   // A_z^n    
-            auxvals.set(i, 10, -x);  // A_z^{n-1}
-            auxvals.set(i, 11, -x);  // A_z^{n-2}
+            auxvals.set(i, 9, -x+2.0*M_PI);   // A_z^n    
+            auxvals.set(i, 10, -x+2.0*M_PI);  // A_z^{n-1}
+            auxvals.set(i, 11, -x+2.0*M_PI);  // A_z^{n-2}
         }
         else    {
             // Right half of domain
-            auxvals.set(i, 9, x);   // A_z^n    
-            auxvals.set(i, 10, x);  // A_z^{n-1}
-            auxvals.set(i, 11, x);  // A_z^{n-2}
+            auxvals.set(i, 9, x-2.0*M_PI);   // A_z^n    
+            auxvals.set(i, 10, x-2.0*M_PI);  // A_z^{n-1}
+            auxvals.set(i, 11, x-2.0*M_PI);  // A_z^{n-2}
         }
 
 

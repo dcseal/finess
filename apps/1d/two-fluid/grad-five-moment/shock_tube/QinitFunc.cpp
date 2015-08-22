@@ -43,15 +43,15 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     double const& left_u1_i    = 0.0;
     double const& left_u2_i    = 0.0;
     double const& left_u3_i    = 0.0;
-    double const& left_press_i = 0.5;
+    double const& left_press_i = 5.0E-1;
 
     double const& left_rho_e   = 1.0*elc_mass;
     double const& left_u1_e    = 0.0;
     double const& left_u2_e    = 0.0;
     double const& left_u3_e    = 0.0;
-    double const& left_press_e = 0.5;
+    double const& left_press_e = 5.0E-1;
 
-    double const& left_B1      = 0.0;
+    double const& left_B1      = 0.75;
     double const& left_B2      = 1.0;
     double const& left_B3      = 0.0;
     double const& left_E1      = 0.0;
@@ -64,15 +64,15 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     double const& rght_u1_i    = 0.0;
     double const& rght_u2_i    = 0.0;
     double const& rght_u3_i    = 0.0;
-    double const& rght_press_i = 0.05;
+    double const& rght_press_i = 5.0E-2;
 
     double const& rght_rho_e   = 0.125*elc_mass;
     double const& rght_u1_e    = 0.0;
     double const& rght_u2_e    = 0.0;
     double const& rght_u3_e    = 0.0;
-    double const& rght_press_e = 0.05;
+    double const& rght_press_e = 5.0E-2;
 
-    double const& rght_B1      = 0.0;
+    double const& rght_B1      = 0.75;
     double const& rght_B2      =-1.0;
     double const& rght_B3      = 0.0;
     double const& rght_E1      = 0.0;

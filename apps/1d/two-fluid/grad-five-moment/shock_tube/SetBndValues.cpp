@@ -27,12 +27,12 @@ void SetBndValues( StateVars& Q )
             q.set(i,m, tmp );
         }
 
-        // aux values
-        for (int m=1; m<=maux; m++)
-        {
-            double tmp = aux.get(1,m);
-            aux.set(i,m, tmp );
-        }
+        //// aux values
+        //for (int m=1; m<=maux; m++)
+        //{
+        //    double tmp = aux.get(1,m);
+        //    aux.set(i,m, tmp );
+        //}
     }
     // ***********************************************  
 
@@ -49,12 +49,12 @@ void SetBndValues( StateVars& Q )
             q.set(i,m, tmp );
         }
 
-        // aux values
-        for (int m=1; m<=maux; m++)
-        {
-            double tmp = aux.get(melems,m);
-            aux.set(i,m, tmp );
-        }
+        //// aux values
+        //for (int m=1; m<=maux; m++)
+        //{
+        //    double tmp = aux.get(melems,m);
+        //    aux.set(i,m, tmp );
+        //}
     }
     // ***********************************************
 
