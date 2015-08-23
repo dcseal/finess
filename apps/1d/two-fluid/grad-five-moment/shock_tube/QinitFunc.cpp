@@ -34,8 +34,14 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     // "Approximate Riemann solver for the two-fluid plasma model"
     // for a description of what these parameters are.
     // Note that we have a minor rescaling of the problem here!
-    const double& ion_mass = global_ini_params.get_ion_mass();
-    const double& elc_mass = global_ini_params.get_elc_mass();
+    const double& mass_ratio     = global_ini_params.get_mass_ratio  ();
+    const double& debye_length   = global_ini_params.get_debye_length();
+    const double& larmor_radius  = global_ini_params.get_larmor_radius();
+
+    // Derived parameters
+    const double ion_mass       = 1.0;
+    const double elc_mass       = ion_mass/mass_ratio;
+
 
     // left values
     //
@@ -117,7 +123,6 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     {
 
         double x = xpts.get(i);
-//      double y = xpts.get(i,2);
 
         if( x < 6.283185307179586 )
         {

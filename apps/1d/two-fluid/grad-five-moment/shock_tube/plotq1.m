@@ -21,9 +21,8 @@
 % Model parameters (and derived parameters too)
 gamma      = sscanf(INI.plasma.gamma, '%e');
 mass_ratio = sscanf(INI.plasma.mass_ratio, '%e');
-ion_mass   = sscanf(INI.plasma.ion_mass, '%e');
+ion_mass   = 1.0;
 elc_mass   = ion_mass / mass_ratio;
-
 cs_light   = sscanf(INI.maxwell.cs_light, '%e');
 
 fprintf(1,'    mass ratio = %f  ; speed of light = %f \n', mass_ratio, cs_light );
