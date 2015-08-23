@@ -111,6 +111,7 @@ void AuxFunc(const dTensor1& xpts, dTensor2& auxvals)
         auxvals.set(i, 15, 0.0);
         auxvals.set(i, 16, 0.0);
         auxvals.set(i, 17, 0.0);
+        auxvals.set(i, 18, 0.0);
 
     }
 

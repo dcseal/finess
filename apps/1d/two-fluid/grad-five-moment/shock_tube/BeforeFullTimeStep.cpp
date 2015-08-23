@@ -301,9 +301,18 @@ void getSourceTerm(
         
         // Store the source terms in aux. storage for use by the
         // implicit Maxwell solver
+        // ... for the vector potential
         auxvals.set(i, 15, -J1*one_over_epsilon);
         auxvals.set(i, 16, -J2*one_over_epsilon);
         auxvals.set(i, 17, -J3*one_over_epsilon);
+        // ... for the scalar potential
+        // (q_in_i + q_en_e)/eps_0
+        const double n_i = qvals.get(i, _rho_i)/ion_mass;
+        const double n_e = qvals.get(i, _rho_e)/elc_mass;
+        const double q_i = 1.0;
+        const double q_e = -1.0;
+
+        auxvals.set(i, 18, (n_i*q_i + n_e*q_e)*one_over_epsilon);
     }
 }
 
@@ -393,6 +402,9 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         double  B_n     = 0.0;
     
 
+        getSourceTerm(qvals, aux);        // Evaluate source term
+
+
         // Some more temporary storage
         // TODO: Use auxiliary storage instead
         double I[n+1], u[n+1], u_prev[n+1], u_star[n+1];
@@ -409,13 +421,15 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
         for (ia = 0; ia <= n; ia++) {
             u[ia] = aux.get(ia+1, 1);
             u_prev[ia] = aux.get(ia+1, 2);
+            I[ia] = 0.0;
+            u_star[ia] = u[ia] + aux.get(ia+1, 18)/(alpha*alpha);
         }
         // Implicit wave solver implementation
         // Step 1: 
         // Apply Green's function of modified Helmholtz operator 
         // (this is implemented in [1] as a fast convolution)
         // TODO: Use auxiliary storage for efficiency
-        fastConvolve(I, u, n, nu);
+        fastConvolve(I, u_star, n, nu);
 
 
         // Step 2: 
@@ -441,10 +455,6 @@ void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew )
     }
 
 
-
-
-        double srcContribution = 0.0;
-        getSourceTerm(qvals, aux);        // Evaluate source term
 
 
         // Next, solve a wave equation for the vector potential A
