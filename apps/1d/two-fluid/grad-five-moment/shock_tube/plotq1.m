@@ -25,7 +25,7 @@ ion_mass   = 1.0;
 elc_mass   = ion_mass / mass_ratio;
 cs_light   = sscanf(INI.maxwell.cs_light, '%e');
 
-fprintf(1,'    mass ratio = %f  ; speed of light = %f \n', mass_ratio, cs_light );
+%fprintf(1,'    mass ratio = %f  ; speed of light = %f \n', mass_ratio, cs_light );
 
 % Indices for components
 ind_rho_i     = 1;  %  rho (ion)

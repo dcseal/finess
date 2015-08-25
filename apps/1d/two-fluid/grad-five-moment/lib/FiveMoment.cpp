@@ -95,7 +95,7 @@ void ProjectLeftEig_FiveMoment( int n_offset,
     const double& energy = Q_ave.get(n_N);
     const double  umag2  = (u1*u1 + u2*u2 + u3*u3);
     const double  press  = (gamma-1.0e0)*(energy-0.5e0*rho*umag2);
-    const double  c      = sqrt(gamma*press/rho);
+    const double  c      = sqrt(fabs(gamma*press/rho));
     const double  H      = (energy+press)/rho; 
   
     // Project onto left eigenvectors
