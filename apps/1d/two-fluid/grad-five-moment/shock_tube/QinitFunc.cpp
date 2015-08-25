@@ -145,18 +145,6 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
             qvals.set(i,_E2   , left_E2 );
             qvals.set(i,_E3   , left_E3 );
 
-            // B-field, (psi) and then E-field (phi) cleaning
-//          if(meqn<_psi) continue;
-//          qvals.set(i,_psi  , 0. );
-//          if(meqn<_phi) continue;
-//          qvals.set(i,_phi  , 0. );
-
-//          // entropy tracking
-//          if(meqn >=_entropy_i)
-//          {
-//              qvals.set(i,_entropy_i, left_entropy_i );
-//              qvals.set(i,_entropy_e, left_entropy_e );
-//          }
         }
         else
         {
@@ -179,16 +167,6 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
             qvals.set(i,_E2   , rght_E2 );
             qvals.set(i,_E3   , rght_E3 );
 
-//          if(meqn<_psi) continue;
-//          qvals.set(i,_psi  , 0. );
-//          if(meqn<_phi) continue;
-//          qvals.set(i,_phi  , 0. );
-
-//          if(meqn >=_entropy_i)
-//          {
-//              qvals.set(i,_entropy_i, rght_entropy_i );
-//              qvals.set(i,_entropy_e, rght_entropy_e );
-//          }
         }
     }
 }
