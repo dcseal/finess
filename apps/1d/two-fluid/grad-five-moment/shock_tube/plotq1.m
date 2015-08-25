@@ -55,29 +55,52 @@ J1  = J1_i + J1_e;
 
 figure(1);
 clf;
-pz=plot( xc, qsoln(:,ind_rho_i),'bo');
+pz=plot( xc, qsoln(:,ind_rho_i)/ion_mass,'bo');
 hold on;
-plot( xc, qsoln(:,ind_rho_e),'rx');
+plot( xc, qsoln(:,ind_rho_e)/elc_mass,'rx');
 hold off;
 set(pz,'linewidth',1);
 set(pz,'markersize',8);
 hold off;
 axis on; box on; grid off;
-axis([-0.6 1.6 0 1.1]);
+axis([-0.1 1.1 0 1.1]);
 set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',0:1:15);
 set(gca,'ytick',0:.1:2);
 set(gca,'fontsize',16);
 t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
-legend('ion density', 'electron density');
+legend('ion number density', 'electron number density', 'location', 'NorthEast' );
+
+figure(2);
+clf;
+press_i = (gamma-1).*(qsoln(:,ind_N_i)-0.5*(qsoln(:,ind_M1_i).^2 + qsoln(:,ind_M2_i).^2 + qsoln(:, ind_M3_i).^2)./qsoln(:,ind_rho_i));
+press_e = (gamma-1).*(qsoln(:,ind_N_e)-0.5*(qsoln(:,ind_M1_e).^2 + qsoln(:,ind_M2_e).^2 + qsoln(:, ind_M3_e).^2)./qsoln(:,ind_rho_e));
+pz=plot(xc,press_i, 'bo');
+hold on;
+plot( xc, press_e, 'rx');
+hold off;
+set(pz,'linewidth',1);
+set(pz,'markersize',8);
+hold off;
+%axis on; box on; grid off;
+axis auto;
+%set(gca,'plotboxaspectratio',[1.5 1 1]);
+%set(gca,'xtick',-5:2.5:5);
+%set(gca,'ytick',0:2:12);
+%set(gca,'fontsize',16);
+t1 = title(['Pressure at t = ',num2str(time),'     [FINESS]']); 
+set(t1,'fontsize',16);
 
 % Plot of the electric field
-figure(2);
+figure(5);
 clf;
 pz=plot(xc,qsoln(:,ind_E1),'bo');
 axis on; box on; grid off;
 axis auto;
+t1 = title(['Electric  field at t = ',num2str(time),'     [FINESS]']); 
+set(t1,'fontsize',16);
+
 
 figure(3);
 clf;

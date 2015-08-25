@@ -52,7 +52,6 @@ void SourceTermFunc(const dTensor1& xpts,
     {
 
         double x = xpts.get(i);
-//      double y = xpts.get(i,2);
 
         // Variables
         const double& rho_i    = qvals.get(i,_rho_i);
