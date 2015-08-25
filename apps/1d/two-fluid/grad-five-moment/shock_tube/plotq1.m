@@ -53,20 +53,17 @@ J1_i =  qsoln(:,ind_M1_i) / ion_mass;
 J1_e = -qsoln(:,ind_M1_e) / elc_mass;
 J1  = J1_i + J1_e;
 
-%   u1_i = qsoln(:,5) / q(:,1);
-%   u1_i = qsoln(:,2) / ion_mass;
-
 figure(1);
 clf;
-pz=plot(xc,qsoln(:,ind_rho_i),'bo');
+pz=plot( xc, qsoln(:,ind_rho_i),'bo');
 hold on;
-plot(xc,qsoln(:,ind_rho_e),'rx');
+plot( xc, qsoln(:,ind_rho_e),'rx');
 hold off;
 set(pz,'linewidth',1);
 set(pz,'markersize',8);
 hold off;
 axis on; box on; grid off;
-axis([-0.1 13 0 1.1]);
+axis([-0.6 1.6 0 1.1]);
 set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',0:1:15);
 set(gca,'ytick',0:.1:2);
@@ -75,25 +72,12 @@ t1 = title(['Density at t = ',num2str(time),'     [FINESS]']);
 set(t1,'fontsize',16);
 legend('ion density', 'electron density');
 
+% Plot of the electric field
 figure(2);
 clf;
 pz=plot(xc,qsoln(:,ind_E1),'bo');
-%hold on;
-%plot(xc,qsoln(:,6),'rx');
-%hold off;
-%   set(pz,'linewidth',1);
-%   set(pz,'markersize',8);
-%   hold off;
 axis on; box on; grid off;
 axis auto;
-%axis([-0.1 13 0 1.1]);
-%   set(gca,'plotboxaspectratio',[1.5 1 1]);
-%   set(gca,'xtick',0:1:15);
-%   set(gca,'ytick',0:.1:2);
-%   set(gca,'fontsize',16);
-%   t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
-%   set(t1,'fontsize',16);
-%   legend('ion density', 'electron density');
 
 figure(3);
 clf;
@@ -114,7 +98,6 @@ axis auto;
 set(gca,'fontsize',16);
 t1 = title(['Current at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
-
 
 %   figure(2);
 %   clf;
