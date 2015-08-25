@@ -92,9 +92,9 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     double const left_M2_i = left_rho_i*left_u2_i;
     double const left_M3_i = left_rho_i*left_u3_i;
     //
-    double const left_M1_e = left_rho_i*left_u1_e;
-    double const left_M2_e = left_rho_i*left_u2_e;
-    double const left_M3_e = left_rho_i*left_u3_e;
+    double const left_M1_e = left_rho_e*left_u1_e;
+    double const left_M2_e = left_rho_e*left_u2_e;
+    double const left_M3_e = left_rho_e*left_u3_e;
     //
     double const left_energy_i = left_press_i/(gamma-1.0e0) + 0.5e0*left_rho_i
         *(left_u1_i*left_u1_i + left_u2_i*left_u2_i + left_u3_i*left_u3_i);
@@ -107,9 +107,9 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     double const rght_M2_i = rght_rho_i*rght_u2_i;
     double const rght_M3_i = rght_rho_i*rght_u3_i;
     //
-    double const rght_M1_e = rght_rho_i*rght_u1_e;
-    double const rght_M2_e = rght_rho_i*rght_u2_e;
-    double const rght_M3_e = rght_rho_i*rght_u3_e;
+    double const rght_M1_e = rght_rho_e*rght_u1_e;
+    double const rght_M2_e = rght_rho_e*rght_u2_e;
+    double const rght_M3_e = rght_rho_e*rght_u3_e;
     //
     double const rght_energy_i = rght_press_i/(gamma-1.0e0) + 0.5e0*rght_rho_i
         *(rght_u1_i*rght_u1_i + rght_u2_i*rght_u2_i + rght_u3_i*rght_u3_i);
