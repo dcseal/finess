@@ -124,7 +124,7 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
 
         double x = xpts.get(i);
 
-        if( x < 6.283185307179586 )
+        if( x < 0.5 )
         {
             qvals.set(i,_rho_i,  left_rho_i );
             qvals.set(i,_M1_i ,  left_M1_i );
