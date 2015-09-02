@@ -92,39 +92,52 @@ axis auto;
 t1 = title(['Pressure at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
-% Plot of the electric field
-figure(5);
-clf;
-pz=plot(xc,qsoln(:,ind_E1),'bo');
-hold on;
-plot(xc,qsoln(:,ind_B1),'rx');
-hold off;
-plot(xc,qsoln(:,ind_B2),'go');
-axis on; box on; grid off;
-axis auto;
-t1 = title(['Electric  field at t = ',num2str(time),'     [FINESS]']); 
-set(t1,'fontsize',16);
-
-
+% Plot of second component of magnetic field : B2
 figure(3);
 clf;
-pz=plot(xc, J1, 'bo');
-set(pz,'linewidth',1);
-hold on;
-set(pz,'markersize',8);
-plot(xc, J1_i, 'rx' );
-hold on;
-plot(xc, J1_e, 'go' );
+%pz=plot(xc, qsoln(:,ind_B2), 'bo');
+pz=plot(xc, qsoln(:,ind_B2), 'b-');
+set(pz,'linewidth',3);
+axis on; box on; grid off;
+set(gca,'plotboxaspectratio',[1.5 1 1]);
+set(gca,'fontsize',16);
+set(gca,'xtick',0:0.25:1);
+set(gca,'ytick',-1.5:0.5:1.5);
+axis([0 1 -1.5 1.5]);
+set(gca,'fontsize',16);
+t1 = title(['B2 at t = ',num2str(time),'     [FINESS]']); 
+set(t1,'fontsize',16);
+
+figure(4);
+clf;
+pz=plot( xc, qsoln(:,ind_rho_e)/elc_mass + qsoln(:,ind_rho_i)/ion_mass,'b-');
+set(pz,'linewidth',4);
 hold off;
 axis on; box on; grid off;
-%axis([-0.1 13 0 1.1]);
-axis auto;
-%set(gca,'plotboxaspectratio',[1.5 1 1]);
-%set(gca,'xtick',0:1:15);
-%set(gca,'ytick',0:.1:2);
+axis([-0.01 1.01 0 2.3]);
+set(gca,'plotboxaspectratio',[1.5 1 1]);
+set(gca,'xtick',0:0.2:15);
+set(gca,'ytick',0:0.5:3);
 set(gca,'fontsize',16);
-t1 = title(['Current at t = ',num2str(time),'     [FINESS]']); 
+t1 = title(['Number density at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
+%legend('ion number density', 'electron number density', 'location', 'NorthEast' );
+
+
+
+% Plot of the electric field
+%   figure(5);
+%   clf;
+%   pz=plot(xc,qsoln(:,ind_E1),'bo');
+%   hold on;
+%   plot(xc,qsoln(:,ind_B1),'rx');
+%   hold off;
+%   plot(xc,qsoln(:,ind_B2),'go');
+%   axis on; box on; grid off;
+%   axis auto;
+%   t1 = title(['Electric  field at t = ',num2str(time),'     [FINESS]']); 
+%   set(t1,'fontsize',16);
+
 
 %   figure(2);
 %   clf;

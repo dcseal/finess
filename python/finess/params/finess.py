@@ -151,8 +151,9 @@ def _parameters_accessors_checks():
     
     source_term = Parameter(variable_name = "source_term",
                             section = "finess",
-                            name = "source_term",
-                            type_ = "bool")
+                            name    = "source_term",
+                            type_   = "bool",
+                            default_value = False)
     parameters.append(source_term)
     
     meqn = Parameter(variable_name = "meqn",
