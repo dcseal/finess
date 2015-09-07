@@ -48,7 +48,7 @@ void QinitFunc(const dTensor1& xpts,
         double x = xpts.get(i);
         double rho,u1,u2,u3,press,B1,B2,B3,energy;
 
-        if(x<0.0e0)
+        if(x<0.5e0)
         {
             rho   =  rhol;
             u1    =  u1l;
