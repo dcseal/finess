@@ -39,17 +39,17 @@ set(gca,'xtick',-1:0.5:1);
 if m == 1      
   set(gca,'ytick',0:0.2:1);
   axis([-1 1 0.1 1.1]);
-  t1 = title(['Density at t = ',num2str(time),'     [DoGPack]']);
+  t1 = title(['Density at t = ',num2str(time),'     [FINESS]']);
 elseif m==6
   set(gca,'ytick',0.72:0.01:0.78);
   axis([-1 1 0.72 0.78]);
-  t1 = title(['B^1(x,t) at t = ',num2str(time),'     [DoGPack]']);
+  t1 = title(['B^1(x,t) at t = ',num2str(time),'     [FINESS]']);
 elseif m==7
   set(gca,'ytick',-1:0.5:1);
   axis([-1 1 -1.1 1.1]);
-  t1 = title(['B^2(x,t) at t = ',num2str(time),'     [DoGPack]']);
+  t1 = title(['B^2(x,t) at t = ',num2str(time),'     [FINESS]']);
     else
-      t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [DoGPack]']);
+      t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [FINESS]']);
 end
 set(t1,'fontsize',16);
     
@@ -68,6 +68,6 @@ hold off;
 axis on; box on; grid off;
 set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'fontsize',16);
-t1=title(['Pressure at t = ',num2str(time),'     [DoGPack]']);
+t1=title(['Pressure at t = ',num2str(time),'     [FINESS]']);
 set(t1,'fontsize',16);
 axis([-1 1 0 1.05]);
