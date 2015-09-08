@@ -27,14 +27,16 @@ hold off;
 axis on; box on; grid off;
 set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'fontsize',16);
-t1 = title(['Height at t = ',num2str(time),'     [DoGPack]']);
+t1 = title(['Height at t = ',num2str(time),'     [FINESS]']);
 axis([0 1 0.75 3.25]);
 set(gca,'xtick',0:0.25:1);
 set(gca,'ytick',0:1:3);
 set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(t1,'fontsize',16);
 
-%% Add in the exact solution:
+%% ---------------------------- %%
+%% Add in the exact solution
+%% ---------------------------- %%
 
 % left values:
 ul = 0.;
@@ -91,23 +93,24 @@ hold off;
 axis on; box on; grid off;
 set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'fontsize',16);
-t1 = title(['hu^1(x,t) at t = ',num2str(time),'     [DoGPack]']);  
+t1 = title(['hu^1(x,t) at t = ',num2str(time),'     [FINESS]']);  
 axis([0 1 -0.2 1.6]);
 set(gca,'xtick',0:0.25:1);
 set(gca,'ytick',0:0.5:1.5);
 set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(t1,'fontsize',16);
 
-figure(3);
-clf;
+%   Plot of characteristic variables u\pm sqrt(h).
+%   figure(3);
+%   clf;
 
-h = qsoln(:,1);
-u = qsoln(:,2)./h;
+%   h = qsoln(:,1);
+%   u = qsoln(:,2)./h;
 
-pz=plot(xc, u + 2.*sqrt(h), 'k-' );
-hold on;
-pz=plot(xc, u - 2.*sqrt(h), 'r-' );
-hold on;;
+%   pz=plot(xc, u + 2.*sqrt(h), 'k-' );
+%   hold on;
+%   pz=plot(xc, u - 2.*sqrt(h), 'r-' );
+%   hold on;;
 
 %   set(pz,'markersize',8);
 %   set(pz,'linewidth',1);
@@ -115,7 +118,7 @@ hold on;;
 %   axis on; box on; grid off;
 %   set(gca,'plotboxaspectratio',[1.5 1 1]);
 %   set(gca,'fontsize',16);
-%   t1 = title(['hu^1(x,t) at t = ',num2str(time),'     [DoGPack]']);  
+%   t1 = title(['hu^1(x,t) at t = ',num2str(time),'     [FINESS]']);  
 %   axis([0 1 -0.2 1.6]);
 %   set(gca,'xtick',0:0.25:1);
 %   set(gca,'ytick',0:0.5:1.5);
