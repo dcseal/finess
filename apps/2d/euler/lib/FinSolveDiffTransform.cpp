@@ -194,6 +194,8 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             }
 
 
+            Qnew.set_t( Qnew.get_t() + dt );
+
             // Perform any extra work required:
             AfterStep(dt, Qnew);
             // ---------------------------------------------------------
