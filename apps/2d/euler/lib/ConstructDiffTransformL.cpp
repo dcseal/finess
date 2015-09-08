@@ -28,7 +28,6 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
     const double ylow  = global_ini_params.get_ylow();
     double const gamma = global_ini_params.get_gamma();
 
-
     const int mpts_sten       = global_ini_params.get_space_order(); assert_eq( mpts_sten%2, 1 );
 
     const int mbc_small       = (mbc+1)/2;
@@ -49,16 +48,8 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
     else
         setGaussPoints1d( w1d, x1d );
 
-
-        dTensor4 Gs( 3, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
-        dTensor4 R( 1,  MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
-        dTensor4 G2r( 3, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
-        dTensor4 G1r( 2, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
-        dTensor4 Ge( 2, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
-        dTensor4 P( 1,  MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
-
-
-const int ndim = 2;
+    // Number of dimensions
+    const int ndim = 2;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
@@ -66,7 +57,7 @@ const int ndim = 2;
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
     for( int j = 1-mbc_small; j <= my+mbc_small; j++ )
     {
-
+        
         // Physical location for this current value:
         dTensor2 xpts( 1, ndim );
         xpts.set( 1, 1, xlow + double(i)*dx - 0.5*dx );
@@ -75,8 +66,6 @@ const int ndim = 2;
         // Save the flux function:
         dTensor3 qvals ( meqn, mpts_sten, mpts_sten );
         qvals.setall(0.0);
-        //dTensor2 qvalsx ( meqn, mpts_sten );
-        //dTensor2 qvalsy ( meqn, mpts_sten );
 
         for( int m=1; m <= meqn; m++ )
         {
@@ -86,9 +75,9 @@ const int ndim = 2;
                int s2 = -half_mpts_sten+1;
                for( int r = 1; r <= mpts_sten; r++ )
                {
-                qvals.set( m, r,k, q.get( i+s2, j+s1, m ) );
-//                printf("here %f %d %d %d \n",q.get( i+s2, j+s1, m ),i+s2,j+s1,m);
-                s2++;
+                   qvals.set( m, r,k, q.get( i+s2, j+s1, m ) );
+                   // printf("here %f %d %d %d \n",q.get( i+s2, j+s1, m ),i+s2,j+s1,m);
+                   s2++;
                }
                s1++;
             }
@@ -98,10 +87,19 @@ const int ndim = 2;
         // Storage for local derivatives:
         dTensor3 qderivs ( meqn, MAX_DERIVS, MAX_DERIVS );
         qderivs.setall(0.0);
+
         // Compute a FD approximation to the derivatives:
         // Central difference routine (depends on spatial order!)
         void (*CentralDifferences2D)( double dx, double dy, const dTensor3& f, dTensor3& fderivs) = GetCentralDifferences2D();
         CentralDifferences2D( dx, dy, qvals, qderivs );
+
+        // These need to be allocated here in order to be thread safe
+        dTensor4 Gs  ( 3, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
+        dTensor4 R   ( 1, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
+        dTensor4 G2r ( 3, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
+        dTensor4 G1r ( 2, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
+        dTensor4 Ge  ( 2, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
+        dTensor4 P   ( 1, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
 
         // Initialize all arrays to zero (maybe done already...i should check the constructor)
         Gs.setall( 0. );
@@ -112,7 +110,6 @@ const int ndim = 2;
         P.setall ( 0. );
 
 
-
         // Save all of the "zeroth" time derivatives.
         dTensor4 Q_mixed_derivs( meqn, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
         Q_mixed_derivs.setall(0.);
@@ -120,13 +117,17 @@ const int ndim = 2;
         {
             for( int hx=1; hx <= MAX_DERIVS; hx++ )
             for( int hy=1; hy <= MAX_DERIVS; hy++ )
-            {   double x1=xpts.get(1,1);double y1=xpts.get(1,1);double deriv1=1.0;
+            {   
+                double x1     = xpts.get(1,1);
+                double y1     = xpts.get(1,1);
+                double deriv1 = 1.0;
+
                 //Q_mixed_derivs.set( me, hx,hy, 1,qderivs.get(me, hx,hy)/(factorial[hx-1]*factorial[hy-1]) );
                 //No need to do anything here because we have pulled division by the factorial into the central differences code.
-                Q_mixed_derivs.set( me, hx,hy, 1,qderivs.get(me, hx,hy) );
+                Q_mixed_derivs.set( me, hx,hy, 1, qderivs.get(me, hx,hy) );
+
             }
         }
-
 
         //Need to deal with k=0 specially because of the 1/rho term...
         for(int k=0;k<1;k++)
@@ -154,31 +155,32 @@ const int ndim = 2;
 
           R.set( 1, 1,1, 1, 1.0/(Q_mixed_derivs.get(1,1,1,1)) );
 
-          //Populate time derivatives of 1/rho...
+          // Populate time derivatives of 1/rho...
           for( int hx=0; hx < MAX_DERIVS; hx++ )
           for( int hy=0; hy < MAX_DERIVS; hy++ )
           {
                 if(hx+hy+k>0)
                 {
-                double tmp = 0.0;
-                R.set(1,hx+1,hy+1,k+1,0.0);
-                for( int rx=0; rx <= hx; rx++ )
-                for( int ry=0; ry <= hy; ry++ )
-                for( int s=0; s <= k; s++ )
-                {
-                      tmp += Q_mixed_derivs.get( 1, rx+1,ry+1, s+1)*R.get(1, hx+1-rx,hy+1-ry, k+1-s );
-                }
-                tmp *=-1.0/(Q_mixed_derivs.get(1,1,1,1));
-                R.set( 1, hx+1,hy+1, k+1, tmp );
+                    double tmp = 0.0;
+                    R.set(1,hx+1,hy+1,k+1,0.0);
+                    for( int rx=0; rx <= hx; rx++ )
+                    for( int ry=0; ry <= hy; ry++ )
+                    for( int s=0; s <= k; s++ )
+                    {
+                        tmp += Q_mixed_derivs.get( 1, rx+1,ry+1, s+1)*R.get(1, hx+1-rx,hy+1-ry, k+1-s );
+                    }
+                    tmp *=-1.0/(Q_mixed_derivs.get(1,1,1,1));
+                    R.set( 1, hx+1,hy+1, k+1, tmp );
                 }
           }
-          //populate the time derivatives of (rho u)^2/rho and u
+
+          // Populate the time derivatives of (rho u)^2/rho and u
           for( int hx=0; hx < MAX_DERIVS; hx++ )
           for( int hy=0; hy < MAX_DERIVS; hy++ )
           {
-                double tmp1 = 0.0;
-                double tmp2 = 0.0;
-                double tmp3 = 0.0;
+                double tmp1  = 0.0;
+                double tmp2  = 0.0;
+                double tmp3  = 0.0;
                 double tmp11 = 0.0;
                 double tmp12 = 0.0;
                 for( int rx=0; rx <= hx; rx++ )
@@ -207,7 +209,7 @@ const int ndim = 2;
                 P.set( 1, hx+1,hy+1, k+1, tmp );
           }
        
-          //populate time derivatives of energy equation flux...
+          // Populate time derivatives of energy equation flux...
           for( int hx=0; hx < MAX_DERIVS; hx++ )
           for( int hy=0; hy < MAX_DERIVS; hy++ )
           {
@@ -442,16 +444,25 @@ const int ndim = 2;
 
            }
 
-       }
-        
-
-
-
-        // Now, construct time-averaged flux.  Note that Q_mixed_derivs
-        // already contains a factorial in its definition.  In order to
-        // construct the "time-averaged" version, we need to only divide by a
-        // single extra factor of (k+1).
+        }
+       
+        // ------------------------------------------------------------------ //
+        //
         // Construct the time-averaged flux.
+        //
+        // Now, construct time-averaged flux by computing a numerical
+        // approximation to the integral of the flux function, given a
+        // space-time expansion of the conserved variables.  By computing this
+        // term, the scheme stays automatically conservative.
+        //
+        // Note that Q_mixed_derivs already contains a factorial in its 
+        // definition.  In order to
+        // construct the "time-averaged" version, we need to only divide by a
+        // single extra factor of (k+1).  
+        //
+        // ------------------------------------------------------------------ //
+
+        // 1nd-component of flux function : F in q_t + F_x + G_y = Psi
         double rho_ta_flux  = 0.;
         double u1_ta_flux   = 0.;
         double u2_ta_flux   = 0.;
@@ -477,23 +488,28 @@ const int ndim = 2;
 
                 //the function that gives the flux for the energy equation
                 Ge1 += ( pow(0.5*( 1.0 + x1d.get(mq) ), k) )*Ge.get( 1, 1,1, k+1 ); 
-            //{printf(" here rho=%le, rhou1=%le, rhou2=%le, P1=%le,E=%le \n",rho,ru1,ru2,P1,E);}
+                //{printf(" here rho=%le, rhou1=%le, rhou2=%le, P1=%le,E=%le \n",rho,ru1,ru2,P1,E);}
+
             }
-        //printf("here F1=%le, F2=%le, F3=%le, F5=%le \n",rho_ta_flux,u1_ta_flux,u2_ta_flux,E_ta_flux);
-          //  printf("THIS %le \n",w1d.get( mq ));
+
+            //printf("here F1=%le, F2=%le, F3=%le, F5=%le \n",rho_ta_flux,u1_ta_flux,u2_ta_flux,E_ta_flux);
+            //  printf("THIS %le \n",w1d.get( mq ));
             rho_ta_flux += (0.5*w1d.get( mq )) * ( ru1 );
             u1_ta_flux  += (0.5*w1d.get( mq )) * ( ru1*ru1/rho+P1);
             u2_ta_flux  += (0.5*w1d.get( mq )) * ( ru1*ru2/rho);
             E_ta_flux   += (0.5*w1d.get( mq )) * (E+P1)*ru1/rho;
-        //printf("here F1=%le, F2=%le, F3=%le, F5=%le \n",rho_ta_flux,u1_ta_flux,u2_ta_flux,E_ta_flux);
+            //printf("here F1=%le, F2=%le, F3=%le, F5=%le \n",rho_ta_flux,u1_ta_flux,u2_ta_flux,E_ta_flux);
+
         }
+
         F.set( i,j, 1, rho_ta_flux ); // flux for density
         F.set( i,j, 2, u1_ta_flux );  // flux for 1-component of momentum
-        F.set( i,j, 3, u2_ta_flux );         // not used in 1D (flux for 2-component of momentum)
-        F.set( i,j, 4, 0.0 );         // not used in 1D (flux for 3-component of momentum)
+        F.set( i,j, 3, u2_ta_flux );  // flux for 2-component of momentum
+        F.set( i,j, 4, 0.0 );         // not used in 1/2D (flux for 3-component of momentum)
         F.set( i,j, 5, E_ta_flux );   // flux for energy
 
 
+        // 2nd-component of flux function : G in q_t + F_x + G_y = Psi
         rho_ta_flux  = 0.;
         u1_ta_flux   = 0.;
         u2_ta_flux   = 0.;
@@ -520,26 +536,22 @@ const int ndim = 2;
                 //the function that gives the flux for the energy equation
                 Ge1 += ( pow(0.5*( 1.0 + x1d.get(mq) ), k) )*Ge.get( 2, 1,1, k+1 ); 
             }
-           // {printf(" here %le %le \n",rho,P1);}
+
+            // {printf(" here %le %le \n",rho,P1);}
             rho_ta_flux += (0.5*w1d.get( mq )) * ( ru2 );
             u1_ta_flux  += (0.5*w1d.get( mq )) * ( ru2*ru1/rho);
             u2_ta_flux  += (0.5*w1d.get( mq )) * ( ru2*ru2/rho+P1);
             E_ta_flux   += (0.5*w1d.get( mq )) * (E+P1)*ru2/rho;
-           // printf("here G1=%le, G2=%le, G3=%le, G5=%le \n",rho_ta_flux,u1_ta_flux,u2_ta_flux,E_ta_flux);
+            // printf("here G1=%le, G2=%le, G3=%le, G5=%le \n",rho_ta_flux,u1_ta_flux,u2_ta_flux,E_ta_flux);
+
         }
 
         G.set( i,j, 1, rho_ta_flux ); // flux for density
         G.set( i,j, 2, u1_ta_flux );  // flux for 1-component of momentum
-        G.set( i,j, 3, u2_ta_flux );         // not used in 1D (flux for 2-component of momentum)
-        G.set( i,j, 4, 0.0 );         // not used in 1D (flux for 3-component of momentum)
+        G.set( i,j, 3, u2_ta_flux );  // flux for 2-component of momentum
+        G.set( i,j, 4, 0.0 );         // not used in 1/2D (flux for 3-component of momentum)
         G.set( i,j, 5, E_ta_flux );   // flux for energy
 
-
-
-
-        }
-
+    }
 
 }
-
-
