@@ -20,7 +20,7 @@ using namespace std;
 // The reason there is an extra awkward parameter, mpoints in here is to keep
 // the same user interface that DoGPack uses.
 //
-void SampleFunctionTypeA( 
+void SampleFunction( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
@@ -132,7 +132,7 @@ void SampleFunctionTypeA(
 // The reason there is an extra awkward parameter, mpoints in here is to keep
 // the same user interface that DoGPack uses.
 //
-void SampleFunctionTypeB( 
+void SampleFunction( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 

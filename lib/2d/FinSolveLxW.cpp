@@ -123,7 +123,6 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
             SetBndValues(Qnew);
             ConstructIntegratedR( dt, Qnew, smax, F, G);
 
-
             if( global_ini_params.get_mpp_limiter() )
             {
 
@@ -131,6 +130,9 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
                 ConstructLxWL( Qnew, F, G, *fhat, *ghat, Lstar, smax );
        
                 // Construct the low-order flux
+                void ConstructLFL( const double dt, const StateVars& Qnew, 
+                    dTensorBC3& fLF, dTensorBC3& gLF, dTensorBC3& Lstar,
+                    dTensorBC3& smax );
                 ConstructLFL( dt, Qnew, *fLF, *gLF, Lstar, smax );
 
                 // Limit the high-order flux
@@ -152,7 +154,6 @@ void FinSolveLxW( StateVars& Qnew, double tend, double dtv[] )
 //                  qnew.set(i, j, m, qnew.get(i,j,m) + dt*tmp );
 
                 }
-
             }
             else
             { 

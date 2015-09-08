@@ -20,7 +20,7 @@ void D2FluxFunc(const dTensor2& xpts, const dTensor2& Q, const dTensor2& Aux,
     dTensor5& D2flux);
 
 // Used for construcing the flux function
-void SampleFunctionTypeB( 
+void SampleFunction( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
@@ -81,7 +81,7 @@ void ConstructIntegratedR( double dt, const StateVars& Q,
     // If "1st-order" (Euler step), then this completes this function call.
     //
     dTensorBC4 R( mx, my, meqn, 2, mbc );  // place-holder for the flux function
-    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
@@ -556,8 +556,8 @@ void ConstructIntegratedR( double dt,
     //
     dTensorBC4 R1( mx, my, meqn, 2, mbc );  // place-holder for the flux function
     dTensorBC4 R2( mx, my, meqn, 2, mbc );  // place-holder for the flux function
-    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
-    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
 
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;
@@ -639,8 +639,8 @@ void ConstructIntegratedR( double dt,
     //
     dTensorBC4 R1( mx, my, meqn, 2, mbc );  // place-holder for the flux function
     dTensorBC4 R2( mx, my, meqn, 2, mbc );  // place-holder for the flux function
-    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
-    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q1, aux1, R1, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q2, aux2, R2, &FluxFunc );
 
 // TODO  - allow for different sized stencils for different orders (-DS)
 const int mbc_small      = 3;

@@ -372,7 +372,7 @@ void ConstructL( StateVars& Q, dTensorBC3& Lstar, dTensorBC3& smax)
     {
 
         // Compute the source term.
-        SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
+        SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, Lstar, &SourceTermFunc);
 #pragma omp parallel for
         for (int i=1; i<=mx; i++)
         for (int j=1; j<=my; j++)

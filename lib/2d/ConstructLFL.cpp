@@ -13,7 +13,7 @@ using namespace std;
 void FluxFunc(const dTensor2&,const dTensor2&,const dTensor2&,dTensor3&);
 
 // Used for construcing the flux function
-void SampleFunctionTypeB( 
+void SampleFunction( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
@@ -54,7 +54,7 @@ void ConstructLFL( const double dt, const StateVars& Qnew,
 
     // Compute finite difference approximations on all of the conserved
     // variables:
-    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     // Find a global wave speed
     void GlobalWaveSpd( const StateVars& Q, double& alpha1, double& alpha2);
@@ -190,7 +190,7 @@ void ConstructLFL_BCx2( const double dt, StateVars& Qnew,
     // Compute finite difference approximations on all of the conserved
     // variables:
     SetBndValuesX(Qnew);
-    SampleFunctionTypeB( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     // Find a global wave speed
     void GlobalWaveSpd( const StateVars& Q, double& alpha1, double& alpha2);

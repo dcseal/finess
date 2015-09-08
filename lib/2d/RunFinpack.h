@@ -20,7 +20,7 @@ void FinSolveLxW    ( StateVars& Qnew, double tend, double dtv[] );
 void FinSolveMD     ( StateVars& Qnew, double tend, double dtv[] );
 void FinSolveUser   ( StateVars& Qnew, double tend, double dtv[] );
 
-void SampleFunctionTypeA( 
+void SampleFunction( 
     int istart, int iend,
     int jstart, int jend,
     const dTensorBC3& qin, 
