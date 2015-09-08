@@ -1,9 +1,20 @@
-
 #----------------------------------------------------------
-def plotq1(m, meth1, meqn, mx, time, xc, qsoln, auxsoln):
+def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     
     import matplotlib.pyplot as plt
     import numpy as np
+
+    # (Pulled from plotfin1.py)
+    meqn     = ini_params['meqn']
+    maux     = ini_params['maux']
+    nplot    = ini_params['nout']
+
+    # These values can be found by looking at xc, which contains cell centered
+    # values
+    mx       = ini_params['mx']
+    xlow     = ini_params['xlow']
+    xhigh    = ini_params['xhigh']
+
 
     # Exact solution:
     width = 0.5
@@ -13,7 +24,7 @@ def plotq1(m, meth1, meqn, mx, time, xc, qsoln, auxsoln):
         if( abs(x) < width ):
             qex[i] = 1.0
 
-    print(sum( qsoln[:,0] ) )
+#   print(sum( qsoln[:,0] ) )
 
     plt.figure(1)
     plt.clf()
@@ -23,7 +34,7 @@ def plotq1(m, meth1, meqn, mx, time, xc, qsoln, auxsoln):
     plt.plot(xc,qsoln[:,m],'bo')
     plt.plot(xc,qex, '-r', linewidth=2.0)
     tmp1 = "".join(("q(t,x) at t = ",str(time)))
-    title = "".join((tmp1,"     [DoGPack]"))
+    title = "".join((tmp1,"     [FINESS]"))
     plt.title(title)
     plt.draw()
     
