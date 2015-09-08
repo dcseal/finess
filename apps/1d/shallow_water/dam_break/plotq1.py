@@ -1,10 +1,14 @@
 from __future__ import print_function
 
 #----------------------------------------------------------
-def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
+def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     
     import matplotlib.pyplot as plt
     import numpy as np
+
+    meqn     = ini_params['meqn']
+    maux     = ini_params['maux']
+    mx       = ini_params['mx']
 
     # HEIGHT
     m=0

@@ -1,9 +1,14 @@
 
 #----------------------------------------------------------
-def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
+def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     
     import matplotlib.pyplot as plt
     import numpy as np
+
+    # (Pulled from plotfin1.py)
+    meqn     = ini_params['meqn']
+    maux     = ini_params['maux']
+    nplot    = ini_params['nout']
 
     # Exact solution:
     width = 0.5

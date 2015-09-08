@@ -1,5 +1,5 @@
 #----------------------------------------------------------
-def plotq1(m, meth1, meqn, mx, time, xc, qsoln, auxsoln):
+def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     """Default plotting file.
 
     This routine provides a handle that a user can swap out in a single
@@ -11,6 +11,17 @@ def plotq1(m, meth1, meqn, mx, time, xc, qsoln, auxsoln):
     import matplotlib.pyplot as plt
     import numpy as np
     from math import fabs
+
+    # (Pulled from plotfin1.py)
+    meqn     = ini_params['meqn']
+    maux     = ini_params['maux']
+    nplot    = ini_params['nout']
+
+    # These values can be found by looking at xc, which contains cell centered
+    # values
+    mx       = ini_params['mx']
+    xlow     = ini_params['xlow']
+    xhigh    = ini_params['xhigh']
 
     qlow  = min(qsoln[:,m])
     qhigh = max(qsoln[:,m])
