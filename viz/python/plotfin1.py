@@ -200,8 +200,7 @@ if __name__== '__main__':
     line arguments, if any, and then executes plotfin1.  To see a list of
     options, type 
 
-        python3 $FINESS/viz/python/plotfin1.py -h
-
+    $ python3 $FINESS/viz/python/plotfin1.py -h
     """
 
     # Parse input arguments
