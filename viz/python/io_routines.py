@@ -104,5 +104,17 @@ def parse_ini_parameters(parameters_file, params={} ):
     params['xlow' ]       = config.getfloat('grid', 'xlow'  )
     params['xhigh']       = config.getfloat('grid', 'xhigh' )
 
+    # 2D "grid" data
+    if( params['ndims'] > 1 ):
+        params['my' ]         = config.getint  ('grid', 'my'    )
+        params['ylow' ]       = config.getfloat('grid', 'ylow'  )
+        params['yhigh']       = config.getfloat('grid', 'yhigh' )
+
+    # 3D "grid" data
+    if( params['ndims'] > 2 ):
+        params['mz' ]         = config.getint  ('grid', 'mz'    )
+        params['zlow' ]       = config.getfloat('grid', 'zlow'  )
+        params['zhigh']       = config.getfloat('grid', 'zhigh' )
+
     return params
 
