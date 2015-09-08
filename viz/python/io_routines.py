@@ -5,32 +5,6 @@
 # See $(FINESS)/lib/[1-3]d/Output.cpp to see the order in which variables are saved to file.
 
 #----------------------------------------------------------
-def read_params(outputdir):
-    """Routine used for parsing any qhelp.dat file."""
-
-    import string
-
-    params  = {}
-    Fparams = "".join((outputdir,"/qhelp.dat"     ))
-    Rparams = open(Fparams,'r')
-
-    linestring = Rparams.readline()
-    linelist   = string.split(linestring)
-    ndims      = int(linelist[0])
-
-    if(not ndims==1 ):
-        print("\n Incorrect dimension, ndims must be 1. ndims = \n", ndims )
-        return -1
-
-    for k in range(6):
-        linestring = Rparams.readline()
-        linelist   = string.split(linestring)
-        params[linelist[2]] = float(linelist[0])
-
-    Rparams.close()
-    return params
-
-#----------------------------------------------------------
 def read_qfile(mx, meqn, qfile ):
     """Read solution from file.  The format of this file is identical to that
     used by FINESS for output.
@@ -67,3 +41,68 @@ def read_qfile(mx, meqn, qfile ):
     # return time
     return time, qsoln
 #----------------------------------------------------------
+
+
+def parse_ini_parameters(parameters_file, params={} ):
+    """Parse a parameters.ini file.
+
+    This function parses an input file parameters.ini and returns a dictionary
+    containing key-value pairs for each required object in a DoGPack
+    parameters.ini file.
+
+    TODO - test for errors on checking these files - read in from the default
+    parameters file if that object is missing.
+
+    Input
+    -----
+
+        parameters_file - a string pointing to a valid parameters.ini file.
+
+    Returns
+    -------
+
+        params - a dictionary containing key-value pairs.  If params already
+        exists as a dictionary, this routine will add new keys.
+
+    TODO - this should be rewritten to be consistent with the parameters that
+    $FINESS/python/finess/params defines.
+    """
+
+    import ConfigParser
+
+    config = ConfigParser.RawConfigParser()
+    config.read( parameters_file )
+
+    # TODO - make sure this is consistent with the code generation software as
+    # well.  There should be a clear way to do this.  -DS 9/8/2015
+
+    params['ndims']       = config.getint  ('finess', 'ndims'       )
+    params['nout']        = config.getint  ('finess', 'nout'        )
+    params['tfinal']      = config.getfloat('finess', 'tfinal'      )
+    params['dt_init']     = config.getfloat('finess', 'initial_dt'  )
+    params['dt_max']      = config.getfloat('finess', 'max_dt'      )
+    params['cfl_max']     = config.getfloat('finess', 'max_cfl'     )
+    params['cfl_des']     = config.getfloat('finess', 'desired_cfl' )
+    params['nv']          = config.getint  ('finess', 'nv'          )
+
+    params['time_stepping_method'] = config.get('finess', 'time_stepping_method' )
+    params['space_order'] = config.getint     ('finess', 'space_order' )
+    params['time_order']  = config.getint     ('finess', 'time_order'  )
+    params['mcapa']       = config.getint     ('finess', 'mcapa'       )
+    params['maux']        = config.getint     ('finess', 'maux'        )
+    params['source_term'] = config.getboolean ('finess', 'source_term' )
+    params['meqn']        = config.getint     ('finess', 'meqn'        )
+
+    if( config.has_option('finess', 'output_dir' ) ):
+        params['output_dir']  = config.get        ('finess', 'output_dir' )
+    else:
+        params['output_dir']  = 'output'
+
+    # Parse grid data  (Every solver at least has this portion!)
+    params['mx' ]         = config.getint  ('grid', 'mx'    )
+    params['mbc']         = config.getint  ('grid', 'mbc'   )
+    params['xlow' ]       = config.getfloat('grid', 'xlow'  )
+    params['xhigh']       = config.getfloat('grid', 'xhigh' )
+
+    return params
+

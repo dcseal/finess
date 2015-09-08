@@ -1,15 +1,26 @@
 from __future__ import print_function  # used for printing to file
 
 #-----------------------------------------------------------------------------#
-def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
+def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     
     import matplotlib.pyplot as plt
     import numpy as np
 
-    # HACK:
-    gamma = 1.4
-    gp1 = gamma+1.
-    gm1 = gamma-1.
+    meqn     = ini_params['meqn']
+    maux     = ini_params['maux']
+    mx       = ini_params['mx']
+
+    # Pull gas constant (or read it if it hasn't already been read)
+    if( not ini_params.has_key('gamma') ):
+
+        import ConfigParser
+        config = ConfigParser.RawConfigParser()
+        config.read( ini_params['output_dir'] + '/parameters.ini' )
+        ini_params['gamma'] = config.getfloat('euler', 'gamma' )
+
+    gamma   = ini_params['gamma']
+    gp1     = gamma+1.
+    gm1     = gamma-1.
 
     # DENSITY
     m=0
@@ -20,7 +31,7 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.gca().set_ylim([0.0, 7.0])
     plt.plot(xc,qsoln[:,m],'bo')
     tmp1 = "".join(("Density at t = ",str(time)))
-    title = "".join((tmp1,"     [DoGPack]"))
+    title = "".join((tmp1,"     [FINESS]"))
     plt.title(title)
     plt.draw()
 
@@ -36,7 +47,7 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.gca().set_ylim( [0.0, 500.] )
     plt.plot(xc,press,'bo')
     tmp1 = "".join(("Pressure at t = ",str(time)))
-    title = "".join((tmp1,"     [DoGPack]"))
+    title = "".join((tmp1,"     [FINESS]"))
     plt.title(title)
     plt.draw()
  
@@ -52,12 +63,9 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln,auxsoln):
     plt.gca().set_ylim([-1.0, 15.0])
     plt.plot(xc,u,'bo')
     tmp1 = "".join(("Velocity at t = ",str(time)))
-    title = "".join((tmp1,"     [DoGPack]"))
+    title = "".join((tmp1,"     [FINESS]"))
     plt.title(title)
     plt.draw()
-
-    # Add in the exact solution:
-
 
     # print data to file.
 #   data = np.array( [xc, qsoln[:,0], qsoln[:,1], qsoln[:,4] ] )
