@@ -122,7 +122,7 @@ def _parameters_accessors_checks():
                            name = "time_order",
                            type_ = "int")
     parameters.append(time_order)
-    checks.append(CheckOneOf(time_order, [1, 2, 3, 4, 5]))
+    checks.append(CheckOneOf(time_order, [1, 2, 3, 4, 5, 7, 9, 11]))
     
     #use_limiter removed
     
