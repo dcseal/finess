@@ -36,7 +36,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
 
     const int mbc_small       = (mbc+1)/2;
     const int half_mpts_sten  = (mpts_sten+1)/2;          // assert_eq( half_mpts_sten, 3 );
-    const int MAX_DERIVS      = mpts_sten;
+    const int MAX_DERIVS      = mpts_sten;         assert_ge( MAX_DERIVS, global_ini_params.get_space_order() );
     const int MAX_FLUX_DERIVS = mpts_sten-1;
 
     // Quadrature rules for numerically evaluating the integral of the flux
