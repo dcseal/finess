@@ -198,18 +198,16 @@ void ConstructLxWL(
     // --------------------------------------------------------------------- //
     if( global_ini_params.get_source_term() )
     {
-//      printf("Error: source-term not implemented for Lax-Wendroff method\n");
-//      exit(1);
         // Compute the source term.
 //      SampleFunction( 1-mbc, mx+mbc, node, q, aux, Lstar, &SourceTermFunc);
-    #pragma omp parallel for
-            for (int i=1; i<=mx; i++)
-            {
-                for (int m=1; m<=meqn; m++)
-                {
-                    Lstar.set(i,m, Lstar.get(i,m) -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
-                }
-            }
+  #pragma omp parallel for
+          for (int i=1; i<=mx; i++)
+          {
+              for (int m=1; m<=meqn; m++)
+              {
+                  Lstar.set(i,m, Lstar.get(i,m) -(fhat.get(i+1,m)-fhat.get(i,m))/dx );
+              }
+          }
     }
     else
     {
