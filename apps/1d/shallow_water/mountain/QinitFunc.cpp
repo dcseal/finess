@@ -28,7 +28,6 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
 
         double x = xpts.get(i);
 
-printf("x = %f\n", x );
         // Bottom topography
         double bot = 0.5e0*exp(-100.0e0*pow((x-0.5),2));
 
