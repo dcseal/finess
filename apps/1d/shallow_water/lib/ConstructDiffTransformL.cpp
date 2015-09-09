@@ -299,7 +299,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
             double u2 = -S.get(1,1);
             for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             {
-                u1 += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*S.get( 1, k+1 );
+                u1 +=  ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*S.get( 1, k+1 );
                 u2 += -( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*S.get( 1, k+1 );
             }
             source_ta += (0.5*w1d.get( mq )) * u2;
