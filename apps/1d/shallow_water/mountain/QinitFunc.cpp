@@ -25,15 +25,17 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     // Initial conditions
     for (int i=1; i<=numpts; i++)
     {
+
         double x = xpts.get(i);
 
-
+printf("x = %f\n", x );
+        // Bottom topography
         double bot = 0.5e0*exp(-100.0e0*pow((x-0.5),2));
 
         //h = 1.0040014495278291 - bot;
         //Qflow = 0.2;
 
-        double h = 1.0678715170821127 - bot;
+        double h     = 1.0678715170821127 - bot;
         double Qflow = 0.25;
 
         qvals.set(i,1, h );      // depth

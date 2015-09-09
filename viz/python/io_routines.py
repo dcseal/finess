@@ -26,8 +26,8 @@ def read_qfile(mx, meqn, qfile ):
     
     # extract all point values
     k = 0
-    for i in range(mx):
-        for me in range(meqn):
+    for me in range(meqn):
+        for i in range(mx):
 
             linestring  = Rqfile.readline()
             linelist    = string.split(linestring)
