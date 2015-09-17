@@ -18,8 +18,8 @@ void AfterQinit( StateVars& Q )
     const double dx = global_ini_params.get_dx();
     const double dy = global_ini_params.get_dy();
 
-//  double energy = 0.244816/(dx*dy);
-    double energy = 0.979264/(dx*dy);
+  double energy = 0.244816/(dx*dy);
+//    double energy = 0.979264/(dx*dy);
 
     q.set(1,1,5, energy );
 

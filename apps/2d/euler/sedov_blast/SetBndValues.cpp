@@ -6,7 +6,11 @@ void SetBndValues( StateVars& Q );
 
 // Wrappers for main Euler library
 void SetBndValuesX( StateVars& Q )
-{ SetBndValues( Q ); }
+{ 
+//Separated boundary condition is not needed for this case
+//The separated boundary is needed only if the corner values have different
+//values
+SetBndValues( Q ); }
 
 void SetBndValuesY( StateVars& Q )
 { SetBndValues( Q ); }
@@ -125,7 +129,7 @@ void SetBndValues( StateVars& Q )
     // ***********************************************
     // BOTTOM LEFT CORNER
     // ***********************************************
-/*    for(int i=1; i<=mbc; i++)
+    for(int i=1; i<=mbc; i++)
         for(int j=1; j<=mbc; j++)
         {
             for(int m=1; m<=meqn; m++)
@@ -134,7 +138,7 @@ void SetBndValues( StateVars& Q )
                 }
         }
     // ***********************************************
-*/
+
 
 // TODO - cross terms!?
 }

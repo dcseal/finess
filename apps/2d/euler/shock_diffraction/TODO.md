@@ -18,3 +18,9 @@ I see two obvious solutions, neither of which are satisfactory:
     2. Copy every time-integrator in the library to this application.
 
 Until a reasonable solution is reached, this application will not run.
+
+Update (Qi Tang):
+All the functions (except ConstructLFL_BCx2) that uses SetBndValuesX and 
+SetBndValuesY have been rewritten locally. Currently this example can run. 
+But it may require some optimazations if there is a similar test problem 
+in the future.

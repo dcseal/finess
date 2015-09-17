@@ -170,8 +170,11 @@ void ApplyMPPLimiter2D(
                 for( int m=1; m <= meqn; m++ )
                     qtmp2[m-1] = 0.0;
 
-                // bisection
-                for(int nn = 1; nn<10; nn++)
+                // bisection 
+                // maximal iteration will affect the speed of the code
+                // But reducing maximal iteration will lead to larger 
+                // numerical diffusion that is introduced from low order scheme.
+                for(int nn = 1; nn<5; nn++)
                 {
                     rate = (root1+root2)/2.0;
                     for( int m=1; m <= meqn; m++ )

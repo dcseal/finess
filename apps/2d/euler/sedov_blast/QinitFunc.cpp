@@ -52,11 +52,6 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
         const double u3  = 0.0;
         const double energy = 1.0e-12;
 
-//      if(x < dx - 1.e-4 && y < dy - 1.e-4 )
-//      { energy =  0.244816/dx/dy; }
-//      else
-//      { energy =  1.0e-12; } 
-
         qvals.set(i,1, rho    );
         qvals.set(i,2, rho*u1 );
         qvals.set(i,3, rho*u2 );

@@ -16,6 +16,8 @@ AfterFullTimeStep   = AfterFullTimeStep
 # conditions.  For this problem, we need two SetBndValues functions: one for
 # x-direction, and one for y-direction
 ConstructL          = ConstructL
+ConstructLxWL	    = ConstructLxWL
+FinSolveLxW	    	= FinSolveLxW
 
 # place to add object modules
 #
