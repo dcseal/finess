@@ -29,8 +29,8 @@ void ConstructLFL( const double dt, StateVars& Qnew,
     dTensorBC3&    q = Qnew.ref_q  ();
     dTensorBC3&  aux = Qnew.ref_aux();
 
-    void SetBndValues(StateVars& Qnew); 
-    SetBndValues( Qnew );
+    //void SetBndValues(StateVars& Qnew); 
+    //SetBndValues( Qnew ); //not sure this is needed in any case -QT
 
     // Grid and problem information
     const int mx     = global_ini_params.get_mx();
@@ -196,40 +196,42 @@ void ConstructLFL_BCx2( const double dt, StateVars& Qnew,
     void GlobalWaveSpd( const StateVars& Q, double& alpha1, double& alpha2);
     double alpha_x, alpha_y;
     GlobalWaveSpd( Qnew, alpha_x, alpha_y );
-
-    // Find fastest wave speed in X-direction
+    smax.set(1,1,1, alpha_x);
+    smax.set(1,1,2, alpha_y);
+    
+	// Find fastest wave speed in X-direction
     //
     // This chunk of code was written specifically for Euler equations
     //
-//  double alpha_x     = 1.0e-15;
-//  const double gamma = global_ini_params.get_gamma();
-//  for (int i = 1; i <= mx;  i++)
-//  for (int j = 1; j <= my;  j++)
-//  {
-//      // -- Compute a local wave speed -x- //
-//      dTensor1 xedge(2);
-//      xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
-//      xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
-
-//      const double rho = q.get(i,j,1);
-//      const double u1 =  q.get(i,j,2)/rho;
-//      const double u2 =  q.get(i,j,3)/rho;
-//      const double u3 =  q.get(i,j,4)/rho;
-//      const double energy = q.get(i,j,5);
-//      const double press = (gamma-1.0e0)*(energy-0.5e0*rho*(u1*u1+u2*u2+u3*u3));
-
-//      if (press < 0.0)
-//      {
-//          cout << " x negative press = " << press << " (x,y)= "<< 
-//          xedge.get(1)<<" "<<xedge.get(2) << endl;
-//      }
-
-//      const double c = sqrt(fabs(gamma*press/rho));
-//      const double alpha = abs(u1) + c;
-
-//      smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
-//      alpha_x = Max(alpha_x, alpha);
-//  }
+//   double alpha_x     = 1.0e-15;
+//   const double gamma = global_ini_params.get_gamma();
+//   for (int i = 1; i <= mx;  i++)
+//   for (int j = 1; j <= my;  j++)
+//   {
+//       // -- Compute a local wave speed -x- //
+//       dTensor1 xedge(2);
+//       xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
+//       xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
+// 
+//       const double rho = q.get(i,j,1);
+//       const double u1 =  q.get(i,j,2)/rho;
+//       const double u2 =  q.get(i,j,3)/rho;
+//       const double u3 =  q.get(i,j,4)/rho;
+//       const double energy = q.get(i,j,5);
+//       const double press = (gamma-1.0e0)*(energy-0.5e0*rho*(u1*u1+u2*u2+u3*u3));
+// 
+//       if (press < 0.0)
+//       {
+//           cout << " x negative press = " << press << " (x,y)= "<< 
+//           xedge.get(1)<<" "<<xedge.get(2) << endl;
+//       }
+// 
+//       const double c = sqrt(fabs(gamma*press/rho));
+//       const double alpha = abs(u1) + c;
+// 
+//       smax.set( i, j, 1, Max( smax.get(i,j,1), alpha )  );
+//       // alpha_x = Max(alpha_x, alpha);
+//   }
 
     for (int i = 1; i <= mx+1; i++)
     for (int j = 1; j <= my;   j++)
@@ -240,43 +242,43 @@ void ConstructLFL_BCx2( const double dt, StateVars& Qnew,
         Fhat.set(i,j,m, hf );
     }
 
-//  SetBndValuesY(Qnew);
-//  SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
+    SetBndValuesY(Qnew);
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     // Find fastest wave speed in Y-direction
     //
     // This chunk of code was written specifically for Euler equations
     //
-//  double alpha_y = 1.0e-15;
-//  for (int i = 1; i <= mx;  i++)
-//  for (int j = 1; j <= my;  j++)
-//  {
-//      // -- Compute a local wave speed -y- //
-//      dTensor1 xedge(2); 
-//      xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
-//      xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
-
-//      const double rho = q.get(i,j,1);
-//      const double u1 =  q.get(i,j,2)/rho;
-//      const double u2 =  q.get(i,j,3)/rho;
-//      const double u3 =  q.get(i,j,4)/rho;
-//      const double energy = q.get(i,j,5);
-
-//      const double press = (gamma-1.0e0)*(energy-0.5e0*rho*(u1*u1+u2*u2+u3*u3));
-
-//      if (press < 0.0)
-//      {
-//          cout << " y negative press = " << press;
-//          cout << " (x,y)= "<< xedge.get(1)<<" "<<xedge.get(2) << endl;
-//      }
-
-//      // Sound speeds
-//      const double c = sqrt(fabs(gamma*press/rho));
-//      const double alpha = abs(u2) + c;
-
-//      smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
-//      alpha_y = Max(alpha_y, alpha);
-//  }
+//   double alpha_y = 1.0e-15;
+//   for (int i = 1; i <= mx;  i++)
+//   for (int j = 1; j <= my;  j++)
+//   {
+//       // -- Compute a local wave speed -y- //
+//       dTensor1 xedge(2); 
+//       xedge.set( 1, xlow + double(i)*dx - 0.5*dx );
+//       xedge.set( 2, ylow + double(j)*dy - 0.5*dy );
+// 
+//       const double rho = q.get(i,j,1);
+//       const double u1 =  q.get(i,j,2)/rho;
+//       const double u2 =  q.get(i,j,3)/rho;
+//       const double u3 =  q.get(i,j,4)/rho;
+//       const double energy = q.get(i,j,5);
+// 
+//       const double press = (gamma-1.0e0)*(energy-0.5e0*rho*(u1*u1+u2*u2+u3*u3));
+// 
+//       if (press < 0.0)
+//       {
+//           cout << " y negative press = " << press;
+//           cout << " (x,y)= "<< xedge.get(1)<<" "<<xedge.get(2) << endl;
+//       }
+// 
+//       // Sound speeds
+//       const double c = sqrt(fabs(gamma*press/rho));
+//       const double alpha = abs(u2) + c;
+// 
+//       smax.set( i, j, 2, Max( smax.get(i,j,2), alpha )  );
+//       // alpha_y = Max(alpha_y, alpha);
+//   }
 
 #pragma omp parallel for
     for (int i = 1; i<= mx;   i++)
