@@ -177,6 +177,18 @@ void SetBndValuesX( StateVars& Q )
     // ----------------------- //
 
     // ********************************************************************* //
+    // TOP BOUNDARY "outflow" - zeroth-order extrapolation
+    // ********************************************************************* //
+    for (int i=1-mbc; i<= mx+mbc; i++)
+    for (int j=my+1; j<=my+mbc; j++)
+    for (int m=1; m<=meqn; m++)
+    {
+        double tmp = q.get(i,my,m);                    
+        q.set(i,j,m, tmp );
+    }
+    // ********************************************************************* //
+
+    // ********************************************************************* //
     // RIGHT BOUNDARY (copy initial conditions)
     // ********************************************************************* //
     void QinitFunc(const dTensor2& xpts,
@@ -201,8 +213,39 @@ void SetBndValuesX( StateVars& Q )
     //
     //      Segment 3: 1.0 < x < 13.0; y = 0.0
     //
+    // Note: different order of update lead to different ghost point values at
+    // the concave corner.
     // ********************************************************************* //
 
+    // Segment 1
+    for( int i = 1;       i <= istep-1; i++)
+    for( int j = jstep-1; j >= jstep-mbc; j-- )
+    {
+        for (int m=1; m<=meqn; m++)
+        {
+
+            double tmp = q.get(i, 2*jstep-1-j, m);                    
+            q.set(i,j,m, tmp );
+
+        }
+        // Flip the momemtum u2:
+        q.set(i,j,3, -q.get(i,j,3) );
+     }
+  
+    // Segment 3
+    // outflow
+    for (int i=istep-mbc; i<= mx+mbc; i++)
+    for (int j=0; j>=(1-mbc); j--)
+    {
+        for (int m=1; m<=meqn; m++)
+        {
+
+            double tmp = q.get(i,1, m);                    
+            q.set(i,j,m, tmp );
+
+        }
+    } 
+     
     // Segment 2
     for (int i = istep-1; i >= istep-mbc; i--)
     for (int j = 1; j <= jstep; j++ )
@@ -210,7 +253,7 @@ void SetBndValuesX( StateVars& Q )
         for (int m=1; m<=meqn; m++)
         {
 
-            double tmp = q.get(2*istep+1-i, j, m);                    
+            double tmp = q.get(2*istep-1-i, j, m);                    
             q.set(i,j,m, tmp );
 
         }
@@ -264,17 +307,7 @@ void SetBndValuesY( StateVars& Q )
     // BOUNDARY CONDITION LOOP
     // ----------------------- //
 
-    // ********************************************************************* //
-    // TOP BOUNDARY "outflow" - zeroth-order extrapolation
-    // ********************************************************************* //
-    for (int i=1-mbc; i<= mx+mbc; i++)
-    for (int j=my+1; j<=my+mbc; j++)
-    for (int m=1; m<=meqn; m++)
-    {
-        double tmp = q.get(i,my,m);                    
-        q.set(i,j,m, tmp );
-    }
-    // ********************************************************************* //
+   // ********************************************************************* //
 
     // Compute index where the step is located.  
     // q(istep,:) is inside the domain.
@@ -294,6 +327,12 @@ void SetBndValuesY( StateVars& Q )
     //
     // ********************************************************************* //
 
+    // This step is not actually applying boundary condition in x and y 
+    // separately. Instead, it mainly just update the corner values around 
+    // x=1 and y=6. If this step is missing, the solution may look wrong.
+    // This step is needed for both first order solver and high order solver.
+    // -QT
+
     // Segment 1
     for( int i = 1;       i <= istep-1; i++)
     for( int j = jstep-1; j >= jstep-mbc; j-- )
@@ -309,6 +348,7 @@ void SetBndValuesY( StateVars& Q )
         q.set(i,j,3, -q.get(i,j,3) );
     }
 
+/*
     // Segment 3
     for (int i=istep; i<= mx+mbc; i++)
     for (int j=0; j>=(1-mbc); j--)
@@ -323,5 +363,6 @@ void SetBndValuesY( StateVars& Q )
         // Flip the momemtum u2:
         q.set(i,j,3, -q.get(i,j,3) );
     }
+*/
 
 }

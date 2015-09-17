@@ -34,6 +34,7 @@ void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Q )
 
             q.set(i,j,m, 0.0 );
         }
-    }
+		q.set(i,j,1,1.e-10); 
+	}
 
 }
