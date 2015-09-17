@@ -62,7 +62,6 @@ void ConstructLFL( const double dt, const StateVars& Qnew,
     GlobalWaveSpd( Qnew, alpha_x, alpha_y );
     smax.set(1,1,1, alpha_x);
     smax.set(1,1,2, alpha_y);
-//  printf("alpha_x, alpha_y = %f, %f \n", alpha_x, alpha_y );
 
 /* This section of code was written specifically for Euler equations */
 /*
@@ -196,6 +195,8 @@ void ConstructLFL_BCx2( const double dt, StateVars& Qnew,
     void GlobalWaveSpd( const StateVars& Q, double& alpha1, double& alpha2);
     double alpha_x, alpha_y;
     GlobalWaveSpd( Qnew, alpha_x, alpha_y );
+    smax.set(1,1,1, alpha_x);
+    smax.set(1,1,2, alpha_y);
 
     // Find fastest wave speed in X-direction
     //
@@ -240,8 +241,8 @@ void ConstructLFL_BCx2( const double dt, StateVars& Qnew,
         Fhat.set(i,j,m, hf );
     }
 
-//  SetBndValuesY(Qnew);
-//  SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
+    SetBndValuesY(Qnew);
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, q, aux, R, &FluxFunc );
 
     // Find fastest wave speed in Y-direction
     //
