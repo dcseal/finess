@@ -1,16 +1,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%   Information you have available to you:
+%%   Information that should have been defined before calling this function:
 %%
 %%     Basic information:
 %%              mx:  number of points
 %%    [xlow,xhigh]:  min/max values of grid
 %%            meqn:  number of equations
 %%            maux:  number of aux components
-%%           meth1:  spatial order of accuracy
 %%
 %%   Grid information:
-%%              xc: grid points (cell centers), size = (mx,my)
+%%              xc: grid points (cell centers), size = (mx)
 %%
 %%   Solution information:
 %%           qsoln:  solution sampled on mesh, size = (mx,meqn)
@@ -33,59 +32,6 @@ set(gca,'fontsize',16);
 t1 = title(['q(x,t) at t = ',num2str(time),'     [DoGPack]']); 
 set(t1,'fontsize',16);
 
-
-%sp = zeros(mx_old,1);
-%se = zeros(mx_old,1);
-%flag = zeros(mx_old,1);
-%for i=1:mx_old
-%  Q2sum = 0.0;
-%      
-%  for k=1:(meth1-2)
-%    Q2sum = Q2sum + qcoeffs(i,1,k)^2;
-%  end
-%      
-%  Q2kmax = qcoeffs(i,1,meth1-1)^2;
-%  Q2sum = Q2sum + Q2kmax;
-%
-%  if Q2kmax>1.0e-10
-%    sp(i) = (Q2kmax/Q2sum);
-%  else
-%    sp(i) = 0.0;
-%  end
-%  
-%  Q2kmax = qcoeffs(i,1,meth1)^2;
-%  Q2sum = Q2sum + Q2kmax;
-%  
-%  if Q2kmax>1.0e-10
-%    se(i) = (Q2kmax/Q2sum);
-%  else
-%    se(i) = 0.0;
-%  end
-%  
-%  if (se(i)>=(0.1*(meth1)^(-4)))
-%    flag(i) = 1;
-%  end
-%  
-%end
-
-%figure(2);
-%clf;
-%pz=plot(xc_old,se,'bo');
-%%hold on
-%%pzz=plot(xc_old,sp,'rx');
-%hold off;
-%axis on; box on; grid off;
-%set(gca,'plotboxaspectratio',[2 1 1]);
-%set(gca,'fontsize',16);
-
-%figure(3);
-%clf;
-%pz=plot(xc_old,flag,'bo');
-%hold off;
-%axis on; box on; grid off;
-%set(gca,'plotboxaspectratio',[2 1 1]);
-%set(gca,'fontsize',16);
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Solve for the exact solution.
 %
@@ -95,10 +41,10 @@ set(t1,'fontsize',16);
 
  % Parameters used for computing the exact solution
  t = time;
- q0 = @(z)(0.5 + sin(pi*z));
- qp = @(z)(pi*cos(pi*z));
- f  = @(z)(q0(z)*t + z - xc);
- fp = @(z)(qp(z)*t + 1.0);
+ q0 = @(z)(0.5 + sin(pi*z));        % initial conditions
+ qp = @(z)(pi*cos(pi*z));           % Derivative of initial conditions
+ f  = @(z)(q0(z)*t + z - xc);       % function we need to find the zero of
+ fp = @(z)(qp(z)*t + 1.0);          % Derivative of above line (for Newton iterations)
 
  % Convergence parameters:
  tol = 1e-14;
@@ -107,11 +53,15 @@ set(t1,'fontsize',16);
 
  % Only check for exact solution at the final time
  if( abs(t-tfinal) < 1e-10 )
-%  disp('  Computing exact solution: comment out this section of plotq1 if not desired');
-   xi  = xc;   % initial guess
+
+   % initial guess and `error' used to compute convergence to implicit
+   % solution
+   xi  = xc;   
    err = max(abs( f(xi) ) );
 
-   % Newton iteration til convergence:
+   % --------------------------------------- %
+   % Newton iteration til convergence
+   % --------------------------------------- %
    num_iter = 0;
    while( err > tol )
    	xi = xi - (f(xi) ./ fp(xi));
