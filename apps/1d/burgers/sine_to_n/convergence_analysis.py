@@ -1,19 +1,3 @@
-#==============================================================================#
-# This file is part of HYPERPYWS: Hyperbolic Python WENO Solver
-#
-#   *** This software is made available "as is" without any assurance that it
-#   *** will work for your purposes.  The software may in fact have defects, so
-#   *** use the software at your own risk.
-#
-# License: GPL, see COPYING for details
-#
-# Copyright (C) 2013 
-#
-#    David Seal,  seal@math.msu.edu,  Michigan State University
-#    Yaman Guclu, guclu@math.msu.edu, Michigan State University
-#
-#===============================================================================
-
 import math
 
 #===============================================================================
