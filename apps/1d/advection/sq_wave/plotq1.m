@@ -40,6 +40,17 @@ set(gca,'fontsize',16);
 t1 = title(['q(x,t) at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
+
+params.mx = mx;
+params.dx = dx;
+params.eps_indicator = 0.1;
+flag = flag_indicator( qsoln(:,1), params );
+hold on;
+plot( xc, flag, 'go' );
+hold off;
+
+%legend('Exact', 'Approx', 'Flag' );
+
 if ( abs(time-round(time)) < 1.0e-10 && time > 0)
   err1 = norm(qsoln-qex,1)/norm(qex,1);
   err2 = norm(qsoln-qex,2)/norm(qex,2);
@@ -53,3 +64,7 @@ if ( abs(time-round(time)) < 1.0e-10 && time > 0)
 end
 
 disp([['Min value of q = ', num2str( min(qsoln(:,1)), '%1.10e' ) ]]);
+
+% INI file and its contents:
+% INI
+% INI.grid
