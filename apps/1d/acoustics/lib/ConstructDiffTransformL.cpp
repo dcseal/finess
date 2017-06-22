@@ -9,7 +9,8 @@
 // Time expanded state variable, q using discrete transform.
 //
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
-void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
+//void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
+void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F, dTensorBC2& Lstar)
 {
 
     // Central difference routine (depends on spatial order!)
