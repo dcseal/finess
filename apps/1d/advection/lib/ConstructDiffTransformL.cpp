@@ -14,7 +14,8 @@
 // the advection velocity is stored in aux(1,1,1).
 //
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
-void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
+//void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
+void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F, dTensorBC2& Lstar)
 {
 
     // Central difference routine (depends on spatial order!)
@@ -38,6 +39,20 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     const int half_mpts_sten  = (mpts_sten+1)/2;          // assert_eq( half_mpts_sten, 3 );
     const int MAX_DERIVS      = mpts_sten;
     const int MAX_FLUX_DERIVS = mpts_sten-1;
+
+    // Quadrature rules for numerically evaluating the integral of the flux
+    dTensor1 w1d( MAX_DERIVS );
+    dTensor1 x1d( MAX_DERIVS );
+
+    void setGaussLobattoPoints1d( dTensor1& w1d, dTensor1& x1d);
+    void setGaussPoints1d(dTensor1& w1d, dTensor1& x1d);
+
+    if( mpts_sten < 9 )
+        setGaussLobattoPoints1d( w1d, x1d);
+    else
+        setGaussPoints1d( w1d, x1d );
+
+
 
     // Compute finite difference approximations on all of the conserved
     // variables:
@@ -107,10 +122,26 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
             for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             {
                 tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, k+1 );
-//              tmp += (dt / 2.0) * Q_mixed_derivs.get( m, 1, k+1 );
             }
             F.set( i, m, tmp );
         }
+
+        // Construct the time-averaged flux.
+//      double ta_flux = 0.;
+//      for( int m=1; m<=meqn; m++ )
+//      {
+//          for( int mq=1; mq <= MAX_DERIVS; mq++ )
+//          {
+//              // Evaluate q at this quadrature point
+//              double q = Q_mixed_derivs.get(m,1,1);
+//              for( int k=1; k < MAX_FLUX_DERIVS; k++ )
+//              { q += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( m, 1, k+1 ); }
+
+//              // 0.5 * wgt * fluxfunc( q(t(xi)) ).
+//              ta_flux += (0.5*w1d.get( mq )) * ( q );
+//          }
+//          F.set( i, m, ta_flux );
+//      }
 
     }
 
