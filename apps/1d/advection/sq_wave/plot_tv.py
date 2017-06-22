@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-fname = 'output0080/total-variation.dat'
+#fname = 'output0080/total-variation.dat'
+fname = 'output/total-variation.dat'
 fid   = open( fname, 'r' )
 
 # read in the data
