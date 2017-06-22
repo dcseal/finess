@@ -96,7 +96,7 @@ function plotfin1_nostop( parameters_ini_filename_in )
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
       %% Conserved variables -- qsoln
-      time  = fscanf(fids,'%e', 1);
+      time  = fscanf(fids,'%e', 1)
       qtmp  = fscanf(fids,'%e', [1,inf]);
       qsoln = reshape( qtmp, mx, meqn );
       clear qtmp;
