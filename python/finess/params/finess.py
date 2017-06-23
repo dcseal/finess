@@ -124,8 +124,15 @@ def _parameters_accessors_checks():
     parameters.append(time_order)
     checks.append(CheckOneOf(time_order, [1, 2, 3, 4, 5, 7, 9, 11]))
     
-    #use_limiter removed
-    
+    # MR limiter to cut down fluxes
+    mr_limiter = Parameter(variable_name = "mr_limiter",
+                         section = "finess",
+                         name = "mr_limiter",
+                         type_ = "bool",
+                         default_value = False)
+    parameters.append(mr_limiter)
+
+
     verbosity = Parameter(variable_name = "verbosity",
                           section = "finess",
                           name = "verbosity",
