@@ -28,14 +28,16 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     const double dx    = global_ini_params.get_dx();
     const double xlow  = global_ini_params.get_xlow();
 
-    const int mpts_sten       = global_ini_params.get_space_order(); assert_eq( mpts_sten%2, 1 );
+    const int mpts_sten       = global_ini_params.get_space_order(); // assert_eq( mpts_sten%2, 1 );
 
     const int mbc_small       = (mbc+1)/2;
-    const int half_mpts_sten  = (mpts_sten+1)/2;          // assert_eq( half_mpts_sten, 3 );
+    const int half_mpts_sten  = (mpts_sten+1)/2;  // = 3,4,5,6 for orders 5,7,8,11
     const int MAX_DERIVS      = mpts_sten;
     const int MAX_FLUX_DERIVS = mpts_sten-1;
 
-// printf("MAX_FLUX_DERIVS = %d, MAX_FLUX_DERIVS = %d\n", MAX_DERIVS, MAX_FLUX_DERIVS );
+    // Double check there are enough boundary points (otherwise there will be
+    //                                                an unnoticed seg. fault)
+    assert_ge( 1+mbc-mbc_small, half_mpts_sten );
 
     // Compute finite difference approximations on all of the conserved
     // variables:
