@@ -1,3 +1,5 @@
+#include <iostream>
+#include <iomanip>
 #include "dogdefs.h"
 #include "dog_math.h"
 #include "stdlib.h"
@@ -5,6 +7,8 @@
 #include "StateVars.h"
 #include "assert.h"
 #include "CentralDifferences.h"
+
+using namespace std;
 
 // Time expanded state variable, q using discrete transform.
 //
@@ -53,6 +57,9 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         setGaussPoints1d( w1d, x1d );
 
 
+    dTensorBC2 flag(mx,meqn,mbc);
+    void FlagIndicator( StateVars& Q, dTensorBC2& flag );
+    FlagIndicator( Q, flag );
 
     // Compute finite difference approximations on all of the conserved
     // variables:
@@ -118,8 +125,10 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         // single extra factor of (k+1).
         for( int m=1; m<=meqn; m++ )
         {
+            const int nterms = 4*flag.get(i,m) + MAX_FLUX_DERIVS*(1-flag.get(i,m));
             double tmp = Q_mixed_derivs.get(m,1,1);
-            for( int k=1; k < MAX_FLUX_DERIVS; k++ )
+//          for( int k=1; k < MAX_FLUX_DERIVS; k++ )
+            for( int k=1; k < nterms; k++ )
             {
                 tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, k+1 );
             }
@@ -147,3 +156,73 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
 
 }
 
+void FlagIndicator( StateVars& Q, dTensorBC2& flag )
+{
+
+    void SetBndValues( StateVars& Q );
+    SetBndValues( Q );
+    dTensorBC2& q   = Q.ref_q();
+    dTensorBC2& aux = Q.ref_aux();
+
+    const int mx     = q.getsize(1);
+    const int meqn   = q.getsize(2);
+    const int maux   = aux.getsize(2);
+    const int mbc    = q.getmbc();
+
+    // Needed to define derivatives
+    const double dx    = global_ini_params.get_dx();
+    const double xlow  = global_ini_params.get_xlow();
+
+    // Multiresolution analysis parameter epsilon
+    const double eps_mr  = 0.1;
+
+    dTensorBC2 flag_no_buff( mx, meqn, mbc );
+    flag_no_buff.setall(0.);
+
+    // --------------------------------------------------------------------
+    // Part I: Fill in values for the flag
+    // --------------------------------------------------------------------
+    int num_flagged_elems = 0;
+    for( int i = 1-mbc+1; i <= mx+mbc-1; i++ )
+    {
+
+        dTensor1 Qavg(meqn);
+        for( int m=1; m <= meqn; m++ )
+        {
+            double tmp = 0.5*( q.get(i+1,m) + q.get(i-1,m) );
+            Qavg.set(m, tmp );
+
+            if( abs( tmp - q.get(i,m) ) > eps_mr * dx )
+            { 
+                flag_no_buff.set(i, m, 1); 
+                num_flagged_elems += 1;     
+//              cout << "flagged elem i  = " << i << endl;
+            }
+
+        }
+
+    }
+    cout << "num_flagged_elems = " << num_flagged_elems << endl;
+
+    // --------------------------------------------------------------------
+    // Part II: Create buffer zone around each flagged element
+    // --------------------------------------------------------------------
+    flag.setall(0.);
+    for( int i = 1; i <= mx; i++ )
+    {
+
+        for( int m=1; m <= meqn; m++ )
+        {
+            if( flag_no_buff.get(i,m) > 0 )
+            { 
+                for( int j=-mbc; j <= mbc; j++ )
+                {
+                    flag.set(i+j, m, 1); 
+                }
+            }
+
+        }
+
+    }
+
+}
