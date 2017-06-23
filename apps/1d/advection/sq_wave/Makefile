@@ -12,8 +12,8 @@ include $(FINESS)/apps/1d/advection/lib/Makefile.defs
 #
 #ConstructIntegratedF    = ConstructIntegratedF
 #FinSolveUser            = FinSolveUser
-#FinSolveUser            = $(APP_LIB)/FinSolveDiffTransform
-FinSolveUser            = $(APP_LIB)/FinSolveDiffTransformFluxLimiter
+FinSolveUser            = $(APP_LIB)/FinSolveDiffTransform
+#FinSolveUser            = $(APP_LIB)/FinSolveDiffTransformFluxLimiter
 
 # place to add object modules
 #
