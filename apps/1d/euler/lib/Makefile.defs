@@ -33,8 +33,10 @@ ApplyMPPLimiter1D = $(APP_LIB)/ApplyMPPLimiter1D
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
+   $(FINESS)/apps/1d/euler/lib/ConstructDiffTransformL.o \
 
 #
 APP_LIB_SOURCES = \
+   $(FINESS)/apps/1d/euler/lib/ConstructDiffTransformL.cpp \
 
 #

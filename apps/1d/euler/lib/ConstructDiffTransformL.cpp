@@ -13,7 +13,7 @@
 // Euler equations.
 //
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
-void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
+void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F, dTensorBC2& Lstar)
 {
 
     dTensorBC2& q   = Q.ref_q();
@@ -49,6 +49,13 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     else
         setGaussPoints1d( w1d, x1d );
 
+    dTensorBC1 flag(mx,mbc);
+    void FlagIndicator( StateVars& Q, dTensorBC1& flag );
+
+    flag.setall(0.);
+    if( global_ini_params.get_mr_limiter() )
+        FlagIndicator( Q, flag );
+
     // Compute finite difference approximations on all of the conserved
     // variables:
 #pragma omp parallel for
@@ -81,10 +88,10 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         CentralDifferences( dx, qvals, qderivs );
 
         dTensor3 Gs( 1, MAX_DERIVS, MAX_DERIVS );
-        dTensor3 R( 1, MAX_DERIVS, MAX_DERIVS );
+        dTensor3 R ( 1, MAX_DERIVS, MAX_DERIVS );
         dTensor3 Gr( 2, MAX_DERIVS, MAX_DERIVS );
         dTensor3 Ge( 1, MAX_DERIVS, MAX_DERIVS );
-        dTensor3 P( 1, MAX_DERIVS, MAX_DERIVS );
+        dTensor3 P ( 1, MAX_DERIVS, MAX_DERIVS );
 
         // Initialize all arrays to zero (maybe done already...i should check the constructor)
         Gs.setall( 0. );
@@ -164,6 +171,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
                 Gr.set( 1, h+1, k+1, tmp );
                 Gr.set( 2, h+1, k+1, tmp1 );
           }  
+
           //Populate time derivatives of pressure
           for( int h=0; h < MAX_DERIVS; h++ )
           {
@@ -187,90 +195,91 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
           for( int h=0; h < MAX_FLUX_DERIVS-k; h++ )
           {
 
-           //compute conserved quantity derivatives...
-           Q_mixed_derivs.set(1,h+1,k+2,-((double)h+1.0)/(k+1)*Q_mixed_derivs.get(2,h+2,k+1));
-           Q_mixed_derivs.set(2,h+1,k+2,-((double)h+1.0)/(k+1)*(Gr.get(1,h+2,k+1)+P.get(1,h+2,k+1)));
-           Q_mixed_derivs.set(3,h+1,k+2,0.0);
-           Q_mixed_derivs.set(4,h+1,k+2,0.0);
-           Q_mixed_derivs.set(5,h+1,k+2,-((double)h+1.0)/(k+1)*Ge.get(1,h+2,k+1));
+               //compute conserved quantity derivatives...
+               Q_mixed_derivs.set(1,h+1,k+2,-((double)h+1.0)/(k+1)*Q_mixed_derivs.get(2,h+2,k+1));
+               Q_mixed_derivs.set(2,h+1,k+2,-((double)h+1.0)/(k+1)*(Gr.get(1,h+2,k+1)+P.get(1,h+2,k+1)));
+               Q_mixed_derivs.set(3,h+1,k+2,0.0);
+               Q_mixed_derivs.set(4,h+1,k+2,0.0);
+               Q_mixed_derivs.set(5,h+1,k+2,-((double)h+1.0)/(k+1)*Ge.get(1,h+2,k+1));
            }
 
-       }
+        }
 
 
         // Recursive relationship goes here! Compute higher order derivatives //
         for( int k=1; k < MAX_FLUX_DERIVS;   k++ )      
         {
-        //Populate time derivatives of (rho u)^2...
-        for( int h=0; h < MAX_DERIVS; h++ )
-        {
+            //Populate time derivatives of (rho u)^2...
+            for( int h=0; h < MAX_DERIVS; h++ )
+            {
                 double tmp = 0.0;
                 for( int r=0; r <= h; r++ )
                 for( int s=0; s <= k; s++ )
                 {
-                      tmp += Q_mixed_derivs.get( 2, r+1, s+1)*Q_mixed_derivs.get(2, h+1-r, k+1-s );
+                    tmp += Q_mixed_derivs.get( 2, r+1, s+1)*Q_mixed_derivs.get(2, h+1-r, k+1-s );
                 }
                 Gs.set( 1, h+1, k+1, tmp );
-        }
-        //Populate time derivatives of 1/rho...
-        for( int h=0; h < MAX_DERIVS; h++ )
-        {
+            }
+
+            //Populate time derivatives of 1/rho...
+            for( int h=0; h < MAX_DERIVS; h++ )
+            {
                 double tmp = 0.0;
                 R.set(1,h+1,k+1,0.0);
                 for( int r=0; r <= h; r++ )
                 for( int s=0; s <= k; s++ )
                 {
-                      tmp += Q_mixed_derivs.get( 1, r+1, s+1)*R.get(1, h+1-r, k+1-s );
+                    tmp += Q_mixed_derivs.get( 1, r+1, s+1)*R.get(1, h+1-r, k+1-s );
                 }
                 tmp *=-1.0/(Q_mixed_derivs.get(1,1,1));
                 R.set( 1, h+1, k+1, tmp );
-        }
+            }
 
-        //populate time derivatives of (rho u)^2/rho and u
-        for( int h=0; h < MAX_DERIVS; h++ )
-        {
+            //populate time derivatives of (rho u)^2/rho and u
+            for( int h=0; h < MAX_DERIVS; h++ )
+            {
                 double tmp = 0.0;
                 double tmp1 = 0.0;
                 for( int r=0; r <= h; r++ )
                 for( int s=0; s <= k; s++ )
                 {
-                      tmp += Gs.get( 1, r+1, s+1)*R.get(1, h+1-r, k+1-s );
-                      tmp1 += Q_mixed_derivs.get( 2, r+1, s+1)*R.get(1, h+1-r, k+1-s );
+                    tmp += Gs.get( 1, r+1, s+1)*R.get(1, h+1-r, k+1-s );
+                    tmp1 += Q_mixed_derivs.get( 2, r+1, s+1)*R.get(1, h+1-r, k+1-s );
                 }
                 Gr.set( 1, h+1, k+1, tmp );
                 Gr.set( 2, h+1, k+1, tmp1 );
-        }
-        //populate time derivatives of P
-        for( int h=0; h < MAX_DERIVS; h++ )
-        {
+            }
+            //populate time derivatives of P
+            for( int h=0; h < MAX_DERIVS; h++ )
+            {
                 double tmp = 0.0;
                 tmp = 0.4*(Q_mixed_derivs.get( 5, h+1, k+1)-0.5*Gr.get(1,h+1,k+1));
                 P.set( 1, h+1, k+1, tmp );
-        }
-        //populate time derivatives of energy equation flux
-        for( int h=0; h < MAX_DERIVS; h++ )
-        {
+            }
+            //populate time derivatives of energy equation flux
+            for( int h=0; h < MAX_DERIVS; h++ )
+            {
                 double tmp1 = 0.0;
                 for( int r=0; r <= h; r++ )
                 for( int s=0; s <= k; s++ )
                 {
-                      tmp1 += (Q_mixed_derivs.get( 5, r+1, s+1)+P.get( 1, r+1, s+1))*Gr.get(2, h+1-r, k+1-s );
+                    tmp1 += (Q_mixed_derivs.get( 5, r+1, s+1)+P.get( 1, r+1, s+1))*Gr.get(2, h+1-r, k+1-s );
                 }
                 Ge.set(1,h+1,k+1,tmp1);
 
-         }
+            }
 
-          for( int h=0; h < MAX_FLUX_DERIVS-k; h++ )
-          {
+            for( int h=0; h < MAX_FLUX_DERIVS-k; h++ )
+            {
 
-           //compute conserved quantity derivatives...
-           Q_mixed_derivs.set(1,h+1,k+2,-((double)h+1.0)/(k+1)*Q_mixed_derivs.get(2,h+2,k+1));
-           Q_mixed_derivs.set(2,h+1,k+2,-((double)h+1.0)/(k+1)*(Gr.get(1,h+2,k+1)+P.get(1,h+2,k+1)));
-           Q_mixed_derivs.set(3,h+1,k+2,0.0);
-           Q_mixed_derivs.set(4,h+1,k+2,0.0);
-           Q_mixed_derivs.set(5,h+1,k+2,-((double)h+1.0)/(k+1)*Ge.get(1,h+2,k+1));
-           }
-         }
+                //compute conserved quantity derivatives...
+                Q_mixed_derivs.set(1,h+1,k+2,-((double)h+1.0)/(k+1)*Q_mixed_derivs.get(2,h+2,k+1));
+                Q_mixed_derivs.set(2,h+1,k+2,-((double)h+1.0)/(k+1)*(Gr.get(1,h+2,k+1)+P.get(1,h+2,k+1)));
+                Q_mixed_derivs.set(3,h+1,k+2,0.0);
+                Q_mixed_derivs.set(4,h+1,k+2,0.0);
+                Q_mixed_derivs.set(5,h+1,k+2,-((double)h+1.0)/(k+1)*Ge.get(1,h+2,k+1));
+            }
+        }
 
         //Compute the highest time-order terms of the auxillary quantities because we will need these for the Euler fluxes 
         for(int k=MAX_FLUX_DERIVS-1;k<MAX_DERIVS;k++)
@@ -340,6 +349,10 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
 
        }
 
+        // Drop to third order if this element is flagged
+        const int nterms = 3*flag.get(i) + MAX_DERIVS*(1-flag.get(i));
+//      printf("nterms = %d\n", nterms );
+
         // Construct the time-averaged flux.
         double rho_ta_flux  = 0.;
         double u1_ta_flux   = 0.;
@@ -352,7 +365,8 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
             double E    = Q_mixed_derivs.get(5,1,1);
             double P1   = P.get(1,1,1);
             double Ge1  = Ge.get(1,1,1);
-            for( int k=1; k < MAX_DERIVS; k++ )
+//          for( int k=1; k < MAX_DERIVS; k++ )
+            for( int k=1; k < nterms; k++ )         // < -- This version works with a limiter
             { 
                 rho += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 1, 1, k+1 ); 
                 ru1 += ( pow(0.5*dt*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 2, 1, k+1 ); 
@@ -379,3 +393,70 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
 
 }
 
+void FlagIndicator( StateVars& Q, dTensorBC1& flag )
+{
+
+    void SetBndValues( StateVars& Q );
+    SetBndValues( Q );
+    dTensorBC2& q   = Q.ref_q();
+    dTensorBC2& aux = Q.ref_aux();
+
+    const int mx     = q.getsize(1);
+    const int meqn   = q.getsize(2);
+    const int maux   = aux.getsize(2);
+    const int mbc    = q.getmbc();
+
+    // Needed to define derivatives
+    const double dx    = global_ini_params.get_dx();
+    const double xlow  = global_ini_params.get_xlow();
+
+    // Multiresolution analysis parameter epsilon
+    const double eps_mr  = 0.1;
+
+    dTensorBC1 flag_no_buff( mx, mbc );
+    flag_no_buff.setall(0.);
+
+    // --------------------------------------------------------------------
+    // Part I: Fill in values for the flag
+    // --------------------------------------------------------------------
+    int num_flagged_elems = 0;
+    for( int i = 1-mbc+1; i <= mx+mbc-1; i++ )
+    {
+
+        dTensor1 Qavg(meqn);
+        for( int m=1; m <= meqn; m++ )
+        {
+            double tmp = 0.5*( q.get(i+1,m) + q.get(i-1,m) );
+            Qavg.set(m, tmp );
+
+            if( abs( tmp - q.get(i,m) ) > eps_mr * dx )
+            { 
+                flag_no_buff.set(i, 1); 
+                num_flagged_elems += 1;     
+                printf("flagged elem i = %d (neighbors get padded later)\n", i );
+            }
+
+        }
+
+    }
+    printf("num_flagged_elems = %d\n", num_flagged_elems);
+
+    // --------------------------------------------------------------------
+    // Part II: Create buffer zone around each flagged element
+    // --------------------------------------------------------------------
+    flag.setall(0.);
+    for( int i = 1; i <= mx; i++ )
+    {
+
+        if( flag_no_buff.get(i) > 0 )
+        { 
+            for( int j=-mbc; j <= mbc; j++ )
+            {
+                flag.set(i+j, 1); 
+            }
+        }
+
+
+    }
+
+}
