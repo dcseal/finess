@@ -6,10 +6,20 @@
 #include "StateVars.h"
 #include "CentralDifferences2D.h"
 
-
-void ConstructDiffTransformL( double dt, StateVars& Q,
-    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
+// Time expanded state variable of the flux using discrete differential 
+// transforms
+//
+// 2D Euler equations.
+//
+// See also: $FINESS/lib/2d/ConstructIntegratedF.cpp.
+void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G)
 {
+
+    // Number of dimensions
+    const int ndim = 2;
+
+    // Central difference routine (depends on spatial order!)
+    void (*CentralDifferences2D)( double dx, double dy, const dTensor3& f, dTensor3& fderivs) = GetCentralDifferences2D();
 
     const dTensorBC3& q   = Q.const_ref_q  ();
     const dTensorBC3& aux = Q.const_ref_aux();
@@ -35,21 +45,26 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
     const int MAX_DERIVS      = mpts_sten;
     const int MAX_FLUX_DERIVS = mpts_sten-1;
 
+    // Double check there are enough boundary points (otherwise there will be
+    //                                                an unnoticed seg. fault)
+    assert_ge( 1+mbc-mbc_small, half_mpts_sten );
+
     // Quadrature rules for numerically evaluating the integral of the flux
     const int NumQuad = 9;
     dTensor1 w1d( NumQuad );
     dTensor1 x1d( NumQuad );
 
+    // Extra variables for nondimensional version of PDE.  This helps to
+    // reduce the total number of divisions that happen inside the main loop
+    const double dt_dx = dt/dx;
+    const double dt_dy = dt/dy;
+
     void setGaussLobattoPoints1d( dTensor1& w1d, dTensor1& x1d);
     void setGaussPoints1d(dTensor1& w1d, dTensor1& x1d);
-    //if( mpts_sten < 9 )
     if( NumQuad < 9 )
         setGaussLobattoPoints1d( w1d, x1d);
     else
         setGaussPoints1d( w1d, x1d );
-
-    // Number of dimensions
-    const int ndim = 2;
 
     // Compute finite difference approximations on all of the conserved
     // variables:
@@ -89,8 +104,6 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
         qderivs.setall(0.0);
 
         // Compute a FD approximation to the derivatives:
-        // Central difference routine (depends on spatial order!)
-        void (*CentralDifferences2D)( double dx, double dy, const dTensor3& f, dTensor3& fderivs) = GetCentralDifferences2D();
         CentralDifferences2D( dx, dy, qvals, qderivs );
 
         // These need to be allocated here in order to be thread safe
@@ -102,12 +115,12 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
         dTensor4 P   ( 1, MAX_DERIVS, MAX_DERIVS, MAX_DERIVS );
 
         // Initialize all arrays to zero (maybe done already...i should check the constructor)
-        Gs.setall( 0. );
-        R.setall ( 0. );
+        Gs.setall ( 0. );
+        R.setall  ( 0. );
         G2r.setall( 0. );
         G1r.setall( 0. );
-        Ge.setall( 0. );
-        P.setall ( 0. );
+        Ge.setall ( 0. );
+        P.setall  ( 0. );
 
 
         // Save all of the "zeroth" time derivatives.
@@ -124,7 +137,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
 
                 //Q_mixed_derivs.set( me, hx,hy, 1,qderivs.get(me, hx,hy)/(factorial[hx-1]*factorial[hy-1]) );
                 //No need to do anything here because we have pulled division by the factorial into the central differences code.
-                Q_mixed_derivs.set( me, hx,hy, 1, qderivs.get(me, hx,hy) );
+                Q_mixed_derivs.set( me, hx, hy, 1, qderivs.get(me,hx,hy) );
 
             }
         }
@@ -187,9 +200,9 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
                 for( int ry=0; ry <= hy; ry++ )
                 for( int s=0; s <= k; s++ )
                 {
-                      tmp1 += Gs.get( 1, rx+1,ry+1, s+1)*R.get(1, hx+1-rx, hy+1-ry,k+1-s );
-                      tmp2 += Gs.get( 2, rx+1,ry+1, s+1)*R.get(1, hx+1-rx, hy+1-ry,k+1-s );
-                      tmp3 += Gs.get( 3, rx+1,ry+1, s+1)*R.get(1, hx+1-rx, hy+1-ry,k+1-s );
+                      tmp1  += Gs.get( 1, rx+1,ry+1, s+1)*R.get(1, hx+1-rx, hy+1-ry,k+1-s );
+                      tmp2  += Gs.get( 2, rx+1,ry+1, s+1)*R.get(1, hx+1-rx, hy+1-ry,k+1-s );
+                      tmp3  += Gs.get( 3, rx+1,ry+1, s+1)*R.get(1, hx+1-rx, hy+1-ry,k+1-s );
                       tmp11 += Q_mixed_derivs.get( 2, rx+1,ry+1, s+1)*R.get(1, hx+1-rx,hy+1-ry, k+1-s );
                       tmp12 += Q_mixed_derivs.get( 3, rx+1,ry+1, s+1)*R.get(1, hx+1-rx,hy+1-ry, k+1-s );
                 }
@@ -226,41 +239,42 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
                 Ge.set(2,hx+1,hy+1,k+1,tmp2);
 
            }
-          for( int hy=0; hy < MAX_FLUX_DERIVS-k; hy++ )
-          for( int hx=0; hx < MAX_FLUX_DERIVS-k; hx++ )
-          {
 
-           //compute conserved quantity derivatives...
-           Q_mixed_derivs.set(1,hx+1,hy+1,k+2,-dt/dx*((double)hx+1.0)/(k+1)*Q_mixed_derivs.get(2,hx+2,hy+1,k+1)-dt/dy*((double)hy+1.0)/(k+1)*Q_mixed_derivs.get(3,hx+1,hy+2,k+1));
-           Q_mixed_derivs.set(2,hx+1,hy+1,k+2,-dt/dx*((double)hx+1.0)/(k+1)*(G2r.get(1,hx+2,hy+1,k+1)+P.get(1,hx+2,hy+1,k+1))-dt/dy*((double)hy+1.0)/(k+1)*G2r.get(3,hx+1,hy+2,k+1));
-           Q_mixed_derivs.set(3,hx+1,hy+1,k+2,-dt/dy*((double)hy+1.0)/(k+1)*(G2r.get(2,hx+1,hy+2,k+1)+P.get(1,hx+1,hy+2,k+1))-dt/dx*((double)hx+1.0)/(k+1)*G2r.get(3,hx+2,hy+1,k+1));
-           Q_mixed_derivs.set(4,hx+1,hy+1,k+2,0.0);
-           Q_mixed_derivs.set(5,hx+1,hy+1,k+2,-dt/dx*((double)hx+1.0)/(k+1)*Ge.get(1,hx+2,hy+1,k+1)-dt/dy*((double)hy+1.0)/(k+1)*Ge.get(2,hx+1,hy+2,k+1));
+           for( int hy=0; hy < MAX_FLUX_DERIVS-k; hy++ )
+           for( int hx=0; hx < MAX_FLUX_DERIVS-k; hx++ )
+           {
+
+               //compute conserved quantity derivatives...
+               Q_mixed_derivs.set(1,hx+1,hy+1,k+2,-dt_dx*((double)hx+1.0)/(k+1)*Q_mixed_derivs.get(2,hx+2,hy+1,k+1)              -dt_dy*((double)hy+1.0)/(k+1)*Q_mixed_derivs.get(3,hx+1,hy+2,k+1));
+               Q_mixed_derivs.set(2,hx+1,hy+1,k+2,-dt_dx*((double)hx+1.0)/(k+1)*(G2r.get(1,hx+2,hy+1,k+1)+P.get(1,hx+2,hy+1,k+1))-dt_dy*((double)hy+1.0)/(k+1)*G2r.get(3,hx+1,hy+2,k+1));
+               Q_mixed_derivs.set(3,hx+1,hy+1,k+2,-dt_dy*((double)hy+1.0)/(k+1)*(G2r.get(2,hx+1,hy+2,k+1)+P.get(1,hx+1,hy+2,k+1))-dt_dx*((double)hx+1.0)/(k+1)*G2r.get(3,hx+2,hy+1,k+1));
+               Q_mixed_derivs.set(4,hx+1,hy+1,k+2,0.0);
+               Q_mixed_derivs.set(5,hx+1,hy+1,k+2,-dt_dx*((double)hx+1.0)/(k+1)*Ge.get(1,hx+2,hy+1,k+1)-dt_dy*((double)hy+1.0)/(k+1)*Ge.get(2,hx+1,hy+2,k+1));
            }
 
        }
 
-        for(int k=1;k<MAX_FLUX_DERIVS;k++)
-        {
+       for(int k=1;k<MAX_FLUX_DERIVS;k++)
+       {
 
-          //Populate time derivatives of (rho u)^2...
-          for( int hx=0; hx < MAX_DERIVS; hx++ )
-          for( int hy=0; hy < MAX_DERIVS; hy++ )
-          {
-                double tmp1 = 0.0;
-                double tmp2 = 0.0;
-                double tmp3 = 0.0;
-                for( int rx=0; rx <= hx; rx++ )
-                for( int ry=0; ry <= hy; ry++ )
-                for( int s=0; s <= k; s++ )
-                {
-                      tmp1 += Q_mixed_derivs.get( 2, rx+1,ry+1, s+1)*Q_mixed_derivs.get(2, hx+1-rx,hy+1-ry, k+1-s );
-                      tmp2 += Q_mixed_derivs.get( 3, rx+1,ry+1, s+1)*Q_mixed_derivs.get(3, hx+1-rx,hy+1-ry, k+1-s );
-                      tmp3 += Q_mixed_derivs.get( 2, rx+1,ry+1, s+1)*Q_mixed_derivs.get(3, hx+1-rx,hy+1-ry, k+1-s );
-                }
-                Gs.set( 1, hx+1,hy+1, k+1, tmp1 );
-                Gs.set( 2, hx+1,hy+1, k+1, tmp2 );
-                Gs.set( 3, hx+1,hy+1, k+1, tmp3 );
+           //Populate time derivatives of (rho u)^2...
+           for( int hx=0; hx < MAX_DERIVS; hx++ )
+           for( int hy=0; hy < MAX_DERIVS; hy++ )
+           {
+               double tmp1 = 0.0;
+               double tmp2 = 0.0;
+               double tmp3 = 0.0;
+               for( int rx=0; rx <= hx; rx++ )
+               for( int ry=0; ry <= hy; ry++ )
+               for( int s=0; s <= k; s++ )
+               {
+                   tmp1 += Q_mixed_derivs.get( 2, rx+1,ry+1, s+1)*Q_mixed_derivs.get(2, hx+1-rx,hy+1-ry, k+1-s );
+                   tmp2 += Q_mixed_derivs.get( 3, rx+1,ry+1, s+1)*Q_mixed_derivs.get(3, hx+1-rx,hy+1-ry, k+1-s );
+                   tmp3 += Q_mixed_derivs.get( 2, rx+1,ry+1, s+1)*Q_mixed_derivs.get(3, hx+1-rx,hy+1-ry, k+1-s );
+               }
+               Gs.set( 1, hx+1,hy+1, k+1, tmp1 );
+               Gs.set( 2, hx+1,hy+1, k+1, tmp2 );
+               Gs.set( 3, hx+1,hy+1, k+1, tmp3 );
           }
 
           //Populate time derivatives of 1/rho...
@@ -282,6 +296,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
                 R.set( 1, hx+1,hy+1, k+1, tmp );
                 }
           }
+
           //populate the time derivatives of (rho u)^2/rho and u
           for( int hx=0; hx < MAX_DERIVS; hx++ )
           for( int hy=0; hy < MAX_DERIVS; hy++ )
@@ -338,12 +353,12 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
           for( int hx=0; hx < MAX_FLUX_DERIVS-k; hx++ )
           {
 
-           //compute conserved quantity derivatives...
-           Q_mixed_derivs.set(1,hx+1,hy+1,k+2,-dt/dx*((double)hx+1.0)/(k+1)*Q_mixed_derivs.get(2,hx+2,hy+1,k+1)-dt/dy*((double)hy+1.0)/(k+1)*Q_mixed_derivs.get(3,hx+1,hy+2,k+1));
-           Q_mixed_derivs.set(2,hx+1,hy+1,k+2,-dt/dx*((double)hx+1.0)/(k+1)*(G2r.get(1,hx+2,hy+1,k+1)+P.get(1,hx+2,hy+1,k+1))-dt/dy*((double)hy+1.0)/(k+1)*G2r.get(3,hx+1,hy+2,k+1));
-           Q_mixed_derivs.set(3,hx+1,hy+1,k+2,-dt/dy*((double)hy+1.0)/(k+1)*(G2r.get(2,hx+1,hy+2,k+1)+P.get(1,hx+1,hy+2,k+1))-dt/dx*((double)hx+1.0)/(k+1)*G2r.get(3,hx+2,hy+1,k+1));
-           Q_mixed_derivs.set(4,hx+1,hy+1,k+2,0.0);
-           Q_mixed_derivs.set(5,hx+1,hy+1,k+2,-dt/dx*((double)hx+1.0)/(k+1)*Ge.get(1,hx+2,hy+1,k+1)-dt/dy*((double)hy+1.0)/(k+1)*Ge.get(2,hx+1,hy+2,k+1));
+               //compute conserved quantity derivatives...
+               Q_mixed_derivs.set(1,hx+1,hy+1,k+2,-dt_dx*((double)hx+1.0)/(k+1)*Q_mixed_derivs.get(2,hx+2,hy+1,k+1)              -dt_dy*((double)hy+1.0)/(k+1)*Q_mixed_derivs.get(3,hx+1,hy+2,k+1));
+               Q_mixed_derivs.set(2,hx+1,hy+1,k+2,-dt_dx*((double)hx+1.0)/(k+1)*(G2r.get(1,hx+2,hy+1,k+1)+P.get(1,hx+2,hy+1,k+1))-dt_dy*((double)hy+1.0)/(k+1)*G2r.get(3,hx+1,hy+2,k+1));
+               Q_mixed_derivs.set(3,hx+1,hy+1,k+2,-dt_dy*((double)hy+1.0)/(k+1)*(G2r.get(2,hx+1,hy+2,k+1)+P.get(1,hx+1,hy+2,k+1))-dt_dx*((double)hx+1.0)/(k+1)*G2r.get(3,hx+2,hy+1,k+1));
+               Q_mixed_derivs.set(4,hx+1,hy+1,k+2,0.0);
+               Q_mixed_derivs.set(5,hx+1,hy+1,k+2,-dt_dx*((double)hx+1.0)/(k+1)*Ge.get(1,hx+2,hy+1,k+1)-dt_dy*((double)hy+1.0)/(k+1)*Ge.get(2,hx+1,hy+2,k+1));
            }
 
        }
@@ -371,7 +386,6 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
                 Gs.set( 3, hx+1,hy+1, k+1, tmp3 );
           }
 
-
           //Populate time derivatives of 1/rho...
           for( int hx=0; hx < MAX_DERIVS; hx++ )
           for( int hy=0; hy < MAX_DERIVS; hy++ )
@@ -391,13 +405,14 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
                 R.set( 1, hx+1,hy+1, k+1, tmp );
                 }
           }
+
           //populate the time derivatives of (rho u)^2/rho and u
           for( int hx=0; hx < MAX_DERIVS; hx++ )
           for( int hy=0; hy < MAX_DERIVS; hy++ )
           {
-                double tmp1 = 0.0;
-                double tmp2 = 0.0;
-                double tmp3 = 0.0;
+                double tmp1  = 0.0;
+                double tmp2  = 0.0;
+                double tmp3  = 0.0;
                 double tmp11 = 0.0;
                 double tmp12 = 0.0;
                 for( int rx=0; rx <= hx; rx++ )
@@ -516,6 +531,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q,
         E_ta_flux    = 0.;
         for( int mq=1; mq <= NumQuad; mq++ )
         {
+
             // Evaluate q at this quadrature point
             double rho  = Q_mixed_derivs.get(1,1,1,1);
             double ru1  = Q_mixed_derivs.get(2,1,1,1);

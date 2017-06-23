@@ -8,7 +8,6 @@
 central_differences_t GetCentralDifferences()
 {
 
-    // TODO - implement WENO3 and WENO-Z version
     if( global_ini_params.get_space_order() == 5)
         return &CentralDifferences5;
     else if( global_ini_params.get_space_order() == 7)
@@ -17,11 +16,6 @@ central_differences_t GetCentralDifferences()
         return &CentralDifferences9;
     else if( global_ini_params.get_space_order() == 11)
         return &CentralDifferences11;
-//  else if(global_ini_params.get_weno_version() == IniParams::WenoVersion::Z  && global_ini_params.get_space_order() == 9)
-//  {
-//      printf("Warning: we're not sure these are the correct coefficients for WENOZ-9!\n");
-//      return &WenoReconstruct_Z9;
-//  }
     else
         throw(std::logic_error("Requested Central Difference Operator is not implemented."));
 }
