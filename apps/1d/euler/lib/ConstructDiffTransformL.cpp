@@ -433,13 +433,13 @@ void FlagIndicator( StateVars& Q, dTensorBC1& flag )
             { 
                 flag_no_buff.set(i, 1); 
                 num_flagged_elems += 1;     
-                printf("flagged elem i = %d (neighbors get padded later)\n", i );
+//              printf("flagged elem i = %d (neighbors get padded later)\n", i );
             }
 
         }
 
     }
-    printf("num_flagged_elems = %d\n", num_flagged_elems);
+//  printf("num_flagged_elems = %d\n", num_flagged_elems);
 
     // --------------------------------------------------------------------
     // Part II: Create buffer zone around each flagged element
