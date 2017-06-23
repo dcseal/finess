@@ -202,7 +202,7 @@ void FlagIndicator( StateVars& Q, dTensorBC2& flag )
         }
 
     }
-    cout << "num_flagged_elems = " << num_flagged_elems << endl;
+//  cout << "num_flagged_elems = " << num_flagged_elems << endl;
 
     // --------------------------------------------------------------------
     // Part II: Create buffer zone around each flagged element
