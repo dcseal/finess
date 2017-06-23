@@ -6,6 +6,7 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
 
     meqn     = ini_params['meqn']
     maux     = ini_params['maux']
+    nplot    = ini_params['nout']
     mx       = ini_params['mx']
 
     # Exact solution:
@@ -17,7 +18,9 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
             qex[i] = 1.0
 #           qex[i] = np.cos(np.pi*(x-0.5)/width)**6
 
-    print("Linf-error = %2.15e" % max( abs(qsoln[:,0]-qex[:]) ) )
+    print("Linf-error = %2.15e\n" % max( abs(qsoln[:,0]-qex[:]) ) )
+    print('total mass = %f\n'     % ( (xc[1]-xc[0])*sum( qsoln[:,0] ) ) )
+#   print('sum = %f\n' % ( ( xc[1]-xc[0] ) * sum(qsoln[:,0]) ) )
 
     plt.figure(1)
     plt.clf()
