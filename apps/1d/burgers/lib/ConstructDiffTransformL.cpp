@@ -36,7 +36,9 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     const int MAX_DERIVS      = mpts_sten;
     const int MAX_FLUX_DERIVS = mpts_sten-1;
 
-    printf("TODO - check the boundaries here - there's a bug with accessing elements that are out of bounds here\n"):
+    // Double check there are enough boundary points (otherwise there will be
+    //                                                an unnoticed seg. fault)
+    assert_ge( 1+mbc-mbc_small, half_mpts_sten );
 
     // Quadrature rules for numerically evaluating the integral of the flux
     dTensor1 w1d( MAX_DERIVS );
@@ -59,7 +61,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
 
     // Compute finite difference approximations on all of the conserved
     // variables:
-//#pragma omp parallel for
+#pragma omp parallel for
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
     {
 

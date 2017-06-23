@@ -35,6 +35,10 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     const int MAX_DERIVS      = mpts_sten;
     const int MAX_FLUX_DERIVS = mpts_sten-1;
 
+    // Double check there are enough boundary points (otherwise there will be
+    //                                                an unnoticed seg. fault)
+    assert_ge( 1+mbc-mbc_small, half_mpts_sten );
+
     // Quadrature rules for numerically evaluating the integral of the flux
     const int NumQuad = 9;
     dTensor1 w1d( NumQuad );
