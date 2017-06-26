@@ -1,0 +1,28 @@
+#!/bin/bash -login
+#PBS -l walltime=00:02:00,nodes=24:ppn=1
+#PBS -j oe
+#PBS -N run_2d_euler_dt_11
+ 
+# load necessary modules, e.g.
+# module load HDF5
+ 
+# change to the working directory where your code is located
+#
+# TODO - I don't know how to get this to use the environment variable $(FINESS)
+# that should be loaded with each login shell.  I tried doing the following:
+#
+# source ~/.bashrc
+#
+# but that didn't seem to work
+#
+# Instead, I am currently hard coding my own folder to this folder change:
+cd ~/code/finess/apps/2d/euler/two_d_riemann_test
+#cd $(PBS_O_WORKDIR)
+
+# Compile your code (this was done by hand)
+make cleanallo; make -j;
+# make cleanallo; make;
+ 
+# call your executable
+pwd
+aprun -n1 ./finess.exe
