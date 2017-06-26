@@ -21,7 +21,7 @@ def _parameters_accessors_checks():
                     name = "riemann_problem_number",
                     type_ = "int")
     parameters.append(riemann_problem_no)
-    checks.append(CheckOneOf(OPT, [0, 1, 2, 3, 4, 5]))
+    checks.append(CheckOneOf(riemann_problem_no, [0, 1, 2, 3, 4, 5]))
     return parameters, map(Accessor, parameters), checks
 
 parameter_list, accessor_list, check_list = \

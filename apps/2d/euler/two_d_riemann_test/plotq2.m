@@ -7,32 +7,120 @@
 %% [xlow,xhigh,ylow,yhigh]:  min/max values of grid
 %%                    meqn:  number of equations
 %%                    maux:  number of aux components
+%%                   meth1:  spatial order of accuracy
 %%
 %%   Grid information:
 %%       (xc,yc): grid points (cell centers), size = (mx,my)
+%%       (xl,yl): grid points (lower left cell corners), size = (mx+1,my+1)
 %%
 %%   Solution information:
 %%         qsoln:  solution sampled on mesh, size = (mx,my,meqn)
 %%           aux:  aux components sampled on mesh, size = (mx,my,maux)
+%%          qaug:  solution sampled on mesh, with zero padding to
+%%                 make it compatible with surf and pcolor matlab
+%%                 plotting tools, size = (mx+1,my+1,meqn)
+%%       aux_aug:  aux components sampled on mesh, with zero padding to
+%%                 make it compatible with surf and pcolor matlab
+%%                 plotting tools, size = (mx+1,my+1,maux)
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% gas constant and Riemann problem options (OPT = 1 or 2)
-gamma_gas = sscanf(INI.euler.gamma, '%e');
-% OPT       = sscanf(INI.euler.opt, '%d');
+% close all;    % Close any open figures
 
+% gas constant
+%   fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
+%   if fids==-1
+%     disp(['File  ',outputdir,'/eulerhelp.dat  not found.']);
+%     disp('Setting gamma = 1.4');
+%     gamma_gas = 1.4;
+%   else
+%     gamma_gas  = fscanf(fids,'%e',1);
+%     fclose(fids);
+%   end
+
+gamma_gas = sscanf(INI.euler.gamma, '%e');
+rpnum     = sscanf(INI.euler.riemann_problem_number, '%d' );        % Riemann problem number
+
+rho=qsoln(:,:,m);
+
+% figure('Position', [100, 100, 1049, 895]);
+% clf;
+% pcolor(xc,yc,rho);
+% axis([-0.5 0.5 -0.5 0.5])
+% %contourf(xc, yc, rho,40 );
+% min(min(rho))
+% shading flat;
+% yrbcolormap
+% axis on; box on; grid off;
+% axis('equal');
+% %axis([-0.05 13.25 -0.05 11.05]);
+% %set(gca,'xtick',-4:1.0:14);
+% %set(gca,'ytick',-4:1.0:14);
+% %set(gca,'fontsize',16);
+% t1 = title(['Density at t = ',num2str(time)]); 
+% set(t1,'fontsize',16);
+% colorbar;
+% %caxis([0.8,10]);
+% caxis auto;
+% %export_fig -transparent Density1.png
+%    
+% Grey scale figure plot that you see in a lot of papers.
+% figure('Position', [100, 100, 1049, 895]);
 figure(1);
 clf;
-pcolor(xc,yc,qsoln(:,:,m));
-shading flat;
-yrbcolormap
+%colors=linspace(1.0,3.0,10);
+h=xc(2,1)-xc(1,1);
+[px,py]=gradient(rho,h,h);
+v=sqrt(px.^2+py.^2)';
+
+
+max(max(v))
+min(min(v))
+colormap(flipud(gray(2048)).^10)
+h = pcolor(xc,yc,v');
+set(h, 'EdgeColor', 'none');
+%contourf(xc, yc, rho,10, '-k' );
+
+%colorbar()
 axis on; box on; grid off;
 axis('equal');
-axis([-0.01 1.01 -0.01 1.01]);
-set(gca,'xtick',0:0.25:1);
-set(gca,'ytick',0:0.25:1);
-set(gca,'fontsize',16);
-t1 = title(['q(',num2str(m),') at t = ',num2str(time),'     [FINESS]']); 
+%axis([-0.05 13.25 -0.05 11.05]);
+%set(gca,'xtick',-4:1.0:14);
+%set(gca,'ytick',-4:1.0:14);
+%set(gca,'fontsize',16);
+t1 = title(['Density at t = ',num2str(time)]); 
+axis([-0.5 0.5 -0.5 0.5])
 set(t1,'fontsize',16);
+% export_fig -transparent DensityBW.png     % TODO - need to find this file from somewhere
 
-figure(1)
+% figure('Position', [100, 100, 1049, 895]);
+  figure(2);
+  clf;
+  rho=qsoln(:,:,1);
+  e=qsoln(:,:,5);
+  u1=qsoln(:,:,2)./qsoln(:,:,1);
+  u2=qsoln(:,:,3)./qsoln(:,:,1);
+  u3=qsoln(:,:,4)./qsoln(:,:,1);
+  P=0.4*(e-0.5*rho.*(u1.*u1+u2.*u2+u3.*u3));
+  
+  c=sqrt(1.4*P./rho);
+  M=sqrt(u1.*u1+u2.*u2)./c;
+  %contour(xc, yc, P, linspace(0.091, 38, 50), '-k' );
+  contourf(xc, yc, P, 40, '-k' );
+  colorbar()
+  %axis on; box on; grid off;
+  %axis('equal');
+  %axis([-0.05 13.25 -0.05 11.05]);
+  
+  axis([-0.5 0.5 -0.5 0.5])
+  %set(gca,'xtick',-4:1.0:14);
+  %set(gca,'ytick',-4:1.0:14);
+  set(gca,'fontsize',16);
+  t1 = title(['Pressure at t = ',num2str(time)]); 
+  set(t1,'fontsize',16);
+% 
+% % n1 = frame number
+% %fname = strcat( strcat( 'density', num2str(n1, '%02d' ) ), '.jpg' );
+% %print(1, '-djpeg', fname );
+% %fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
+% %print(3, '-deps', fname  );

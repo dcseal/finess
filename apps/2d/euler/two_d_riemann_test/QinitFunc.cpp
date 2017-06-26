@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "dogdefs.h"
-#include "EulerParams.h"
+#include "IniParams.h"
 
 // This is a user-supplied routine that sets the
 // initial conditions at all the points "xpts"
@@ -31,6 +31,11 @@
 //      "Solution of Two-Dimensional Riemann Problems for Gas Dynamics without 
 //       Riemann Problem Solvers," Kurganov and Tadmor. 
 //
+//
+// or the Moe-Rossmanith-Seal moment limiter paper
+// (https://arxiv.org/abs/1507.03024) for references and a description of the
+// RP1 and RP3.
+//     
 // We use the indicator OPT in the [euler] section of the parameters file to 
 // indicate which Riemann problem we are solving
 //
@@ -41,7 +46,7 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
     const double gamma = global_ini_params.get_gamma();
 
     // Riemann problem number
-    const int    riemann_number = global_ini_params.get_riemann_number();
+    const int    riemann_number = global_ini_params.get_riemann_problem_number();
 
     // Location of initial shock discontinuity
     const double x0 = global_ini_params.get_x0();
@@ -155,56 +160,57 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
         if(riemann_number==3)
         {
 
-            rho1=2.0;
-            u11 = 0.75;
-            u21 = 0.5;
-            u3 = 0.0;
-            press1=1.0;
+            rho1    = 2.0;
+            u11     = 0.75;
+            u21     = 0.5;
+            u3      = 0.0;
+            press1  = 1.0;
 
-            rho2   = 1.0;
-            u12    =  -0.75;
-            u22    =  0.5;
-            u3    =  0.0;
-            press2 =  1.0;
+            rho2    =  1.0;
+            u12     = -0.75;
+            u22     =  0.5;
+            u3      =  0.0;
+            press2  =  1.0;
 
-            rho3   =  3.0;
-            u13    =  -0.75;
-            u23    =  -0.5;
-            u3    =  0.0;
-            press3 =  1.0;
+            rho3    =  3.0;
+            u13     = -0.75;
+            u23     = -0.5;
+            u3      =  0.0;
+            press3  =  1.0;
 
             rho4   = 1.0;
             u14    = 0.75;
             u24    = -0.5;
-            u3    = 0.0;
+            u3     = 0.0;
             press4 = 1.0;
         }
+
         if(riemann_number==4)
         {
 
-            rho1=1.0;
-            u11 = -0.6259;
-            u21 = 0.1;
-            u3 = 0.0;
-            press1=1.0;
+            rho1    =  1.0;
+            u11     = -0.6259;
+            u21     = 0.1;
+            u3      = 0.0;
+            press1  = 1.0;
 
-            rho2   = 0.8;
-            u12    =  0.1;
-            u22    =  0.1;
-            u3    =  0.0;
-            press2 =  1.0;
+            rho2    = 0.8;
+            u12     = 0.1;
+            u22     = 0.1;
+            u3      = 0.0;
+            press2  = 1.0;
 
-            rho3   =  1.0;
-            u13    =  0.1;
-            u23    =  -0.6259;
-            u3    =  0.0;
-            press3 =  1.0;
+            rho3    = 1.0;
+            u13     = 0.1;
+            u23     =-0.6259;
+            u3      = 0.0;
+            press3  = 1.0;
 
-            rho4   = 0.5917;
-            u14    = 0.1;
-            u24    = 0.1;
-            u3    = 0.0;
-            press4 = 0.4;
+            rho4    = 0.5917;
+            u14     = 0.1;
+            u24     = 0.1;
+            u3      = 0.0;
+            press4  = 0.4;
         }
         if(riemann_number==5)
         {
