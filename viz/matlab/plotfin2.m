@@ -1,4 +1,4 @@
-function plotfin2(parameters_ini_filename_in)
+function plotfin2(outputdir_in)
 %PLOTFIN2     Generic 2D plotting routine for FINESS.
 %
 % PLOTFIN2(outputdir_in) is the main plotting
@@ -21,22 +21,33 @@ function plotfin2(parameters_ini_filename_in)
 %
 % See also: plotfin1
 
-if( nargin )
-  parameters_ini_filename = parameters_ini_filename_in;
-else
-  parameters_ini_filename = 'parameters.ini';
+% Read in the parameters file that was used to generate this run
+if( ~nargin )
+  outputdir_in = 'output/';
 end
+fids = fopen([[outputdir_in, '/parameters_ini_filename']],'r');
+parameters_ini_filename_str = fgetl(fids)
+fclose(fids);
 
-% Read in any user-supplied paramters.
-INI = ConvertIniFile2Struct(parameters_ini_filename);
+% Read in any user-supplied parameters
+INI = ConvertIniFile2Struct([[outputdir_in, '/', parameters_ini_filename_str]]);
 
-% pull the output directory.
+% Pull the output directory.
+%
+% TODO - This seems to be a circular argument.  The output_dir is passed in,
+% but then it is read in from the parameters file.
 if( isfield( INI.finess, 'output_dir' ) )
   outputdir = INI.finess.output_dir;
 else
   outputdir = 'output';
 end
 INI.finess
+
+if( ~strcmp(outputdir, outputdir_in ) )
+    disp('Warning: the outputdir read from the parameters file is different than what was passed into this routine.');
+    outputdir
+    outputdir_in
+end
 
 
 % Pull more information from parameters file
