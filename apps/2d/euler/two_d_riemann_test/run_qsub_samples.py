@@ -12,11 +12,12 @@ def main(ts_method):
     ts_method_str = integrators[ts_method]
     print(ts_method_str)
 
+    # Parameters to run samples over.  This script looks at all combinations of
+    # these parameters
     cfl_range = [0.3,0.4]
     sorders   = [5,7,9,11]
     mx_range  = [64,128,256,512]
 
-    run_number = 0
     for mx_now in mx_range:
         for space_order in sorders:
             for cfl in cfl_range:
@@ -47,12 +48,9 @@ def main(ts_method):
 
                 # if you want to capture script output, do
                 #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
-#               cmd = 'qsub %s' % output_file_name
-#               print(cmd)
-        #       call(cmd, shell=True)
-
-                # run number
-                run_number = run_number + 1
+                cmd = 'qsub %s' % qsub_file_name
+                print('Running command', cmd)
+                call(cmd, shell=True)
 
 def parse_input( help_message ):
     """Parse input arguments."""

@@ -8,13 +8,12 @@ def _parameters_accessors_checks():
     parameters = []
     checks = []
 
-
     # Global alpha flag (for Lax-Friedrichs vs. Local Lax-Friedrichs flux splitting)
     global_alpha = Parameter(variable_name = "global_alpha",
                          section = "finess",
                          name = "global_alpha",
                          type_ = "bool",
-                         default_value = False)
+                         default_value = True)
     parameters.append(global_alpha)
 
     # Positivity preserving limiter flag
