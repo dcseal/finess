@@ -112,7 +112,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
         // check if max number of time steps exceeded
         if( n_step > nv )
         {
-            printf(" Error in FinSolveRK.cpp: "         );
+            printf(" Error in FinSolveDiffTransform.cpp: "         );
             printf("Exceeded allowed # of time steps \n");
             printf("    n_step = %d\n", n_step          );
             printf("        nv = %d\n", nv              );
@@ -158,6 +158,9 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 // Limit the high-order flux
                 ApplyMPPLimiter2D( dt, qnew, *fLF, *gLF, *fhat, *ghat );
 
+                const double dt_dx = dt/dx;
+                const double dt_dy = dt/dy;
+
                 // Update the solution:
 #pragma omp parallel for
                 for( int i=1; i <= mx; i++   )
@@ -166,9 +169,9 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 {
 
                     double tmp = (fhat->get(i+1,j,m)-fhat->get(i,j,m) );
-                    qnew.set(i, j, m, qnew.get(i,j,m) - (dt/dx)*tmp );
+                    qnew.set(i, j, m, qnew.get(i,j,m) - (dt_dx)*tmp );
                     tmp = (ghat->get(i,j+1,m)-ghat->get(i,j,m) );
-                    qnew.set(i, j, m, qnew.get(i,j,m) - (dt/dy)*tmp );
+                    qnew.set(i, j, m, qnew.get(i,j,m) - (dt_dy)*tmp );
 
                     // Test the LF solver by uncommenting this chunk
                     // double tmp = Lstar.get(i,j,m);
@@ -210,7 +213,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
-                cout << "FinSolveLxW2D ... Step" << setw(5) << n_step;
+                cout << "FinSolveDiffTransform ... Step" << setw(5) << n_step;
                 cout << "   CFL =" << setw(6) << fixed << cfl;
                 cout << "   dt =" << setw(11) << scientific << dt;
                 cout << "   t =" << setw(11) << scientific << t <<endl;
@@ -236,7 +239,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 t = told;
                 if( global_ini_params.get_verbosity() )
                 {
-                    cout<<"FinSolveLxW2D rejecting step...";
+                    cout<<"FinSolveDiffTransform rejecting step...";
                     cout<<"CFL number too large";
                     cout<<endl;
                 }
