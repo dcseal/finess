@@ -101,7 +101,7 @@ function plotfin1_nostop( parameters_ini_filename_in )
       % USER SUPPLIED FUNCTION
       plotq1;        
   
-   end
-   disp(' ')
+    end
+    disp(' ')
 
 end
