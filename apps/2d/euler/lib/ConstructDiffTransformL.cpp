@@ -66,6 +66,14 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
     else
         setGaussPoints1d( w1d, x1d );
 
+    // Set the flag indicator
+    dTensorBC2 flag(mx,my,mbc);
+    flag.setall(0.);
+
+    void FlagIndicator( StateVars& Q, dTensorBC2& flag );
+    if( global_ini_params.get_mr_limiter() )
+        FlagIndicator( Q, flag );
+
     // Compute finite difference approximations on all of the conserved
     // variables:
 #pragma omp parallel for
@@ -477,7 +485,10 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
         //
         // ------------------------------------------------------------------ //
 
-        // 1nd-component of flux function : F in q_t + F_x + G_y = Psi
+        // Drop to third order if this element is flagged
+        const int nterms = 3*flag.get(i,j) + MAX_DERIVS*(1-flag.get(i,j));
+
+        // 1st-component of flux function : F in q_t + F_x + G_y = Psi
         double rho_ta_flux  = 0.;
         double u1_ta_flux   = 0.;
         double u2_ta_flux   = 0.;
@@ -491,7 +502,8 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
             double E    = Q_mixed_derivs.get(5,1,1,1);
             double P1   = P.get(1,1,1,1);
             double Ge1  = Ge.get(1,1,1,1);
-            for( int k=1; k < MAX_DERIVS; k++ )
+//          for( int k=1; k < MAX_DERIVS; k++ )
+            for( int k=1; k < nterms; k++ )         // < -- This version works with a limiter
             { 
                 rho += ( pow(0.5*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 1, 1,1, k+1 ); 
                 ru1 += ( pow(0.5*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 2, 1,1, k+1 );
@@ -539,7 +551,9 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
             double E    = Q_mixed_derivs.get(5,1,1,1);
             double P1   = P.get(1,1,1,1);
             double Ge1  = Ge.get(2,1,1,1);
-            for( int k=1; k < MAX_DERIVS; k++ )
+
+//          for( int k=1; k < MAX_DERIVS; k++ )     // < -- Original version that uses all derivatives
+            for( int k=1; k < nterms; k++ )         // < -- This version works with a limiter
             { 
                 rho += ( pow(0.5*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 1, 1,1, k+1 ); 
                 ru1 += ( pow(0.5*( 1.0 + x1d.get(mq) ), k) )*Q_mixed_derivs.get( 2, 1,1, k+1 );
@@ -567,6 +581,85 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
         G.set( i,j, 3, u2_ta_flux );  // flux for 2-component of momentum
         G.set( i,j, 4, 0.0 );         // not used in 1/2D (flux for 3-component of momentum)
         G.set( i,j, 5, E_ta_flux );   // flux for energy
+
+    }
+
+}
+
+void FlagIndicator( StateVars& Q, dTensorBC2& flag )
+{
+
+    void SetBndValues( StateVars& Q );
+    SetBndValues( Q );
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
+
+    const int mx     = q.getsize(1);
+    const int my     = q.getsize(2);
+    const int meqn   = q.getsize(3);
+    const int maux   = aux.getsize(3);
+    const int mbc    = q.getmbc();
+
+    // Needed to define derivatives
+    const double dx    = global_ini_params.get_dx();
+    const double xlow  = global_ini_params.get_xlow();
+
+    const double dy    = global_ini_params.get_dy();
+    const double ylow  = global_ini_params.get_ylow();
+
+    // Multiresolution analysis parameter epsilon (TODO - move to parameters.ini file)
+    const double eps_mr  = 0.1;
+
+    dTensorBC2 flag_no_buff( mx, my, mbc );
+    flag_no_buff.setall(0.);
+
+    // --------------------------------------------------------------------
+    // Part I: Fill in values for the flag
+    // --------------------------------------------------------------------
+    int num_flagged_elems = 0;
+    for( int i = 1-mbc+1; i <= mx+mbc-1; i++ )
+    for( int j = 1-mbc+1; j <= my+mbc-1; j++ )
+    {
+
+        dTensor1 Qavg(meqn);
+        for( int m=1; m <= meqn; m++ )
+        {
+            double tmp = 0.5*( q.get(i+1,j,m) + q.get(i-1,j,m) );
+                       + 0.5*( q.get(i,j+1,m) + q.get(i,j-1,m) );
+
+            Qavg.set(m, tmp );
+
+            if( fabs( tmp - q.get(i,j,m) ) > eps_mr * dx ||
+                fabs( tmp - q.get(i,j,m) ) > eps_mr * dy 
+            )
+            { 
+                flag_no_buff.set(i, j, 1); 
+                num_flagged_elems += 1;     
+//              printf("flagged elem i,j = %d %d (neighbors get padded later)\n", i,j );
+            }
+
+        }
+
+    }
+//  printf("num_flagged_elems = %d\n", num_flagged_elems);
+
+    // --------------------------------------------------------------------
+    // Part II: Create buffer zone around each flagged element
+    // --------------------------------------------------------------------
+    flag.setall(0.);
+    for( int i = 1; i <= mx; i++ )
+    for( int j = 1; j <= my; j++ )
+    {
+
+        if( flag_no_buff.get(i,j) > 0 )
+        { 
+            for( int k1=-mbc; k1 <= mbc; k1++ )
+            for( int k2=-mbc; k2 <= mbc; k2++ )
+            {
+                flag.set(i+k1,j+k2, 1); 
+            }
+        }
+
 
     }
 
