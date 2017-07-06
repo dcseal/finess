@@ -124,9 +124,17 @@ set(t1,'fontsize',16);
 % Note: n1 = frame number so you can use this to keep track of each picture
 % when coupled with something like plotfin2_nostop (or simply plotfin2 if you
 % want to click through each image).
+
+%   descriptor = erase(sscanf(INI.finess.output_dir,'%s'),'output');
+    
+    descriptor = sscanf(INI.finess.output_dir,'%s');
+    descriptor = descriptor(7:end);
+
 %
-% fname = strcat( strcat( 'density-dt05-128-frame', num2str(n1, '%02d' ) ), '.jpg' );
-% print(1, '-djpeg', fname );
+% fname = strcat( strcat( 'density-dt07-128-frame', num2str(n1, '%02d' ) ), '.jpg' );
+  fname = [['density-', descriptor, '-frame', num2str(n1, '%02d' ) , '.jpg' ]];
+; print(1, '-djpeg', fname );
+
 % fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
 % print(3, '-deps', fname  );
 
