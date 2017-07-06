@@ -63,7 +63,7 @@ rho=qsoln(:,:,m);
 % %caxis([0.8,10]);
 % caxis auto;
 % %export_fig -transparent Density1.png
-%    
+
 % Grey scale figure plot that you see in a lot of papers.
 % figure('Position', [100, 100, 1049, 895]);
 figure(1);
@@ -73,9 +73,7 @@ h=xc(2,1)-xc(1,1);
 [px,py]=gradient(rho,h,h);
 v=sqrt(px.^2+py.^2)';
 
-
-max(max(v))
-min(min(v))
+fprintf('Smallest and largest value of the computed gradient = %f %f\n', max(max(v)), min(min(v)) );
 colormap(flipud(gray(2048)).^10)
 h = pcolor(xc,yc,v');
 set(h, 'EdgeColor', 'none');
@@ -89,9 +87,13 @@ axis('equal');
 %set(gca,'ytick',-4:1.0:14);
 %set(gca,'fontsize',16);
 t1 = title(['Density at t = ',num2str(time)]); 
-axis([-0.5 0.5 -0.5 0.5])
+axis([-0.5 0.5 -0.5 0.5])       % TODO - read in RP number?
 set(t1,'fontsize',16);
-% export_fig -transparent DensityBW.png     % TODO - need to find this file from somewhere
+
+% TODO - need to find this file
+% from somewhere.  Scott, did you write this yourself or yank it from the web?
+% -DS
+% export_fig -transparent DensityBW.png     
 
 % figure('Position', [100, 100, 1049, 895]);
   figure(2);
@@ -118,9 +120,22 @@ set(t1,'fontsize',16);
   set(gca,'fontsize',16);
   t1 = title(['Pressure at t = ',num2str(time)]); 
   set(t1,'fontsize',16);
-% 
-% % n1 = frame number
-% %fname = strcat( strcat( 'density', num2str(n1, '%02d' ) ), '.jpg' );
-% %print(1, '-djpeg', fname );
-% %fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
-% %print(3, '-deps', fname  );
+
+% Note: n1 = frame number so you can use this to keep track of each picture
+% when coupled with something like plotfin2_nostop (or simply plotfin2 if you
+% want to click through each image).
+
+%   descriptor = erase(sscanf(INI.finess.output_dir,'%s'),'output');
+    
+    descriptor = sscanf(INI.finess.output_dir,'%s');
+    descriptor = descriptor(7:end);
+
+%
+% fname = strcat( strcat( 'density-dt07-128-frame', num2str(n1, '%02d' ) ), '.jpg' );
+  fname = [['density-', descriptor, '-frame', num2str(n1, '%02d' ) , '.jpg' ]];
+; print(1, '-djpeg', fname );
+
+% fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
+% print(3, '-deps', fname  );
+
+
