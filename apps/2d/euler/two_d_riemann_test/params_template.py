@@ -62,12 +62,14 @@ riemann_problem_number = 1  ; Option [0,1,2,3,4,5] for which Riemann problem to 
 
 qsub_template = '''
 #!/bin/bash -login
-#PBS -l walltime=00:24:00,nodes=1:ppn=%(proc_per_node)i
+#PBS -l walltime=48:02:00,nodes=1:ppn=%(proc_per_node)i
 #PBS -j oe
 #PBS -N run_2d_euler_%(descriptor)s
  
 # load necessary modules, e.g.
 # module load HDF5
+module load gcc
+module load Python
  
 # change to the working directory where your code is located
 #
@@ -84,8 +86,10 @@ cd ~/code/finess/apps/2d/euler/two_d_riemann_test
 
 # Compile your code (uncomment this if you do not do this by hand)
 # make cleanallo; make -j;
- 
+
+export OMP_NUM_THREADS='24'
+
 # call your executable
 pwd
-aprun -n1 ./finess.exe %(params_file_name)s 
+aprun -n1 -d24 ./finess.exe %(params_file_name)s 
 '''
