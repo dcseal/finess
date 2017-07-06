@@ -59,7 +59,7 @@ int RunFinpack( )
     cout << "   | Developed by the research group of           |   " << endl;
     cout << "   |            David C. Seal                     |   " << endl;
     cout << "   |            Department of Mathematics         |   " << endl;
-    cout << "   |            Michigan State University         |   " << endl;
+    cout << "   |            US Naval Academy                  |   " << endl;
     cout << "   ------------------------------------------------   " << endl;
     cout << endl;
 

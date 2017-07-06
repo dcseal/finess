@@ -42,10 +42,16 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
     //                                                an unnoticed seg. fault)
     assert_ge( 1+mbc-mbc_small, half_mpts_sten );
 
+    // Flag indicator for temporal limiter
+    dTensorBC2 flag(mx,my,mbc); flag.setall(0.);
+    void FlagIndicator( StateVars& Q, dTensorBC2& flag );
+    if( global_ini_params.get_mr_limiter() )
+        FlagIndicator( Q, flag );
+
     // Quadrature rules for numerically evaluating the integral of the flux
-    const int NumQuad = 9;
-    dTensor1 w1d( NumQuad );
-    dTensor1 x1d( NumQuad );
+//  const int NumQuad = 9;
+//  dTensor1 w1d( NumQuad );
+//  dTensor1 x1d( NumQuad );
 
     // Extra variables for nondimensional version of PDE.  This helps to
     // reduce the total number of divisions that happen inside the main loop
@@ -141,10 +147,15 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
         // already contains a factorial in its definition.  In order to
         // construct the "time-averaged" version, we need to only divide by a
         // single extra factor of (k+1).
+
+        const int nterms = 4*flag.get(i,j) + MAX_FLUX_DERIVS*(1-flag.get(i,j));
+
+            
         for( int m=1; m<=meqn; m++ )
         {
             double tmp = Q_mixed_derivs.get(m,1,1,1);
-            for( int k=1; k < MAX_FLUX_DERIVS; k++ )
+//          for( int k=1; k < MAX_FLUX_DERIVS; k++ )
+            for( int k=1; k < nterms; k++ )
             {
                 // tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, 1, k+1 );
                 // our series is now in terms of dtau which ranges from 0 to 1 always, so dt is no longer needed here.
@@ -160,7 +171,8 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
         for( int m=1; m<=meqn; m++ )
         {
             double tmp = Q_mixed_derivs.get(m,1,1,1);
-            for( int k=1; k < MAX_FLUX_DERIVS; k++ )
+//          for( int k=1; k < MAX_FLUX_DERIVS; k++ )
+            for( int k=1; k < nterms; k++ )
             {
                 //tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, 1, k+1 );
                 //our series is now in terms of dtau which ranges from 0 to 1 always, so dt is no longer needed here.
@@ -175,4 +187,87 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
 
 }
 
+void FlagIndicator( StateVars& Q, dTensorBC2& flag )
+{
 
+    void SetBndValues( StateVars& Q );
+    SetBndValues( Q );
+    dTensorBC3& q   = Q.ref_q();
+    dTensorBC3& aux = Q.ref_aux();
+
+    const int mx     = q.getsize(1);
+    const int my     = q.getsize(2);
+    const int meqn   = q.getsize(3);
+    const int maux   = aux.getsize(3);
+    const int mbc    = q.getmbc();
+
+    // Needed to define derivatives
+    const double dx    = global_ini_params.get_dx();
+    const double xlow  = global_ini_params.get_xlow();
+
+    const double dy    = global_ini_params.get_dy();
+    const double ylow  = global_ini_params.get_ylow();
+
+    // Multiresolution analysis parameter epsilon
+    //
+    // TODO - move this into the parameters.ini file 
+    const double eps_mr  = 0.1;
+
+    dTensorBC2 flag_no_buff( mx, my, mbc );
+    flag_no_buff.setall(0.);
+
+    // --------------------------------------------------------------------
+    // Part I: Fill in values for the flag
+    // --------------------------------------------------------------------
+    int num_flagged_elems = 0;
+    for( int i = 1-mbc+1; i <= mx+mbc-1; i++ )
+    for( int j = 1-mbc+1; j <= my+mbc-1; j++ )
+    {
+
+        for( int m=1; m <= meqn; m++ )
+        {
+            const double tmp_x = 0.5*( q.get(i+1,j,m) + q.get(i-1,j,m) );
+            const double tmp_y = 0.5*( q.get(i,j+1,m) + q.get(i,j-1,m) );
+
+//          const double diff_x = tmp_x - q.get(i,j,m);
+//          const double diff_y = tmp_y - q.get(i,j,m);
+//          if( fabs(diff_x) > 1e-13 )
+//              printf("Element (%d,%d), dx = %2.15e\n", i, j, tmp_x - q.get(i,j,m) );
+
+//          if( fabs(diff_y) > 1e-13 )
+//              printf("Element (%d,%d), dy = %2.15e\n", i, j, tmp_y - q.get(i,j,m) );
+
+            if( fabs( tmp_x - q.get(i,j,m) ) > eps_mr * dx || 
+                fabs( tmp_y - q.get(i,j,m) ) > eps_mr * dy )
+            { 
+                flag_no_buff.set(i, j, 1); 
+                num_flagged_elems += 1;     
+//              printf("flagged elem i, j = %d %d (neighbors get padded later)\n", i, j );
+            }
+
+        }
+
+    }
+    printf("num_flagged_elems = %d\n", num_flagged_elems);
+
+    // --------------------------------------------------------------------
+    // Part II: Create buffer zone around each flagged element
+    // --------------------------------------------------------------------
+    flag.setall(0.);
+    for( int i = 1; i <= mx; i++ )
+    for( int j = 1; j <= my; j++ )
+    {
+
+        if( flag_no_buff.get(i,j) > 0 )
+        { 
+            for( int k1=-mbc; k1 <= mbc; k1++ )
+            for( int k2=-mbc; k2 <= mbc; k2++ )
+            {
+                flag.set(i+k1, j+k2, 1); 
+            }
+        }
+
+
+    }
+
+}

@@ -1,20 +1,17 @@
 #include <iostream>
 #include <iomanip>
 #include "dog_math.h"
-#include "IniParams.h"
 #include "stdlib.h"
 #include "dogdefs.h"
 #include "hooks.h"              // hooks (files that a user may wish to relink)
-#include "constructs.h"
 #include "app_defined.h"        // application (required) files
+#include "constructs.h"
 #include "misc2d.h"
-#include "StateVars.h"
 #include "FinSolveLxW.h"
-
+#include "StateVars.h"
+#include "IniParams.h"
 using namespace std;
 
-
-void ConSoln( const StateVars& Q );
 
 // Stuff used for a single (Euler) step
 void SetBndValues( StateVars& Q );
@@ -25,18 +22,26 @@ void ConstructL(
         dTensorBC2& Lstar,
         dTensorBC1& smax);
 void AfterStep(double dt, StateVars& Q );
-
-void ConstructDiffTransformL( const StateVars& Q,
-        const dTensorBC3& F,  dTensorBC3& Lstar, dTensorBC3& smax);
-
+void ConstructDiffTransformL( const StateVars& Q, const dTensorBC3& F,  dTensorBC3& Lstar, dTensorBC3& smax);
 double GetCFL(double dt, double dtmax, const dTensorBC2& aux, const dTensorBC1& smax);
-
 void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew );
 void AfterFullTimeStep (double dt, const StateVars& Qold, StateVars& Qnew );
 
-
-// Experimental solver intended to use differential transforms to construct
-// higher derivatives for a Lax time discretization.
+// -------------------------------------------------------------------------- //
+//
+// FinSolveDT.  Finite difference solver that uses differential transforms.
+//
+// This solver works with Taylor expansions of the fluxes and computes higher
+// derivatives using a recursive definition of the solver.  In order to use
+// this solver, the file ConstructDiffTransformL needs to be written locally
+// for each application library.  The purpose of putting this file here in the
+// main library is to reduce the total amount of code floating around.
+// 
+//
+// See also: FinSolveRK, FinSolveLxW, FinSolveMD, FinSolveUser.  If you don't
+// know which solver to use, stick with Runge-Kutta (RK) time stepping.
+//
+// -------------------------------------------------------------------------- //
 void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 {
 
@@ -98,6 +103,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
         gLF  = new dTensorBC3( mx, my+1, meqn, mbc );
     }
 
+
     // ---------------------------------------------- //
     // -- MAIN TIME STEPPING LOOP (for this frame) -- //
     // ---------------------------------------------- //
@@ -112,7 +118,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
         // check if max number of time steps exceeded
         if( n_step > nv )
         {
-            printf(" Error in FinSolveDiffTransform.cpp: "         );
+            printf(" Error in FinSolveDT.cpp: "         );
             printf("Exceeded allowed # of time steps \n");
             printf("    n_step = %d\n", n_step          );
             printf("        nv = %d\n", nv              );
@@ -144,46 +150,10 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             // Take a full time step of size dt
             BeforeStep(dt, Qnew);
             SetBndValues(Qnew);
-
-            // Construct a time averaged flux
-            void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
-            ConstructDiffTransformL( dt, Qnew, smax, F, G);
-
-            if( global_ini_params.get_mpp_limiter() )
             { 
-
-                // Construct the low-order flux
-                ConstructLFL( dt, Qnew, *fLF, *gLF, Lstar, smax );
-
-                // Limit the high-order flux
-                ApplyMPPLimiter2D( dt, qnew, *fLF, *gLF, *fhat, *ghat );
-
-                const double dt_dx = dt/dx;
-                const double dt_dy = dt/dy;
-
-                // Update the solution:
-#pragma omp parallel for
-                for( int i=1; i <= mx; i++   )
-                for( int j=1; j <= my; j++   )
-                for( int m=1; m <= meqn; m++ )
-                {
-
-                    double tmp = (fhat->get(i+1,j,m)-fhat->get(i,j,m) );
-                    qnew.set(i, j, m, qnew.get(i,j,m) - (dt_dx)*tmp );
-                    tmp = (ghat->get(i,j+1,m)-ghat->get(i,j,m) );
-                    qnew.set(i, j, m, qnew.get(i,j,m) - (dt_dy)*tmp );
-
-                    // Test the LF solver by uncommenting this chunk
-                    // double tmp = Lstar.get(i,j,m);
-                    // qnew.set(i, j, m, qnew.get(i,j,m) + dt*tmp );
-
-                }
-
-            }
-            else
-            { 
-
-                // Construct RHS (i.e. apply WENO to time averaged fluxes)
+                void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
+                ConstructDiffTransformL( dt, Qnew, smax, F, G);
+                // Construct RHS
                 ConstructLxWL( Qnew, F, G, Lstar, smax);
 
                 // Update the solution:
@@ -195,7 +165,6 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 }
 
             }
-
 
             Qnew.set_t( Qnew.get_t() + dt );
 
@@ -213,7 +182,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
-                cout << "FinSolveDiffTransform ... Step" << setw(5) << n_step;
+                cout << "FinSolveDT2D ... Step" << setw(5) << n_step;
                 cout << "   CFL =" << setw(6) << fixed << cfl;
                 cout << "   dt =" << setw(11) << scientific << dt;
                 cout << "   t =" << setw(11) << scientific << t <<endl;
@@ -239,7 +208,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 t = told;
                 if( global_ini_params.get_verbosity() )
                 {
-                    cout<<"FinSolveDiffTransform rejecting step...";
+                    cout<<"FinSolveDT2D rejecting step...";
                     cout<<"CFL number too large";
                     cout<<endl;
                 }
@@ -251,6 +220,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
         } // End of m_accept loop
 
         // compute conservation and print to file
+        void ConSoln( const StateVars& Q );
         ConSoln(Qnew);
 
     } // End of while loop

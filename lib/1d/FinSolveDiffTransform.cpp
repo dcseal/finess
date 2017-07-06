@@ -23,8 +23,6 @@ void ConstructL(
         dTensorBC1& smax);
 void AfterStep(double dt, StateVars& Q );
 
-//void ConstructDiffTransformL( const StateVars& Q,const dTensorBC2& F,  dTensorBC2& Lstar, dTensorBC1& smax, dTensorBC2& );
-
 double GetCFL(double dt, double dtmax, const dTensorBC2& aux, const dTensorBC1& smax);
 
 void BeforeFullTimeStep(double dt, const StateVars& Qold, StateVars& Qnew );
