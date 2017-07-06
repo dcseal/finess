@@ -10,8 +10,9 @@
 #include "StateVars.h"
 
 /*
- * Top level function to RunFinpack.  Briefly, this function calls the
- * following functions in the following order:
+ * Top level function to run 2D FINESS applications.
+ *
+ * See also: $FINESS/lib/main_global.cpp, $FINESS/lib/[1-3]d/RunFinpack.cpp.
  *
  */
 int RunFinpack(std::string parameters_ini_filename)
@@ -32,7 +33,7 @@ int RunFinpack(std::string parameters_ini_filename)
     cout << "   | Developed by the research group of           |   " << endl;
     cout << "   |            David C. Seal                     |   " << endl;
     cout << "   |            Department of Mathematics         |   " << endl;
-    cout << "   |            Michigan State University         |   " << endl;
+    cout << "   |            US Naval Academy                  |   " << endl;
     cout << "   ------------------------------------------------   " << endl;
     cout << endl;
 
