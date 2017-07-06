@@ -129,7 +129,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         // single extra factor of (k+1).
         for( int m=1; m<=meqn; m++ )
         {
-            const int nterms = 4*flag.get(i,m) + MAX_FLUX_DERIVS*(1-flag.get(i,m));
+            const int nterms = 3*flag.get(i,m) + MAX_FLUX_DERIVS*(1-flag.get(i,m));
             double tmp = Q_mixed_derivs.get(m,1,1);
 //          for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             for( int k=1; k < nterms; k++ )
