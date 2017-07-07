@@ -25,19 +25,22 @@
 //                                 each point.
 //
 // In this file we specify initial conditions for a number of
-// 2d Riemann problems that have been studied in many papers.
-// See for example 
+// 2d Riemann problems that have been studied in many papers.  See
+//
+//      "A posteriori subcell limiting of the discontinuous Galerkin finite
+//      element method for hyperbolic conservation laws," Dumbser et al, JCP (2014).
+//
+// or 
 //
 //      "Solution of Two-Dimensional Riemann Problems for Gas Dynamics without 
 //       Riemann Problem Solvers," Kurganov and Tadmor. 
 //
-//
-// or the Moe-Rossmanith-Seal moment limiter paper
-// (https://arxiv.org/abs/1507.03024) for references and a description of the
-// RP1 and RP3.
+// The Moe-Rossmanith-Seal moment limiter paper
+// (https://arxiv.org/abs/1507.03024) has references and a description of RP1 
+// and RP3.
 //     
-// We use the indicator OPT in the [euler] section of the parameters file to 
-// indicate which Riemann problem we are solving
+// We use the indicator riemann_problem_number in the [euler] section of the parameters file to 
+// indicate which Riemann problem we are solving.
 //
 // See also: $FINESS/lib/2d/blanks/QinitFunc
 void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
@@ -48,60 +51,62 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
     // Riemann problem number
     const int    riemann_number = global_ini_params.get_riemann_problem_number();
 
-    // Location of initial shock discontinuity
-    const double x0 = global_ini_params.get_x0();
-
     // Loop over grid points
     const int numpts=xpts.getsize(1);
     for (int i=1; i<=numpts; i++)
     {
 
-        double x = xpts.get(i,1);
-        double y = xpts.get(i,2);
-
-        double xstar = x0 + y*osq3;
-       
-        double rho,u1,u2,u3,press;
-
+        // Density, velocity, and pressure for each corner in the Riemann
+        // problem.
         double rho1,rho2,rho3,rho4;
         double u11,u12,u13,u14;
         double u21,u22,u23,u24;
         double press1,press2,press3,press4;
-  
+ 
+        // Default value is to place the discontinuity at the origin.  The only
+        // Riemann problem that doesn't have this is RP1 becuase it moves so
+        // fast.
+        //
+        // (TODO - move this to a user parameter inside parameters.ini? -DS)
         double xcorner=0.0;
         double ycorner=0.0;
 
-        int center=0;       
+        // Density, velocity and pressure
+        double rho,u1,u2,u3,press;
+        u3 = 0.0;
 
-        if(center==0)
-        {
-            rho1=0.532258064516129;
-            u11 = 1.206045378311055;
-            u21 = 0.0;
-            u3 = 0.0;
-            press1=0.3;
+        // TODO - what is this section on?  I think it makes sense to pass
+        // this information in through the riemann_number paramter.
+//      int center=0;       
+//      if(center==0)
+//      {
+//          rho1=0.532258064516129;
+//          u11 = 1.206045378311055;
+//          u21 = 0.0;
+//          u3 = 0.0;
+//          press1=0.3;
 
-            rho2   = 0.137992831541219;
-            u12    = 1.206045378311055;
-            u22    = 1.206045378311055;
-            u3    =  0.0;
-            press2 =  0.029032258064516;
+//          rho2   = 0.137992831541219;
+//          u12    = 1.206045378311055;
+//          u22    = 1.206045378311055;
+//          u3    =  0.0;
+//          press2 =  0.029032258064516;
 
-            rho3   =  0.532258064516129;
-            u13    =  0.0;
-            u23    =  0.532258064516129;
-            u3    =  0.0;
-            press3 =  0.3;
+//          rho3   =  0.532258064516129;
+//          u13    =  0.0;
+//          u23    =  0.532258064516129;
+//          u3    =  0.0;
+//          press3 =  0.3;
 
-            rho4   = 1.5;
-            u14    = 0.0;
-            u24    = 0.0;
-            u3    = 0.0;
-            press4 = 1.5;
+//          rho4   = 1.5;
+//          u14    = 0.0;
+//          u24    = 0.0;
+//          u3    = 0.0;
+//          press4 = 1.5;
 
-            xcorner=0.3;
-            ycorner=0.3;
-        }
+//          xcorner=0.3;
+//          ycorner=0.3;
+//      }
 
         if( riemann_number == 1 )
         {
@@ -129,7 +134,12 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
             u24    = 0.0;
             u3    = 0.0;
             press4 = 1.5;
+
+            xcorner = 0.3;
+            ycorner = 0.3;
+
         }
+
         if(riemann_number==2)
         {
 
@@ -156,6 +166,10 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
             u24    = 0.0;
             u3    = 0.0;
             press4 = 1.1;
+
+            xcorner = 0.0;
+            ycorner = 0.0;
+
         }
         if(riemann_number==3)
         {
@@ -183,6 +197,10 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
             u24    = -0.5;
             u3     = 0.0;
             press4 = 1.0;
+
+            xcorner = 0.0;
+            ycorner = 0.0;
+
         }
 
         if(riemann_number==4)
@@ -211,6 +229,10 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
             u24     = 0.1;
             u3      = 0.0;
             press4  = 0.4;
+
+            xcorner = 0.0;
+            ycorner = 0.0;
+
         }
         if(riemann_number==5)
         {
@@ -238,7 +260,15 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
             u24    = 0.0;
             u3    = 0.0;
             press4 = 0.4;
+
+            xcorner = 0.0;
+            ycorner = 0.0;
+
         }
+
+        // Determine which quadrant
+        const double x = xpts.get(i,1);
+        const double y = xpts.get(i,2);
 
         if(x < xcorner)
         {
@@ -279,8 +309,8 @@ void QinitFunc(const dTensor2& xpts, dTensor2& qvals)
              
         } 
 
+        // Derived conserved variable
         double energy = press/(gamma-1.0e0) + 0.5e0*rho*(u1*u1 + u2*u2 + u3*u3);
-
 
         qvals.set(i,1, rho    );
         qvals.set(i,2, rho*u1 );
