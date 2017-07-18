@@ -7,8 +7,8 @@ finess_data_template = '''
 ; Parameters common to FINESS applications
 [finess]
 ndims       = 2          ; 1, 2, or 3
-nout        = 8          ; number of output times to print results
-tfinal      = 0.25      ; final time (for RP1)
+nout        = 6          ; number of output times to print results
+tfinal      = 0.30       ; final time (for RP1)
 initial_dt  = 1.0        ; initial dt
 max_dt      = 1.0e10     ; max allowable dt 
 max_cfl     = 1.00       ; max allowable Courant number
@@ -22,7 +22,7 @@ mcapa       = 0   ; mcapa (capacity function index in aux arrays)
 maux        = 0   ; maux (number of aux arrays, maux >= mcapa)
 source_term = false   ; source term (1-yes, 0-no)
 meqn        = 5   ; number of equations
-mr_limiter  = true ; flag for multiresolution analysis limiter (only works with DTs)
+mr_limiter  = false ; flag for multiresolution analysis limiter (only works with DTs)
 output_dir  = %(output)s ; location of the output directory
 
 ; -------------------------------------------------
