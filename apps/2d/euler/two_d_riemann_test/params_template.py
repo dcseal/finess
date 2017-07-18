@@ -7,9 +7,8 @@ finess_data_template = '''
 ; Parameters common to FINESS applications
 [finess]
 ndims       = 2          ; 1, 2, or 3
-nout        = 1          ; number of output times to print results
-;tfinal      = 2.0        ; final time
-tfinal      = 0.80      ; final time (for RP1)
+nout        = 8          ; number of output times to print results
+tfinal      = 0.25      ; final time (for RP1)
 initial_dt  = 1.0        ; initial dt
 max_dt      = 1.0e10     ; max allowable dt 
 max_cfl     = 1.00       ; max allowable Courant number
@@ -23,6 +22,7 @@ mcapa       = 0   ; mcapa (capacity function index in aux arrays)
 maux        = 0   ; maux (number of aux arrays, maux >= mcapa)
 source_term = false   ; source term (1-yes, 0-no)
 meqn        = 5   ; number of equations
+mr_limiter  = true ; flag for multiresolution analysis limiter (only works with DTs)
 output_dir  = %(output)s ; location of the output directory
 
 ; -------------------------------------------------
@@ -57,7 +57,7 @@ alpha_scaling = 1.1    ; scaling parameter       ( alpha_scaling >= 1.0 )
 ; -------------------------------------------------
 [euler]
 gamma = 1.4                 ; gas constant
-riemann_problem_number = 1  ; Option [0,1,2,3,4,5] for which Riemann problem to solver.  
+riemann_problem_number = %(rp_num)i  ; Option [0,1,2,3,4,5] for which Riemann problem to solver.  
 '''
 
 qsub_template = '''
@@ -81,8 +81,8 @@ module load Python
 # but that didn't seem to work
 #
 # Instead, I am currently hard coding my own folder to this folder change:
-cd ~/code/finess/apps/2d/euler/two_d_riemann_test
 #cd $(PBS_O_WORKDIR)
+cd ~/code/finess/apps/2d/euler/two_d_riemann_test
 
 # Compile your code (uncomment this if you do not do this by hand)
 # make cleanallo; make -j;

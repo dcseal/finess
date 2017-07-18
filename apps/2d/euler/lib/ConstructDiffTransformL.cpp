@@ -37,7 +37,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
     const double xlow  = global_ini_params.get_xlow();
     const double ylow  = global_ini_params.get_ylow();
     double const gamma = global_ini_params.get_gamma();
-
+//printf("space -rder = %d\n", global_ini_params.get_space_order() );
     const int mpts_sten       = global_ini_params.get_space_order(); assert_eq( mpts_sten%2, 1 );
 
     const int mbc_small       = (mbc+1)/2;
@@ -76,11 +76,14 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
 
     // Compute finite difference approximations on all of the conserved
     // variables:
-#pragma omp parallel for
+#pragma omp parallel for collapse(2)
     for( int i = 1-mbc_small; i <= mx+mbc_small; i++ )
+    {
     for( int j = 1-mbc_small; j <= my+mbc_small; j++ )
     {
         
+//printf("i,j = %d %d\n", i, j );
+
         // Physical location for this current value:
         dTensor2 xpts( 1, ndim );
         xpts.set( 1, 1, xlow + double(i)*dx - 0.5*dx );
@@ -582,6 +585,7 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensor
         G.set( i,j, 4, 0.0 );         // not used in 1/2D (flux for 3-component of momentum)
         G.set( i,j, 5, E_ta_flux );   // flux for energy
 
+    }
     }
 
 }

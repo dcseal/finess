@@ -28,20 +28,25 @@
 % close all;    % Close any open figures
 
 % gas constant
-%   fids  = fopen([outputdir,'/eulerhelp.dat'],'r');
-%   if fids==-1
-%     disp(['File  ',outputdir,'/eulerhelp.dat  not found.']);
-%     disp('Setting gamma = 1.4');
-%     gamma_gas = 1.4;
-%   else
-%     gamma_gas  = fscanf(fids,'%e',1);
-%     fclose(fids);
-%   end
-
 gamma_gas = sscanf(INI.euler.gamma, '%e');
-rpnum     = sscanf(INI.euler.riemann_problem_number, '%d' );        % Riemann problem number
 
-rho=qsoln(:,:,m);
+% Riemann problem number.  
+%
+% Here, we follow the naming convention found in 
+% "A posteriori subcell limiting of the discontinuous Galerkin finite element method 
+% for hyperbolic conservation laws," Dumbser et al, JCP (2014).  The final
+% times reported in that paper are the following:
+%
+% RP[number] | T-final
+% --------------------
+%        1   | 0.25  (This is shorter than T = 0.8 found in many other papers)
+%        2   | 0.25
+%        3   | 0.3
+%        4   | 0.25
+%        5   | 0.25
+rpnum     = sscanf(INI.euler.riemann_problem_number, '%d' );
+
+rho=qsoln(:,:,1);
 
 % figure('Position', [100, 100, 1049, 895]);
 % clf;
