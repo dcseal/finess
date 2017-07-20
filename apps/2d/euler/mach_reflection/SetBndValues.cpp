@@ -59,7 +59,7 @@ void SetBndValues( StateVars& Q )
     // RIGHT BOUNDARY (Zeroth-order extrapolation)
     // ********************************************************************* //
     for (int i=(mx+1); i<=(mx+mbc); i++)
-    for (int j=1; j<=my; j++)
+    for (int j=1; j<=my+mbc; j++)
     for (int m=1; m<=meqn; m++)
     {
         double tmp = q.get(mx,j,m);                    
