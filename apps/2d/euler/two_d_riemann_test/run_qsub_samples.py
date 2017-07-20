@@ -5,6 +5,8 @@ from subprocess import call, Popen, PIPE
 
 from params_template import finess_data_template, qsub_template
 
+from time import sleep
+
 def main(ts_method):
     '''Create multiple qsub calls and run the code.'''
 
@@ -16,33 +18,58 @@ def main(ts_method):
     # these parameters
     cfl_range = [0.3,0.4]
     sorders   = [5,7,9,11]
-    mx_range  = [64,128,256,512]
+    mx_range  = [64,128,256,512,728,999]
+    mx_range  = [512,728,999]
+
+    cfl_range = [0.3]
+    sorders   = [5,7,9,11]
+    mx_range  = [512,1024,1400]
+    riemann_problems = [2,3,4,5]
 
     for mx_now in mx_range:
-        for space_order in sorders:
+      for space_order in sorders:
+        for riemann_prob_num in riemann_problems:
             for cfl in cfl_range:
-
 
                 mx_now = mx_now
                 my_now = mx_now
 
-                time_order = space_order
-                my_dictionary = {'s_order' : space_order, 't_order' : time_order,
-                        'cfl' : cfl,
-                        'mx' : mx_now, 'my' : my_now,
-                        'ts_method_str' : ts_method_str }
-                my_dictionary['output'] = 'output%(mx)03i_dt_%(s_order)02i_cfl%(cfl)2.1f' % my_dictionary
+                if( ts_method == 0 ):
+                    time_order = 4
+                else:
+                    time_order = space_order
 
-                params_file_name = 'parameters%(mx)03i_dt_%(s_order)02i_cfl_%(cfl)2.1f.ini' % my_dictionary
+                my_dictionary = {'s_order' : space_order, 't_order' : time_order,
+                        'cfl' : cfl, 'mx' : mx_now, 'my' : my_now,
+                        'rp_num' : riemann_prob_num,
+                        'ts_method_str' : ts_method_str }
+
+                if( ts_method == 0 ):
+                    my_dictionary['output'] = 'output_rp%(rp_num)02i_%(mx)04i_rk_%(s_order)02i_cfl%(cfl)2.1f' % my_dictionary
+                    params_file_name = 'parameters_rp%(rp_num)02i_%(mx)04i_rk_%(s_order)02i_cfl_%(cfl)2.1f.ini' % my_dictionary
+                else:
+                    my_dictionary['output'] = 'output_rp%(rp_num)02i_%(mx)04i_dt_%(s_order)02i_cfl%(cfl)2.1f' % my_dictionary
+                    params_file_name = 'parameters_rp%(rp_num)02i_%(mx)04i_dt_%(s_order)02i_cfl_%(cfl)2.1f.ini' % my_dictionary
+
+                # print to the lustre file system instead of locally
+                my_dictionary['output'] = '/mnt/lustre/scratch/seal/euler/' + my_dictionary['output']
+
                 with closing(open(params_file_name,'w')) as data:
                     print >> data, finess_data_template% my_dictionary
 
 
                 my_dictionary['proc_per_node'] = 24
-                my_dictionary['descriptor'] = '%(mx)03i_dt_%(s_order)02i_cfl_%(cfl)2.1f' % my_dictionary
-                my_dictionary['params_file_name'] = params_file_name
 
-                qsub_file_name = 'run_app_%(mx)03i_dt_%(s_order)02i_cfl_%(cfl)2.1f.qsub' % my_dictionary
+
+                if( ts_method == 0 ):
+                    my_dictionary['descriptor'] = 'rp%(rp_num)02i_%(mx)04i_rk_%(s_order)02i_cfl_%(cfl)2.1f' % my_dictionary
+                    my_dictionary['params_file_name'] = params_file_name
+                    qsub_file_name = 'run_app_rp%(rp_num)02i_%(mx)04i_rk_%(s_order)02i_cfl_%(cfl)2.1f.qsub' % my_dictionary
+                else:
+                    my_dictionary['descriptor'] = 'rp%(rp_num)02i_%(mx)04i_dt_%(s_order)02i_cfl_%(cfl)2.1f' % my_dictionary
+                    my_dictionary['params_file_name'] = params_file_name
+                    qsub_file_name = 'run_app_rp%(rp_num)02i_%(mx)04i_dt_%(s_order)02i_cfl_%(cfl)2.1f.qsub' % my_dictionary
+
                 with closing(open(qsub_file_name,'w')) as data:
                     print >> data, qsub_template % my_dictionary
 
@@ -51,6 +78,7 @@ def main(ts_method):
                 cmd = 'qsub %s' % qsub_file_name
                 print('Running command', cmd)
                 call(cmd, shell=True)
+                sleep(1)    # Does this help out with preventing jobs from being held?
 
 def parse_input( help_message ):
     """Parse input arguments."""
