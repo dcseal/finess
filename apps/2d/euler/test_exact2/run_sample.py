@@ -68,8 +68,8 @@ def parse_input( help_message ):
   
     parser.add_argument('-s','--time_integrator',
                       type    = int,
-                      choices = list(range(4)),
-                      default =  0,
+                      choices = list(range(5)),
+                      default =  4,
                       dest    = 't_stepper',
                       metavar = 'X',
                       help    = 

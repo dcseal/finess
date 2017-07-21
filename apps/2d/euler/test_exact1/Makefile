@@ -9,8 +9,8 @@ include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 ## ------------------------------------------------------------------------- ##
 # overridden library objects
 #
-FinSolveUser            = $(APP_LIB)/FinSolveDiffTransform
 #FinSolveUser            = $(FINESS)/lib/2d/FinSolveRK_PIF
+FinSolveUser            = $(FINESS)/lib/2d/FinSolveDT
 
 # place to add object modules
 #
