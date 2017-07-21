@@ -3,56 +3,51 @@ from __future__ import with_statement
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 
-from params_template import dogpack_data_template
+from params_template import finess_data_template
 
 def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start):
-
-    '''runs time stepping method given by ts_method for 'iterations' number of
+    '''Refinement study.
+    
+    This function runs time stepping method given by ts_method for 'iterations' number of
     times.  The resolution gets increased by a factor of 'mx_ratio' for each
     iteration.  The starting resolution is given by 'mx_start'.   Output is
     written to folders 'output0000n' for n=0...iterations-1.
 '''
 
-    data_file = 'parameters.ini'
-    ratio = 2
+    data_file = 'parameters.ini'    # Location of parameters
+    ratio     = 1.5                   # Refinement ratio
 
     integrators   = ['Runge-Kutta', 'SDC', 'Lax-Wendroff', 'Multiderivative', 'User-Defined']
     ts_method_str = integrators[ts_method]
     print(ts_method_str)
 
     my_start = mx_start
-    print(space_order)
-
+    print space_order
     for i in range(iterations):
         mx_now = mx_start * ratio**i
         my_now = my_start * ratio**i
-        #dt_now = dt_start / ratio**i
 
-        # we want to do:
-        #   data = open('dogpack.data','w')
-        #   print >> data, dogpack_data_template % { 'mx': mx_now, 'ts_method': ts_method} 
-        #   data.close()
-        # and we avoid the .close() (even in case of exception) with 'with':
         with closing(open(data_file,'w')) as data:
-            # print >> data, dogpack_data_template % locals() 
+            # print >> data, finess_data_template% locals() 
             ## if we had used same names for everything
             my_dictionary = {'s_order' : space_order, 't_order' : time_order,
                     'cfl' : cfl,
                     'mx' : mx_now, 'my' : my_now,
                     "i_now": (i+n_start), 'ts_method_str' : ts_method_str }
-            print >> data, dogpack_data_template % my_dictionary
+            my_dictionary['output'] = 'output_%(i_now)03i' % my_dictionary
+            print >> data, finess_data_template% my_dictionary
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
-        # cmd = './dog.exe -o outputSL%(s_order)i_%(t_order)i_%(i_now)03i' % my_dictionary
-        cmd = './dog.exe -o output_%(i_now)03i' % my_dictionary
-        print cmd
+        cmd = './finess.exe'
+        print(cmd)
         call(cmd, shell=True)
-        print ''' 
+        print(''' 
 //////////////////////// finished running output directory output%03i //////////
-''' % (i+n_start)
+''' % (i+n_start) )
 
 def parse_input( help_message ):
+    """Parse input arguments."""
   
     import argparse, sys
   
@@ -68,8 +63,8 @@ def parse_input( help_message ):
   
     parser.add_argument('-s','--time_integrator',
                       type    = int,
-                      choices = range(4),
-                      default =  0,
+                      choices = range(5),
+                      default =  4,
                       dest    = 't_stepper',
                       metavar = 'X',
                       help    = 
@@ -84,7 +79,7 @@ def parse_input( help_message ):
     parser.add_argument('-f','--frames',
                       type    = int,
                       nargs   = 2,
-                      default = [50, 7],
+                      default = [5, 9],
                       metavar = ('MX_START', 'N_FRAMES'),
                       help    = 
 ''' Refinment parameters:
@@ -95,7 +90,7 @@ MX_START grid points.
     parser.add_argument('-t', '--order',
                       type = int,
                       nargs   = 2,
-                      default = [5, 3],
+                      default = [11, 11],
                       metavar = ('S_ORDER', 'T_ORDER'),
                       help = 
 '''Order of accuracy in space S_ORDER, and time T_ORDER.
