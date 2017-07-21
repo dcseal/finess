@@ -1,4 +1,3 @@
-
 # parameters template. 
 #
 # This should agree with the current parameters.ini with the exception of the
@@ -62,16 +61,19 @@ riemann_problem_number = %(rp_num)i  ; Option [0,1,2,3,4,5] for which Riemann pr
 
 qsub_template = '''
 #!/bin/bash -login
-#PBS -l walltime=48:02:00,nodes=1:ppn=%(proc_per_node)i
+#PBS -l walltime=48:02:00,nodes=1:ppn=%(proc_per_node)i,mem=4gb
 #PBS -j oe
 #PBS -N run_2d_euler_%(descriptor)s
- 
+#PBS -M seal@usna.edu
+#PBS -m abe
+
 # load necessary modules, e.g.
 # module load HDF5
-module load gcc
-module load Python
+# module load gcc
+# module load Python
  
 # change to the working directory where your code is located
+# cd <path_to_code>
 #
 # TODO - I don't know how to get this to use the environment variable $(FINESS)
 # that should be loaded with each login shell.  I tried doing the following:
@@ -87,9 +89,10 @@ cd ~/code/finess/apps/2d/euler/two_d_riemann_test
 # Compile your code (uncomment this if you do not do this by hand)
 # make cleanallo; make -j;
 
-export OMP_NUM_THREADS='24'
+export OMP_NUM_THREADS='%(proc_per_node)i'
 
 # call your executable
-pwd
-aprun -n1 -d24 ./finess.exe %(params_file_name)s 
+#pwd
+#aprun -n1 -d24 ./finess.exe %(params_file_name)s 
+time ./finess.exe %(params_file_name)s 
 '''

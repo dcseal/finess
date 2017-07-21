@@ -16,15 +16,15 @@ def main(ts_method):
 
     # Parameters to run samples over.  This script looks at all combinations of
     # these parameters
-    cfl_range = [0.3,0.4]
-    sorders   = [5,7,9,11]
-    mx_range  = [64,128,256,512,728,999]
-    mx_range  = [512,728,999]
+#   cfl_range = [0.3,0.4]
+#   sorders   = [5,7,9,11]
+#   mx_range  = [64,128,256,512,728,999]
+#   mx_range  = [512,728,999]
 
     cfl_range = [0.3]
     sorders   = [5,7,9,11]
     mx_range  = [512,1024,1400]
-    riemann_problems = [2,3,4,5]
+    riemann_problems = [1,2,3,4,5]
 
     for mx_now in mx_range:
       for space_order in sorders:
@@ -52,13 +52,15 @@ def main(ts_method):
                     params_file_name = 'parameters_rp%(rp_num)02i_%(mx)04i_dt_%(s_order)02i_cfl_%(cfl)2.1f.ini' % my_dictionary
 
                 # print to the lustre file system instead of locally
-                my_dictionary['output'] = '/mnt/lustre/scratch/seal/euler/' + my_dictionary['output']
+#               my_dictionary['output'] = '/mnt/lustre/scratch/seal/euler/' + my_dictionary['output']
+
+                my_dictionary['output'] = '/mnt/scratch/seal/euler/' + my_dictionary['output']
 
                 with closing(open(params_file_name,'w')) as data:
                     print >> data, finess_data_template% my_dictionary
 
 
-                my_dictionary['proc_per_node'] = 24
+                my_dictionary['proc_per_node'] = 20
 
 
                 if( ts_method == 0 ):
