@@ -1,0 +1,25 @@
+#!/bin/bash -login
+#PBS -l walltime=48:00:00,nodes=1:ppn=20,mem=4gb
+#PBS -j oe
+#PBS -N Euler-convergence-study
+#PBS -M seal@usna.edu
+#PBS -m abe
+
+# load necessary modules, e.g.
+# module load HDF5
+# module load Python
+
+# change to the working directory where your code is located
+# cd <path_to_code>
+cd $FINESS/apps/2d/euler/test_exact1
+
+export OMP_NUM_THREADS=20
+
+# create the executable
+make cleanallo; make -j
+
+# call your executable
+# <exectuable> <calling parameters>
+#time ./dog.exe
+time python run_sample.py 0.3 -s 4 -t 5 5
+#python run_l2_error.py
