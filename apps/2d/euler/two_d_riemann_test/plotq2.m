@@ -88,9 +88,9 @@ set(h, 'EdgeColor', 'none');
 axis on; box on; grid off;
 axis('equal');
 %axis([-0.05 13.25 -0.05 11.05]);
-%set(gca,'xtick',-4:1.0:14);
-%set(gca,'ytick',-4:1.0:14);
-%set(gca,'fontsize',16);
+set(gca,'xtick',-0.5:0.1:0.5);
+set(gca,'ytick',-0.5:0.1:0.5);
+set(gca,'fontsize',16);
 t1 = title(['Density at t = ',num2str(time)]); 
 axis([-0.5 0.5 -0.5 0.5])       % TODO - read in RP number?
 set(t1,'fontsize',16);
@@ -118,13 +118,32 @@ set(t1,'fontsize',16);
   %axis on; box on; grid off;
   %axis('equal');
   %axis([-0.05 13.25 -0.05 11.05]);
-  
-  axis([-0.5 0.5 -0.5 0.5])
-  %set(gca,'xtick',-4:1.0:14);
-  %set(gca,'ytick',-4:1.0:14);
-  set(gca,'fontsize',16);
-  t1 = title(['Pressure at t = ',num2str(time)]); 
-  set(t1,'fontsize',16);
+
+  %colors=linspace(1.0,3.0,10);
+
+    h=xc(2,1)-xc(1,1);
+    [px,py]=gradient(P,h,h);
+    v=sqrt(px.^2+py.^2)';
+
+    fprintf('Smallest and largest value of the computed gradient = %f %f\n', max(max(v)), min(min(v)) );
+    colormap(flipud(gray(2048)).^10)
+    h = pcolor(xc,yc,v');
+    set(h, 'EdgeColor', 'none');
+    %contourf(xc, yc, rho,10, '-k' );
+
+    %colorbar()
+    axis on; box on; grid off;
+%   xticks(-0.5:0.1:0.5);  % TODO - this is for version 2017a and not 2015 that I have 
+%   yticks(-0.5:0.1:0.5);
+    ticks = -0.5:0.1:0.5;
+    set(gca,'xtick', ticks);
+    set(gca,'ytick', ticks);
+    set(gca,'fontsize',16);
+    t1 = title(['Pressure at t = ',num2str(time)]); 
+    set(t1,'fontsize',16);
+    axis([-0.5 0.5 -0.5 0.5])       % TODO - read in RP number?
+%   axis('equal');
+
 
 % Note: n1 = frame number so you can use this to keep track of each picture
 % when coupled with something like plotfin2_nostop (or simply plotfin2 if you
@@ -140,7 +159,7 @@ set(t1,'fontsize',16);
   fname = [['density-', descriptor, '-frame', num2str(n1, '%02d' ) , '.jpg' ]];
 ; print(1, '-djpeg', fname );
 
-% fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
-% print(3, '-deps', fname  );
+  fname = [['pressure-', descriptor, '-frame', num2str(n1, '%02d' ) , '.jpg' ]];
+  print(2, '-djpeg', fname  );
 
 
