@@ -1,4 +1,4 @@
-function plotfin1( parameters_ini_filename_in )
+function plotfin1(outputdir_in)
 %PLOTFIN1    Generic 1D plotting routine for FINESS.
 %
 % PLOTFIN1( outputdir_in ) is the main MATLAB plotting routine used in FINESS
@@ -16,9 +16,10 @@ function plotfin1( parameters_ini_filename_in )
 %
 % Input parameters:
 %
-%   parameters_ini_filename_in - string identifying the location of the
-%   parameters file used to construct this solution.  This can be
-%   relative or an absolute pathname.  Default = 'parameters.ini'.
+%   outputdir_in - string identifying the location of the
+%   output directory.  The parameters file will then be read in by examining
+%   the parameters_ini_filename that FINESS creates when it runs the code.
+%   Default = 'output'.
 %
 % Output parameters:
 %
@@ -26,52 +27,72 @@ function plotfin1( parameters_ini_filename_in )
 %
 % See also: plotq1, plotfin2, for the other dimensional plotters.
 
-  if( nargin )
-    parameters_ini_filename = parameters_ini_filename_in;
-  else
-    parameters_ini_filename = 'parameters.ini';
-  end
+% Read in the parameters file that was used to generate this run
+if( ~nargin )
+  outputdir_in = 'output/';
+end
+fids = fopen([[outputdir_in, '/parameters_ini_filename']],'r');
+parameters_ini_filename_str = fgetl(fids)
+fclose(fids);
 
-  % Read in any user-supplied paramters.
-  INI = ConvertIniFile2Struct(parameters_ini_filename);
+% Read in any user-supplied parameters
+INI = ConvertIniFile2Struct([[outputdir_in, '/', parameters_ini_filename_str]]);
 
-  % pull the output directory.
-  if( isfield( INI.finess, 'output_dir' ) )
-      outputdir = INI.finess.output_dir;
-  else
-      outputdir = 'output';
-  end
+% Pull the output directory.
+if( isfield( INI.finess, 'output_dir' ) )
+    outputdir = INI.finess.output_dir;
+    if( ~strcmp(outputdir, outputdir_in ) )
+        disp('Warning: the outputdir read from the parameters file is different than what was passed into this routine.');
+        disp('    Using the file that is passed into this function.');
+        outputdir
+        outputdir_in
+    end
+    outputdir = outputdir_in;
+    INI.finess.output_dir = outputdir;
+else
+  outputdir = 'output';
+end
+INI.finess
 
-  % Pull more information from parameters file
-  ndims = sscanf(INI.finess.ndims, '%d');
-  if (ndims~=1)
-      error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
-  end
+% Pull more information from parameters file
+ndims = sscanf(INI.finess.ndims, '%d');
+if (ndims~=1)
+    error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
+end
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%  Parse QHELP.DAT (or parameters.ini file)
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  fids  = fopen([outputdir,'/qhelp.dat'],'r');
-  if( fids==-1 )
-      error(['File  ',outputdir,'/qhelp.dat  not found.']);
-  end
-  ndims = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  if( ndims~=1 )
-      error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
-  end
-  meqn    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  maux    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  nplot   = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  %
-  mx      = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  xlow    = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  xhigh   = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  fclose(fids);
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%  Parse QHELP.DAT (or parameters.ini file)
+% %%  THIS HAS BEEN DECPRECATED IN FAVOR OF USING DATA FROM PARAMETERS FILE.
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% fids  = fopen([outputdir,'/qhelp.dat'],'r');
+% if( fids==-1 )
+%     error(['File  ',outputdir,'/qhelp.dat  not found.']);
+% end
+% ndims = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% if( ndims~=1 )
+%     error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
+% end
+% meqn    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% maux    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% nplot   = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% %
+% mx      = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% xlow    = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% xhigh   = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% fclose(fids);
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  % Grid information
-  dx = (xhigh-xlow)/mx;                                 % cell spacing
-  xc = transpose(linspace(xlow+dx/2, xhigh-dx/2, mx));  % cell centers
+  % Grid and problem information
+  meqn  = sscanf(INI.finess.meqn, '%d');
+  maux  = sscanf(INI.finess.maux, '%d');
+  nplot = sscanf(INI.finess.nout, '%d');
+  mx    = sscanf(INI.grid.mx, '%d');
+  xlow  = sscanf(INI.grid.xlow, '%e');
+  xhigh = sscanf(INI.grid.xhigh, '%e');
+
+  % (Uniform) Grid information
+  dx = (xhigh-xlow)/mx;
+  xc = transpose(linspace(xlow+dx/2,xhigh-dx/2,mx));
 
   % q - flag for determining whether or not to quit
   q=-1;
