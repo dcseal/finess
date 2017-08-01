@@ -42,7 +42,10 @@ USE_H5CPP = 0
 
 #LINK = time g++-4.7 -fopenmp -O4
 #LINK = time clang++ -O4 -std=c++11 -stdlib=libc++
-LINK = time clang++ -O4 -std=gnu++11 -stdlib=libc++ -fopenmp -lgomp
+#LINK = time clang++ -O4 -std=gnu++11 -stdlib=libc++ -fopenmp -lgomp
+#LINK = time clang++ -O4 
+LINK = time g++-7 -fopenmp -O4
+#LINK = time g++-7 -ggdb -DCHECK_BOUNDS
 
 # the following symbol is deprecated
 FFLAGS =  -c $(INCLUDE_LIBS)

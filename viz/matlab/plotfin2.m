@@ -19,7 +19,7 @@ function plotfin2(outputdir_in)
 %
 %    None.
 %
-% See also: plotfin1
+% See also: plotq2 and plotfin1
 
 % Read in the parameters file that was used to generate this run
 if( ~nargin )
@@ -33,21 +33,20 @@ fclose(fids);
 INI = ConvertIniFile2Struct([[outputdir_in, '/', parameters_ini_filename_str]]);
 
 % Pull the output directory.
-%
-% TODO - This seems to be a circular argument.  The output_dir is passed in,
-% but then it is read in from the parameters file.
 if( isfield( INI.finess, 'output_dir' ) )
-  outputdir = INI.finess.output_dir;
+    outputdir = INI.finess.output_dir;
+    if( ~strcmp(outputdir, outputdir_in ) )
+        disp('Warning: the outputdir read from the parameters file is different than what was passed into this routine.');
+        disp('    Using the file that is passed into this function.');
+        outputdir
+        outputdir_in
+    end
+    outputdir = outputdir_in;
+    INI.finess.output_dir = outputdir;
 else
   outputdir = 'output';
 end
 INI.finess
-
-if( ~strcmp(outputdir, outputdir_in ) )
-    disp('Warning: the outputdir read from the parameters file is different than what was passed into this routine.');
-    outputdir
-    outputdir_in
-end
 
 
 % Pull more information from parameters file
