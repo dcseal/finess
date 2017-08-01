@@ -98,8 +98,8 @@ set(gca,'xtick',-4:0.5:4);
 set(gca,'ytick',-4:0.5:4);
 set(gca,'fontsize',16);
 %t1 = title(['\rho(t,x,y) at t = ',num2str(time),'     [FINESS]']); 
-%t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
-t1 = title(['Density']);
+t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
+%t1 = title(['Density']);
 set(t1,'fontsize',16);
 
 % ---------------------------------------------------------------------------- %
@@ -127,11 +127,15 @@ figure(1)
 % ---------------------------------------------------------------------------- %
 % Plot the pretty pictures!
 % ---------------------------------------------------------------------------- %
+%INI.finess
+%INI.finess.output_dir
 
+%descriptor = sscanf(INI.finess.output_dir,'%s');
+%descriptor = descriptor(7:end)
 
 % n1 = frame number
-%fname = strcat( strcat( 'density', num2str(n1, '%02d' ) ), '.jpg' );
-%print(1, '-djpeg', fname );
-%fname = strcat( strcat( 'density-contour', num2str(n1, '%02d' ) ), '.eps' );
+%fname = strcat( strcat( 'density-schl-dt05_800x200_nf', num2str(n1, '%02d' ) ), '.jpg' );
+%print(2, '-djpeg', fname );
+%fname = strcat( strcat( 'density-contour-dt05_800x200_nf', num2str(n1, '%02d' )), '.jpg' );
 %print(3, '-deps', fname  );
 
