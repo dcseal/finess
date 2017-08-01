@@ -15,7 +15,7 @@ nout        = 1        ; number of output times to print results
 tfinal      = 0.15       ; final time
 initial_dt  = 0.0005    ; initial dt
 max_dt      = 1.0e10    ; max allowable dt 
-max_cfl     = 0.5       ; max allowable Courant number
+max_cfl     = 0.4       ; max allowable Courant number
 desired_cfl = %(cfl)f   ; desired Courant number
 nv          = 500000    ; max number of time steps per call to DogSolve
 time_stepping_method = %(ts_method_str)s ; (e.g., Runge-Kutta, SDC, Lax-Wendroff, User-Defined)
@@ -29,7 +29,7 @@ source_term = false  ; source term (true or false)
 output_dir  = %(output)s ; location of the output directory
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
-mbc   = 5     ; number of ghost cells on each boundary
+mbc   = 11    ; number of ghost cells on each boundary
 xlow  =   -1.0e0  ; left end point
 xhigh =   1.0e0  ; right end point
 [eulerParams]

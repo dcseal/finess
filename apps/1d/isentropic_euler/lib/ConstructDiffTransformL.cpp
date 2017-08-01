@@ -4,18 +4,18 @@
 #include "IniParams.h"
 #include "StateVars.h"
 #include "assert.h"
-#include <math.h>
 #include "CentralDifferences.h"
+#include <math.h>
 
 
 // Time expanded state variable, q using discrete transform.
 // See: Multi-moment ADER-Taylor methods for systems of conservation laws
 // with source terms in one dimension 
 //
-// Euler equations.
+// Isentropic Euler equations.
 //
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
-void ConstructDiffTransformL( const double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
+void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F, dTensorBC2& Lstar)
 {
 
     dTensorBC2& q   = Q.ref_q();

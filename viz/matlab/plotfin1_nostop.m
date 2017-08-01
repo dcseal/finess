@@ -1,64 +1,105 @@
-function plotfin1_nostop( parameters_ini_filename_in )
-%PLOTFIN1_NOSTOP    1D plotting routine that doesn't stop for input.
+function plotfin1_nostop(outputdir_in)
+%PLOTFIN1_NOSTOP    Generic 1D plotting routine for FINESS.
 %
-% PLOTFIN1_NOSTOP( parameters_ini_filename_in )
+% PLOTFIN1_NOSTOP( outputdir_in ) is the main MATLAB plotting routine used in FINESS
+% for all the 1D problems.
 %
-% parameters_ini_filename_in = location of parameters file.   default = 'parameters.ini'
+% outputdir_in = location for output directory.  default = 'output'
 %
-% This routine is essentially a clone of plotfin1, but this one does not stop
-% to ask for user input.  It is useful for the creation of movies.
+% In almost every application in FINESS, there is a single script, plotq1.m 
+% that this function calls once per frame.  There is a default script located
+% here in the library.  That script is where a
+% user is expected to modify extra desired plotting stuff, for example setting
+% axes, linecolors, exact solutions etc.
 %
-% See also: plotfin1.
+% This script was borrowed and modified from DoGPack (dogpack-code.org).
+%
+% Input parameters:
+%
+%   outputdir_in - string identifying the location of the
+%   output directory.  The parameters file will then be read in by examining
+%   the parameters_ini_filename that FINESS creates when it runs the code.
+%   Default = 'output'.
+%
+% Output parameters:
+%
+%    None.
+%
+% See also: plotfin1, plotq1, and plotfin2, for the other dimensional plotters.
 
-  if( nargin )
-    parameters_ini_filename = parameters_ini_filename_in;
-  else
-    parameters_ini_filename = 'parameters.ini';
-  end
+% Read in the parameters file that was used to generate this run
+if( ~nargin )
+  outputdir_in = 'output/';
+end
+fids = fopen([[outputdir_in, '/parameters_ini_filename']],'r');
+parameters_ini_filename_str = fgetl(fids)
+fclose(fids);
 
-  % Read in any user-supplied paramters.
-  INI = ConvertIniFile2Struct(parameters_ini_filename);
+% Read in any user-supplied parameters
+INI = ConvertIniFile2Struct([[outputdir_in, '/', parameters_ini_filename_str]]);
 
-  % pull the output directory.
-  if( isfield( INI.finess, 'output_dir' ) )
-      outputdir = INI.finess.output_dir;
-  else
-      outputdir = 'output';
-  end
+% Pull the output directory.
+if( isfield( INI.finess, 'output_dir' ) )
+    outputdir = INI.finess.output_dir;
+    if( ~strcmp(outputdir, outputdir_in ) )
+        disp('Warning: the outputdir read from the parameters file is different than what was passed into this routine.');
+        disp('    Using the file that is passed into this function.');
+        outputdir
+        outputdir_in
+    end
+    outputdir = outputdir_in;
+    INI.finess.output_dir = outputdir;
+else
+  outputdir = 'output';
+end
+INI.finess
 
-  % Pull more information from parameters file
-  ndims = sscanf(INI.finess.ndims, '%d');
-  if (ndims~=1)
-      error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
-  end
+% Pull more information from parameters file
+ndims = sscanf(INI.finess.ndims, '%d');
+if (ndims~=1)
+    error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
+end
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%  Parse QHELP.DAT (or parameters.ini file)
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  fids  = fopen([outputdir,'/qhelp.dat'],'r');
-  if( fids==-1 )
-      error(['File  ',outputdir,'/qhelp.dat  not found.']);
-  end
-  ndims = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  if( ndims~=1 )
-      error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
-  end
-  meqn    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  maux    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  nplot   = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  %
-  mx      = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  xlow    = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  xhigh   = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
-  fclose(fids);
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%  Parse QHELP.DAT (or parameters.ini file)
+% %%  THIS HAS BEEN DECPRECATED IN FAVOR OF USING DATA FROM PARAMETERS FILE.
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% fids  = fopen([outputdir,'/qhelp.dat'],'r');
+% if( fids==-1 )
+%     error(['File  ',outputdir,'/qhelp.dat  not found.']);
+% end
+% ndims = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% if( ndims~=1 )
+%     error(['Incorrect dimension, ndims must be 1. ndims = ',num2str(ndims)]);
+% end
+% meqn    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% maux    = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% nplot   = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% %
+% mx      = fscanf(fids,'%d',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% xlow    = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% xhigh   = fscanf(fids,'%e',1); fscanf(fids,'%s',1); fscanf(fids,'%s',1);
+% fclose(fids);
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  % Grid information
-  dx = (xhigh-xlow)/mx;                                 % cell spacing
-  xc = transpose(linspace(xlow+dx/2, xhigh-dx/2, mx));  % cell centers
+  % Grid and problem information
+  meqn  = sscanf(INI.finess.meqn, '%d');
+  maux  = sscanf(INI.finess.maux, '%d');
+  nplot = sscanf(INI.finess.nout, '%d');
+  mx    = sscanf(INI.grid.mx, '%d');
+  xlow  = sscanf(INI.grid.xlow, '%e');
+  xhigh = sscanf(INI.grid.xhigh, '%e');
 
-  m=1;
+  % (Uniform) Grid information
+  dx = (xhigh-xlow)/mx;
+  xc = transpose(linspace(xlow+dx/2,xhigh-dx/2,mx));
 
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Main plotting loop.  This routine automatically clicks through all of the
+  % frames.
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  m = 1;
   for n1=0:nplot
 
       %% Solution -- q
@@ -74,6 +115,7 @@ function plotfin1_nostop( parameters_ini_filename_in )
           error(['File  ',fname,'  not found.']);
       end
  
+
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       % Read in the data from the output folder
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -98,7 +140,8 @@ function plotfin1_nostop( parameters_ini_filename_in )
 
       end
   
-      % USER SUPPLIED FUNCTION
+      % USER SUPPLIED FUNCTION - This should be a local file that can be
+      % modified to change stuff like axes and colors.
       plotq1;        
   
     end
