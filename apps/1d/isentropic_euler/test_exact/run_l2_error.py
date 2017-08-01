@@ -20,8 +20,8 @@ def main( ):
 
         directory_num = my_dictionary['dir_num'] =  i
 
-        folder = (os.getcwd() + '/output_RK_%(dir_num)01i/') % my_dictionary 
-        folder_DT = (os.getcwd() + '/output_DT_%(dir_num)01i/') % my_dictionary 
+        folder = (os.getcwd() + '/output_Runge-Kutta_%(dir_num)03i/') % my_dictionary 
+        folder_DT = (os.getcwd() + '/output_User-Defined_%(dir_num)03i/') % my_dictionary 
 
 #       print folder
         if( not os.path.exists(folder) ):
@@ -67,7 +67,7 @@ def main( ):
            writer.writerow([list1[0],list1[1],list1[2]])
            #thefile.write("%s\n" % list1)
 
- # This is exactly the format I want:
+# This is exactly the format I want:
 #{\normalsize $25$}   &   {\normalsize $1.747\times 10^{-4}$}   & {\normalsize --} &  {\normalsize $8.292\times 10^{-5}$} & {\normalsize --}  \\
        
         old_err = new_err
@@ -75,6 +75,10 @@ def main( ):
         i = i + 1
 
 if __name__ == '__main__':
+    """TODO - using optparse is apparently deprecated in favor of argparse.
+    This should be updated and/or deleted.  Right now, this script doesn't take
+    in input arguments anyway. -DS 8/1/17"""
+
     import optparse
     parser = optparse.OptionParser(
         usage='''%%prog (-h |

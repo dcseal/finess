@@ -40,8 +40,7 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
                     'mx' : mx_now, 
                     "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
             }
-            my_dictionary['output'] = 'output_RK_%(i_now)01i' % my_dictionary
-            #my_dictionary['output'] = 'output_DT_%(i_now)01i' % my_dictionary
+            my_dictionary['output'] = 'output_' + ts_method_str + '_%(i_now)03i' % my_dictionary
             print >> data, dogpack_data_template % my_dictionary
 
         # if you want to capture script output, do
@@ -51,8 +50,8 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
         print(cmd)
         call(cmd, shell=True)
         print(''' 
-//////////////////////// finished running output directory output%03i //////////
-''' % (i+n_start) )
+//////////////////////// finished running output directory output_%s_%03i //////////
+''' % (ts_method_str,i+n_start) )
 
 def parse_input( help_message ):
     """Parse the user supplied input."""
