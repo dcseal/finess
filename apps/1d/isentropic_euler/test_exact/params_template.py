@@ -29,7 +29,7 @@ source_term = false  ; source term (true or false)
 output_dir  = %(output)s ; location of the output directory
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
-mbc   = 5     ; number of ghost cells on each boundary
+mbc   = 11    ; number of ghost cells on each boundary
 xlow  =   -1.0e0  ; left end point
 xhigh =   1.0e0  ; right end point
 [eulerParams]

@@ -35,10 +35,8 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
         with closing(open(data_file,'w')) as data:
             # print >> data, dogpack_data_template % locals() 
             ## if we had used same names for everything
-            my_dictionary = {'s_order' : space_order, 't_order' : time_order,
-                    'cfl' : cfl,
-                    'mx' : mx_now, 
-                    "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
+            my_dictionary = {'s_order' : space_order, 't_order' : time_order, 'cfl' : cfl,
+                    'mx' : mx_now, "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
             }
             my_dictionary['output'] = 'output_' + ts_method_str + '_%(i_now)03i' % my_dictionary
             print >> data, dogpack_data_template % my_dictionary
