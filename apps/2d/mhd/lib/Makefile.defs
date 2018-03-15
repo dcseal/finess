@@ -50,5 +50,6 @@ $(ConstructHJ_L).o
 
 #
 APP_LIB_SOURCES = \
+$(ConstructHJ_L).cpp
 
 #
