@@ -24,7 +24,6 @@ ProjectRightEig     = $(APP_LIB)/ProjectRightEig
 # Wave speed functions
 SetWaveSpd          = $(APP_LIB)/SetWaveSpd
 
-
 # Auxilary function
 AuxFunc             = $(APP_LIB)/AuxFunc
 
@@ -33,15 +32,15 @@ MHDParams           = $(APP_LIB)/MHDParams
 AfterQinit          = $(APP_LIB)/AfterQinit
 #ConstructLF         = $(APP_LIB)/ConstructLF
 
-AfterStep = $(APP_LIB)/AfterStep
-FinSolveLxW = $(APP_LIB)/FinSolveLxW
-FinSolveRK = $(APP_LIB)/FinSolveRK
-GetCFL = $(APP_LIB)/GetCFL
-UpdateSoln = $(APP_LIB)/UpdateSoln
+AfterStep           = $(APP_LIB)/AfterStep
+FinSolveLxW         = $(APP_LIB)/FinSolveLxW
+FinSolveRK          = $(APP_LIB)/FinSolveRK
+GetCFL              = $(APP_LIB)/GetCFL
+UpdateSoln          = $(APP_LIB)/UpdateSoln
 
-ApplyMPPLimiter2D = $(APP_LIB)/ApplyMPPLimiter2D
+ApplyMPPLimiter2D   = $(APP_LIB)/ApplyMPPLimiter2D
 
-ConstructHJ_L = $(APP_LIB)/ConstructHJ_L
+ConstructHJ_L       = $(APP_LIB)/ConstructHJ_L
 
 # place to add objects and sources
 #
