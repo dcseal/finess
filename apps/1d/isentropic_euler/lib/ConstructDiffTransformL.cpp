@@ -5,8 +5,7 @@
 #include "StateVars.h"
 #include "assert.h"
 #include <math.h>
-//#include "CentralDifferences.h"       // TODO - need to hunt down these
-                                        // stencils, otherwise this code will not compile
+#include "CentralDifferences.h"
 
 
 // Time expanded state variable, q using discrete transform.
@@ -16,7 +15,7 @@
 // Euler equations.
 //
 // See also: $FINESS/lib/1d/ConstructIntegratedF.cpp.
-void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
+void ConstructDiffTransformL( const double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
 {
 
     dTensorBC2& q   = Q.ref_q();

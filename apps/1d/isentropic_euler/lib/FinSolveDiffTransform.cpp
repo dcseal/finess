@@ -23,8 +23,7 @@ void ConstructL(
         dTensorBC1& smax);
 void AfterStep(double dt, StateVars& Q );
 
-void ConstructDiffTransformL( const StateVars& Q,
-        const dTensorBC2& F,  dTensorBC2& Lstar, dTensorBC1& smax);
+void ConstructDiffTransformL( const double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F);
 
 double GetCFL(double dt, double dtmax, const dTensorBC2& aux, const dTensorBC1& smax);
 
@@ -125,7 +124,6 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
 
             // Construct a "time-averaged" flux by considering Taylor
             // expansions at a single point.
-            void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensorBC2& F);
             ConstructDiffTransformL( dt, Qnew, smax, F);
 
             // Now use the time-averaged flux
