@@ -5,6 +5,7 @@
 #include "dog_math.h"
 #include "IniParams.h"
 #include "StateVars.h"
+#include "constructs.h"
 
 // --- User supplied functions --- //
 void ProjectLeftEig( int ixy, const dTensor1& Aux_ave, const dTensor1& Q_ave, 
@@ -24,29 +25,6 @@ void SampleFunction(
         const dTensorBC3& qin, 
         const dTensorBC3& auxin,  dTensorBC3& Fout,
         void (*Func)(const dTensor2&, const dTensor2&, const dTensor2&, dTensor2&));
-void ConstructLxWL( const StateVars& Q,
-        const dTensorBC3& F, const dTensorBC3& G,
-        dTensorBC3* pFhat, dTensorBC3* pGhat,
-        dTensorBC3& Lstar, dTensorBC3& smax);
-
-
-
-
-
-// Right-hand side for hyperbolic PDE in divergence form
-//
-//       q_t + f(q,x,t)_x + g(q,x,t)_y = Psi(q,x,t)
-//
-// EXPERIMENTAL CODE - This routine performs the Lax-Friedrich's flux
-// splitting on a modified flux function, F and G.
-void ConstructLxWL( const StateVars& Q,
-        const dTensorBC3& F,         // <--- new term: integrated flux, f
-        const dTensorBC3& G,         // <--- new term: integrated flux, g
-        dTensorBC3& Lstar,
-        dTensorBC3& smax)
-{
-    ConstructLxWL(Q, F, G, NULL, NULL, Lstar, smax);
-}
 
 // Clone of the above function - however, this one saves flux values
 void ConstructLxWL( const StateVars& Q,
@@ -433,4 +411,15 @@ void ConstructLxWL( const StateVars& Q,
     // ---------------------------------------------------------
     // LstarExtra(aux,q,Lstar);
 
+}
+
+void ConstructLxWL( const StateVars& Q,
+        const dTensorBC3& F, const dTensorBC3& G,
+        dTensorBC3& Lstar, dTensorBC3& smax)
+{
+    // TODO - does this actually ignore the pFhat and pGhat pointers?  We
+    // don't actually want to do any extra work here and include them unless
+    // we are doing something with the positivity preserving flux limiter.
+    // -DS (3/2018)
+    ConstructLxWL(Q, F, G, NULL, NULL, Lstar, smax);
 }

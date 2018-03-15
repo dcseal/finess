@@ -37,11 +37,11 @@ to see a list of options.
         print("\n    Directory not found, outputdir = %s\n" % outputdir )
         exit()
 
-    # Pull the personalized plotting routine, plotq1.py
+    # Pull the personalized plotting routine, plotq2.py
     curr_dir = os.path.abspath("./")
     sys.path.append(curr_dir)
     plotq2_file  = os.path.abspath("plotq2.py")
-    local_plotq1 = os.path.exists(plotq1_file)
+    local_plotq2 = os.path.exists(plotq2_file)
     if( local_plotq2==False ):
         from plotq2_default import plotq2
     else:
@@ -176,188 +176,8 @@ to see a list of options.
             # USER SUPPLIED FUNCTION (or default function )
             plotq2(xc, yc, qsoln, auxsoln, time, ini_params, m-1 )
 
-            # USER SUPPLIED FUNCTION
-#           plotq2_cart(outputdir,n1,
-#                       m-1,meth1,meqn,time,
-#                       points_per_dir,LegVals,
-#                       xlow,xhigh,ylow,yhigh,
-#                       mx,my,dx,dy,
-#                       mx_old,my_old,dx_old,dy_old,
-#                       xc,yc,xl,yl,qaug);
-        
     plt.ioff()
     print ""
-
-elif (GridType=="Unstructured"):
-    plotq2_file  = os.path.abspath("plotq2_unst.py")
-    local_plotq2 = os.path.exists(plotq2_file)
-    if local_plotq2==False:
-        from plotq2_unst_default import plotq2_unst
-    else:
-        from plotq2_unst import plotq2_unst
-
-    print " Creating mesh ... "
-
-    # READ-IN MESH INFO
-    meshdir = "".join((outputdir,"/mesh_output"))
-    TF = os.path.exists(meshdir)
-    if TF==False:
-        print ""
-        print "    Directory not found, meshdir =",meshdir
-        print ""
-        return -1
-
-    tnode = np.zeros((NumPhysElems,3),int)
-    x  = np.zeros(NumPhysNodes,float)
-    y  = np.zeros(NumPhysNodes,float)
-    read_node(meshdir,NumPhysNodes,x,y)
-    read_tnode(meshdir,NumPhysElems,tnode)
-
-    xlow  = min(x)
-    ylow  = min(y)
-    xhigh = max(x)
-    yhigh = max(y)
-
-    tcounter = np.zeros(NumPhysNodes,int)
-    set_tcounter(NumPhysElems,tnode,tcounter)
-
-    # Add extra points and elements if points_per_dir>1
-    p2 = points_per_dir*points_per_dir
-    points_per_elem = ((points_per_dir+1)*(points_per_dir+2))/2
-    zx = np.zeros(p2,float)
-    zy = np.zeros(p2,float)
-    
-    if (points_per_dir>1):
-        x_tmp = np.zeros(NumPhysElems*points_per_elem,float)
-        y_tmp = np.zeros(NumPhysElems*points_per_elem,float)
-        tnode_new = np.zeros((NumPhysElems*p2,3),int)
-        NumPhysElems_new = 0
-        NumPhysNodes_new = 0
-        newsizes = np.zeros(2,int)            
-        DivideUnstMesh(points_per_dir,NumPhysElems,x,y,tnode,
-                       x_tmp,y_tmp,tnode_new,zx,zy,newsizes)
-        NumPhysElems_new = newsizes[0]
-        NumPhysNodes_new = newsizes[1]
-        x_new = np.zeros(NumPhysNodes_new,float)
-        y_new = np.zeros(NumPhysNodes_new,float)
-        for ijk in range(0,NumPhysNodes_new):
-            x_new[ijk] = x_tmp[ijk]
-            y_new[ijk] = y_tmp[ijk]
-        tcounter_new = np.zeros(NumPhysNodes_new,int)
-        set_tcounter(NumPhysElems_new,tnode_new,tcounter_new)
-    else:
-        NumPhysElems_new = NumPhysElems
-        NumPhysNodes_new = NumPhysNodes
-        x_new = x
-        y_new = y
-        tnode_new = tnode
-        tcounter_new = tcounter
-
-    # Get physical midpoints of each element
-    xmid = np.zeros(NumPhysElems_new,float)
-    ymid = np.zeros(NumPhysElems_new,float)
-    onethird = 1.0/3.0
-    for i in range(0,NumPhysElems_new):
-        xmid[i] = onethird*(x_new[tnode_new[i,0]]+x_new[tnode_new[i,1]]+x_new[tnode_new[i,2]])
-        ymid[i] = onethird*(y_new[tnode_new[i,0]]+y_new[tnode_new[i,1]]+y_new[tnode_new[i,2]])
-
-    # Sample Legendre polynomial on the midpoint of each element
-    Mon2Leg = np.zeros((kmax,kmax),float)
-    GetMonomialToLegendre(kmax,Mon2Leg)
-    MonVals = np.zeros((kmax,p2),float)
-    LegVals = np.zeros((kmax,p2),float)
-    GetUnstLegendre(meth1,kmax,points_per_dir,zx,zy,Mon2Leg,MonVals,LegVals)
-
-    print " Finished creating mesh. "
-    print ""
-
-    q=-1;
-    tmp1 = "".join((" Which component of q do you want to plot ( 1 - ",str(meqn)))
-    tmp2 = "".join((tmp1," ) ? "))
-    m = raw_input(tmp2)
-    print ""
-    if (not m):
-        m = 1
-    else:
-        m = int(m)
-
-    if m<1:
-        print ""
-        print "  Error, need m > 1,  m = ",m
-        print ""
-        return -1
-    elif m>meqn:
-        print ""
-        print "  Error, need m <=",meqn,",  m = ",m
-        print ""
-        return -1
-
-    kn = 0;
-
-    n = 0;
-    nf = 0;
-    n1 = -1;
-
-    plt.ion()
-    while (nf!=-1):        
-        tmp1 = "".join((" Plot which frame ( 0 - ",str(nplot)))
-        tmp2 = "".join((tmp1," ) [type -1 or q to quit] ? "))
-        nf = raw_input(tmp2)
-        if (not nf):
-            n1 = n1 + 1
-            nf = 0
-        elif nf=="q":
-            nf = -1
-        else:
-            nf = int(nf)
-            n1 = nf
-
-        if n1>nplot:
-            print ""
-            print " End of plots "
-            print ""
-            n1 = nplot
-
-        if (nf!=-1):
-            # Solution -- q
-            # solution should be found in file
-            #     outputdir/q[n1].dat
-
-            qfile_tmp_tmp = "".join((str(n1+10000),".dat"))
-            qfile_tmp = "q" + qfile_tmp_tmp[1:]
-            qfile = "".join(("".join((outputdir,"/")),qfile_tmp))
-
-            mtmp = NumElems*meqn*kmax
-            qtmp = np.zeros(mtmp,float)   
-            time = read_qfile(mtmp,qfile,qtmp)                
-            qcoeffs_tmp = np.reshape(qtmp,(NumElems,meqn,kmax),'fortran')
-            qcoeffs = qcoeffs_tmp[0:NumPhysElems,:,:]
-
-            # Solution -- q
-            qsoln_elem = np.zeros((NumPhysElems_new,meqn),float)
-            qsoln      = np.zeros((NumPhysNodes_new,meqn),float)
-            sample_state2_unst(NumPhysElems,p2,meqn,kmax,LegVals,qcoeffs,qsoln_elem)
-            set_soln_at_node_values(NumPhysElems_new,NumPhysNodes_new,
-                                    meqn,tcounter_new,tnode_new,qsoln_elem,qsoln)
-
-            # USER SUPPLIED FUNCTION: Plotting function
-            plotq2_unst(outputdir, n1, 
-                        m-1, meqn, NumPhysElems_new, NumPhysNodes_new, 
-                        xlow, xhigh, ylow, yhigh, time, 
-                        x_new, y_new, tnode_new, 
-                        qsoln, xmid, ymid, qsoln_elem)                
-        
-    plt.ioff()
-    print ""
-    
-else:
-    
-    print ""
-    print " Error in plotfin2.py: GridType = ",GridType," is not supported."
-    print ""
-    return -1
-            
-
 
 ## ------------------------------------------------------------------------- ##
 def parse_input( help_message ):
@@ -397,7 +217,7 @@ one may wish to save additional data.  For example, a 2D code may want to save
         default     = 'plotq2', 
         help        =
 '''filename for file with additional plotting options.
-(default: plotq1)''')
+(default: plotq2)''')
 
     return parser.parse_args()
 #----------------------------------------------------------
@@ -420,5 +240,5 @@ if __name__== '__main__':
     args = parse_input( plotfin2.__doc__ )
 
     # Call the main 1D plotting routine
-    plotfin2(args.outputdir, args.q_name, args.aux_name, args.plotq1_name )
+    plotfin2(args.outputdir, args.q_name, args.aux_name, args.plotq2_name )
 

@@ -1,7 +1,8 @@
-#ifndef _FINSOLVE_RK_
-#define _FINSOLVE_RK_
+#ifndef _FINSOLVE_LXW_
+#define _FINSOLVE_LXW_
 
 #include "StateVars.h"
+#include "constructs.h"
 
 // ------------------------------------------------------------
 // Function definitions
@@ -19,28 +20,6 @@ void AfterStep(double dt, StateVars& Q);
 // before each stage in an RK method)
 void BeforeFullTimeStep(double dt, StateVars& Qold, StateVars& Q );
 void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Qnew );
-
-// ------------------------------------------------------------
-// Lax-Wendroff information:
-//
-// TODO - copy over the ConstructIntegratedF over to this 
-//        routine
-//
-// ------------------------------------------------------------
-
-void ConstructLxWL( const StateVars& Q,
-        const dTensorBC3& F,         // <--- new term: integrated flux, f
-        const dTensorBC3& G,         // <--- new term: integrated flux, g
-        dTensorBC3& Lstar,
-        dTensorBC3& smax);
-
-void ConstructLxWL( const StateVars& Q,
-        dTensorBC3& F,     dTensorBC3& G,
-        dTensorBC3* pFhat, dTensorBC3* pGhat,
-        dTensorBC3& Lstar, dTensorBC3& smax);
-
-void ConstructIntegratedR( double dt, const StateVars& Q, 
-    dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
 
 // Construct a Lax-Friedrich's flux
 void ConstructLFL( const double dt, StateVars& Q,
