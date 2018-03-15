@@ -4,6 +4,7 @@
 #include "StateVars.h"
 
 void SetBndValues( StateVars& Q );
+void SetBndValues( dTensorBC2& q );
 void ConSoln( const StateVars& Qstate );
 
 void BeforeStep(double dt, StateVars& Q );
@@ -41,11 +42,6 @@ void ConstructIntegratedF( double dt,
     dTensorBC1& smax, dTensorBC2& F);
 
 void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1, double charlie1, const StateVars& Q1,
-    double alpha2, double beta2, double charlie2, const StateVars& Q2,
-    dTensorBC1& smax, dTensorBC2& F);
-
-void ConstructIntegratedF( double dt, 
     double alpha1, double beta1, const StateVars& Q1,
     double alpha2, double beta2, const StateVars& Q2,
     double alpha3, double beta3, const StateVars& Q3,
@@ -58,11 +54,17 @@ void ConstructIntegratedF( double dt,
     double alpha4, double beta4, const StateVars& Q4,
     dTensorBC1& smax, dTensorBC2& F);
 
-// Three stage, two-derivative methods
 void ConstructIntegratedF( double dt, 
-    double alpha1, double beta1, const StateVars& Q1,
-    double alpha2, double beta2, const StateVars& Q2,
-    double alpha3, double beta3, const StateVars& Q3,
+    double alpha1, double beta1, double charlie1, const StateVars& Q1,
+    double alpha2, double beta2, double charlie2, const StateVars& Q2,
     dTensorBC1& smax, dTensorBC2& F);
+
+
+// Three stage, two-derivative methods
+//  void ConstructIntegratedF( double dt, 
+//      double alpha1, double beta1, const StateVars& Q1,
+//      double alpha2, double beta2, const StateVars& Q2,
+//      double alpha3, double beta3, const StateVars& Q3,
+//      dTensorBC1& smax, dTensorBC2& F);
 
 #endif 

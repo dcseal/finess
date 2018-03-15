@@ -28,6 +28,8 @@ SetWaveSpd       = $(APP_LIB)/SetWaveSpd
 # Auxilary function
 AuxFunc     = $(APP_LIB)/AuxFunc
 
+ConSoln     = $(APP_LIB)/ConSoln
+
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \

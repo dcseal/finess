@@ -313,12 +313,18 @@ LtNC,FptNC  = ConstructPIFL( Un, UnxNC, nu, eps )
 print("Taking an Euler step on time-averaged RHS (NCW)")
 U_TaylorNCW = EulerStep( Un, LtNC, nu )
 
-"""
 print("Constructing Utt directly")
 Utt = ConstructUx( -L, eps )
 print("Taking Taylor step from Ut and Utt")
 U_TaylorQS = TaylorStep( Un, L, Utt, nu )
-"""
+
+print("Constructing Utt using two WENO+ operators")
+#Utt_p = ConstructUx( -L, eps )
+L_lim = np.array( [sympy.limit(s,eps,0) for s in L] )
+Utt_p,Fp_JUNK = ConstructL( -L_lim, eps )
+print("Taking Taylor step on two WENO+ operators")
+U_Taylor2W = TaylorStep( Un, L, Utt_p, nu )
+
 
 print("printing u from Forward-Euler time stepping")
 for u in UFE:
@@ -334,11 +340,15 @@ print("printing U (NCW)")
 for u in U_TaylorNCW:
     print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
 
-"""
 print("printing U (QiuShu)")
 for u in U_TaylorQS:
-    print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
-"""
+#   print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
+    print( sympy.limit( u, eps, 0 ) )
+
+print("printing U (WENO+x2)")
+for u in U_Taylor2W:
+#   print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
+    print( sympy.limit( u, eps, 0 ) )
 
 #print("Constructing new right hand side value")
 #Lstar, Fpstar = ConstructL( Ustar, eps )

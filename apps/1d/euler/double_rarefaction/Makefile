@@ -9,6 +9,7 @@ include $(FINESS)/apps/1d/euler/lib/Makefile.defs
 # overridden library objects
 #
 FinSolveUser    =  $(FINESS)/lib/1d/FinSolveRK_PIF
+ConSoln                = ConSoln
 
 # uncomment these lines to use the HLL(E) Riemann solver
 #RiemannSolve     = $(LIB1D)/RiemannSolveHLL

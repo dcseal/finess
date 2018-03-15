@@ -13,6 +13,7 @@ include $(FINESS)/apps/1d/shallow_water/lib/Makefile.defs
 # Experimental new method that uses WENO *differentiation* on the interior of
 # the time-integrated flux function.
 #ConstructIntegratedF    = ConstructIntegratedF
+FinSolveUser    = $(FINESS)/lib/1d/FinSolveButcher
 
 # place to add object modules
 #

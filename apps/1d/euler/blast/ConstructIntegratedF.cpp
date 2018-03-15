@@ -57,7 +57,8 @@ void SampleFunction(
 //     q^{n+1} = q^n - \dt F_x.
 //
 // See also: DFluxFunc and D2FluxFunc.
-void ConstructIntegratedF( double dt, const StateVars& Q, dTensorBC1& smax, dTensorBC2& F)
+void ConstructIntegratedF( double dt, const StateVars& Q,
+    dTensorBC1& smax, dTensorBC2& F)
 {
 
     const dTensorBC2& q   = Q.const_ref_q();

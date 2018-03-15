@@ -30,7 +30,7 @@ void ConstructLFL( const StateVars& Q, dTensorBC2& fhat )
     // (Global) Wave speed
     double alpha = 0.;
     GlobalWaveSpd( q, aux, alpha );
-// printf("alpha, = %f \n", alpha );
+//  printf("alpha, = %f \n", alpha );
 
     // ---------------------------------------------------------
     // Compute fhat_{i-1/2}

@@ -37,7 +37,7 @@ set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',0:0.25:1);
 set(gca,'ytick',0:1:7);
 set(gca,'fontsize',16);
-t1 = title(['Density at t = ',num2str(time),'     [DoGPack]']); 
+t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
 figure(2);
@@ -55,7 +55,7 @@ set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',-2:0.25:2);
 set(gca,'ytick',0:100:500);
 set(gca,'fontsize',16);
-t1 = title(['Pressure at t = ',num2str(time),'     [DoGPack]']); 
+t1 = title(['Pressure at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
 figure(3);
@@ -70,7 +70,7 @@ set(gca,'plotboxaspectratio',[1.5 1 1]);
 set(gca,'xtick',-2:0.25:2);
 set(gca,'ytick',0:2:14);
 set(gca,'fontsize',16);
-t1 = title(['u^1(x,t) at t = ',num2str(time),'     [DoGPack]']); 
+t1 = title(['u^1(x,t) at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 
 % Print some pretty pictures!

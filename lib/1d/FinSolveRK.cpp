@@ -58,7 +58,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
     StateVars Qold( t, mx, meqn, maux, mbc );
     dTensorBC2& qold   = Qold.ref_q();
     dTensorBC2& auxold = Qold.ref_aux();
-    Qold.copyfrom( Qnew );
+//  Qold.copyfrom( Qnew );
 
     // Intermediate stages
     StateVars Qstar( t, mx, meqn, maux, mbc );
@@ -168,6 +168,9 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
 
                 case 3:  // Third order in time  (low-storage SSP method)
 
+                    // This is necessary if Qstar has any nans in it
+                    Qstar.copyfrom(Qnew);
+
                     // ---------------------------------------------------------
                     // Stage #1
                     rk.mstage = 1;
@@ -183,7 +186,7 @@ void FinSolveRK( StateVars& Qnew, double tend, double dtv[] )
                     rk.mstage = 2;
                     SetBndValues(Qstar);
                     BeforeStep(dt, Qstar);
-                    ConstructL(Qstar, Lstar, smax);
+                    ConstructL(Qstar,Lstar,smax);
                     UpdateSoln(rk.alpha1->get(rk.mstage), rk.alpha2->get(rk.mstage), 
                             rk.beta->get(rk.mstage), dt, Qnew, Lstar, Qstar);
                     AfterStep(dt, Qstar);

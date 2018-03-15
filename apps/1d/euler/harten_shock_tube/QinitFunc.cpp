@@ -32,18 +32,32 @@ void QinitFunc(const dTensor1& xpts,
 
         double rho,m1,E;
 
+//      if(x<0.5e0)
+//      {
+//          rho   = 0.445;
+//          m1    = 0.3111;
+//          E     = 8.928;
+//      }
+//      else
+//      {
+//          rho   = 0.5;
+//          m1    = 0.0;
+//          E     = 1.4275;
+//      }
+
         if(x<0.5e0)
         {
-            rho   = 0.445;
-            m1    = 0.3111;
-            E     = 8.928;
+            rho   = 0.5;
+            m1    = 0.15*rho;
+            E     = 8.0;
         }
         else
         {
-            rho   = 0.5;
-            m1    = 0.0;
-            E     = 1.4275;
+            rho   = 1.0;
+            m1    = 0.1*rho;
+            E     = 8.0;
         }
+
 
         qvals.set(i,1, rho );       // density
         qvals.set(i,2, m1  );       // 1-momentum

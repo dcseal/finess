@@ -31,22 +31,40 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
 
         double rho,press,u1,u2,u3,energy;
 
+//      if(x>0.0e0)
+//      {
+//          rho   = 7.0;
+//          u1    = 1.0;
+//          u2    = 0.0;
+//          u3    = 0.0;
+//          press = 0.2;
+//      }
+//      else
+//      {
+//          rho   =  7.0;
+//          u1    = -1.0;
+//          u2    = 0.0;
+//          u3    = 0.0;
+//          press = 0.2;
+//      }
+
         if(x>0.0e0)
         {
-            rho   = 7.0;
-            u1    = 1.0;
+            rho   = 1.0;
+            u1    = 3.1;
             u2    = 0.0;
             u3    = 0.0;
-            press = 0.2;
+            press = 1.0;
         }
         else
         {
-            rho   =  7.0;
-            u1    = -1.0;
+            rho   =  1.0;
+            u1    = -3.1;
             u2    = 0.0;
             u3    = 0.0;
-            press = 0.2;
+            press = 1.0;
         }
+
 
         energy = press/(gamma-1.0e0) 
             + 0.5e0*rho*(u1*u1 + u2*u2 + u3*u3);

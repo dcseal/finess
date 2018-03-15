@@ -25,6 +25,7 @@ D2FluxFunc  = $(APP_LIB)/D2FluxFunc
 # Eigen decomposition of the Flux function
 ProjectLeftEig   = $(APP_LIB)/ProjectLeftEig
 ProjectRightEig  = $(APP_LIB)/ProjectRightEig
+SetBndValues     = $(APP_LIB)/SetBndValues
 
 # Wave speed functions
 SetWaveSpd       = $(APP_LIB)/SetWaveSpd

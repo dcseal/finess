@@ -14,6 +14,10 @@
 void Diff1( double dx, const dTensor2& f, dTensor1& fx );
 void Diff2( double dx, const dTensor2& f, dTensor1& fxx );
 
+// !!! NEW TERMS !!! //
+void Diff1NC    ( double dx, const dTensor2& f, dTensor1& fx );
+void Diff2NC    ( double dx, const dTensor2& f, dTensor1& fxx );
+
 void FluxFunc  (const dTensor1&,const dTensor2&,const dTensor2&,dTensor2&);
 void DFluxFunc(const dTensor1& xpts, const dTensor2& Q, const dTensor2& Aux,
     dTensor3& Dflux);

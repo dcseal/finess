@@ -16,6 +16,9 @@ FluxFunc         = $(APP_LIB)/FluxFunc
 ProjectLeftEig   = $(APP_LIB)/ProjectLeftEig
 ProjectRightEig  = $(APP_LIB)/ProjectRightEig
 
+# Boundary conditions (zeroth order extrapolation)
+SetBndValues     = $(APP_LIB)/SetBndValues
+
 # Wave speed functions
 SetWaveSpd       = $(APP_LIB)/SetWaveSpd
 
@@ -30,8 +33,11 @@ D2FluxFunc       = $(APP_LIB)/D2FluxFunc
 # Positivity-preserving limiter
 ApplyMPPLimiter1D = $(APP_LIB)/ApplyMPPLimiter1D
 
+
 # place to add objects and sources
 #
+FinSolveMD      = $(APP_LIB)/FinSolveMD
+
 APP_LIB_OBJECTS = \
 
 #

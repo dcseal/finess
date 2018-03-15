@@ -8,6 +8,8 @@ include $(FINESS)/apps/1d/burgers/lib/Makefile.defs
 
 # overridden library objects
 #
+FinSolveUser           = $(FINESS)/lib/1d/FinSolveButcher
+#ConstructIntegratedF    = ConstructIntegratedF
 
 # place to add object modules
 #
