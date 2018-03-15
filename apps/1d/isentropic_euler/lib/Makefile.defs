@@ -28,16 +28,13 @@ AuxFunc          = $(APP_LIB)/AuxFunc
 
 # Positivity-preserving limiter
 ApplyMPPLimiter1D = $(APP_LIB)/ApplyMPPLimiter1D
-
-ConstructDiffTransformL = $(APP_LIB)/ConstructDiffTransformL
+JUNK              = $(APP_LIB)/Junk
 
 # place to add objects and sources
 #
 APP_LIB_OBJECTS = \
-  $(ConstructDiffTransformL).o
 
 #
 APP_LIB_SOURCES = \
-  $(ConstructDiffTransformL).cpp
 
 #
