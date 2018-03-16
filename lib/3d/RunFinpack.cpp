@@ -72,11 +72,18 @@ int RunFinpack(std::string parameters_ini_filename)
     dTensorBC4& aux  = Qnew.ref_aux();
 
     // Set any auxiliary variables on computational grid
+//  if( maux > 0 )
+//  {  SampleFunctionTypeA(1-mbc, mx+mbc, 1-mbc, my+mbc, 1-mbc, mz+mbc, qnew, aux, aux, &AuxFunc);  }
+
+//  // Set initial data on computational grid
+//  SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, 1-mbc, mz+mbc, qnew, aux, qnew, &QinitFunc);
+
     if( maux > 0 )
-    {  SampleFunctionTypeA(1-mbc, mx+mbc, 1-mbc, my+mbc, 1-mbc, mz+mbc, qnew, aux, aux, &AuxFunc);  }
+    {  SampleFunction(1-mbc, mx+mbc, 1-mbc, my+mbc, 1-mbc, mz+mbc, qnew, aux, aux, &AuxFunc);  }
 
     // Set initial data on computational grid
-    SampleFunctionTypeA( 1-mbc, mx+mbc, 1-mbc, my+mbc, 1-mbc, mz+mbc, qnew, aux, qnew, &QinitFunc);
+    SampleFunction( 1-mbc, mx+mbc, 1-mbc, my+mbc, 1-mbc, mz+mbc, qnew, aux, qnew, &QinitFunc);
+
 
     // Run AfterQinit to set any necessary variables
     AfterQinit( Qnew );
@@ -102,11 +109,11 @@ int RunFinpack(std::string parameters_ini_filename)
             // Runge-Kutta time-stepping scheme
             FinSolveRK( Qnew, tend, dtv );
         }
-        else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
-        {
-            // Lax-Wendroff time stepping
-            FinSolveLxW(Qnew, tend, dtv );
-        }
+//      else if (time_stepping_method == IniParams::TimeSteppingMethod::LxW)
+//      {
+//          // Lax-Wendroff time stepping
+//          FinSolveLxW(Qnew, tend, dtv );
+//      }
         else if (time_stepping_method == IniParams::TimeSteppingMethod::USER_DEFINED)
         {
             // User-defined time-stepping scheme
