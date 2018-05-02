@@ -79,6 +79,10 @@ to see a list of options.
     # Set up the grid
     xc = np.zeros((mx,my),float)
     yc = np.zeros((mx,my),float)
+
+    xl = np.zeros((mx+1,my+1),float)
+    yl = np.zeros((mx+1,my+1),float)
+
     for j in range(0,my+1):
         xl[:,j] = xlow + dx*np.arange(mx+1)[:]
     for i in range(0,mx+1):
