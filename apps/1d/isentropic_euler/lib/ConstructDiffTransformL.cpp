@@ -230,13 +230,12 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
           for( int h=0; h < MAX_FLUX_DERIVS-k; h++ )
           {
 
-           //compute conserved quantity derivatives...
-           Q_mixed_derivs.set(1,h+1,k+2,-((double)h+1.0)/(k+1)*Q_mixed_derivs.get(2,h+2,k+1));
-           Q_mixed_derivs.set(2,h+1,k+2,-((double)h+1.0)/(k+1)*(Gr.get(1,h+2,k+1)+P.get(1,h+2,k+1)));
-           }
+              //compute conserved quantity derivatives...
+              Q_mixed_derivs.set(1,h+1,k+2,-((double)h+1.0)/(k+1)*Q_mixed_derivs.get(2,h+2,k+1));
+              Q_mixed_derivs.set(2,h+1,k+2,-((double)h+1.0)/(k+1)*(Gr.get(1,h+2,k+1)+P.get(1,h+2,k+1)));
+          }
 
        }
-
 
         // Recursive relationship goes here! Compute higher order derivatives //
         for( int k=1; k < MAX_FLUX_DERIVS;   k++ )      
