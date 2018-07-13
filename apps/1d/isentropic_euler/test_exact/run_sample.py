@@ -25,8 +25,8 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
     mx_start
     print space_order
     for i in range(iterations):
+
         mx_now = floor( mx_start * ratio**i )
-        #dt_now = dt_start / ratio**i
 
         # we want to do:
         #   data = open('finess.data','w')
@@ -39,7 +39,7 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
             my_dictionary = {'s_order' : space_order, 't_order' : time_order, 'cfl' : cfl,
                     'mx' : mx_now, "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
             }
-            my_dictionary['output'] = 'output_' + ts_method_str + '_%(i_now)03i' % my_dictionary
+            my_dictionary['output'] = 'output_' + ts_method_str + '_Order' + '%(t_order)02i' % my_dictionary + '_%(i_now)03i' % my_dictionary
             print >> data, finess_data_template % my_dictionary
 
         # if you want to capture script output, do
@@ -85,7 +85,7 @@ def parse_input( help_message ):
     parser.add_argument('-f','--frames',
                       type    = int,
                       nargs   = 2,
-                      default = [60, 12],
+                      default = [100, 12],
                       metavar = ('MX_START', 'N_FRAMES'),
                       help    = 
 ''' Refinment parameters:
