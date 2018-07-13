@@ -7,7 +7,7 @@ from math import log
 import numpy as np
 
 def main( ):
-    '''Write some help documentation here
+    '''TODO - Write some help documentation here
 '''
 
     print "# leading comments can be given a '#' character"
@@ -38,30 +38,23 @@ Please Wait for simulation to finish running.''')
 
         new_err = np.sqrt( np.dot(diff,diff) ) / np.sqrt( np.dot(qex,qex) )
 
+        mx_now = int( qex.shape[0] )
         r1 = '%(new).3e  ' % {'old': old_err, 'new' : new_err}
         
         if( old_err > 0 and new_err > 0 ):
+            mx_ratio = float(mx_now)/float(mx_old)
             result = r1 + '   log2(ratio) = %(rat).3f' % \
-                {'rat' : log( (old_err/new_err), 2) } 
-            #result = r1 + folder + '   log2(ratio) = %(rat).3f' % \
-            #    {'rat' : log( (old_err/new_err), 2) } 
+                {'rat' : log( (old_err/new_err), mx_ratio ) } 
         else:
-            #result = r1 + folder + '   log2(ratio) = %(rat).3f' % \
-            #    {'old' : old_err, 'new' : new_err, 'rat' : (old_err/new_err) } 
             result = r1 + '   log2(ratio) = %(rat).3f' % \
                 {'old' : old_err, 'new' : new_err, 'rat' : (old_err/new_err) } 
         
-        print result
+        print(result)
         old_err = new_err
+        mx_old  = mx_now
         i = i + 1
 
 if __name__ == '__main__':
-    import optparse
-    parser = optparse.OptionParser(
-        usage='''%%prog (-h |
-    
-%s''' % main.__doc__)
-
-    opts, args = parser.parse_args()
+    """TODO - add in parsing options using argparse"""
 
     main( )

@@ -24,12 +24,14 @@ void QinitFunc(const dTensor1& xpts, dTensor2& qvals)
     for (int i=1; i<=numpts; i++)
     {
         double x = xpts.get(i);
-        double s = x-0.5;
 
-        if ( fabs(s) > width/2.0 )
-        { qvals.set(i,1, 0.0e0 ); }
-        else
-        { qvals.set(i, 1,  pow(cos(pi*s/width),6) ); }
+//      double s = x-0.5;
+//      if ( fabs(s) > width/2.0 )
+//      { qvals.set(i,1, 0.0e0 ); }
+//      else
+//      { qvals.set(i, 1,  pow(cos(pi*s/width),6) ); }
+        
+        qvals.set(i, 1, 1.0 + 0.2*sin(4.0*pi*x) );
 
     }
   
