@@ -30,12 +30,12 @@ output_dir  = %(output)s ; location of the output directory
 
 [grid]
 mx    =  %(mx)i  ; number of grid elements in x-direction
-mbc   = 5        ; number of ghost cells on each boundary
+mbc   = 11       ; number of ghost cells on each boundary
 xlow  =   0.0e0  ; left end point
 xhigh =   1.0e0  ; right end point
 
 [weno]
-weno_version  = FD     ; type of WENO reconstruction (e.g. JS, FD, Z)
-epsilon       = 1e-29  ; regulization parameter  ( epsilon > 0.0        )
+weno_version  = JS     ; type of WENO reconstruction (e.g. JS, FD, Z)
+epsilon       = 1e-6   ; regulization parameter  ( epsilon > 0.0        )
 alpha_scaling = 1.0    ; scaling parameter       ( alpha_scaling >= 1.0 )
 '''

@@ -36,7 +36,7 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     plt.gca().set_xlim([xc[0],xc[mx-1]])
     plt.gca().set_ylim([-0.003,0.003])
     plt.plot(xc,qsoln[:,m]-qex,'bo')
-    tmp1 = "".join(("q(t,x) at t = ",str(time)))
+    tmp1 = "".join(("q(t,x)-q(0,x) at t = ",str(time)))
     title = "".join((tmp1,"     [FINESS]"))
     plt.title(title)
     plt.draw()
