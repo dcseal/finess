@@ -3,9 +3,7 @@ from __future__ import with_statement
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 
-from params_template import finess_data_template
-
-def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start):
+def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start, ratio):
     '''Simple script for performing a batch refinement study.
 
   This script runs time stepping method given by ts_method for 'iterations' number of
@@ -13,15 +11,22 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
   iteration.  The starting resolution is given by 'mx_start'.   Output is
   written to folders 'output0000n' for n=0...iterations-1.
 '''
+
+    # Need these calls because this script is not in the same directory as the
+    # finess_data_template
+    import sys,os
+    sys.path.append(os.getcwd())
+    from params_template import finess_data_template
+
     data_file = 'parameters.ini'
-    ratio = 2
 
     integrators   = ['Runge-Kutta', 'SDC', 'Lax-Wendroff', 'Multiderivative', 'User-Defined']
     ts_method_str = integrators[ts_method]
     print(ts_method_str)
 
+    mx_now = mx_start
     for i in range(iterations):
-        mx_now = mx_start * ratio**i
+        mx_now = int( mx_now*ratio )
 
         with closing(open(data_file,'w')) as data:
 
@@ -76,13 +81,23 @@ def parse_input( help_message ):
     parser.add_argument('-f','--frames',
                       type    = int,
                       nargs   = 2,
-                      default = [10, 7],
+                      default = [50, 7],
                       metavar = ('MX_START', 'N_FRAMES'),
                       help    = 
 ''' Refinment parameters:
 Produce N_FRAMES of refinements, starting with 
 MX_START grid points.
-(default: [10, 7] )''')
+(default: [50, 7] )''')
+
+    parser.add_argument('-r','--rratio',
+                      type    = float,
+                      default = 2.0,
+                      metavar = 'R_RATIO',
+                      help    = 
+''' Refinment ratio:
+Each refinement for the solution increases the ratio by a factor of R_RATIO.
+(default: 2''')
+
 
     parser.add_argument('-t', '--order',
                       type = int,
@@ -107,4 +122,4 @@ if __name__ == '__main__':
     print('')
 
     main( args.CFL, args.t_stepper, 
-        args.order[0], args.order[1], args.frames[1], args.frames[0], 0 )
+        args.order[0], args.order[1], args.frames[1], args.frames[0], 0, args.rratio )
