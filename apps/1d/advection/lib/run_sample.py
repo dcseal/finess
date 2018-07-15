@@ -26,7 +26,6 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start,
 
     mx_now = mx_start
     for i in range(iterations):
-        mx_now = int( mx_now*ratio )
 
         with closing(open(data_file,'w')) as data:
 
@@ -48,6 +47,8 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start,
         print(''' 
 //////////////////////// finished running output directory output%03i //////////
 ''' % (i+n_start) )
+
+        mx_now = int( mx_now*ratio )
 
 def parse_input( help_message ):
   
