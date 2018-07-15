@@ -60,10 +60,12 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
     else
         setGaussPoints1d( w1d, x1d );
 
+    // Experimental Flag indicator - Where should we introduce a discontinuity
+    // detector into the solver?  See: discontinuous_example problem
 
-    dTensorBC2 flag(mx,meqn,mbc);
-    void FlagIndicator( StateVars& Q, dTensorBC2& flag );
-    FlagIndicator( Q, flag );
+//  dTensorBC2 flag(mx,meqn,mbc);
+//  void FlagIndicator( StateVars& Q, dTensorBC2& flag );
+//  FlagIndicator( Q, flag );
 
     // Compute finite difference approximations on all of the conserved
     // variables:
@@ -104,8 +106,6 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
             }
         }
 
-// assert_le( fabs( Q_mixed_derivs.get( 1, 1, 1 ) - q.get(i,1) ), 1e-13 );
-
         // Recursive relationship goes here! //
         for( int me = 1; me <= meqn; me++ )
         {
@@ -129,9 +129,9 @@ void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC1& smax, dTensor
         // single extra factor of (k+1).
         for( int m=1; m<=meqn; m++ )
         {
-            const int nterms = 3*flag.get(i,m) + MAX_FLUX_DERIVS*(1-flag.get(i,m));
+//          const int nterms = 3*flag.get(i,m) + MAX_FLUX_DERIVS*(1-flag.get(i,m));
+            const int nterms = MAX_FLUX_DERIVS;
             double tmp = Q_mixed_derivs.get(m,1,1);
-//          for( int k=1; k < MAX_FLUX_DERIVS; k++ )
             for( int k=1; k < nterms; k++ )
             {
                 tmp += ( pow(dt,k) / (1.0+k) )*Q_mixed_derivs.get( m, 1, k+1 );
