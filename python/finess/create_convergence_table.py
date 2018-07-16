@@ -1,4 +1,3 @@
-from output_utilities import Float2LatexConverter
 import math
 
 #===============================================================================
@@ -72,6 +71,56 @@ def ComputeConvergence( mx, err ):
     order.append( LogRatio_err / LogRatio_mx )
   
   return order
+
+#===============================================================================
+# CLASS: Convert floats to friendly LaTeX format (This file was formerly found
+# in an executable titled 'output_utilities.py'.  The problem with this name is
+# that output* files are not only ignored in the git repo, but they are often
+# deleted because this is where temporary output data gets dumped - this is the
+# only file that is needed from that document.)
+#===============================================================================
+
+
+class Float2LatexConverter( object ):
+  """
+  Converter from Python number to string in LaTeX exponential notation.
+  
+  Number is first converted to a string in IEEE 754 floating-point format, 
+  and then to a string in LaTeX-friendly exponential notation.
+  
+  Parameters
+  ----------
+  digits : int
+    Number of digits to be kept in mantissa.
+  
+  Examples
+  --------
+  ::
+    >>> convert = Float2LatexConverter( 5 )
+    >>> convert( 1.25e-7 )
+    '1.25000\\times 10^{-07}'
+    >>> convert.set_prec( 1 )
+    >>> convert( 1.25e-7 )
+    '1.2\\times 10^{-07}'
+  
+  """
+  def __init__( self, digits ):
+    self.set_prec( digits )
+  
+  #-----------------------------------------------------------------------------
+  def set_prec( self, digits ):
+    """ Change number of digits in mantissa. """
+    
+    self._prec = digits
+    self._str  = '{{:.{:d}e}}'.format( digits )
+  
+  #-----------------------------------------------------------------------------
+  def __call__( self, x ):
+    """ Convert number to LaTeX exponential notation. """
+     
+    float_str = self._str.format( x )
+    return r'{0}\times 10^{{{1}}}'.format( *float_str.split('e') )
+
 
 #===============================================================================
 # FUNCTION: Create LaTeX table
@@ -226,5 +275,6 @@ def main():
 
 #===============================================================================
 if __name__ == '__main__':
-  #Run as main program
+  'Run main program'
+
   main()
