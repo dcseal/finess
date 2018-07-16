@@ -1,19 +1,3 @@
-#==============================================================================#
-# This file is part of HYPERPYWS: Hyperbolic Python WENO Solver
-#
-#   *** This software is made available "as is" without any assurance that it
-#   *** will work for your purposes.  The software may in fact have defects, so
-#   *** use the software at your own risk.
-#
-# License: GPL, see COPYING for details
-#
-# Copyright (C) 2013 
-#
-#    David Seal,  seal@math.msu.edu,  Michigan State University
-#    Yaman Guclu, guclu@math.msu.edu, Michigan State University
-#
-#===============================================================================
-
 import math
 
 #===============================================================================
@@ -38,14 +22,22 @@ def LoadData( *file_names ):
   from collections import OrderedDict
   
   # Load data and store it in a list of dictionaries
+# data = []
+# for fn in file_names:
+#   [mx, L1, L2, Li] = loadtxt( fn, unpack=True )
+#   record = OrderedDict()
+#   record['mx'] = mx.astype(int).tolist()
+#   record['L1'] = L1.tolist()
+#   record['L2'] = L2.tolist()
+#   record['Li'] = Li.tolist()
+#   data.append( record )
+
   data = []
   for fn in file_names:
-    [mx, L1, L2, Li] = loadtxt( fn, unpack=True )
+    [mx, Lerr] = loadtxt( fn, unpack=True )
     record = OrderedDict()
-    record['mx'] = mx.astype(int).tolist()
-    record['L1'] = L1.tolist()
-    record['L2'] = L2.tolist()
-    record['Li'] = Li.tolist()
+    record['mx'  ] = mx.astype(int).tolist()
+    record['Lerr'] = Lerr.tolist()
     data.append( record )
 
   # Check compatibility
@@ -81,6 +73,56 @@ def ComputeConvergence( mx, err ):
   return order
 
 #===============================================================================
+# CLASS: Convert floats to friendly LaTeX format (This file was formerly found
+# in an executable titled 'output_utilities.py'.  The problem with this name is
+# that output* files are not only ignored in the git repo, but they are often
+# deleted because this is where temporary output data gets dumped - this is the
+# only file that is needed from that document.)
+#===============================================================================
+
+
+class Float2LatexConverter( object ):
+  """
+  Converter from Python number to string in LaTeX exponential notation.
+  
+  Number is first converted to a string in IEEE 754 floating-point format, 
+  and then to a string in LaTeX-friendly exponential notation.
+  
+  Parameters
+  ----------
+  digits : int
+    Number of digits to be kept in mantissa.
+  
+  Examples
+  --------
+  ::
+    >>> convert = Float2LatexConverter( 5 )
+    >>> convert( 1.25e-7 )
+    '1.25000\\times 10^{-07}'
+    >>> convert.set_prec( 1 )
+    >>> convert( 1.25e-7 )
+    '1.2\\times 10^{-07}'
+  
+  """
+  def __init__( self, digits ):
+    self.set_prec( digits )
+  
+  #-----------------------------------------------------------------------------
+  def set_prec( self, digits ):
+    """ Change number of digits in mantissa. """
+    
+    self._prec = digits
+    self._str  = '{{:.{:d}e}}'.format( digits )
+  
+  #-----------------------------------------------------------------------------
+  def __call__( self, x ):
+    """ Convert number to LaTeX exponential notation. """
+     
+    float_str = self._str.format( x )
+    return r'{0}\times 10^{{{1}}}'.format( *float_str.split('e') )
+
+
+#===============================================================================
 # FUNCTION: Create LaTeX table
 #===============================================================================
 
@@ -90,10 +132,6 @@ def CreateLatexTable( mx, data,
                      err_digits = 2,
                      ord_digits = 2
                     ):
-  
-  # Import HyperPyWS library
-# try               :  import hyperpyws
-# except ImportError:  import hyperpyws_path
   
   # Number of runs and number of datasets
   NR = len(mx)
@@ -119,34 +157,62 @@ def CreateLatexTable( mx, data,
      r'\\' + '\n'
   
   # Exponential notation converter
-  from output_utilities import Float2LatexConverter
   convert = Float2LatexConverter( err_digits )
   
   # Open output file
   f = open( file_name, 'w' )
 
+  f.write(r'\documentclass[draft]{amsart}'); f.write('\n');
+  f.write('\n');
+  f.write(r'\topmargin 0.0in'); f.write('\n'); 
+  f.write(r'\headsep 0.2in'); f.write('\n');
+  f.write(r'%\headheight  -2in%10.6pt'); f.write('\n');
+  f.write(r'\oddsidemargin 0.0in '); f.write('\n');
+  f.write(r'\textheight 8.75in '); f.write('\n');
+  f.write(r'\textwidth 6.5in'); f.write('\n');
+  f.write('\n');
+  f.write(r'\usepackage{pslatex}'); f.write('\n');
+  f.write(r'\usepackage{amsmath}'); f.write('\n');
+  f.write(r'\usepackage{amssymb}'); f.write('\n');
+  f.write(r'\usepackage{latexsym,pifont,color,comment}'); f.write('\n');
+  f.write(r'\usepackage{stmaryrd}'); f.write('\n');
+  f.write(r'\usepackage{esint}'); f.write('\n');
+  f.write('\n');
+  f.write(r'\pagestyle{plain}'); f.write('\n');
+  f.write('\n');
+  f.write(r'\begin{document}'); f.write('\n');
+  f.write('\n');
+  f.write(r'\begin{table}'); f.write('\n');
+  f.write(r'\begin{center}'); f.write('\n');
+
+  # ------------------- #
   # Write table to file
+  # ------------------- #
   f.write( begin )
   f.write( hline )
   f.write( header)
   f.write( hline )
   f.write( hline )
-  f.write( row_template0.format( mx[0], *[ convert(d['L1'][0]) for d in data ] ))
+  f.write( row_template0.format( mx[0], *[ convert(d['Lerr'][0]) for d in data ] ))
   f.write( hline )
   
   for i in range(1,NR):
     
     row_data = [ mx[i] ]
     for d in data:
-      row_data += [ convert(d['L1'][i]), d['L1_order'][i] ]
+      row_data += [ convert(d['Lerr'][i]), d['Order'][i] ]
     
     f.write( row_template.format( *row_data ) )
     f.write( hline )
 
-  f.write( r'\end{tabular}' )
-  f.write( '\n' )
-  
+  f.write(r'\end{tabular}' ); f.write('\n')
+  f.write(r'\end{center}'); f.write('\n')
+  f.write(r'\end{table}')
+
   # Close output file
+  f.write('\n')
+  f.write('\n');
+  f.write('\end{document}');
   f.close()
 
 #===============================================================================
@@ -198,7 +264,7 @@ def main():
   
   # Compute convergence ratios
   for d in data:
-    d['L1_order'] = ComputeConvergence( mx, d['L1'] )
+    d['Order'] = ComputeConvergence( mx, d['Lerr'] )
   
   # Create LaTeX table
   CreateLatexTable( mx, data,
@@ -209,5 +275,6 @@ def main():
 
 #===============================================================================
 if __name__ == '__main__':
-  #Run as main program
+  'Run main program'
+
   main()
