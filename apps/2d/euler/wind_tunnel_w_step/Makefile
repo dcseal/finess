@@ -6,11 +6,15 @@ include $(FINESS)/lib/2d/Makefile.defs
 # Default (application level) definintions
 include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 
+## ------------------------------------------------------------------------- ##
 # overridden library objects
 #
+FinSolveUser            = $(FINESS)/lib/2d/FinSolveDT
 
 # Used to replace values inside wedge with (constant) initial conditions
 AfterFullTimeStep   = AfterFullTimeStep
+## ------------------------------------------------------------------------- ##
+
 
 # Routines needed to be overwritten in order to implement the correct boundary
 # conditions.  For this problem, we need two SetBndValues functions: one for

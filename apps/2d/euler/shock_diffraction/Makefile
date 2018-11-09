@@ -6,8 +6,11 @@ include $(FINESS)/lib/2d/Makefile.defs
 # Default (application level) definintions
 include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 
+## ------------------------------------------------------------------------- ##
 # overridden library objects
 #
+#FinSolveUser            = $(FINESS)/lib/2d/FinSolveRK_PIF
+FinSolveUser            = $(FINESS)/lib/2d/FinSolveDT
 
 # Used to replace values inside wedge with (constant) initial conditions
 AfterFullTimeStep   = AfterFullTimeStep
@@ -17,6 +20,9 @@ AfterFullTimeStep   = AfterFullTimeStep
 # x-direction, and one for y-direction
 ConstructL          = ConstructL
 FinSolveLxW	    	= FinSolveLxW
+
+## ------------------------------------------------------------------------- ##
+
 
 # place to add object modules
 #
