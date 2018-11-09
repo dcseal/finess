@@ -6,9 +6,12 @@ include $(FINESS)/lib/2d/Makefile.defs
 # Default (application level) definintions
 include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 
+## ------------------------------------------------------------------------- ##
 # overridden library objects
 #
-SetWaveSpd      = SetWaveSpd
+SetWaveSpd              = SetWaveSpd
+FinSolveUser            = $(FINESS)/lib/2d/FinSolveDT
+## ------------------------------------------------------------------------- ##
 
 # place to add object modules
 #

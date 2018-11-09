@@ -9,15 +9,13 @@ include $(FINESS)/apps/2d/euler/lib/Makefile.defs
 ## ------------------------------------------------------------------------- ##
 # overridden library objects
 #
+#FinSolveUser            = $(FINESS)/lib/2d/FinSolveRK_PIF
 FinSolveUser            = $(FINESS)/lib/2d/FinSolveDT
-AfterQinit              = AfterQinit
 ## ------------------------------------------------------------------------- ##
 
-# place to add object modules
-#
-ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS) \
+ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
 
-ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES) \
+ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES)
 
 TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/2d/euler/lib/ $(LIB_SYS_INCLUDE)
 
