@@ -150,10 +150,45 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             // Take a full time step of size dt
             BeforeStep(dt, Qnew);
             SetBndValues(Qnew);
+
+            void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
+            ConstructDiffTransformL( dt, Qnew, smax, F, G);
+
+            if( global_ini_params.get_mpp_limiter() )
             { 
-                void ConstructDiffTransformL( double dt, StateVars& Q, dTensorBC3& smax, dTensorBC3& F, dTensorBC3& G);
-                ConstructDiffTransformL( dt, Qnew, smax, F, G);
-                // Construct RHS
+
+                // Construct the low-order flux
+                ConstructLFL( dt, Qnew, *fLF, *gLF, Lstar, smax );
+
+                // Limit the high-order flux
+                ApplyMPPLimiter2D( dt, qnew, *fLF, *gLF, *fhat, *ghat );
+
+                const double dt_dx = dt/dx;
+                const double dt_dy = dt/dy;
+
+                // Update the solution:
+#pragma omp parallel for
+                for( int i=1; i <= mx; i++   )
+                for( int j=1; j <= my; j++   )
+                for( int m=1; m <= meqn; m++ )
+                {
+
+                    double tmp = (fhat->get(i+1,j,m)-fhat->get(i,j,m) );
+                    qnew.set(i, j, m, qnew.get(i,j,m) - (dt_dx)*tmp );
+                    tmp = (ghat->get(i,j+1,m)-ghat->get(i,j,m) );
+                    qnew.set(i, j, m, qnew.get(i,j,m) - (dt_dy)*tmp );
+
+                    // Test the LF solver by uncommenting this chunk
+                    // double tmp = Lstar.get(i,j,m);
+                    // qnew.set(i, j, m, qnew.get(i,j,m) + dt*tmp );
+
+                }
+
+            }
+            else
+            { 
+
+                // Construct RHS (i.e. apply WENO to time averaged fluxes)
                 ConstructLxWL( Qnew, F, G, Lstar, smax);
 
                 // Update the solution:
@@ -165,7 +200,6 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 }
 
             }
-
             Qnew.set_t( Qnew.get_t() + dt );
 
             // Perform any extra work required:
@@ -182,7 +216,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
             if( global_ini_params.get_verbosity() )
             {
                 cout << setprecision(3);
-                cout << "FinSolveDT2D ... Step" << setw(5) << n_step;
+                cout << "FinSolveDT ... Step" << setw(5) << n_step;
                 cout << "   CFL =" << setw(6) << fixed << cfl;
                 cout << "   dt =" << setw(11) << scientific << dt;
                 cout << "   t =" << setw(11) << scientific << t <<endl;
@@ -208,7 +242,7 @@ void FinSolveUser( StateVars& Qnew, double tend, double dtv[] )
                 t = told;
                 if( global_ini_params.get_verbosity() )
                 {
-                    cout<<"FinSolveDT2D rejecting step...";
+                    cout<<"FinSolveDT rejecting step...";
                     cout<<"CFL number too large";
                     cout<<endl;
                 }
