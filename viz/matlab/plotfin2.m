@@ -44,10 +44,13 @@ if( isfield( INI.finess, 'output_dir' ) )
     outputdir = outputdir_in;
     INI.finess.output_dir = outputdir;
 else
-  outputdir = 'output';
+%    disp('Setting outputdir = output');
+%    outputdir = 'output';
+    outputdir = outputdir_in;
 end
-INI.finess
 
+% Print all the relevant information from the INI file
+INI.finess
 
 % Pull more information from parameters file
 ndims = sscanf(INI.finess.ndims, '%d');
