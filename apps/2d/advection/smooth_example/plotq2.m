@@ -94,4 +94,4 @@
 
   figure(1)
 
-% disp([['  minimum value of f is = ', num2str(min(min(qsoln)), '%2.8e')]])
+  disp([['  minimum value of f is = ', num2str(min(min(qsoln)), '%2.8e')]])
