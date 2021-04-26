@@ -177,16 +177,17 @@ void WenoReconstruct_JS7( const dTensor2& g, dTensor2& g_reconst )
 
         beta0 = uim3*(  547.*uim3 -  3882.*uim2  + 4642.*uim1 - 1854.*ui) + 
                 uim2*( 7043.*uim2 - 17246.*uim1  + 7042.*ui) +              
-                uim1*(11003.*uim1 -  9402.*ui  ) + 2107. * pow(ui, 2);
+                uim1*(11003.*uim1 -  9402.*ui  ) + 2107. * ui*ui;
         beta1 = uim2*(  267.*uim2 - 1642.*uim1   + 1602.*ui - 494.*uip1) + 
                 uim1*( 2843.*uim1 - 5966.*ui     + 1922.*uip1) +
-                ui*(   3443.*ui   - 2522.*uip1 ) + 547. * pow(uip1, 2);
+                ui*(   3443.*ui   - 2522.*uip1 ) + 547. * uip1*uip1;
         beta2 = uim1*( 547.*uim1 - 2522.*ui     + 1922.*uip1 - 494.*uip2) + 
                 ui  *(3443.*ui   - 5966.*uip1   + 1602.*uip2 )   + 
-                uip1*(2843.*uip1 - 1642.*uip2 ) + 267.*pow(uip2, 2);
+                uip1*(2843.*uip1 - 1642.*uip2 ) + 267.*uip2*uip2;
         beta3 = ui*  ( 2107.*ui   -  9402.*uip1   + 7042.*uip2 - 1854.*uip3 ) + 
                 uip1*(11003.*uip1 - 17246.*uip2   + 4642.*uip3 )              + 
-                uip2*( 7043.*uip2 -  3882.*uip3 ) + 547.*pow(uip3, 2);
+                uip2*( 7043.*uip2 -  3882.*uip3 ) + 547.*uip3*uip3;
+
         u1 = (-1./4. )*uim3 + (13./12.)*uim2 - (23./12.)*uim1 + (25./12.)*ui;
         u2 = ( 1./12.)*uim2 - ( 5./12.)*uim1 + (13./12.)*ui   + ( 1./4. )*uip1;
         u3 = (-1./12.)*uim1 + ( 7./12.)*ui   + ( 7./12.)*uip1 - ( 1./12.)*uip2;
@@ -380,10 +381,10 @@ void WenoReconstruct_JS11( const dTensor2& g, dTensor2& g_reconst )
 // SECTION: WENO-Z reconstruction                       //
 // ---------------------------------------------------- // 
 
-// See: D.S. Balsara and C.-W. Shu, "Monotonicity Preserving Weighted 
-//      Essentially Non-oscillatory Schemes with Increasingly High Order of 
-//      Accuracy". J. Comput. Phys. 160 (2000), pp. 405-452.
-// and other references for examples.
+// See: M. Castro, B. Costa, W.S. Don, "High order weighted essentially
+//      non-oscillatory WENO-Z schemes for hyperbolic conservation laws". J. 
+//      Comput.  Phys. 230 (2011), pp. 1766-1792 .
+//
 void WenoReconstruct_Z5( const dTensor2& g, dTensor2& g_reconst )
 {
 
