@@ -33,7 +33,7 @@ shading flat;
 yrbcolormap
 axis on; box on; grid off;
 axis('equal');
-axis([-0.05 3.25 -0.05 1.05]);
+axis([-0.05 2.05 -0.05 1.05]);
 set(gca,'xtick',-4:0.5:4);
 set(gca,'ytick',-4:0.5:4);
 set(gca,'fontsize',16);
@@ -42,7 +42,7 @@ set(gca,'fontsize',16);
 t1 = title(['Density at t = ',num2str(time),'     [FINESS]']); 
 set(t1,'fontsize',16);
 colorbar;
-caxis([1,25]);
+caxis auto;
 
 % ---------------------------------------------------------------------------- %
 % Schlieren plot for density (or any other variable)
@@ -68,7 +68,7 @@ set(hp, 'EdgeColor', 'none');
 % Fancier labels for the plots
 axis on; box on; grid off;
 axis('equal');
-axis([-0.05 3.25 -0.05 1.05]);
+axis([-0.05 2.05 -0.05 1.05]);
 set(gca,'xtick',-4:0.5:4);
 set(gca,'ytick',-4:0.5:4);
 set(gca,'fontsize',16);
@@ -89,11 +89,11 @@ set(t1,'fontsize',16);
 figure(3);
 clf;
 %contour(xc, yc, qsoln(:,:,m), linspace(1.3965, 22.682,30), '-k' );
-% Woodward and Collela's contour lines:
-contour(xc, yc, qsoln(:,:,m), linspace(1.728, 20.74,30), '-k' );
+qm = qsoln(:,:,m);
+contour(xc, yc, qm, linspace(min(qm(:)), max(qm(:)), 30), '-k' );
 axis on; box on; grid off;
 axis('equal');
-axis([-0.05 3.25 -0.05 1.05]);
+axis([-0.05 2.05 -0.05 1.05]);
 set(gca,'xtick',-4:0.5:4);
 set(gca,'ytick',-4:0.5:4);
 set(gca,'fontsize',16);
@@ -108,7 +108,7 @@ set(t1,'fontsize',16);
 
 figure(4)
 clf
-plot( xc(:,1), qsoln(:,25,1), 'b-');
+plot( xc(:,1), qsoln(:,round(end/2),1), 'b-');
 
 set(gca,'xtick',-4:0.5:4);
 set(gca,'fontsize',16);
