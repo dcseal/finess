@@ -29,6 +29,7 @@ from plotq2_default.py.
 
     from io_routines import read_qfile2                 # Reading data files
     from io_routines import parse_ini_parameters        # *.ini parser
+    from io_routines import output_ini_file             # ini saved in outputdir
    
     TF = os.path.exists(outputdir)
     if(TF==False):
@@ -45,7 +46,7 @@ from plotq2_default.py.
     else:
         from plotq2 import plotq2
 
-    ini_params   = parse_ini_parameters( outputdir+'/parameters.ini' )
+    ini_params   = parse_ini_parameters( output_ini_file(outputdir) )
 
     # Additional information
     meqn     = ini_params['meqn']

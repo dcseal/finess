@@ -63,6 +63,27 @@ def read_qfile2(mx, my, meqn, qfile ):
 #----------------------------------------------------------
 
 
+def output_ini_file(outputdir):
+    """Return the path of the parameters file saved in outputdir.
+
+    At the start of a run, scripts/startscript copies the parameters file into
+    the output directory and writes its name to outputdir/parameters_ini_filename.
+    That name is the one given on the command line, which may include a path,
+    but the copy is saved under its basename.  Output directories that have no
+    parameters_ini_filename fall back to parameters.ini.
+    """
+    import os
+
+    name_file = os.path.join(outputdir, 'parameters_ini_filename')
+    if os.path.exists(name_file):
+        with open(name_file) as f:
+            name = os.path.basename(f.readline().strip())
+    else:
+        name = 'parameters.ini'
+    return os.path.join(outputdir, name)
+#----------------------------------------------------------
+
+
 def parse_ini_parameters(parameters_file, params={} ):
     """Parse a parameters.ini file.
 
@@ -91,7 +112,8 @@ def parse_ini_parameters(parameters_file, params={} ):
     import configparser
 
     config = configparser.RawConfigParser(inline_comment_prefixes=(';',))
-    config.read( parameters_file )
+    if not config.read( parameters_file ):
+        raise FileNotFoundError("cannot read parameters file '%s'" % parameters_file)
 
     # TODO - make sure this is consistent with the code generation software as
     # well.  There should be a clear way to do this.  -DS 9/8/2015

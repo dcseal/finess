@@ -31,6 +31,7 @@ from plotq1_default.py.
     from io_routines import parse_ini_parameters            
     from io_routines import read_qfile                  # Reading data files
     from io_routines import parse_ini_parameters        # *.ini parser
+    from io_routines import output_ini_file             # ini saved in outputdir
 
     TF = os.path.exists( outputdir )
     if TF==False:
@@ -47,7 +48,7 @@ from plotq1_default.py.
     else:
         from plotq1 import plotq1
 
-    ini_params   = parse_ini_parameters( outputdir+'/parameters.ini' )
+    ini_params   = parse_ini_parameters( output_ini_file(outputdir) )
 
     mx      = ini_params['mx'   ]
     xlow    = ini_params['xlow' ]
