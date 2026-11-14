@@ -169,6 +169,11 @@ from plotq2_default.py.
             # USER SUPPLIED FUNCTION (or default function )
             plotq2(xc, yc, xl, yl, qsoln, auxsoln, time, ini_params, m-1 )
 
+            # Let the GUI process events before we block in input().  Without
+            # this, backends such as GTK (the default on Wayland) leave the
+            # window blank until the script exits.
+            plt.pause(0.001)
+
     plt.ioff()
     print("")
 
