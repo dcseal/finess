@@ -13,7 +13,7 @@ Derived parameters:
 
 """
 
-from __future__ import absolute_import
+
 
 def _parameters_accessors_checks():
 
@@ -37,7 +37,7 @@ def _parameters_accessors_checks():
         defining_expression_in_cpp = """this->cs_light*this->cs_light""")
     parameters.append(cs_light_squared)
 
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 parameter_list, accessor_list, check_list =  \
     _parameters_accessors_checks()
