@@ -22,7 +22,7 @@ void BeforeFullTimeStep(double dt, StateVars& Qold, StateVars& Q );
 void AfterFullTimeStep(double dt, StateVars& Qold, StateVars& Qnew );
 
 // Construct a Lax-Friedrich's flux
-void ConstructLFL( const double dt, StateVars& Q,
+void ConstructLFL( const double dt, const StateVars& Q,
     dTensorBC3& Fhat, dTensorBC3& Ghat,
     dTensorBC3& Lstar, dTensorBC3& smax);
 
