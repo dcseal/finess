@@ -3,25 +3,23 @@ def plotfin2( outputdir="output", qname="q", auxname="a", plotq2name="plotq2"):
 
 Execute via
 
-    $ python $FINESS/viz/python/plotfin2.py
+    $ python3 $FINESS/viz/python/plotfin2.py
 
 from an application directory.   For help type
 
-    $ python $FINESS/viz/python/plotfin2.py -h
- 
+    $ python3 $FINESS/viz/python/plotfin2.py -h
+
 to see a list of options.
 
-    Usage: plotfin2( points_per_dir_in="1", outputdir="output", point_type_in="1", qname="q")
- 
-    points_per_dir = points per direction (spatial dimension)
- 
+    Usage: plotfin2( outputdir="output", qname="q", auxname="a" )
+
     outputdir = location of output directory
+    qname     = prefix of solution files (i.e., [qname]0000.dat, [qname]0001.dat, ...)
+    auxname   = prefix of aux files
 
-    point_type = 1:   uniform points on each element
-               = 2:   Gauss-Legendre points on each element
-
-    qname          = name of variable filename (i.e., [qname]0000.dat, [qname]0001.dat, ...)
-    
+Each frame is drawn by plotq2(xc, yc, xl, yl, qsoln, auxsoln, time, ini_params, m),
+taken from plotq2.py in the application directory if present, otherwise
+from plotq2_default.py.
 """
 
     import os
@@ -221,19 +219,19 @@ one may wish to save additional data.  For example, a 2D code may want to save
 
 #----------------------------------------------------------
 if __name__== '__main__':
-    """Default python plotting routine for 1D simulations in FINESS.
+    """Default python plotting routine for 2D simulations in FINESS.
 
     When run from the command line, this script parses user supplied command
-    line arguments, if any, and then executes plotfin1.  To see a list of
-    options, type 
+    line arguments, if any, and then executes plotfin2.  To see a list of
+    options, type
 
-        python $FINESS/viz/python/plotfin1.py -h
+        python3 $FINESS/viz/python/plotfin2.py -h
 
     """
 
     # Parse input arguments
     args = parse_input( plotfin2.__doc__ )
 
-    # Call the main 1D plotting routine
+    # Call the main 2D plotting routine
     plotfin2(args.outputdir, args.q_name, args.aux_name, args.plotq2_name )
 

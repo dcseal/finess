@@ -140,6 +140,20 @@ directory.  The basic format requires the user to call the main plotting
 routines from an application directory.  Local options, such as grid labels,
 axis options etc. are supplied by a single script defined by each application.
 
+For example, after running a 1D or 2D application, type
+
+    $ python3 $FINESS/viz/python/plotfin1.py      # 1D
+    $ python3 $FINESS/viz/python/plotfin2.py      # 2D
+
+or, from MATLAB, `plotfin1` or `plotfin2`.  The application may supply its own
+`plotq1.py` / `plotq2.py` (or `plotq1.m` / `plotq2.m`) to customize each
+frame; see [viz/python/README.md](viz/python/README.md) for details.
+
+An alternative set of Python tools, the `finess.viz` package in
+`$FINESS/python/finess/viz`, is run through `$FINESS/viz/plot1d_generic.py`,
+`plot2d_generic.py` and `plot2d_generic_contour.py`; see the last section of
+[viz/python/README.md](viz/python/README.md).
+
 ## Compiling all applications in a single directory
 
 The script $FINESS/python/finess/util.py has been supplied in an effort to

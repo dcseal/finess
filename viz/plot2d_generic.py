@@ -5,12 +5,13 @@ environment variable $PYTHONPATH includes $FINESS/python.
 
 To execute this file, from an application directory, simply call
 
-$> python $FINESS/viz/plot2d_generic.py
+$> python3 $FINESS/viz/plot2d_generic.py
 
 from the command line.
 
 See also: 
-    * plot[1,3]d_generic.py (TODO - write these routines) for other plotting routines.
+    * plot1d_generic.py, plot2d_generic.py, plot2d_generic_contour.py
+    * $FINESS/viz/python/plotfin[1,2].py for the plotfin plotting routines.
     * $FINESS/viz/matlab for matlab plotting routines.
 """
 

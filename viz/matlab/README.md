@@ -1,5 +1,5 @@
-DoGPack plotting routines based on the MATrix LABoratory (MATLAB)
-=================================================================
+FINESS plotting routines based on the MATrix LABoratory (MATLAB)
+================================================================
 
 This library contains plotting routines for [FINESS](../../README.md) that
 are written in [MATLAB](http://www.mathworks.com/).  Many of these work
@@ -11,37 +11,32 @@ See also: ['$FINESS/viz/python'](../python/README.md) for a complete set of
 [Python](http://www.python.org/)
 plotting routines based on [matplotlib](http://matplotlib.org/).
 
-NOTE: most of these routines are identical to those found in the
+NOTE: these routines were adapted from those found in the
 [DoGPack](http://www.dogpack-code.org) software package.
 
 Basic overview
 --------------
 
-The basic calling sequence for any applicaiton is based on calling one of the
-following functions from the application folder:
+From an application folder, after running `finess.exe`, call one of
 
-plotdog1(), plotdog2(), plotdog3()
+    plotfin1(), plotfin2()
 
-for 1, 2 and 3D applications.  The basic format is the following:
+for 1D and 2D applications.  The basic format is
 
-    plotdog[n]( points\_per\_dir, outputdir\_in, point\_type),
+    plotfin[n]( parameters_ini_filename )
 
-where points\_per\_dir = number of points in each direction, output\_dir is the
-location of the output directory, and point\_type = 1, or 2 (Uniform or
-Gaussian).  Without any arguments, this call defaults to 1 point per
-direction, output\_dir\_in = 'output', and point\_type = 1.
+where `parameters_ini_filename` (default: `'parameters.ini'`) is the
+parameters file used for the run.  The output directory is taken from
+`output_dir` in the `[finess]` section of that file (default: `'output'`).
 
 User supplied script
 --------------------
 
-Each application has a single script, that is called once per each frame that
-is plotted.  For example, these scripts have the following format:
+Each application may supply a single script that is called once for each
+frame that is plotted:
 
     plotq1 - 1D script
-    plotq2\_cart - 2D, Cartesian script
-    plotq2\_unst - 2D, Unstructured script
-    plotq3\_cart - 3D, Cartesian script
-    plotq3\_cart\_slices - 3D, Cartesian script for plotting slices
+    plotq2 - 2D script
 
 These routines allow the user to supply items such as line colors, axes, grid
 labels, color bars, etc., everything that is application specific to the given

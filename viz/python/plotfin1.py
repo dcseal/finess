@@ -4,19 +4,23 @@ def plotfin1( outputdir="output", qname="q", auxname="a", plotq1name="plotq1"):
 
 Execute via
 
-    $ python $FINESS/viz/python/plotdog1.py
+    $ python3 $FINESS/viz/python/plotfin1.py
 
 from an application directory.   For help type
 
-    $ python $FINESS/viz/python/plotdog1.py -h
- 
+    $ python3 $FINESS/viz/python/plotfin1.py -h
+
 to see a list of options.
 
-    Usage: plotdog1( outputdir="output")
- 
-   points_per_dir = points per direction (spatial dimension)
- 
-   outputdir = location of output directory
+    Usage: plotfin1( outputdir="output", qname="q", auxname="a" )
+
+    outputdir = location of output directory
+    qname     = prefix of solution files (i.e., [qname]0000.dat, [qname]0001.dat, ...)
+    auxname   = prefix of aux files
+
+Each frame is drawn by plotq1(xc, qsoln, auxsoln, time, ini_params, m),
+taken from plotq1.py in the application directory if present, otherwise
+from plotq1_default.py.
 """
 
 
@@ -196,7 +200,7 @@ if __name__== '__main__':
     line arguments, if any, and then executes plotfin1.  To see a list of
     options, type 
 
-        python $FINESS/viz/python/plotfin1.py -h
+        python3 $FINESS/viz/python/plotfin1.py -h
 
     """
 
