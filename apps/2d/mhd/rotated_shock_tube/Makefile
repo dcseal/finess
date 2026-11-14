@@ -10,8 +10,8 @@ include $(FINESS)/apps/2d/mhd/lib/Makefile.defs
 AfterQinit = AfterQinit
 # Hamilton-Jacobi rhs for magnetic potential
 
-ALL_OBJECTS = $(COMMON_OBJECTS) 
-ALL_SOURCES = $(COMMON_SOURCES)
+ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
+ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES)
 TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/2d/mhd/lib/ $(LIB_SYS_INCLUDE)
 
 

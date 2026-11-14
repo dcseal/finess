@@ -11,8 +11,8 @@ include $(FINESS)/apps/1d/mhd/lib/Makefile.defs
 
 # place to add object modules
 #
-ALL_OBJECTS = $(COMMON_OBJECTS) 
-ALL_SOURCES = $(COMMON_SOURCES)
+ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS)
+ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES)
 TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/1d/mhd/lib/ $(LIB_SYS_INCLUDE)
 
 ### targets ###
