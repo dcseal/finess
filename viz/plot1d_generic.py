@@ -15,6 +15,11 @@ See also:
     * $FINESS/viz/matlab for matlab plotting routines.
 """
 
+import os, sys
+# finess.viz imports the application's generate_iniparams.py, so make the
+# current (application) directory importable.
+sys.path.insert(0, os.getcwd())
+
 from finess.viz.dim1 \
   import ask_which_component_and_which_frame_and_plot_red_dots
 

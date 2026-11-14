@@ -15,6 +15,11 @@ See also:
     * $FINESS/viz/matlab for matlab plotting routines.
 """
 
+import os, sys
+# finess.viz imports the application's generate_iniparams.py, so make the
+# current (application) directory importable.
+sys.path.insert(0, os.getcwd())
+
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("parameters_ini_filename",
