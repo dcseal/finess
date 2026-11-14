@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 import os
@@ -10,7 +10,7 @@ def main( ):
     '''Write some help documentation here
 '''
 
-    print "# leading comments can be given a '#' character"
+    print("# leading comments can be given a '#' character")
     my_dictionary = {}
     old_err = i = 0
     while( 1 ):
@@ -18,9 +18,9 @@ def main( ):
         directory_num = my_dictionary['dir_num'] =  i
 
         folder = (os.getcwd() + '/output_000%(dir_num)i/') % my_dictionary
-        print folder
+        print(folder)
         if( not os.path.exists(folder) ):
-            print('    Did not find folder: %s' % folder )
+            print(('    Did not find folder: %s' % folder ))
             break
 
         my_dictionary['curr_folder'] = folder
@@ -51,7 +51,7 @@ Please Wait for simulation to finish running.''')
             result = r1 + '   log2(ratio) = %(rat).3f' % \
                 {'old' : old_err, 'new' : new_err, 'rat' : (old_err/new_err) } 
         
-        print result
+        print(result)
         old_err = new_err
         i = i + 1
 

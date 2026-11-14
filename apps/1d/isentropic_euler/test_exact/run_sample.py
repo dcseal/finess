@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 
@@ -23,7 +23,7 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
     print(ts_method_str)
 
     mx_start
-    print space_order
+    print(space_order)
     for i in range(iterations):
 
         mx_now = floor( mx_start * ratio**i )
@@ -40,7 +40,7 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
                     'mx' : mx_now, "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
             }
             my_dictionary['output'] = 'output_' + ts_method_str + '_Order' + '%(t_order)02i' % my_dictionary + '_%(i_now)03i' % my_dictionary
-            print >> data, finess_data_template % my_dictionary
+            print(finess_data_template % my_dictionary, file=data)
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
@@ -48,9 +48,9 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
         cmd = './finess.exe'
         print(cmd)
         call(cmd, shell=True)
-        print(''' 
+        print((''' 
 //////////////////////// finished running output directory output_%s_%03i //////////
-''' % (ts_method_str,i+n_start) )
+''' % (ts_method_str,i+n_start) ))
 
 def parse_input( help_message ):
     """Parse the user supplied input."""
@@ -70,7 +70,7 @@ def parse_input( help_message ):
   
     parser.add_argument('-s','--time_integrator',
                       type    = int,
-                      choices = range(4),
+                      choices = list(range(4)),
                       default =  0,
                       dest    = 't_stepper',
                       metavar = 'X',

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 
@@ -102,7 +102,7 @@ def parse_input( help_message ):
 
     parser.add_argument('-s','--time_integrator',
                       type    = int,
-                      choices = range(5),
+                      choices = list(range(5)),
                       default =  4,
                       dest    = 't_stepper',
                       metavar = 'X',

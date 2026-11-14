@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 import os

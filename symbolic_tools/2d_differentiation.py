@@ -1,4 +1,4 @@
-from __future__ import print_function  # For printing no newline
+  # For printing no newline
 import sympy
 from sympy import Rational
 from sympy import factorial
@@ -40,7 +40,7 @@ def compute_derivs( n, index, dx, dy ):
 
     # Set up matrix that needs to be inverted
     N1=n*n;
-    i1=np.array(range(n))
+    i1=np.array(list(range(n)))
     [I,J]=np.meshgrid(i1,i1)
     I1=I.flatten()
     J1=J.flatten()

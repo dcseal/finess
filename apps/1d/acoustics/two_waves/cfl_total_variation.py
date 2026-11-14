@@ -8,8 +8,8 @@ def main( ):
     import numpy as np
 
     # parser for the parameters.ini files (needed to read in the cfl number)
-    import ConfigParser, os
-    config = ConfigParser.ConfigParser()
+    import configparser, os
+    config = configparser.ConfigParser()
 
     # Plotting flag
     plt_soln = 1

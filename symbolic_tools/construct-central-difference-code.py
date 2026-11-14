@@ -1,4 +1,4 @@
-from __future__ import print_function  # For printing no newline
+  # For printing no newline
 import sympy
 from sympy import Rational
 from sympy import factorial
