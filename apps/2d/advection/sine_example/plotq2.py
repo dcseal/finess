@@ -1,17 +1,9 @@
 
 #----------------------------------------------------------
-def plotq2_cart(outputdir,nframe,
-                m,meth1,meqn,time,
-                points_per_dir,LegVals,
-                xlow,xhigh,ylow,yhigh,
-                mx,my,
-                dx,dy,
-                mx_old,my_old,
-                dx_old,dy_old,
-                xc,yc,
-                xl,yl,
-                qaug):
-    
+def plotq2(xc, yc, xl, yl, qsoln, auxsoln, time, ini_params, m ):
+    """Plotting routine for this application; called by
+    $FINESS/viz/python/plotfin2.py in place of plotq2_default.py."""
+
     import matplotlib.pyplot as plt
     import numpy as np
     from math import sqrt
@@ -20,15 +12,19 @@ def plotq2_cart(outputdir,nframe,
     from math import sin
     from math import pi
 
+    mx   = ini_params['mx']
+    my   = ini_params['my']
+    meqn = ini_params['meqn']
+
     plt.figure(1)
     plt.clf()
     plt.gca().set_aspect('equal')
     plt.gca().set_xlim(xl[0,0],xl[mx,0])
     plt.gca().set_ylim(yl[0,0],yl[0,my])
-    plt.pcolor(xl,yl,qaug[:,:,m],vmin=0.0,vmax=1.0)
+    plt.pcolor(xl,yl,qsoln[:,:,m],vmin=0.0,vmax=1.0)
     tmp1 = "".join(("q(",str(m+1),") at t = "))
     tmp2 = "".join((tmp1,str(time)))
-    title = "".join((tmp2,"     [DoGPack]"))
+    title = "".join((tmp2,"     [FINESS]"))
     plt.title(title)
     plt.draw()
 
@@ -41,7 +37,7 @@ def plotq2_cart(outputdir,nframe,
 #       for j in range(0,my):            
 #           r[k] = sqrt(pow(xc[i,j]-x0,2)+pow(yc[i,j]-y0,2))
 #           for m in range(0,meqn):
-#               qscat[k,m] = qaug[i,j,m]
+#               qscat[k,m] = qsoln[i,j,m]
 #           k = k+1
 #   qscat_ex = np.zeros((mx*my,meqn),float)
 #   qex(mx,my,meqn,r,qscat_ex)

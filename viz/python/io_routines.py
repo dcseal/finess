@@ -42,6 +42,27 @@ def read_qfile(mx, meqn, qfile ):
 #----------------------------------------------------------
 
 
+#----------------------------------------------------------
+def read_qfile2(mx, my, meqn, qfile ):
+    """Read a 2D solution file written by $(FINESS)/lib/2d/Output.cpp.
+
+    The file holds the time on its first line, followed by one value per
+    line, ordered with m outermost, then j, then i fastest.
+
+    Returns (time, qsoln) where qsoln has shape (mx, my, meqn) and
+    qsoln[i,j,m] is the value in cell (i,j) for component m.
+    """
+
+    import numpy as np
+
+    data  = np.loadtxt(qfile)
+    time  = float(data[0])
+    qsoln = np.reshape(data[1:1+mx*my*meqn], (meqn, my, mx)).transpose(2, 1, 0)
+
+    return time, qsoln
+#----------------------------------------------------------
+
+
 def parse_ini_parameters(parameters_file, params={} ):
     """Parse a parameters.ini file.
 

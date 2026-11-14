@@ -29,7 +29,7 @@ to see a list of options.
     import numpy as np
     import matplotlib.pyplot as plt
 
-    from io_routines import read_qfile                  # Reading data files
+    from io_routines import read_qfile2                 # Reading data files
     from io_routines import parse_ini_parameters        # *.ini parser
    
     TF = os.path.exists(outputdir)
@@ -150,16 +150,7 @@ to see a list of options.
             qfile_tmp = qname + qfile_tmp_tmp[1:]
             qfile = "".join(("".join((outputdir,"/")),qfile_tmp))
 
-            qtmp    = np.zeros(mx*my*meqn,float)   
-            time    = read_qfile(mx*my*meqn,qfile,qtmp)
-            qcoeffs = np.reshape(qtmp,(meqn,my,mx))
-            
-            qsoln = np.zeros((mx*my,meqn),float)
-            sample_state2_cart_mod(mx_old,my_old,points_per_dir,meqn,kmax,qcoeffs,LegVals,qsoln)
-            qaug = np.zeros((mx+1,my+1,meqn),float)
-            qaug[0:mx,0:my,0:meqn] = np.reshape(qsoln,(mx,my,meqn),'F')
-
-            time,qsoln  = read_qfile(mx, meqn, qfile )
+            time,qsoln  = read_qfile2(mx, my, meqn, qfile )
 
             if(maux>0):
 
@@ -172,13 +163,13 @@ to see a list of options.
                 afile_tmp = auxname + afile_tmp_tmp[1:]
                 afile = "".join(("".join((outputdir,"/")),afile_tmp))
 
-                time_aux, auxsoln = read_qfile(mx, maux, afile )
+                time_aux, auxsoln = read_qfile2(mx, my, maux, afile )
 
             else:
                 auxsoln = 0.0;
 
             # USER SUPPLIED FUNCTION (or default function )
-            plotq2(xc, yc, qsoln, auxsoln, time, ini_params, m-1 )
+            plotq2(xc, yc, xl, yl, qsoln, auxsoln, time, ini_params, m-1 )
 
     plt.ioff()
     print("")
