@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from contextlib import closing
 from subprocess import call, Popen, PIPE
@@ -48,9 +48,9 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
         cmd = './finess.exe'
         print(cmd)
         call(cmd, shell=True)
-        print((''' 
+        print(''' 
 //////////////////////// finished running output directory output_%s_%03i //////////
-''' % (ts_method_str,i+n_start) ))
+''' % (ts_method_str,i+n_start) )
 
 def parse_input( help_message ):
     """Parse the user supplied input."""

@@ -9,7 +9,7 @@ def main( ):
 
     # parser for the parameters.ini files (needed to read in the cfl number)
     import configparser, os
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(inline_comment_prefixes=(';',))
 
     # Plotting flag
     plt_soln = 1
@@ -41,7 +41,7 @@ def main( ):
         folder = (os.getcwd() + '/output%(dir_num)04i/') % my_dictionary
 
         # Grab the current cfl number:
-        config.readfp(open(folder + '/parameters.ini'))
+        config.read(folder + '/parameters.ini')
         cfl_now = float( config.get('finess','desired_cfl') )
 
         data = np.loadtxt( folder + '/total-variation.dat' )

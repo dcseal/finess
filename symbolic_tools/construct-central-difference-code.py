@@ -1,4 +1,3 @@
-  # For printing no newline
 import sympy
 from sympy import Rational
 from sympy import factorial

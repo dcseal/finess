@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from contextlib import closing
 from subprocess import call, Popen, PIPE
@@ -42,9 +42,9 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
         cmd = './finess.exe'
         print(cmd)
         call(cmd, shell=True)
-        print((''' 
+        print(''' 
 //////////////////////// finished running output directory output%03i //////////
-''' % (i+n_start) ))
+''' % (i+n_start) )
 
 def parse_input( help_message ):
     """Parse input arguments."""
@@ -63,7 +63,7 @@ def parse_input( help_message ):
   
     parser.add_argument('-s','--time_integrator',
                       type    = int,
-                      choices = list(range(4)),
+                      choices = list(range(5)),
                       default =  4,
                       dest    = 't_stepper',
                       metavar = 'X',
@@ -74,7 +74,7 @@ def parse_input( help_message ):
   2. Lax-Wendroff
   3. Multiderivative
   4. 'User-Defined' time integrator.  (See Makefile for what gets linked to)
-(default: 0)''')
+(default: 4)''')
 
     parser.add_argument('-f','--frames',
                       type    = int,
