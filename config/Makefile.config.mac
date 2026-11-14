@@ -51,7 +51,7 @@ CXX = g++
 FFLAGS = -O4 -fopenmp
 
 # Command used for compiling each object
-COMPILE = time $(CXX) $(FFLAGS) -c $(INCLUDE_LIBS)
+COMPILE = $(CXX) $(FFLAGS) -c $(INCLUDE_LIBS)
 
 # Can be used to generate ctags files for navigating code.
 # See (http://ctags.sourceforge.net) for more details

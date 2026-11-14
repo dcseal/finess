@@ -17,7 +17,7 @@ cleanall: cleanallo
 	rm -rf $(CLEANALL_DIRS)
 
 run:
-	time ./$(EXECUTABLE) -o $(output)
+	./$(EXECUTABLE) -o $(output)
 
 
 $(INIPARAMS_H): $(INIPARSER_H) 
