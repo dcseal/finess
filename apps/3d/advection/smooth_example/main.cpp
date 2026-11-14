@@ -4,13 +4,9 @@
 //  FINESS: See LICENSE.txt for licensing details
 //  --------------------------------------------
 //
-//    Lead Developer:  
+//    Lead Developer:
 //             David C. Seal
-//             Michigan University
-//             Department of Mathematics
-//             619 Red Cedar Road
-//             East Lansing, MI 48823
-//             seal@math.msu.edu
+//             https://sites.google.com/view/dseal/home
 //
 // =========================================================================
 int main(int argc, char* argv[])

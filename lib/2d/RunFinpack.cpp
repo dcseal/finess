@@ -32,8 +32,7 @@ int RunFinpack(std::string parameters_ini_filename)
     cout << "   |          non-oscillatory software Package    |   " << endl;
     cout << "   | Developed by the research group of           |   " << endl;
     cout << "   |            David C. Seal                     |   " << endl;
-    cout << "   |            Department of Mathematics         |   " << endl;
-    cout << "   |            US Naval Academy                  |   " << endl;
+    cout << "   |   https://sites.google.com/view/dseal/home   |   " << endl;
     cout << "   ------------------------------------------------   " << endl;
     cout << endl;
 

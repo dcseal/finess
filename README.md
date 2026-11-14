@@ -5,6 +5,9 @@ package.  It is a set of C++ libraries intended to be used by applications to
 solve hyperbolic partial differential equations.  This code was heavily
 derived from DoGPack (http://www.dogpack-code.org).
 
+FINESS is developed by the research group of
+[David C. Seal](https://sites.google.com/view/dseal/home).
+
 See: [$FINESS/LICENSE.txt](LICENSE.txt) for the end user license agreement.
 
 ## Overview ##
