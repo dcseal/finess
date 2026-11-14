@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from contextlib import closing
 from subprocess import call, Popen, PIPE
@@ -11,7 +11,7 @@ def main( ):
 
     # parser for the parameters.ini files (needed to read in the cfl number)
     import configparser, os
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(inline_comment_prefixes=(';',))
 
     # Count the number of output directories:
     my_dictionary = {}
@@ -26,14 +26,14 @@ def main( ):
         i = i+1
 
     tvd_vec = np.zeros( (i,1) )
-    print(("found %i folders" % len(tvd_vec) ))
+    print("found %i folders" % len(tvd_vec) )
     for i in range( len(tvd_vec) ):
 
         directory_num = my_dictionary['dir_num'] = i
         folder = (os.getcwd() + '/output%(dir_num)04i/') % my_dictionary
 
         # Grab the current cfl number:
-        config.readfp(open(folder + '/parameters.ini'))
+        config.read_file(open(folder + '/parameters.ini'))
         cfl_now = float( config.get('dogParams','cflv(2)') )
 
         data = np.loadtxt( folder + '/total-variation.dat' )
@@ -41,7 +41,7 @@ def main( ):
         tv   = data[:,1]
         dtv  = max( tv[1:] - tv[0:len(tv)-1] )
         #print("cfl, tvd-change = %2.3f, %2.5e" % ( cfl_now, dtv ) )
-        print(("%2.3f %2.5e" % ( cfl_now, dtv ) ))
+        print("%2.3f %2.5e" % ( cfl_now, dtv ) )
 
 if __name__ == '__main__':
     import optparse

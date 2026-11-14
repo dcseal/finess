@@ -69,7 +69,7 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     plt.gca().set_aspect('auto')
     plt.gca().set_xlim( [xc[0], xc[mx-1]] )
     plt.gca().set_ylim( [-15., 15.] )
-    print(( xc.shape, diffq.shape ))
+    print( xc.shape, diffq.shape )
     plt.plot(xc, diffq, 'bo')
     plt.plot(xc,qexp, '-r', linewidth=2.0)
     tmp1 = "".join(("dq/dx(t,x) at t = ",str(time)))

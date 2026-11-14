@@ -71,7 +71,7 @@ The easiest way to set up the $FINESS environment variable is to use the short
 script provided in the util subdirectory.  Go into your base directory you
 created above and run
 
-    $ python util/setenv.py
+    $ python3 util/setenv.py
 
 This script should produce two files that contain the shell script for setting
 the above variables. By default these files are called setenv.bash and

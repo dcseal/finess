@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from contextlib import closing
 from subprocess import call, Popen, PIPE
@@ -45,7 +45,7 @@ def main( ):
             ## if we had used same names for everything
             print(run_matlab_template % my_dictionary, file=data)
         
-        s = Popen('matlab -nodesktop -nosplash < ' + input_file, shell=True, stdout=PIPE).communicate()[0]
+        s = Popen('matlab -nodesktop -nosplash < ' + input_file, shell=True, stdout=PIPE, text=True).communicate()[0]
         new_err = float( s[s.find('>>')-1:len(s)].replace(">>","") )
 
         r1 = '%(old)e    %(new)e    ' % {'old': old_err, 'new' : new_err}

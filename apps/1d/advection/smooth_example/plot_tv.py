@@ -9,10 +9,10 @@ data = np.loadtxt( fname )
 t  = data[:,0]
 tv = data[:,1]
 
-print(("Largest increse in total variation = %2.5e" % ( max( tv[1:] - tv[0:len(tv)-1] ) ) ))
+print("Largest increse in total variation = %2.5e" % ( max( tv[1:] - tv[0:len(tv)-1] ) ) )
 pltsoln = True
 
-print(('tv[0] = ', tv[0]))
+print('tv[0] = ', tv[0])
 
 if( pltsoln ):
     # plot the data

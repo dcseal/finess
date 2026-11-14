@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from contextlib import closing
 from subprocess import call, Popen, PIPE
@@ -41,7 +41,7 @@ def main( ):
 Please Wait for simulation to finish running.''')
             break
  
-        qlength = len(qex)/5
+        qlength = len(qex)//5
         m = sqrt(qlength)
         dx = dy = 10.0/m
         print('m = %(mm)d' % {'mm':m})

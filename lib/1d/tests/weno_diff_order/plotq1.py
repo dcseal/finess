@@ -27,7 +27,7 @@ def plotq1(m,meth1,meqn,mx,time,xc,qsoln):
         else:
             qex_xx[n] = 0.
 
-    print(("Linf-error = %2.15e" % max( abs(qsoln[:,0]-qex[:]) ) ))
+    print("Linf-error = %2.15e" % max( abs(qsoln[:,0]-qex[:]) ) )
 
     plt.figure(1)
     plt.clf()

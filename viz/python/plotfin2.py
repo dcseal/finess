@@ -34,7 +34,7 @@ to see a list of options.
    
     TF = os.path.exists(outputdir)
     if(TF==False):
-        print(("\n    Directory not found, outputdir = %s\n" % outputdir ))
+        print("\n    Directory not found, outputdir = %s\n" % outputdir )
         exit()
 
     # Pull the personalized plotting routine, plotq2.py
@@ -70,7 +70,7 @@ to see a list of options.
     dy     = (yhigh-ylow)/my
 
     print("")
-    print(("       outputdir = %s" % outputdir       ))
+    print("       outputdir = %s" % outputdir       )
     print("")
 
     curr_dir = os.path.abspath("./")
@@ -113,7 +113,7 @@ to see a list of options.
 
     # Check user input
     if( m < 1 or m > meqn ):
-        print(("\n  Error, need 1 <= m <= meqn = %d.  You chose m = %d \n" % (meqn, m) ))
+        print("\n  Error, need 1 <= m <= meqn = %d.  You chose m = %d \n" % (meqn, m) )
         exit(1)
 
     n  = 0;

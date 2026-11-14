@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from contextlib import closing
 from subprocess import call, Popen, PIPE
@@ -20,7 +20,7 @@ def main( ):
         folder = (os.getcwd() + '/output_000%(dir_num)i/') % my_dictionary
         print(folder)
         if( not os.path.exists(folder) ):
-            print(('    Did not find folder: %s' % folder ))
+            print('    Did not find folder: %s' % folder )
             break
 
         my_dictionary['curr_folder'] = folder

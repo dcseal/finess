@@ -10,7 +10,6 @@ def read_qfile(mx, meqn, qfile ):
     used by FINESS for output.
     """
 
-    import string
     import numpy as np
 
     # solution to be returned
@@ -21,7 +20,7 @@ def read_qfile(mx, meqn, qfile ):
 
     # get time
     linestring = Rqfile.readline()
-    linelist   = string.split(linestring)
+    linelist   = linestring.split()
     time       = float(linelist[0])
     
     # extract all point values
@@ -30,7 +29,7 @@ def read_qfile(mx, meqn, qfile ):
         for i in range(mx):
 
             linestring  = Rqfile.readline()
-            linelist    = string.split(linestring)
+            linelist    = linestring.split()
             qsoln[i,me] = float(linelist[0])
 
             k = k+1
@@ -70,7 +69,7 @@ def parse_ini_parameters(parameters_file, params={} ):
 
     import configparser
 
-    config = configparser.RawConfigParser()
+    config = configparser.RawConfigParser(inline_comment_prefixes=(';',))
     config.read( parameters_file )
 
     # TODO - make sure this is consistent with the code generation software as

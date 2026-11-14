@@ -68,11 +68,11 @@ to see a list of options.
     meth1 = 1
 
     print("")
-    print(("        GridType = %s" % GridType        ))
-    print(("  points_per_dir = %i" % points_per_dir  ))
-    print(("      point_type = %i" % point_type      ))
-    print(("       outputdir = %s" % outputdir       ))
-    print(("       sorder    = %i" % meth1           ))
+    print("        GridType = %s" % GridType        )
+    print("  points_per_dir = %i" % points_per_dir  )
+    print("      point_type = %i" % point_type      )
+    print("       outputdir = %s" % outputdir       )
+    print("       sorder    = %i" % meth1           )
     print("")
 
     # Grid information

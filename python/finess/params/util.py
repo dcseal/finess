@@ -15,7 +15,7 @@ def read_params(parameter_filename, parameters_list):
 
     from configparser import ConfigParser
     from finess.params import DerivedParameter
-    config = ConfigParser()
+    config = ConfigParser(inline_comment_prefixes=(';',))
     config.read(parameter_filename)
     params = dict(sum([[((s, opt), config.get(s, opt)) for opt in config.options(s)] for s in config.sections()], []))
 

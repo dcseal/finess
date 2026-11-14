@@ -3,13 +3,12 @@
 #----------------------------------------------------------
 def read_params(outputdir,params):
 
-    import string
 
     Fparams = "".join((outputdir,"/qhelp.dat"     ))
     Rparams = open(Fparams,'r')
 
     linestring = Rparams.readline()
-    linelist = string.split(linestring)
+    linelist = linestring.split()
     ndims = int(linelist[0])
 
     if ndims!=1:
@@ -19,12 +18,12 @@ def read_params(outputdir,params):
         return -1
 
     linestring = Rparams.readline()
-    linelist = string.split(linestring)
+    linelist = linestring.split()
     GridType = str(linelist[0])
 
     for k in range (0,8):
         linestring = Rparams.readline()
-        linelist = string.split(linestring)
+        linelist = linestring.split()
         params[k] = float(linelist[0])
 
     Rparams.close()
@@ -75,20 +74,19 @@ def SampleBasis1(numpts,meth1,phi):
 #----------------------------------------------------------
 def read_qfile(mtmp,qfile,qtmp):
 
-    import string
 
     # open file
     Rqfile = open(qfile,'r')
 
     # get time
     linestring = Rqfile.readline()
-    linelist = string.split(linestring)
+    linelist = linestring.split()
     time = float(linelist[0])
     
     # store all Legendre coefficients in qtmp
     for k in range (0,mtmp):
         linestring = Rqfile.readline()
-        linelist = string.split(linestring)
+        linelist = linestring.split()
         qtmp[k] = float(linelist[0])
 
     # close file

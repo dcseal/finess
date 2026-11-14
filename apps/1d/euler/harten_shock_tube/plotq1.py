@@ -14,7 +14,7 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     if( 'gamma' not in ini_params ):
 
         import configparser
-        config = configparser.RawConfigParser()
+        config = configparser.RawConfigParser(inline_comment_prefixes=(';',))
         config.read( ini_params['output_dir'] + '/parameters.ini' )
         ini_params['gamma'] = config.getfloat('euler', 'gamma' )
 

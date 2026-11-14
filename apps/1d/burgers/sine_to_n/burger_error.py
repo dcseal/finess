@@ -41,10 +41,10 @@ def burger_exact(x, t, q0, qp):
         xi = xi - ( f(xi) / fp(xi) )
         num_iter += 1
         if( num_iter > MAX_ITER ):
-            print(('  Too many iterations = %d ' % num_iter ))
+            print('  Too many iterations = %d ' % num_iter )
             break
 
-    print((' Found exact solution in %d iterations' % num_iter ))
+    print(' Found exact solution in %d iterations' % num_iter )
 
     # exact solution:
     return q0(x-t*q0(xi))

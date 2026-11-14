@@ -15,7 +15,7 @@ def run_command_in_dir(directory, command):
     current_working_directory = os.getcwd()
     os.chdir(directory)
     try:
-        p = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        p = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE, text = True)
         stdout_output, stderr_output = p.communicate()
         command_return_code = p.wait()
     finally:

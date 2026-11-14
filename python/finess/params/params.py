@@ -96,8 +96,8 @@ def generate_default_on_missing(default_value):
          "section": section, 
          "name": name,
          "default_value": \
-	     str(default_value) if type(default_value) != bool \
-	         else str(default_value).lower()}
+             str(default_value) if type(default_value) != bool \
+                 else str(default_value).lower()}
     return default_on_missing
 
 
@@ -165,7 +165,7 @@ class EnumParameterType(ParameterType):
     def type_string(self):
         return """%(class_name)s::%(enum_scope_name)s::enum_type"""% \
                {"class_name": class_name,
-	        "enum_scope_name": self.enum_scope_name}
+                "enum_scope_name": self.enum_scope_name}
 
         
 
@@ -222,13 +222,13 @@ class Parameter:
         
         if type(type_) == str:
             self.type_= ParameterType(type_)
-        elif type(type_) == type(self):
+        elif isinstance(type_, ParameterType):
             self.type_ = type_
         else:
             raise ValueError("type_ should be a string, or a ParameterType object.")
-	
-	self.missing_handler = terminate_on_missing if default_value == None else \
-	                       generate_default_on_missing(default_value)
+        
+        self.missing_handler = terminate_on_missing if default_value == None else \
+                               generate_default_on_missing(default_value)
 
     
     def get_declaration_code(self):
@@ -236,9 +236,9 @@ class Parameter:
     
     def get_defining_code(self):
         return self.type_.generate_parsing(self.variable_name, 
-	                                   self.section, self.name,
-	                                   missing_handler = \
-					       self.missing_handler)
+                                           self.section, self.name,
+                                           missing_handler = \
+                                               self.missing_handler)
 
 
 class DerivedParameter(Parameter):
@@ -250,7 +250,7 @@ class DerivedParameter(Parameter):
                
         if type(type_) == str:
             self.type_= ParameterType(type_)
-        elif type(type_) == type(self):
+        elif isinstance(type_, ParameterType):
             self.type_ = type_
         else:
             raise ValueError("type_ should be a string, or a ParameterType object.")
@@ -267,7 +267,7 @@ class DerivedParameter(Parameter):
 
     def get_defining_code(self):
         dump_code = "" if self.dump_to_section == None else \
-                    """    	this->ini_doc["%(section)s"]["%(name)s"] = anyToString(%(value)s)  + "    ; Derived Parameter"; """ % \
+                    """         this->ini_doc["%(section)s"]["%(name)s"] = anyToString(%(value)s)  + "    ; Derived Parameter"; """ % \
                     {'section': self.dump_to_section,                
                      'name': self.dump_to_name,
                      'value': self.defining_expression_in_cpp}
@@ -412,7 +412,7 @@ extern %(class_name)s %(global_variable_name)s;
 """
     for p in parameters:
         if isinstance(p.type_, EnumParameterType):
-	    p.type_.class_name = class_name
+            p.type_.class_name = class_name
 
     types_requiring_definitions =         [t for t in set([p.type_ for p in parameters])
              if getattr(t, "generate_type_definition", None) != None]
@@ -465,11 +465,11 @@ void %(class_name)s::init(std::string inputFilename){
     IniParser parser;
     {
         std::ifstream ifs(inputFilename.c_str());
-	std::string ini_file_content = read_entire_stream(ifs);
-	int parse_return_value = parser.parse(ini_file_content);
-	if(parse_return_value != 0)
-	    terminate("Error parsing " + inputFilename + ": line #" +
-	              anyToString(parse_return_value));
+        std::string ini_file_content = read_entire_stream(ifs);
+        int parse_return_value = parser.parse(ini_file_content);
+        if(parse_return_value != 0)
+            terminate("Error parsing " + inputFilename + ": line #" +
+                      anyToString(parse_return_value));
     }
 
     this->ini_doc = parser.get_ini_doc();

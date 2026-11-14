@@ -125,7 +125,7 @@ def CreateLatexTable( mx, data,
   NR = len(mx)
   ND = len(data)
 
-  """
+  r"""
   #test space
   print data
   print ND

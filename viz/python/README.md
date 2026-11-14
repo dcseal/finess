@@ -12,19 +12,19 @@ Basic overview
 
 To execute a plotting routine, type
 
-    $ python $FINESS/viz/python/plotdog[n].py
+    $ python3 $FINESS/viz/python/plotdog[n].py
 
 from an application directory, after running `dog.exe', where [n] = dimension of
 application.  
 
 For a full list of options, type
 
-        $ python $FINESS/viz/python/plotdog[n].py -h
+        $ python3 $FINESS/viz/python/plotdog[n].py -h
 
 For example, running
 
 
-        $ python $FINESS/viz/python/plotdog1.py -p 4 -o output3000
+        $ python3 $FINESS/viz/python/plotdog1.py -p 4 -o output3000
 
 executes the 1D plotting script and request four points per element and will
 read data from the output directory `output3000'.

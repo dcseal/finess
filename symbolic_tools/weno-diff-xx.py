@@ -33,7 +33,7 @@ def compute_derivs( u_stencil, index, dx ):
     return A.inv()
 
 def compute_poly_fit( u_stencil, x ):
-    """Compute an expression for the polynomial approximation (in the variable
+    r"""Compute an expression for the polynomial approximation (in the variable
     x) to the given stencil.
     
     This polynomial fits points (x,p(x)) through
@@ -45,7 +45,7 @@ def compute_poly_fit( u_stencil, x ):
     return sympy.poly( interpolate( u_stencil, x ) )
 
 def compute_h1_norm( u_stencil, indices ):
-    """Compute the H1-norm of a given stencil.  This routine computes the
+    r"""Compute the H1-norm of a given stencil.  This routine computes the
     integral
 
         beta = \sum_l dx**(2l-1) \int_{xl}^{xr} d^l/dx^l p(x)\, dx.
