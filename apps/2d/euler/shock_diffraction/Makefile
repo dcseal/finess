@@ -16,14 +16,15 @@ AfterFullTimeStep   = AfterFullTimeStep
 # conditions.  For this problem, we need two SetBndValues functions: one for
 # x-direction, and one for y-direction
 ConstructL          = ConstructL
-ConstructLxWL	    = ConstructLxWL
 FinSolveLxW	    	= FinSolveLxW
 
 # place to add object modules
 #
 ALL_OBJECTS = $(COMMON_OBJECTS) $(APP_LIB_OBJECTS) \
+  ConstructLxWL_BCx2.o \
 
 ALL_SOURCES = $(COMMON_SOURCES) $(APP_LIB_SOURCES) \
+  ConstructLxWL_BCx2.cpp \
 
 TOPLIB_INCLUDE = -I$(TOPLIB) -I$(FINESS)/apps/2d/euler/lib/ $(LIB_SYS_INCLUDE)
 
