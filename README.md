@@ -26,7 +26,7 @@ The installation procedure is essentially idential to that of
 replace each occurance of $DOGPACK with $FINESS.  The public source code can
 be pull by calling
 
-    $ git clone https://bitbucket.org/dseal/finess-release
+    $ git clone https://github.com/dcseal/finess
 
 from the command line.
 
