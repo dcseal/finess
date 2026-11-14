@@ -30,7 +30,9 @@ if test -f mesh.dat; then
 fi
 cp $morefiles $parameters_ini_filename $outputdir;
 
-echo $parameters_ini_filename > $outputdir/parameters_ini_filename
+# Record the name of the copy (cp keeps only the basename), not the path the
+# file was given by, so plotting routines can find it in the output directory.
+echo "$(basename "$parameters_ini_filename")" > $outputdir/parameters_ini_filename
 
 # copy information sufficient to reconstruct the
 # code used to generate the data
