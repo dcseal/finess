@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 import numpy as np
@@ -12,8 +12,8 @@ def main( ):
 '''
 
     # parser for the parameters.ini files (needed to read in the cfl number)
-    import ConfigParser, os
-    config = ConfigParser.ConfigParser()
+    import configparser, os
+    config = configparser.ConfigParser()
 
     # Count the number of output directories:
     my_dictionary = {}
@@ -28,7 +28,7 @@ def main( ):
         i = i+1
 
     tvd_vec = np.zeros( (i,1) )
-    print("found %i folders" % len(tvd_vec) )
+    print(("found %i folders" % len(tvd_vec) ))
 
     print("-----------------------------------------------------------------------")
     print(" CFL;        Mass;          L1-norm;        L2-norm;       Linf-norm   ")
@@ -54,7 +54,7 @@ def main( ):
         d1   = max( l1norm ) - min( l1norm )
         d2   = max( l2norm ) - min( l2norm )
         di   = max( linorm ) - min( linorm )
-        print("%2.3f;    %2.5e;    %2.5e;    %2.5e;    %2.5e" % ( cfl_now, dm, d1, d2, di ) )
+        print(("%2.3f;    %2.5e;    %2.5e;    %2.5e;    %2.5e" % ( cfl_now, dm, d1, d2, di ) ))
 
 if __name__ == '__main__':
     main.__doc__

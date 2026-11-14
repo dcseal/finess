@@ -4,7 +4,7 @@ equations.
 Currently, only euler.gamma.
 """
 
-from __future__ import absolute_import
+
 
 def _parameters_accessors_checks():
     from finess.params import Parameter, CheckGreaterThan, Accessor
@@ -19,7 +19,7 @@ def _parameters_accessors_checks():
     parameters.append(gamma)
     checks.append(CheckGreaterThan(gamma, 0.0))
 
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 parameter_list, accessor_list, check_list =  \
     _parameters_accessors_checks()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 import os
@@ -22,15 +22,15 @@ def main( ):
 
     my_dictionary = {'dogpack_dir' : dogpack_home_dir, 'num_pts' : number_pts ,
         's_order' : s_order, 't_order' : t_order }
-    print "# leading comments can be given a '#' character"
-    print "# running t_order = ", t_order, " space_order = ", s_order
+    print("# leading comments can be given a '#' character")
+    print("# running t_order = ", t_order, " space_order = ", s_order)
     old_err = i = 0
     while( 1 ):
 
         directory_num = my_dictionary['dir_num'] =  i
         folder = 'outputSL%(s_order)i_%(t_order)i_00%(dir_num)i' % my_dictionary
         if( not os.path.exists(folder) ):
-            print 'Did Not find folder: ' + folder
+            print('Did Not find folder: ' + folder)
             break
 
         my_dictionary['curr_folder'] = folder
@@ -43,7 +43,7 @@ def main( ):
         with closing(open(input_file,'w')) as data:
             # print >> data, dogpack_data_template % locals() 
             ## if we had used same names for everything
-            print >> data, run_matlab_template % my_dictionary
+            print(run_matlab_template % my_dictionary, file=data)
         
         s = Popen('matlab -nodesktop -nosplash < ' + input_file, shell=True, stdout=PIPE).communicate()[0]
         new_err = float( s[s.find('>>')-1:len(s)].replace(">>","") )
@@ -57,7 +57,7 @@ def main( ):
 
         result = r1 + folder + '   log2( ratio ) = %(rat)8e' % \
             {'old' : old_err, 'new' : new_err, 'rat' : rat }
-        print result
+        print(result)
 
         old_err = new_err
 

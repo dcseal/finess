@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 import os
@@ -11,7 +11,7 @@ def main( ):
     '''Write some help documentation here
 '''
 
-    print "# leading comments can be given a '#' character"
+    print("# leading comments can be given a '#' character")
     my_dictionary = {}
     old_err = i = 0
     error=[['mx','L2','order']]
@@ -25,7 +25,7 @@ def main( ):
 
 #       print folder
         if( not os.path.exists(folder) ):
-            print 'did not find folder: %s' % folder
+            print('did not find folder: %s' % folder)
             break
 
         my_dictionary['curr_folder'] = folder
@@ -59,7 +59,7 @@ def main( ):
                 {'old' : old_err, 'new' : new_err, 'rat' : (old_err/new_err) } 
             error1=[qex.shape[0],new_err,0.000]
         error=error+[error1]
-        print result
+        print(result)
         old_err = new_err
         thefile = open( 'file%d.csv'%o1 , 'w' )
         for list1 in itertools.islice(error,1,None):

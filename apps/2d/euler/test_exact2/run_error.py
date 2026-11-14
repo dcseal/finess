@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 import os
@@ -10,7 +10,7 @@ def main( ):
     '''Write some help documentation here
 '''
 
-    print "# leading comments can be given a '#' character"
+    print("# leading comments can be given a '#' character")
     my_dictionary = {}
     old_err = i = 0
     old_err2 = 0
@@ -22,7 +22,7 @@ def main( ):
 
 #       print folder
         if( not os.path.exists(folder) ):
-            print 'did not find folder: %s' % folder
+            print('did not find folder: %s' % folder)
             break
 
         my_dictionary['curr_folder'] = folder
@@ -44,7 +44,7 @@ Please Wait for simulation to finish running.''')
         qlength = len(qex)/5
         m = sqrt(qlength)
         dx = dy = 10.0/m
-        print 'm = %(mm)d' % {'mm':m}
+        print('m = %(mm)d' % {'mm':m})
         qex =  qex[:qlength]    # only density for this error
         qapp = qapp[:qlength]   # only density
         diff = qex - qapp
@@ -74,8 +74,8 @@ Please Wait for simulation to finish running.''')
  # This is exactly the format I want:
 #{\normalsize $25$}   &   {\normalsize $1.747\times 10^{-4}$}   & {\normalsize --} &  {\normalsize $8.292\times 10^{-5}$} & {\normalsize --}  \\
        
-        print result 
-        print result2
+        print(result) 
+        print(result2)
 
         old_err = new_err
         old_err2 = new_err2

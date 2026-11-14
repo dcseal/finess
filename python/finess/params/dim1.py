@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 def _parameters_accessors_checks():
 
@@ -40,7 +40,7 @@ def _parameters_accessors_checks():
 		      defining_expression_in_cpp = """(this->xhigh - this->xlow) / this->mx""")
     parameters.append(dx)
     
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 
 

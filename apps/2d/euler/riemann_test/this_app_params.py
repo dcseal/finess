@@ -13,7 +13,7 @@ def _parameters_accessors_checks():
                     type_ = "int")
     parameters.append(OPT)
     checks.append(CheckOneOf(OPT, [1, 2]))
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 parameter_list, accessor_list, check_list = \
     _parameters_accessors_checks()

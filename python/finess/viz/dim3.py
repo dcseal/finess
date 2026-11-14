@@ -3,7 +3,7 @@ This module provides functions for generating coordinates arrays.
 See also: TODO.
 """
 
-from __future__ import absolute_import
+
 
 
 def meshgrid(params):

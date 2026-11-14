@@ -76,7 +76,7 @@ def _parameters_accessors_checks():
     parameters.append(pr)
     checks.append(CheckGreaterThan(pr, 0.0))
     
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 parameter_list, accessor_list, check_list = \
     _parameters_accessors_checks()

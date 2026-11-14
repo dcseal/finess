@@ -50,11 +50,11 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     qbig = np.concatenate( (qsoln[mx-mbc:,0], qsoln[:,0], qsoln[:mbc,0] ) )
 
     # Six point stencil (one 5 point for left, and one 5 point for right)
-    Im2 = range(0, (mx+mbc-2))
-    Im1 = range(1, (mx+mbc-1))
-    I   = range(2, (mx+mbc  ))
-    Ip1 = range(3, (mx+mbc+1))
-    Ip2 = range(4, (mx+mbc+2))
+    Im2 = list(range(0, (mx+mbc-2)))
+    Im1 = list(range(1, (mx+mbc-1)))
+    I   = list(range(2, (mx+mbc  )))
+    Ip1 = list(range(3, (mx+mbc+1)))
+    Ip2 = list(range(4, (mx+mbc+2)))
 
     qim2 = qbig[Im2]
     qim1 = qbig[Im1]
@@ -69,7 +69,7 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     plt.gca().set_aspect('auto')
     plt.gca().set_xlim( [xc[0], xc[mx-1]] )
     plt.gca().set_ylim( [-15., 15.] )
-    print( xc.shape, diffq.shape )
+    print(( xc.shape, diffq.shape ))
     plt.plot(xc, diffq, 'bo')
     plt.plot(xc,qexp, '-r', linewidth=2.0)
     tmp1 = "".join(("dq/dx(t,x) at t = ",str(time)))

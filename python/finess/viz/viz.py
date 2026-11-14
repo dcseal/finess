@@ -12,14 +12,14 @@ def interactive_plot(max_i, draw_ith_frame, new_window_for_each_frame = False):
     """
     def get_next_i(current_i):
         """Returns -1 if want to quit."""
-        print "Plot which frame ( 0 - %(max_i)d ) [type anything else to quit] ? " % {"max_i": max_i}, 
-        i_str = raw_input()
+        print("Plot which frame ( 0 - %(max_i)d ) [type anything else to quit] ? " % {"max_i": max_i}, end=' ') 
+        i_str = input()
         
         if i_str == "":
             if current_i < max_i:
                 return current_i + 1
             else:
-                print "End of plots"
+                print("End of plots")
                 return max_i
             
         try:
@@ -28,7 +28,7 @@ def interactive_plot(max_i, draw_ith_frame, new_window_for_each_frame = False):
             i_entered = -1
         
         if i_entered > max_i:
-            print "End of plots"
+            print("End of plots")
             return max_i
         else:
             return i_entered
@@ -61,17 +61,17 @@ def ask_which_component(params):
         raise RuntimeError( \
           "Invalid input: %(component_str)s is not one of %(valid_range)s"% \
           {"component_str": component_str,
-           "valid_range": str(range(1, meqn + 1))})
+           "valid_range": str(list(range(1, meqn + 1)))})
     meqn = params["finess", "meqn"]
 
-    print 'Plot which component of q  ( 1 - %(meqn)d ) ? ' \
-          % {"meqn": meqn},
-    component_str = raw_input()
+    print('Plot which component of q  ( 1 - %(meqn)d ) ? ' \
+          % {"meqn": meqn}, end=' ')
+    component_str = input()
 
     try:
         component = int(component_str)
     except ValueError:
-        print "Unable to interpret input as an integer, plotting Component 1 by default."
+        print("Unable to interpret input as an integer, plotting Component 1 by default.")
         component = 1
 
     if component >= 1 and component <= meqn:

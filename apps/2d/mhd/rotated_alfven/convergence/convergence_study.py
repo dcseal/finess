@@ -71,7 +71,7 @@ def L1_error_list(output_dir_list):
 
         tfinal, q, aux = finess.dim2.read_qa(params, nout)
         debug_tfinal = tfinal
-        print "tfinal: ", tfinal
+        print("tfinal: ", tfinal)
         from numpy import sin, cos, sum, abs, pi, max
         angle = params['initial', 'angle']
         X, Y = finess.viz.dim2.meshgrid(params)
@@ -232,15 +232,15 @@ def L1_A_error_list(output_dir_list):
 output_dir_list = ['output_30deg_%(i)02d' % {'i': i} for i in [0, 1, 2, 3, 4]]
 error_list = L1_error_list(output_dir_list)
 order_list = log2_adjacent_ratio(error_list)
-print 'rho'
-print order_list
-print error_list
+print('rho')
+print(order_list)
+print(error_list)
 
 
 
 A_error_list = L1_A_error_list(output_dir_list)
 A_order_list = log2_adjacent_ratio(A_error_list)
-print 'A:'
-print A_order_list
-print A_error_list
+print('A:')
+print(A_order_list)
+print(A_error_list)
 

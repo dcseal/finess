@@ -13,9 +13,9 @@ def read_params(outputdir,params):
     ndims = int(linelist[0])
 
     if ndims!=1:
-        print ""
-        print " Incorrect dimension, ndims must be 1. ndims = ",ndims
-        print ""
+        print("")
+        print(" Incorrect dimension, ndims must be 1. ndims = ",ndims)
+        print("")
         return -1
 
     linestring = Rparams.readline()

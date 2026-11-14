@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 
@@ -32,7 +32,7 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
                     "i_now": (i+n_start), 'ts_method_str' : ts_method_str,
             }
             my_dictionary['output'] = 'output_%(i_now)04i' % my_dictionary
-            print >> data, finess_data_template % my_dictionary
+            print(finess_data_template % my_dictionary, file=data)
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
@@ -40,9 +40,9 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
         cmd = './finess.exe'
         print(cmd)
         call(cmd, shell=True)
-        print(''' 
+        print((''' 
 //////////////////////// finished running output directory output%03i //////////
-''' % (i+n_start) )
+''' % (i+n_start) ))
 
 def parse_input( help_message ):
   
@@ -60,7 +60,7 @@ def parse_input( help_message ):
   
     parser.add_argument('-s','--time_integrator',
                       type    = int,
-                      choices = range(5),
+                      choices = list(range(5)),
                       default =  0,
                       dest    = 't_stepper',
                       metavar = 'X',

@@ -322,7 +322,7 @@ U_TaylorQS = TaylorStep( Un, L, Utt, nu )
 
 print("printing u from Forward-Euler time stepping")
 for u in UFE:
-    print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
+    print(( 'u = ', u, sympy.limit( u, eps, 0 ), ';' ))
 
 """
 print("printing U (CFD)")
@@ -332,7 +332,7 @@ for u in U_TaylorCFD:
 
 print("printing U (NCW)")
 for u in U_TaylorNCW:
-    print( 'u = ', u, sympy.limit( u, eps, 0 ), ';' )
+    print(( 'u = ', u, sympy.limit( u, eps, 0 ), ';' ))
 
 """
 print("printing U (QiuShu)")

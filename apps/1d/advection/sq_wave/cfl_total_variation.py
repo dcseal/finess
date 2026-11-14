@@ -8,8 +8,8 @@ def main( ):
     import numpy as np
 
     # parser for the parameters.ini files (needed to read in the cfl number)
-    import ConfigParser, os
-    config = ConfigParser.ConfigParser()
+    import configparser, os
+    config = configparser.ConfigParser()
 
     # Plotting flag
     plt_soln = 1
@@ -29,7 +29,7 @@ def main( ):
     tvd_vec = np.zeros( (i,1) )
     cfl_vec = np.zeros( (i,1) )
 
-    print("found %i folders" % len(tvd_vec) )
+    print(("found %i folders" % len(tvd_vec) ))
 
     print("-----------------------------------------------------------------------")
     print("CFL; Deviation in TV; Largest undershoot; Largest overshoot")
@@ -52,7 +52,7 @@ def main( ):
         minq = min( data[:,2] )
         maxq = max( data[:,3] )
         dtv  = max( tv[1:] - tv[0:len(tv)-1] )
-        print("%2.3f;    %2.5e;    %2.5e;    %2.5e" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) )
+        print(("%2.3f;    %2.5e;    %2.5e;    %2.5e" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) ))
         fids.write( "%2.3f    %2.15e    %2.5e    %2.5e\n" % ( cfl_now, dtv, min(minq,0.), max(maxq-1.0,0.) ) )
 
         tvd_vec[i] = dtv

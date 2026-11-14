@@ -65,7 +65,7 @@ you app directory, and
 
 
 
-from __future__ import absolute_import
+
 
 class_name = "IniParams"
 global_variable_name = "global_ini_params"
@@ -176,7 +176,7 @@ class EnumParameterType(ParameterType):
         };
         """ % \
         {"enum_scope_name": self.enum_scope_name,
-         "enumerator_list": ", ".join(self.string_enumerator_dict.values())}
+         "enumerator_list": ", ".join(list(self.string_enumerator_dict.values()))}
     
     def generate_stringToAny_specialization(self):
         return """template<>
@@ -193,7 +193,7 @@ inline %(type_string)s stringToAny<%(type_string)s>(const std::string& s){
                         {"string": item[0],
                          "enumerator": item[1],
                          "full_enum_scope_name": self.full_enum_scope_name} \
-                        for item in self.string_enumerator_dict.items()]    + 
+                        for item in list(self.string_enumerator_dict.items())]    + 
                        ["        " + self.full_enum_scope_name + "::DEFAULT;"])
          }
     
@@ -207,7 +207,7 @@ inline %(type_string)s stringToAny<%(type_string)s>(const std::string& s){
                 "full_enum_scope_name": self.full_enum_scope_name,
                 "section": section,
                 "name": name,
-                "string_list": ", ".join(self.string_enumerator_dict.keys())}
+                "string_list": ", ".join(list(self.string_enumerator_dict.keys()))}
 
 
 class Parameter:
@@ -341,7 +341,7 @@ class CheckOneOf(Check):
         assert isinstance(parameter, Parameter)
         assert parameter.type_.type_string in ["int"]
         assert type(list_) in [list, set]
-        assert all(map(lambda x: type(x) == int, list_))
+        assert all([type(x) == int for x in list_])
         
         self.parameter = parameter
         self.list_ = list_

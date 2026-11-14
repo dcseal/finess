@@ -1,4 +1,4 @@
-from __future__ import print_function  # For printing no newline
+  # For printing no newline
 import sympy  # symbolic library
 import re     # regular expressions: for saving useful output
 

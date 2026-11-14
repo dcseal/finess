@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 def _parameters_accessors_checks():
     from finess.params import Parameter, DerivedParameter, Accessor,\
@@ -97,7 +97,7 @@ def _parameters_accessors_checks():
 		      defining_expression_in_cpp = """(this->zhigh - this->zlow) / this->mz""")
     parameters.append(dz)
     
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 parameter_list, accessor_list, check_list = \
     _parameters_accessors_checks()

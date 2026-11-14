@@ -38,9 +38,9 @@ to see a list of options.
 
     TF = os.path.exists(outputdir)
     if TF==False:
-        print ""
-        print "    Directory not found, outputdir =",outputdir
-        print ""
+        print("")
+        print("    Directory not found, outputdir =",outputdir)
+        print("")
         exit()
 
     curr_dir = os.path.abspath("./")
@@ -68,11 +68,11 @@ to see a list of options.
     meth1 = 1
 
     print("")
-    print("        GridType = %s" % GridType        )
-    print("  points_per_dir = %i" % points_per_dir  )
-    print("      point_type = %i" % point_type      )
-    print("       outputdir = %s" % outputdir       )
-    print("       sorder    = %i" % meth1           )
+    print(("        GridType = %s" % GridType        ))
+    print(("  points_per_dir = %i" % points_per_dir  ))
+    print(("      point_type = %i" % point_type      ))
+    print(("       outputdir = %s" % outputdir       ))
+    print(("       sorder    = %i" % meth1           ))
     print("")
 
     # Grid information
@@ -101,22 +101,22 @@ to see a list of options.
     q=-1;
     tmp1 = "".join((" Which component of q do you want to plot ( 1 - ",str(meqn)))
     tmp2 = "".join((tmp1," ) ? "))
-    m = raw_input(tmp2)
-    print ""
+    m = input(tmp2)
+    print("")
     if (not m):
         m = 1
     else:
         m = int(m)
 
     if(m<1):
-        print ""
-        print "  Error, need m > 1,  m = ",m
-        print ""
+        print("")
+        print("  Error, need m > 1,  m = ",m)
+        print("")
         exit(1)
     elif(m>meqn):
-        print ""
-        print "  Error, need m <=",meqn,",  m = ",m
-        print ""
+        print("")
+        print("  Error, need m <=",meqn,",  m = ",m)
+        print("")
         exit(1)
 
     kn = 0;
@@ -129,7 +129,7 @@ to see a list of options.
     while (nf!=-1):
         tmp1 = "".join((" Plot which frame ( 0 - ",str(nplot)))
         tmp2 = "".join((tmp1," ) [type -1 or q to quit] ? "))
-        nf = raw_input(tmp2)
+        nf = input(tmp2)
         if (not nf):
             n1 = n1 + 1
             nf = 0
@@ -140,9 +140,9 @@ to see a list of options.
             n1 = nf
 
         if(n1>nplot):
-            print ""
-            print " End of plots "
-            print ""
+            print("")
+            print(" End of plots ")
+            print("")
             n1 = nplot
 
         if(nf!=-1):
@@ -209,7 +209,7 @@ to see a list of options.
             plotq1(m-1, meth1, meqn, mx, time, xc, qsoln, auxsoln)
 
     plt.ioff()
-    print ""
+    print("")
 ## ------------------------------------------------------------------------- ##
     
 

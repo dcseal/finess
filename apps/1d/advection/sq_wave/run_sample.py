@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 
@@ -71,17 +71,17 @@ def main(cfl, ts_method, space_order, time_order, iterations, mx_start, n_start)
                     'mx' : mx_now,
                     "i_now": (i+n_start),
                     'ts_method_str' : ts_method_str }
-            print >> data, dogpack_data_template % my_dictionary
+            print(dogpack_data_template % my_dictionary, file=data)
 
         # if you want to capture script output, do
         #   Popen(thing to run, shell=True, stdout=PIPE).communicate()[0]
         #%cmd = './dog.exe -o outputSL%(s_order)i_%(t_order)i_%(i_now)03i' % my_dictionary
         cmd = './dog.exe -o output00%(i_now)i' % my_dictionary
-        print cmd
+        print(cmd)
         call(cmd, shell=True)
-        print ''' 
+        print(''' 
 //////////////////////// finished running output directory output%03i //////////
-''' % (i+n_start)
+''' % (i+n_start))
 
 def parse_input( help_message ):
   
@@ -99,7 +99,7 @@ def parse_input( help_message ):
   
     parser.add_argument('-s','--time_integrator',
                       type    = int,
-                      choices = range(4),
+                      choices = list(range(4)),
                       default =  0,
                       dest    = 't_stepper',
                       metavar = 'X',

@@ -7,7 +7,7 @@ primary interface for executing the 2D python plotting interface for FINESS.
 See also: TODO.
 """
 
-from __future__ import absolute_import
+
 
 def ask_which_component_and_which_frame_and_plot(parameters_ini_filename, plotting_method, **kwargs):
     from finess.params.util import read_params

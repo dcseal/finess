@@ -3,7 +3,7 @@ try:
 except(ImportError):
     err  = '\nUnable to import module finess.params\n'
     err += 'Make sure that $FINESS/python/finess is part of the environment variable $PYTHONPATH\n'
-    raise( ImportError(err) )
+    raise ImportError(err)
 
 import finess.params.dim1
 

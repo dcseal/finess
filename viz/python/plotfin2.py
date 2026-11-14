@@ -34,7 +34,7 @@ to see a list of options.
    
     TF = os.path.exists(outputdir)
     if(TF==False):
-        print("\n    Directory not found, outputdir = %s\n" % outputdir )
+        print(("\n    Directory not found, outputdir = %s\n" % outputdir ))
         exit()
 
     # Pull the personalized plotting routine, plotq2.py
@@ -70,7 +70,7 @@ to see a list of options.
     dy     = (yhigh-ylow)/my
 
     print("")
-    print("       outputdir = %s" % outputdir       )
+    print(("       outputdir = %s" % outputdir       ))
     print("")
 
     curr_dir = os.path.abspath("./")
@@ -96,7 +96,7 @@ to see a list of options.
     q=-1;
     tmp1 = "".join((" Which component of q do you want to plot ( 1 - ",str(meqn)))
     tmp2 = "".join((tmp1," ) ? "))
-    m = raw_input(tmp2)
+    m = input(tmp2)
     print("")
 
     # Select an equation to plot. Defuaul: m=1
@@ -106,14 +106,14 @@ to see a list of options.
         m = int(m)
 
     if m<1:
-        print ""
-        print "  Error, need m > 1,  m = ",m
-        print ""
+        print("")
+        print("  Error, need m > 1,  m = ",m)
+        print("")
         return -1
 
     # Check user input
     if( m < 1 or m > meqn ):
-        print("\n  Error, need 1 <= m <= meqn = %d.  You chose m = %d \n" % (meqn, m) )
+        print(("\n  Error, need 1 <= m <= meqn = %d.  You chose m = %d \n" % (meqn, m) ))
         exit(1)
 
     n  = 0;
@@ -125,7 +125,7 @@ to see a list of options.
 
         tmp1 = "".join((" Plot which frame ( 0 - ",str(nplot)))
         tmp2 = "".join((tmp1," ) [type -1 or q to quit] ? "))
-        nf = raw_input(tmp2)
+        nf = input(tmp2)
         if (not nf):
             n1 = n1 + 1
             nf = 0
@@ -181,7 +181,7 @@ to see a list of options.
             plotq2(xc, yc, qsoln, auxsoln, time, ini_params, m-1 )
 
     plt.ioff()
-    print ""
+    print("")
 
 ## ------------------------------------------------------------------------- ##
 def parse_input( help_message ):

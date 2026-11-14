@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 def _parameters_accessors_checks():    
     from finess.params import Parameter, Accessor, Check, \
@@ -173,7 +173,7 @@ def _parameters_accessors_checks():
                         default_value = "ASCII")
     parameters.append(datafmt)
 
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
     
 parameter_list, accessor_list, check_list = \
     _parameters_accessors_checks()

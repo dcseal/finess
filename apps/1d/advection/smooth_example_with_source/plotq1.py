@@ -16,7 +16,7 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
         if( abs(x-0.5) < 0.5*width ):
             qex[i] = np.cos(np.pi*(x-0.5)/width)**6
 
-    print("Linf-error = %2.15e" % max( abs(qsoln[:,0]-qex[:]) ) )
+    print(("Linf-error = %2.15e" % max( abs(qsoln[:,0]-qex[:]) ) ))
 
     plt.figure(1)
     plt.clf()

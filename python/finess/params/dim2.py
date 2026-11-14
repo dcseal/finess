@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 def _parameters_accessors_checks():
     from finess.params import Parameter, DerivedParameter, Accessor,\
@@ -64,7 +64,7 @@ def _parameters_accessors_checks():
 		      defining_expression_in_cpp = """(this->yhigh - this->ylow) / this->my""")
     parameters.append(dy)
     
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 
 

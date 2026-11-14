@@ -10,7 +10,7 @@ def _parameters_accessors_checks():
     checks.append(Check(cpp_code = """if(this->maux != 1)
         terminate("finess.maux should be 1 for 2D Constraint Transport.");"""))
 
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 parameter_list, accessor_list, check_list = \
     _parameters_accessors_checks()

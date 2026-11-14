@@ -11,7 +11,7 @@ def _parameters_accessors_checks():
                       section = "euler",
                       name = "x0",
                       type_ = "double"))
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 parameter_list, accessor_list, check_list = \
     _parameters_accessors_checks()

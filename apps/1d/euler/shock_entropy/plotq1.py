@@ -1,4 +1,4 @@
-from __future__ import print_function  # used for printing to file
+  # used for printing to file
 
 #-----------------------------------------------------------------------------#
 def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
@@ -11,10 +11,10 @@ def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):
     mx       = ini_params['mx']
 
     # Pull gas constant (or read it if it hasn't already been read)
-    if( not ini_params.has_key('gamma') ):
+    if( 'gamma' not in ini_params ):
 
-        import ConfigParser
-        config = ConfigParser.RawConfigParser()
+        import configparser
+        config = configparser.RawConfigParser()
         config.read( ini_params['output_dir'] + '/parameters.ini' )
         ini_params['gamma'] = config.getfloat('euler', 'gamma' )
 

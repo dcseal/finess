@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import with_statement
+
 from contextlib import closing
 from subprocess import call, Popen, PIPE
 import os
@@ -10,7 +10,7 @@ def main( ):
     '''Write some help documentation here
 '''
 
-    print "# leading comments can be given a '#' character"
+    print("# leading comments can be given a '#' character")
     my_dictionary = {}
     old_err = i = 0
     while( 1 ):
@@ -21,7 +21,7 @@ def main( ):
 
 #       print folder
         if( not os.path.exists(folder) ):
-            print 'did not find folder: %s' % folder
+            print('did not find folder: %s' % folder)
             break
 
         my_dictionary['curr_folder'] = folder
@@ -56,7 +56,7 @@ Please Wait for simulation to finish running.''')
  # This is exactly the format I want:
 #{\normalsize $25$}   &   {\normalsize $1.747\times 10^{-4}$}   & {\normalsize --} &  {\normalsize $8.292\times 10^{-5}$} & {\normalsize --}  \\
        
-        print result
+        print(result)
 
         old_err = new_err
 

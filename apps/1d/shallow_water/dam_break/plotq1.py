@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 #----------------------------------------------------------
 def plotq1(xc, qsoln, auxsoln, time, ini_params, m ):

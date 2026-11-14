@@ -4,7 +4,7 @@
    Notably,
    check_all_apps_in_a_dir_compile
 """
-from __future__ import absolute_import
+
 
 
 def run_command_in_dir(directory, command):
@@ -127,15 +127,15 @@ def check_all_apps_in_a_dir_compile(directory, show_error_message = True):
             build_command_return_code, build_command_stdout_output, build_command_stderr_output = \
                 rebuild_app(app_dir)
             if build_command_return_code != 0:
-                print "Build failed: " + app_dir
+                print("Build failed: " + app_dir)
                 if show_error_message:
-                    print build_command_stderr_output
+                    print(build_command_stderr_output)
             else:
-                print "Build succeeded: " + app_dir
+                print("Build succeeded: " + app_dir)
         except RuntimeError as e:
-            print e.message
+            print(e.message)
 
-        print "=" * 40
+        print("=" * 40)
 
 def check_all_apps_compile(show_error_message = True):
     """Rebuild all apps, and print result to stdout."""

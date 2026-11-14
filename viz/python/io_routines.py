@@ -68,9 +68,9 @@ def parse_ini_parameters(parameters_file, params={} ):
     $FINESS/python/finess/params defines.
     """
 
-    import ConfigParser
+    import configparser
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read( parameters_file )
 
     # TODO - make sure this is consistent with the code generation software as

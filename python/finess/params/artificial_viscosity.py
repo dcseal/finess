@@ -4,7 +4,7 @@ viscosity.
 Reference: doi:10.1016/j.jcp.2014.03.001
 """
 
-from __future__ import absolute_import
+
 
 def _parameters_accessors_checks():
     from finess.params import Parameter, CheckGreaterEqual, Accessor
@@ -31,7 +31,7 @@ def _parameters_accessors_checks():
     parameters.append(av_epsilon)
     checks.append(CheckGreaterEqual(av_epsilon, 0.0))
     
-    return parameters, map(Accessor, parameters), checks
+    return parameters, list(map(Accessor, parameters)), checks
 
 parameter_list, accessor_list, check_list =  \
     _parameters_accessors_checks()

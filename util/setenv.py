@@ -41,43 +41,43 @@ python_path = ":".join((finessP,python_path))
 matlab_path = ":".join((finessM,matlab_path))
 hdf5_disable_version_check = "1"
 
-print ""
-print "The following variables will be set:"
-print "  FINESS = %s" % finess_path
+print("")
+print("The following variables will be set:")
+print("  FINESS = %s" % finess_path)
 write_environment_variable(csh_file,bash_file,"FINESS",finess_path)
 
-print "  PYTHONPATH = %s" % python_path
+print("  PYTHONPATH = %s" % python_path)
 write_environment_variable(csh_file,bash_file,"PYTHONPATH",python_path)
 
-print "  MATLABPATH = %s" % matlab_path
+print("  MATLABPATH = %s" % matlab_path)
 write_environment_variable(csh_file,bash_file,"MATLABPATH",matlab_path)
 
-print "  HDF5_DISABLE_VERSION_CHECK = %s" % hdf5_disable_version_check
+print("  HDF5_DISABLE_VERSION_CHECK = %s" % hdf5_disable_version_check)
 write_environment_variable(csh_file,bash_file,"HDF5_DISABLE_VERSION_CHECK", hdf5_disable_version_check)
 
 pdog1_command = "python $FINESS/python/finess/viz/plotdog1.py"
-print "  plotdog1 = %s" %pdog1_command
+print("  plotdog1 = %s" %pdog1_command)
 write_shortcut_alias(csh_file,bash_file,"plotdog1",pdog1_command)
 
 pdog2_command = "python $FINESS/viz/python/plotdog2.py"
-print "  plotdog2 = %s" %pdog2_command
+print("  plotdog2 = %s" %pdog2_command)
 write_shortcut_alias(csh_file,bash_file,"plotdog2",pdog2_command)
-print ""
+print("")
 
 plot1d_generic_command = "python $FINESS/viz/plot1d_generic.py"
-print "  plot1d_generic = %s" % plot1d_generic_command
+print("  plot1d_generic = %s" % plot1d_generic_command)
 write_shortcut_alias(csh_file,bash_file,"plot1d_generic", plot1d_generic_command)
-print ""
+print("")
 
 plot2d_generic_command = "python $FINESS/viz/plot2d_generic.py"
-print "  plot2d_generic = %s" % plot2d_generic_command
+print("  plot2d_generic = %s" % plot2d_generic_command)
 write_shortcut_alias(csh_file,bash_file,"plot2d_generic", plot2d_generic_command)
-print ""
+print("")
 
 plot2d_generic_command = "python $FINESS/viz/plot2d_generic_contour.py"
-print "  plot2d_generic_contour = %s" % plot2d_generic_command
+print("  plot2d_generic_contour = %s" % plot2d_generic_command)
 write_shortcut_alias(csh_file,bash_file,"plot2d_generic_contour", plot2d_generic_command)
-print ""
+print("")
 
 # Close output files
 csh_file.close()
